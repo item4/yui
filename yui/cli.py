@@ -1,6 +1,7 @@
 import click
 
-from .bot import Bot, current_bot
+from .bot import Bot
+from .box import box
 
 
 @click.group()
@@ -11,7 +12,7 @@ def yui():
 @yui.command()
 @click.argument('token')
 def run(token):
-    @current_bot.command('안녕')
+    @box.command('안녕')
     async def hi(bot, message):
         user = await bot.api.users.info(message.get('user'))
         await bot.say(
