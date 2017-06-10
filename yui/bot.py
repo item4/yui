@@ -1,9 +1,34 @@
 import asyncio
+import collections
+import functools
 import json
 
 import aiohttp
 
 from .api import SlackAPI
+
+
+class _CurrentBot:
+
+    def __init__(self):
+        self.handlers = collections.defaultdict(dict)
+        self.aliases = {}
+
+    def command(self, name: str, aliases=None):
+        def decorator(func):
+            @functools.wraps(func)
+            def internal(func):
+                self.handlers['message'][name] = func
+
+                if aliases is not None:
+                    for alias in aliases:
+                        self.aliases[alias] = name
+            return internal(func)
+
+        return decorator
+
+
+current_bot = _CurrentBot()
 
 
 class Bot:
@@ -60,13 +85,19 @@ class Bot:
             message = await get()
 
             print(message)
-            if message.get('type') == 'message':
-                if message['text'].startswith('안녕 '):
-                    user = await self.api.users.info(message.get('user'))
-                    await self.say(
-                        'test',
-                        '안녕하세요! {}'.format(user['user']['name'])
-                    )
+            type = message.get('type')
+
+            handlers = current_bot.handlers.get(type)
+            if handlers:
+                for name, func in handlers.items():
+                    if type == 'message':
+                        eq = message['text'] == name
+                        startswith = message['text'].startswith(name + ' ')
+
+                        if eq or startswith:
+                            res = await func(self, message)
+                            if not res:
+                                break
 
     async def receive(self, put):
         """Receive stream from slack."""
