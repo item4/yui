@@ -4,6 +4,9 @@ from .bot import Bot
 from .box import box
 
 
+__all__ = 'main', 'yui'
+
+
 @click.group()
 def yui():
     """YUI, Slack Bot for item4.slack.com"""

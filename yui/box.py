@@ -2,6 +2,9 @@ import collections
 import functools
 
 
+__all__ = 'Box', 'box'
+
+
 class Box:
     """Box, collection of handlers and aliases"""
 

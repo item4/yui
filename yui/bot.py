@@ -7,6 +7,9 @@ from .api import SlackAPI
 from .box import Box, box
 
 
+__all__ = 'Bot',
+
+
 class Bot:
     """Yui."""
 
