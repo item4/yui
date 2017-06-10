@@ -106,10 +106,9 @@ class SlackAPI:
 class Bot:
     """Yui."""
 
-    def __init__(self, loop, token: str, debug: bool=False):
+    def __init__(self, token: str, debug: bool=False):
         """Initialize"""
 
-        self.loop = loop
         self.token = token
         self.debug = debug
         self.queue = asyncio.Queue()
@@ -118,7 +117,10 @@ class Bot:
     def run(self):
         """Run"""
 
-        self.loop.run_until_complete(
+        loop = asyncio.get_event_loop()
+        loop.set_debug(self.debug)
+
+        loop.run_until_complete(
             asyncio.wait(
                 (
                     self.receive(self.queue.put),
@@ -126,6 +128,7 @@ class Bot:
                 )
             )
         )
+        loop.close()
 
     async def call(self, method: str, data: dict=None):
         """Call API methods."""

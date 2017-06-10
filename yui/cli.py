@@ -1,4 +1,3 @@
-import asyncio
 import click
 
 from .bot import Bot
@@ -13,11 +12,7 @@ def yui():
 @click.argument('token')
 def run(token):
     debug = True
-    loop = asyncio.get_event_loop()
-    loop.set_debug(debug)
-
-    bot = Bot(loop, token, debug)
+    bot = Bot(token, debug)
     bot.run()
-    loop.close()
 
 main = yui
