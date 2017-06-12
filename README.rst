@@ -27,9 +27,11 @@ Installation
 Run
 ---
 
+`yui.config.toml` file require `TOKEN` value.
+
 .. code-block:: bash
 
-   $ yui run <YOUR_SLACK_TOKEN_HERE>
+   $ yui run -c yui.config.toml
 
 
 License
