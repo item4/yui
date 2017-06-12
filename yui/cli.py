@@ -61,7 +61,7 @@ def run(config):
         )
 
     debug = True
-    bot = Bot(config['TOKEN'], debug)
+    bot = Bot(config)
     bot.run()
 
 main = yui

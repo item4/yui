@@ -2,6 +2,7 @@ import asyncio
 import json
 
 import aiohttp
+from attrdict import AttrDict
 
 from .api import SlackAPI
 from .box import Box, box
@@ -13,11 +14,10 @@ __all__ = 'Bot',
 class Bot:
     """Yui."""
 
-    def __init__(self, token: str, debug: bool=False, using_box: Box=None):
+    def __init__(self, config: AttrDict, using_box: Box=None):
         """Initialize"""
 
-        self.token = token
-        self.debug = debug
+        self.config = config
         self.box = using_box or box
         self.queue = asyncio.Queue()
         self.api = SlackAPI(self)
@@ -26,7 +26,7 @@ class Bot:
         """Run"""
 
         loop = asyncio.get_event_loop()
-        loop.set_debug(self.debug)
+        loop.set_debug(self.config.DEBUG)
 
         loop.run_until_complete(
             asyncio.wait(
@@ -44,7 +44,7 @@ class Bot:
         with aiohttp.ClientSession() as session:
 
             form = aiohttp.FormData(data or {})
-            form.add_field('token', self.token)
+            form.add_field('token', self.config.TOKEN)
             async with session.post(
                 'https://slack.com/api/{}'.format(method),
                 data=form
