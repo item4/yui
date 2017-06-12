@@ -5,6 +5,8 @@ install_requires = {
     'aiohttp >= 2.1.0',
     # CLI
     'Click >= 6.7',
+    # Configuration
+    'toml >= 0.9.2',
 }
 
 tests_require = {

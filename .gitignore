@@ -161,3 +161,5 @@ ENV/
 /site
 
 # End of https://www.gitignore.io/api/python,intellij+iml
+
+*.config.toml
