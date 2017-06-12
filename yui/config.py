@@ -6,6 +6,9 @@ from attrdict import AttrDict
 
 __all__ = 'error', 'load',
 
+DEFAULT = {
+    'DEBUG': False,
+}
 
 def error(msgfmt: str, *args):
     msg = msgfmt.format(*args)
@@ -25,6 +28,7 @@ def load(path: pathlib.Path) -> AttrDict:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = AttrDict(toml.load(path.name))
+    config = AttrDict(DEFAULT.copy())
+    config.update(toml.load(path.name))
 
     return config
