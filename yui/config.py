@@ -2,17 +2,18 @@ import pathlib
 import sys
 
 import toml
+from attrdict import AttrDict
 
 __all__ = 'error', 'load',
 
 
-def error(msgfmt, *args):
+def error(msgfmt: str, *args):
     msg = msgfmt.format(*args)
     print(msg, file=sys.stderr)
     raise SystemExit(1)
 
 
-def load(path: pathlib.Path) -> dict:
+def load(path: pathlib.Path) -> AttrDict:
     """Load configuration from given path."""
 
     if not path.exists():
@@ -24,6 +25,6 @@ def load(path: pathlib.Path) -> dict:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = toml.load(path.name)
+    config = AttrDict(toml.load(path.name))
 
     return config

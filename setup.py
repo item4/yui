@@ -7,6 +7,8 @@ install_requires = {
     'Click >= 6.7',
     # Configuration
     'toml >= 0.9.2',
+    # util
+    'attrdict >= 2.0.0',
 }
 
 tests_require = {

@@ -1,4 +1,6 @@
-from .util import AttrDict, bool2str
+from attrdict import AttrDict
+
+from .util import bool2str
 
 
 __all__ = 'SlackAPI',
