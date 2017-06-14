@@ -8,6 +8,7 @@ __all__ = 'error', 'load',
 
 DEFAULT = {
     'DEBUG': False,
+    'PREFIX': '',
 }
 
 def error(msgfmt: str, *args):

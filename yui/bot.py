@@ -53,10 +53,16 @@ class Bot:
                                                 .format(method, data))
                 return await response.json()
 
-    async def say(self, channel: str, text: str) -> dict:
+    async def say(self, channel: str, text: str, **kwargs) -> dict:
         """Shortcut for bot saying."""
 
-        return await self.api.chat.postMessage(channel, text, as_user=True)
+        return await self.api.chat.postMessage(
+            channel,
+            text,
+            as_user=True,
+            link_names=True,
+            **kwargs
+        )
 
     async def process(self, get):
         """Process messages."""
@@ -69,13 +75,24 @@ class Bot:
 
             handlers = self.box.handlers.get(type)
             if handlers:
-                for name, func in handlers.items():
+                for name, handler in handlers.items():
                     if type == 'message':
-                        eq = message['text'] == name
-                        startswith = message['text'].startswith(name + ' ')
+                        chunks = message['text'].split(' ')
+                        match = True
+                        if handler.need_prefix:
+                            match = chunks[0] == self.config.PREFIX + name
 
-                        if eq or startswith:
-                            res = await func(self, message)
+                        if match:
+                            func_params = handler.signature.parameters
+                            kwargs = {}
+                            if 'bot' in func_params:
+                                kwargs['bot'] = self
+                            if 'message' in func_params:
+                                kwargs['message'] = message
+                            if 'chunks' in func_params:
+                                kwargs['chunks'] = chunks
+
+                            res = await handler.callback(**kwargs)
                             if not res:
                                 break
 

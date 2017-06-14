@@ -52,15 +52,25 @@ def yui():
 def run(config):
     """Run YUI."""
 
-    @box.command('안녕')
+    @box.on('message')
     async def hi(bot, message):
+        if message['text'] in ['안녕', '안녕 유이', '유이 안녕']:
+            user = await bot.api.users.info(message.get('user'))
+            await bot.say(
+                message['channel'],
+                '안녕하세요! @{}'.format(user['user']['name'])
+            )
+            return False
+        return True
+
+    @box.command('ping', ['핑'])
+    async def ping(bot, message):
         user = await bot.api.users.info(message.get('user'))
         await bot.say(
-            'test',
-            '안녕하세요! {}'.format(user['user']['name'])
+            message['channel'],
+            '@{}, pong!'.format(user['user']['name'])
         )
 
-    debug = True
     bot = Bot(config)
     bot.run()
 
