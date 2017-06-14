@@ -34,6 +34,15 @@ Run
    $ yui run -c yui.config.toml
 
 
+Contribute to YUI
+-----------------
+
+.. code-block:: bash
+
+   $ mkdir -p .git/hooks/
+   $ ln -s $(pwd)/hooks/pre-commit .git/hooks
+
+
 License
 -------
 
