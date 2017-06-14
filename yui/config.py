@@ -11,12 +11,12 @@ __all__ = 'error', 'load',
 DEFAULT = {
     'DEBUG': False,
     'PREFIX': '',
-    'HANDLERS': [],
+    'HANDLERS': (),
 }
 
 
-def error(msgfmt: str, *args):
-    msg = msgfmt.format(*args)
+def error(message: str, *args):
+    msg = message.format(*args)
     print(msg, file=sys.stderr)
     raise SystemExit(1)
 
@@ -34,6 +34,6 @@ def load(path: pathlib.Path) -> AttrDict:
         error('File suffix must be *.config.toml')
 
     config = AttrDict(DEFAULT.copy())
-    config.update(toml.load(path.name))
+    config.update(toml.load(path.open()))
 
     return config
