@@ -2,6 +2,7 @@ import asyncio
 import json
 
 import aiohttp
+
 from attrdict import AttrDict
 
 from .api import SlackAPI

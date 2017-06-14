@@ -35,7 +35,10 @@ class Box:
 
             @functools.wraps(func)
             def internal(func):
-                self.handlers['message'][name] = Handler(func, need_prefix=True)
+                self.handlers['message'][name] = Handler(
+                    func,
+                    need_prefix=True
+                )
 
                 if aliases is not None:
                     for alias in aliases:
@@ -58,6 +61,7 @@ class Box:
             return internal(func)
 
         return decorator
+
 
 # (:class:`Box`) Default Box
 box = Box()

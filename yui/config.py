@@ -1,8 +1,10 @@
 import pathlib
 import sys
 
-import toml
 from attrdict import AttrDict
+
+import toml
+
 
 __all__ = 'error', 'load',
 
@@ -10,6 +12,7 @@ DEFAULT = {
     'DEBUG': False,
     'PREFIX': '',
 }
+
 
 def error(msgfmt: str, *args):
     msg = msgfmt.format(*args)
