@@ -4,7 +4,6 @@ import pathlib
 import click
 
 from .bot import Bot
-from .box import box
 from .config import load
 
 
@@ -51,25 +50,6 @@ def yui():
 @load_config
 def run(config):
     """Run YUI."""
-
-    @box.on('message')
-    async def hi(bot, message):
-        if message['text'] in ['안녕', '안녕 유이', '유이 안녕']:
-            user = await bot.api.users.info(message.get('user'))
-            await bot.say(
-                message['channel'],
-                '안녕하세요! @{}'.format(user['user']['name'])
-            )
-            return False
-        return True
-
-    @box.command('ping', ['핑'])
-    async def ping(bot, message):
-        user = await bot.api.users.info(message.get('user'))
-        await bot.say(
-            message['channel'],
-            '@{}, pong!'.format(user['user']['name'])
-        )
 
     bot = Bot(config)
     bot.run()

@@ -1,4 +1,5 @@
 import asyncio
+import importlib
 import json
 
 import aiohttp
@@ -17,6 +18,9 @@ class Bot:
 
     def __init__(self, config: AttrDict, using_box: Box=None):
         """Initialize"""
+
+        for module_name in config.HANDLERS:
+            importlib.import_module(module_name)
 
         self.config = config
         self.box = using_box or box
