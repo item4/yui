@@ -82,24 +82,45 @@ class Bot:
             if handlers:
                 for name, handler in handlers.items():
                     if type == 'message':
-                        chunks = message['text'].split(' ')
-                        match = True
-                        if handler.need_prefix:
-                            match = chunks[0] == self.config.PREFIX + name
+                        res = await self.process_message_handler(
+                            name,
+                            handler,
+                            message
+                        )
+                        if not res:
+                            break
 
-                        if match:
-                            func_params = handler.signature.parameters
-                            kwargs = {}
-                            if 'bot' in func_params:
-                                kwargs['bot'] = self
-                            if 'message' in func_params:
-                                kwargs['message'] = message
-                            if 'chunks' in func_params:
-                                kwargs['chunks'] = chunks
+            if type == 'message':
+                for name, alias_to in self.box.aliases.items():
+                    handler = self.box.handlers[type][alias_to]
+                    res = await self.process_message_handler(
+                        name,
+                        handler,
+                        message
+                    )
+                    if not res:
+                        break
 
-                            res = await handler.callback(**kwargs)
-                            if not res:
-                                break
+    async def process_message_handler(self, name: str, handler, message: dict):
+        chunks = message['text'].split(' ')
+        match = True
+        if handler.need_prefix:
+            match = chunks[0] == self.config.PREFIX + name
+
+        if match:
+            func_params = handler.signature.parameters
+            kwargs = {}
+            if 'bot' in func_params:
+                kwargs['bot'] = self
+            if 'message' in func_params:
+                kwargs['message'] = message
+            if 'chunks' in func_params:
+                kwargs['chunks'] = chunks
+
+            res = await handler.callback(**kwargs)
+            if not res:
+                return False
+        return True
 
     async def receive(self, put):
         """Receive stream from slack."""
