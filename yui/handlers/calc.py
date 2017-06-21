@@ -43,7 +43,7 @@ async def calc(bot, message, chunks):
     else:
         await bot.say(
             message['channel'],
-            '`{}` 를 실행하면 지역변수가 이렇게 되요!\n\n{}'.format(
+            '`{}` 를 실행하면 지역변수가 이렇게 돼요!\n\n{}'.format(
                 expr,
                 '\n'.join(
                     '`{}` = `{}`'.format(key, value)
