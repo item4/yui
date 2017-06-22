@@ -256,8 +256,153 @@ GLOBAL_CONTEXT = {
 
 GLOBAL_CONTEXT.update(MATH_CONTEXT)
 
-ALLOWED_GLOBAL_ATTRS = [
-    '__name__',
+ALLOWED_STR_ATTRS = [
+    'capitalize',
+    'casefold',
+    'center',
+    'count',
+    'encode',
+    'endswith',
+    'expandtabs',
+    'find',
+    'format',
+    'format_map',
+    'index',
+    'isalnum',
+    'isalpha',
+    'isdecimal',
+    'isdigit',
+    'isidentifier',
+    'islower',
+    'isnumeric',
+    'isprintable',
+    'isspace',
+    'istitle',
+    'isupper',
+    'join',
+    'ljust',
+    'lower',
+    'lstrip',
+    'maketrans',
+    'partition',
+    'replace',
+    'rfind',
+    'rindex',
+    'rjust',
+    'rpartition',
+    'rsplit',
+    'rstrip',
+    'split',
+    'splitlines',
+    'swapcase',
+    'startswith',
+    'strip',
+    'title',
+    'translate',
+    'upper',
+    'zfill',
+]
+
+ALLOWED_BYTES_ATTRS = [
+    'fromhex',
+    'hex',
+    'count',
+    'decode',
+    'endswith',
+    'find',
+    'index',
+    'join',
+    'maketrans',
+    'partition',
+    'replace',
+    'rfind',
+    'rindex',
+    'rpartition',
+    'startswith',
+    'translate',
+    'center',
+    'ljust',
+    'lstrip',
+    'rjust',
+    'rsplit',
+    'rstrip',
+    'split',
+    'strip',
+    'capitalize',
+    'expandtabs',
+    'isalnum',
+    'isalpha',
+    'isdigit',
+    'islower',
+    'isspace',
+    'istitle',
+    'isupper',
+    'lower',
+    'splitlines',
+    'swapcase',
+    'title',
+    'upper',
+    'zfill',
+]
+
+ALLOWED_LIST_ATTRS = [
+    'index',
+    'count',
+    'append',
+    'clear',
+    'copy',
+    'extend',
+    'insert',
+    'pop',
+    'remove',
+    'reverse',
+    'sort',
+]
+
+ALLOWED_TUPLE_ATTRS = [
+    'index',
+    'count',
+    'append',
+    'clear',
+    'copy',
+    'extend',
+    'insert',
+    'pop',
+    'remove',
+    'reverse',
+]
+
+ALLOWED_SET_ATTRS = [
+    'isdisjoint',
+    'issubset',
+    'issuperset',
+    'union',
+    'intersection',
+    'difference',
+    'symmetric_difference',
+    'copy',
+    'update',
+    'intersection_update',
+    'difference_update',
+    'symmetric_difference_update',
+    'add',
+    'remove',
+    'discard',
+    'pop',
+    'clear',
+]
+
+ALLOWED_DICT_ATTRS = [
+    'copy',
+    'fromkeys',
+    'get',
+    'items',
+    'keys',
+    'pop',
+    'popitem',
+    'setdefault',
+    'update',
+    'values',
 ]
 
 PROTECTED_IDS = [
@@ -293,6 +438,13 @@ PROTECTED_IDS = [
     'license', 'help', '_'
 ]
 
+ALLOWED_GLOBAL_ATTRS = list(set(
+    ALLOWED_DICT_ATTRS + ALLOWED_STR_ATTRS + ALLOWED_BYTES_ATTRS +
+    ALLOWED_LIST_ATTRS + ALLOWED_SET_ATTRS + ALLOWED_TUPLE_ATTRS
+)) + [
+   '__name__',
+]
+
 ALLOWED_ATTRS = [
     '{}.{}'.format(g, a)
     for g in GLOBAL_CONTEXT.keys()
@@ -301,12 +453,44 @@ ALLOWED_ATTRS = [
     'math.{}'.format(method) for method in MATH_CONTEXT.keys()
 ] + [
     'math.{}.__name__'.format(method) for method in MATH_CONTEXT.keys()
+] + [
+    'str.{}'.format(method) for method in ALLOWED_STR_ATTRS
+] + [
+    'bytes.{}'.format(method) for method in ALLOWED_BYTES_ATTRS
+] + [
+    'list.{}'.format(method) for method in ALLOWED_LIST_ATTRS
+] + [
+    'tuple.{}'.format(method) for method in ALLOWED_TUPLE_ATTRS
+] + [
+    'set.{}'.format(method) for method in ALLOWED_SET_ATTRS
+] + [
+    'dict.{}'.format(method) for method in ALLOWED_DICT_ATTRS
 ]
 
 
 def resolve_attr_id(node):
     if isinstance(node, ast.Attribute):
-        return '{}.{}'.format(resolve_attr_id(node.value), node.attr)
+        value_id = None
+        if isinstance(node.value, (ast.Name, ast.Attribute)):
+            value_id = resolve_attr_id(node.value)
+        elif isinstance(node.value, ast.Str):
+            value_id = 'str'
+        elif isinstance(node.value, ast.Bytes):
+            value_id = 'bytes'
+        elif isinstance(node.value, (ast.List, ast.ListComp)):
+            value_id = 'list'
+        elif isinstance(node.value, ast.Tuple):
+            value_id = 'tuple'
+        elif isinstance(node.value, (ast.Set, ast.SetComp)):
+            value_id = 'set'
+        elif isinstance(node.value, (ast.Dict, ast.DictComp)):
+            value_id = 'dict'
+        else:
+            raise SyntaxError(
+                'unsupport type: {}'.format(ast.dump(node.value))
+            )
+
+        return '{}.{}'.format(value_id, node.attr)
     return node.id
 
 
@@ -347,7 +531,15 @@ class Validator(ast.NodeVisitor):
         elif isinstance(node.func, ast.Name):
             allowed = self.allowed_names
 
+        error = False
         if id not in allowed:
+            error = True
+            if isinstance(node.func, ast.Attribute):
+                if isinstance(node.func.value, ast.Name):
+                    if node.func.attr in ALLOWED_GLOBAL_ATTRS:
+                        error = False
+
+        if error:
             raise SyntaxError('call {} is not permitted.'.format(id))
 
         self.generic_visit(node)
