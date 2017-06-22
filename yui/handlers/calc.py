@@ -511,6 +511,9 @@ class ExtractNames(ast.NodeVisitor):
     def __init__(self):
         self.names = []
 
+    def visit_arg(self, node):
+        self.names.append(node.arg)
+
     def visit_Name(self, node):  # noqa
         if isinstance(node.ctx, (TYPE_STORE, TYPE_DEL)):
             self.names.append(node.id)
