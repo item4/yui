@@ -6,7 +6,7 @@ import math
 from ..box import box
 
 
-@box.command('calc', ['='])
+@box.command('=', ['calc'])
 async def calc(bot, message, chunks):
     expr = html.unescape(' '.join(chunks[1:]))
     if not expr:
@@ -19,6 +19,53 @@ async def calc(bot, message, chunks):
     result = None
     try:
         result, local = calculate(expr)
+    except SyntaxError as e:
+        await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
+        return
+    except ZeroDivisionError:
+        await bot.say(
+            message['channel'],
+            '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr)
+        )
+        return
+    except Exception as e:
+        await bot.say(
+            message['channel'],
+            '에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e)
+        )
+        return
+
+    if result is not None:
+        await bot.say(
+            message['channel'],
+            '`{}` == `{}`'.format(expr, result)
+        )
+    else:
+        await bot.say(
+            message['channel'],
+            '`{}` 를 실행하면 지역변수가 이렇게 돼요!\n\n{}'.format(
+                expr,
+                '\n'.join(
+                    '`{}` = `{}`'.format(key, value)
+                    for key, value in local.items()
+                )
+            )
+        )
+
+
+@box.command('==')
+async def calc_raw(bot, message, chunks):
+    expr = html.unescape(' '.join(chunks[1:]))
+    if not expr:
+        await bot.say(
+            message['channel'],
+            '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX)
+        )
+        return
+
+    result = None
+    try:
+        result, local = calculate(expr, replace_num_to_decimal=False)
     except SyntaxError as e:
         await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
         return
