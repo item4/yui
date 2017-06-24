@@ -1,6 +1,7 @@
 import asyncio
 import importlib
 import json
+import traceback
 
 import aiohttp
 
@@ -82,6 +83,28 @@ class Bot:
             if handlers:
                 for name, handler in handlers.items():
                     if type == 'message':
+                        try:
+                            res = await self.process_message_handler(
+                                name,
+                                handler,
+                                message
+                            )
+                            if not res:
+                                break
+                        except Exception:
+                            await self.say(
+                                self.config.OWNER,
+                                ('*Message*\n```\n{}\n```\n'
+                                 '*Traceback*\n```\n{}\n```\n').format(
+                                    message,
+                                    traceback.format_exc(),
+                                )
+                            )
+
+            if type == 'message':
+                for name, alias_to in self.box.aliases.items():
+                    handler = self.box.handlers[type][alias_to]
+                    try:
                         res = await self.process_message_handler(
                             name,
                             handler,
@@ -89,17 +112,15 @@ class Bot:
                         )
                         if not res:
                             break
-
-            if type == 'message':
-                for name, alias_to in self.box.aliases.items():
-                    handler = self.box.handlers[type][alias_to]
-                    res = await self.process_message_handler(
-                        name,
-                        handler,
-                        message
-                    )
-                    if not res:
-                        break
+                    except Exception:
+                        await self.say(
+                            self.config.OWNER,
+                            ('*Message*\n```\n{}\n```\n'
+                             '*Traceback*\n```\n{}\n```\n').format(
+                                message,
+                                traceback.format_exc(),
+                            )
+                        )
 
     async def process_message_handler(self, name: str, handler, message: dict):
         chunks = message['text'].split(' ')
