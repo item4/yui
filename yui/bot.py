@@ -77,11 +77,13 @@ class Bot:
             message = await get()
 
             print(message)
+
             type = message.get('type')
+            subtype = message.get('subtype')
 
             handlers = self.box.handlers.get(type)
             if handlers:
-                for name, handler in handlers.items():
+                for name, handler in handlers[subtype].items():
                     if type == 'message':
                         try:
                             res = await self.process_message_handler(
@@ -102,29 +104,35 @@ class Bot:
                             )
 
             if type == 'message':
-                for name, alias_to in self.box.aliases.items():
-                    handler = self.box.handlers[type][alias_to]
-                    try:
-                        res = await self.process_message_handler(
-                            name,
-                            handler,
-                            message
-                        )
-                        if not res:
-                            break
-                    except Exception:
-                        await self.say(
-                            self.config.OWNER,
-                            ('*Message*\n```\n{}\n```\n'
-                             '*Traceback*\n```\n{}\n```\n').format(
-                                message,
-                                traceback.format_exc(),
+                for name, alias_to in self.box.aliases[subtype].items():
+                    handler = self.box.handlers[type][subtype][alias_to]
+                    if handler:
+                        try:
+                            res = await self.process_message_handler(
+                                name,
+                                handler,
+                                message
                             )
-                        )
+                            if not res:
+                                break
+                        except Exception:
+                            await self.say(
+                                self.config.OWNER,
+                                ('*Message*\n```\n{}\n```\n'
+                                 '*Traceback*\n```\n{}\n```\n').format(
+                                    message,
+                                    traceback.format_exc(),
+                                )
+                            )
 
     async def process_message_handler(self, name: str, handler, message: dict):
-        chunks = message.get('text', '').split(' ')
-        match = handler.subtype == message.get('subtype')
+        chunks = []
+        if 'text' in message:
+            chunks = message['text'].split(' ')
+        elif 'message' in message and 'text' in message['message']:
+            chunks = message['message']['text'].split(' ')
+
+        match = True
         if handler.need_prefix:
             match = chunks[0] == self.config.PREFIX + name
 
