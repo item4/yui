@@ -2,8 +2,19 @@ import ast
 import decimal
 import html
 import math
+import signal
 
 from ..box import box
+
+TIMEOUT = 3
+
+
+class TimeoutError(Exception):
+    pass
+
+
+def timeout_handler(signum, frame):
+    raise TimeoutError()
 
 
 @box.command('=', ['calc'])
@@ -16,9 +27,13 @@ async def calc(bot, message, chunks):
         )
         return
 
+    signal.signal(signal.SIGALRM, timeout_handler)
+
     result = None
     try:
+        signal.alarm(TIMEOUT)
         result, local = calculate(expr)
+        signal.alarm(0)
     except SyntaxError as e:
         await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
         return
@@ -26,6 +41,12 @@ async def calc(bot, message, chunks):
         await bot.say(
             message['channel'],
             '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr)
+        )
+        return
+    except TimeoutError:
+        await bot.say(
+            message['channel'],
+            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr)
         )
         return
     except Exception as e:
@@ -63,9 +84,13 @@ async def calc_raw(bot, message, chunks):
         )
         return
 
+    signal.signal(signal.SIGALRM, timeout_handler)
+
     result = None
     try:
+        signal.alarm(TIMEOUT)
         result, local = calculate(expr, replace_num_to_decimal=False)
+        signal.alarm(0)
     except SyntaxError as e:
         await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
         return
@@ -73,6 +98,12 @@ async def calc_raw(bot, message, chunks):
         await bot.say(
             message['channel'],
             '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr)
+        )
+        return
+    except TimeoutError:
+        await bot.say(
+            message['channel'],
+            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr)
         )
         return
     except Exception as e:
