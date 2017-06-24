@@ -17,14 +17,10 @@ def timeout_handler(signum, frame):
     raise TimeoutError()
 
 
-@box.command('=', ['calc'])
-async def calc(bot, message, chunks):
+async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
     expr = html.unescape(' '.join(chunks[1:]))
     if not expr:
-        await bot.say(
-            message['channel'],
-            '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX)
-        )
+        await bot.say(channel, help)
         return
 
     signal.signal(signal.SIGALRM, timeout_handler)
@@ -32,103 +28,83 @@ async def calc(bot, message, chunks):
     result = None
     try:
         signal.alarm(TIMEOUT)
-        result, local = calculate(expr)
+        result, local = calculate(expr, replace_num_to_decimal=num_to_decimal)
         signal.alarm(0)
     except SyntaxError as e:
-        await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
+        await bot.say(
+            channel,
+            '에러가 발생했어요! {}'.format(e),
+            thread_ts=ts,
+        )
         return
     except ZeroDivisionError:
         await bot.say(
-            message['channel'],
-            '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr)
+            channel,
+            '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr),
+            thread_ts=ts,
         )
         return
     except TimeoutError:
         await bot.say(
-            message['channel'],
-            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr)
+            channel,
+            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr),
+            thread_ts=ts,
         )
         return
     except Exception as e:
         await bot.say(
-            message['channel'],
-            '에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e)
+            channel,
+            '에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e),
+            thread_ts=ts,
         )
         return
 
     if result is not None:
         await bot.say(
-            message['channel'],
-            '`{}` == `{}`'.format(expr, result)
+            channel,
+            '`{}` == `{}`'.format(expr, result),
+            thread_ts=ts,
         )
-    else:
+    elif local:
         await bot.say(
-            message['channel'],
+            channel,
             '`{}` 를 실행하면 지역변수가 이렇게 돼요!\n\n{}'.format(
                 expr,
                 '\n'.join(
                     '`{}` = `{}`'.format(key, value)
                     for key, value in local.items()
                 )
-            )
+            ),
+            thread_ts=ts,
         )
+    else:
+        await bot.say(
+            channel,
+            '`{}` 를 실행해도 반환값도 없고, 지역변수도 비어있어요!'.format(expr),
+            thread_ts=ts,
+        )
+
+
+@box.command('=', ['calc'])
+async def calc_decimal(bot, message, chunks):
+    await body(
+        bot,
+        message['channel'],
+        chunks,
+        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+        True,
+    )
 
 
 @box.command('==')
-async def calc_raw(bot, message, chunks):
-    expr = html.unescape(' '.join(chunks[1:]))
-    if not expr:
-        await bot.say(
-            message['channel'],
-            '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX)
-        )
-        return
-
-    signal.signal(signal.SIGALRM, timeout_handler)
-
-    result = None
-    try:
-        signal.alarm(TIMEOUT)
-        result, local = calculate(expr, replace_num_to_decimal=False)
-        signal.alarm(0)
-    except SyntaxError as e:
-        await bot.say(message['channel'], '에러가 발생했어요! {}'.format(e))
-        return
-    except ZeroDivisionError:
-        await bot.say(
-            message['channel'],
-            '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr)
-        )
-        return
-    except TimeoutError:
-        await bot.say(
-            message['channel'],
-            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr)
-        )
-        return
-    except Exception as e:
-        await bot.say(
-            message['channel'],
-            '에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e)
-        )
-        return
-
-    if result is not None:
-        await bot.say(
-            message['channel'],
-            '`{}` == `{}`'.format(expr, result)
-        )
-    else:
-        await bot.say(
-            message['channel'],
-            '`{}` 를 실행하면 지역변수가 이렇게 돼요!\n\n{}'.format(
-                expr,
-                '\n'.join(
-                    '`{}` = `{}`'.format(key, value)
-                    for key, value in local.items()
-                )
-            )
-        )
+async def calc_num(bot, message, chunks):
+    await body(
+        bot,
+        message['channel'],
+        chunks,
+        '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
+        False,
+    )
 
 
 class Decimal(decimal.Decimal):
