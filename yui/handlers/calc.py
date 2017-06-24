@@ -96,6 +96,18 @@ async def calc_decimal(bot, message, chunks):
     )
 
 
+@box.command('=', ['calc'], subtype='message_changed')
+async def calc_decimal_on_change(bot, message, chunks):
+    await body(
+        bot,
+        message['channel'],
+        chunks,
+        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+        True,
+        message['message']['ts'],
+    )
+
+
 @box.command('==')
 async def calc_num(bot, message, chunks):
     await body(
@@ -104,6 +116,18 @@ async def calc_num(bot, message, chunks):
         chunks,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
+    )
+
+
+@box.command('==', subtype='message_changed')
+async def calc_num_on_change(bot, message, chunks):
+    await body(
+        bot,
+        message['channel'],
+        chunks,
+        '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
+        False,
+        message['message']['ts'],
     )
 
 
