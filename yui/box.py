@@ -9,11 +9,12 @@ __all__ = 'Box', 'Handler', 'box'
 class Handler:
     """Handler"""
 
-    def __init__(self, callback, *, need_prefix: bool=False):
+    def __init__(self, callback, *, need_prefix: bool=False, subtype=None):
         """Initialize"""
 
         self.callback = callback
         self.need_prefix = need_prefix
+        self.subtype = subtype
         self.signature = inspect.signature(callback)
 
 
@@ -26,7 +27,7 @@ class Box:
         self.handlers = collections.defaultdict(dict)
         self.aliases = {}
 
-    def command(self, name: str, aliases=None):
+    def command(self, name: str, aliases=None, *, subtype=None):
         """Shortcut decorator for make command easily."""
 
         def decorator(func):
@@ -37,7 +38,8 @@ class Box:
             def internal(func):
                 self.handlers['message'][name] = Handler(
                     func,
-                    need_prefix=True
+                    need_prefix=True,
+                    subtype=subtype,
                 )
 
                 if aliases is not None:
@@ -47,7 +49,7 @@ class Box:
 
         return decorator
 
-    def on(self, type_: str):
+    def on(self, type_: str, *, subtype=None):
         """Decorator for make handler."""
 
         def decorator(func):
@@ -56,7 +58,10 @@ class Box:
 
             @functools.wraps(func)
             def internal(func):
-                self.handlers[type_][func.__hash__] = Handler(func)
+                self.handlers[type_][func.__hash__] = Handler(
+                    func,
+                    subtype=subtype,
+                )
 
             return internal(func)
 

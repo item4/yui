@@ -123,8 +123,8 @@ class Bot:
                         )
 
     async def process_message_handler(self, name: str, handler, message: dict):
-        chunks = message['text'].split(' ')
-        match = True
+        chunks = message.get('text', '').split(' ')
+        match = handler.subtype == message.get('subtype')
         if handler.need_prefix:
             match = chunks[0] == self.config.PREFIX + name
 
