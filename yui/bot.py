@@ -137,6 +137,8 @@ class Bot:
                 kwargs['message'] = message
             if 'chunks' in func_params:
                 kwargs['chunks'] = chunks
+            if 'user' in func_params:
+                kwargs['user'] = await self.api.users.info(message.get('user'))
 
             res = await handler.callback(**kwargs)
             if not res:
