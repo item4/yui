@@ -666,7 +666,7 @@ class Validator(ast.NodeVisitor):
         raise SyntaxError('if stmt is not permitted.')
 
     def visit_With(self, node):  # noqa
-        raise SyntaxError('with stmt is not permitted')
+        raise SyntaxError('with stmt is not permitted.')
 
     def visit_AsyncWith(self, node):  # noqa
         raise SyntaxError('async with stmt is not permitted.')
