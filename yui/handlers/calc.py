@@ -3,10 +3,13 @@ import decimal
 import html
 import math
 import signal
+from collections.abc import Iterable
 
 from ..box import box
 
 TIMEOUT = 3
+
+BUILTIN_ITERABLE = str, bytes, list, tuple, set, frozenset, dict
 
 
 def timeout_handler(signum, frame):
@@ -738,5 +741,9 @@ def calculate(
     if expect_result:
         result = local['__result__']
         del local['__result__']
+
+    if isinstance(result, Iterable) and \
+       not isinstance(result, BUILTIN_ITERABLE):
+        result = list(result)
 
     return result, local

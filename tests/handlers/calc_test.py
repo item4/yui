@@ -119,6 +119,43 @@ def test_calculate_fine(
             assert e == l
 
 
+def test_calculate_magic():
+    """calculate will make result as list what typed such as
+    range, map, filter, enumerate, zip automatically."""
+
+    result, local = calculate('range(4)', replace_num_to_decimal=False)
+    assert result == [0, 1, 2, 3]
+    assert not local
+
+    result, local = calculate(
+        'filter(lambda x: x&1, range(4))',
+        replace_num_to_decimal=False
+    )
+    assert result == [1, 3]
+    assert not local
+
+    result, local = calculate(
+        'map(lambda x: x*100, range(4))',
+        replace_num_to_decimal=False
+    )
+    assert result == [0, 100, 200, 300]
+    assert not local
+
+    result, local = calculate(
+        'enumerate(["i", "t", "e", "m"])',
+        replace_num_to_decimal=False
+    )
+    assert result == [(0, 'i'), (1, 't'), (2, 'e'), (3, 'm')]
+    assert not local
+
+    result, local = calculate(
+        'zip(["i", "t", "e", "m"], [10, 21, 32, 43])',
+        replace_num_to_decimal=False
+    )
+    assert result == [('i', 10), ('t', 21), ('e', 32), ('m', 43)]
+    assert not local
+
+
 @pytest.mark.parametrize(
     'expr, error, message',
     [
