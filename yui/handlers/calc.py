@@ -9,10 +9,6 @@ from ..box import box
 TIMEOUT = 3
 
 
-class TimeoutError(Exception):
-    pass
-
-
 def timeout_handler(signum, frame):
     raise TimeoutError()
 
