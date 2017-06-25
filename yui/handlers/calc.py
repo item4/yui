@@ -25,7 +25,6 @@ async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
     try:
         signal.alarm(TIMEOUT)
         result, local = calculate(expr, replace_num_to_decimal=num_to_decimal)
-        signal.alarm(0)
     except SyntaxError as e:
         await bot.say(
             channel,
@@ -54,6 +53,8 @@ async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
             thread_ts=ts,
         )
         return
+    finally:
+        signal.alarm(0)
 
     if result is not None:
         await bot.say(
