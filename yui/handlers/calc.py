@@ -1,4 +1,5 @@
 import ast
+import datetime
 import decimal
 import functools
 import hashlib
@@ -6,7 +7,9 @@ import html
 import itertools
 import math
 import operator
+import random
 import signal
+import statistics
 from collections.abc import Iterable
 
 from ..box import box
@@ -367,11 +370,20 @@ GLOBAL_CONTEXT = {
     'blake2b': lambda *x: hashlib.blake2b(*x).hexdigest(),
     'blake2s': lambda *x: hashlib.blake2s(*x).hexdigest(),
     'md5': lambda x: hashlib.md5(x).hexdigest(),
+    # datetime
+    'date': datetime.date,
+    'time': datetime.time,
+    'datetime': datetime.datetime,
+    'timedelta': datetime.timedelta,
+    'tzinfo': datetime.tzinfo,
+    'timezone': datetime.timezone,
     # module level injection
     'functools': functools,
     'itertools': itertools,
     'math': math,
     'operator': operator,
+    'random': random,
+    'statistics': statistics,
 }
 
 GLOBAL_CONTEXT.update(FUNCTOOLS_CONTEXT)
@@ -526,6 +538,16 @@ ALLOWED_DICT_ATTRS = [
     'values',
 ]
 
+ALLOWED_HTML_ATTRS = [
+    'escape',
+    'unescape',
+]
+
+ALLOWED_JSON_ATTRS = [
+    'dumps',
+    'loads',
+]
+
 ALLOWED_OPERATOR_ATTRS = [
     'lt',
     'le',
@@ -566,6 +588,27 @@ ALLOWED_OPERATOR_ATTRS = [
     'itemgetter',
 ]
 
+ALLOWED_RANDOM_ATTRS = [
+    'randrange',
+    'randint',
+    'choice',
+    'choices',
+    'shuffle',
+    'sample',
+    'random',
+    'uniform',
+    'triangular',
+    'betavariate',
+    'expovariate',
+    'gammavariate',
+    'gauss',
+    'lognormvariate',
+    'normalvariate',
+    'vonmisesvariate',
+    'paretovariate',
+    'weibullvariate',
+]
+
 ALLOWED_ITERTOOLS_ATTRS = [
     'accumulate',
     'chain',
@@ -582,6 +625,20 @@ ALLOWED_ITERTOOLS_ATTRS = [
     'permutations',
     'combinations',
     'combinations_with_replacement',
+]
+
+ALLOWED_STATISTICS_ATTRS = [
+    'mean',
+    'harmonic_mean',
+    'median',
+    'median_low',
+    'median_high',
+    'median_grouped',
+    'mode',
+    'pstdev',
+    'pvariance',
+    'stdev',
+    'variance',
 ]
 
 PROTECTED_IDS = [
@@ -620,9 +677,55 @@ PROTECTED_IDS = [
 ALLOWED_GLOBAL_ATTRS = list(set(
     ALLOWED_DICT_ATTRS + ALLOWED_STR_ATTRS + ALLOWED_BYTES_ATTRS +
     ALLOWED_LIST_ATTRS + ALLOWED_SET_ATTRS + ALLOWED_TUPLE_ATTRS +
-    ALLOWED_ITERTOOLS_ATTRS + ALLOWED_OPERATOR_ATTRS
+    ALLOWED_ITERTOOLS_ATTRS + ALLOWED_OPERATOR_ATTRS +
+    ALLOWED_RANDOM_ATTRS + ALLOWED_STATISTICS_ATTRS
 )) + [
-   '__name__',
+    # global
+    '__name__',
+    # datetime
+    'min',
+    'max',
+    'resolution'
+    'days',
+    'seconds',
+    'microseconds',
+    'total_seconds',
+    'today',
+    'fromtimestamp',
+    'fromordinal',
+    'year',
+    'month',
+    'day',
+    'replace',
+    'timetuple',
+    'toordinal',
+    'weekday',
+    'isoweekday',
+    'isocalendar',
+    'isoformat',
+    'ctime',
+    'strftime',
+    'now',
+    'utcnow',
+    'utcfromtimestamp',
+    'combine',
+    'strptime',
+    'hour',
+    'minute',
+    'second',
+    'microsecond',
+    'tzinfo',
+    'fold',
+    'date',
+    'time',
+    'timetz',
+    'astimezone',
+    'utcoffset',
+    'dst',
+    'tzname',
+    'utctimetuple',
+    'timestamp',
+    'fromutc',
 ]
 
 ALLOWED_ATTRS = [
@@ -659,6 +762,15 @@ ALLOWED_ATTRS = [
     'operator.{}'.format(method) for method in ALLOWED_OPERATOR_ATTRS
 ] + [
     'operator.{}.__name__'.format(method) for method in ALLOWED_OPERATOR_ATTRS
+] + [
+    'random.{}'.format(method) for method in ALLOWED_RANDOM_ATTRS
+] + [
+    'random.{}.__name__'.format(method) for method in ALLOWED_RANDOM_ATTRS
+] + [
+    'statistics.{}'.format(method) for method in ALLOWED_STATISTICS_ATTRS
+] + [
+    'statistics.{}.__name__'.format(method)
+    for method in ALLOWED_STATISTICS_ATTRS
 ]
 
 
