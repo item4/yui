@@ -1,7 +1,10 @@
 import ast
 import decimal
+import functools
 import html
+import itertools
 import math
+import operator
 import signal
 from collections.abc import Iterable
 
@@ -298,6 +301,10 @@ MATH_CONTEXT = {
     'nan': math.nan,
 }
 
+FUNCTOOLS_CONTEXT = {
+    'reduce': functools.reduce,
+}
+
 GLOBAL_CONTEXT = {
     # builtin constant
     'True': True,
@@ -345,9 +352,13 @@ GLOBAL_CONTEXT = {
     # decimal
     'Decimal': Decimal,
     # module level injection
+    'functools': functools,
+    'itertools': itertools,
     'math': math,
+    'operator': operator,
 }
 
+GLOBAL_CONTEXT.update(FUNCTOOLS_CONTEXT)
 GLOBAL_CONTEXT.update(MATH_CONTEXT)
 
 ALLOWED_STR_ATTRS = [
@@ -499,6 +510,64 @@ ALLOWED_DICT_ATTRS = [
     'values',
 ]
 
+ALLOWED_OPERATOR_ATTRS = [
+    'lt',
+    'le',
+    'eq',
+    'ne',
+    'ge',
+    'gt',
+    'not_',
+    'truth',
+    'is_',
+    'is_not',
+    'add',
+    'and_',
+    'floordiv',
+    'index',
+    'inv',
+    'invert',
+    'lshift',
+    'mod',
+    'mul',
+    'matmul',
+    'neg',
+    'or_',
+    'pos',
+    'pow',
+    'rshift',
+    'sub',
+    'truediv',
+    'xor',
+    'concat',
+    'contains',
+    'countOf',
+    'delitem',
+    'getitem',
+    'indexOf',
+    'setitem',
+    'length_hint',
+    'itemgetter',
+]
+
+ALLOWED_ITERTOOLS_ATTRS = [
+    'accumulate',
+    'chain',
+    'chain.from_iterable',
+    'compress',
+    'dropwhile',
+    'filterfalse',
+    'groupby',
+    'starmap',
+    'takewhile',
+    'tee',
+    'zip_longest',
+    'product',
+    'permutations',
+    'combinations',
+    'combinations_with_replacement',
+]
+
 PROTECTED_IDS = [
     '__name__', '__doc__', '__package__', '__loader__', '__spec__',
     '__build_class__', '__import__', 'abs', 'all', 'any', 'ascii', 'bin',
@@ -534,7 +603,8 @@ PROTECTED_IDS = [
 
 ALLOWED_GLOBAL_ATTRS = list(set(
     ALLOWED_DICT_ATTRS + ALLOWED_STR_ATTRS + ALLOWED_BYTES_ATTRS +
-    ALLOWED_LIST_ATTRS + ALLOWED_SET_ATTRS + ALLOWED_TUPLE_ATTRS
+    ALLOWED_LIST_ATTRS + ALLOWED_SET_ATTRS + ALLOWED_TUPLE_ATTRS +
+    ALLOWED_ITERTOOLS_ATTRS + ALLOWED_OPERATOR_ATTRS
 )) + [
    '__name__',
 ]
@@ -559,6 +629,20 @@ ALLOWED_ATTRS = [
     'set.{}'.format(method) for method in ALLOWED_SET_ATTRS
 ] + [
     'dict.{}'.format(method) for method in ALLOWED_DICT_ATTRS
+] + [
+    'functools.{}'.format(method) for method in FUNCTOOLS_CONTEXT.keys()
+] + [
+    'functools.{}.__name__'.format(method)
+    for method in FUNCTOOLS_CONTEXT.keys()
+] + [
+    'itertools.{}'.format(method) for method in ALLOWED_ITERTOOLS_ATTRS
+] + [
+    'itertools.{}.__name__'.format(method)
+    for method in ALLOWED_ITERTOOLS_ATTRS
+] + [
+    'operator.{}'.format(method) for method in ALLOWED_OPERATOR_ATTRS
+] + [
+    'operator.{}.__name__'.format(method) for method in ALLOWED_OPERATOR_ATTRS
 ]
 
 
