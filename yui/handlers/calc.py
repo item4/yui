@@ -8,6 +8,7 @@ from collections.abc import Iterable
 from ..box import box
 
 TIMEOUT = 3
+LENGTH_LIMIT = 300
 
 BUILTIN_ITERABLE = str, bytes, list, tuple, set, frozenset, dict
 
@@ -60,11 +61,26 @@ async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
         signal.alarm(0)
 
     if result is not None:
-        await bot.say(
-            channel,
-            '`{}` == `{}`'.format(expr, result),
-            thread_ts=ts,
-        )
+        result_string = str(result)
+        if result_string.isprintable():
+            if len(result_string) <= LENGTH_LIMIT:
+                await bot.say(
+                    channel,
+                    '`{}` == `{}`'.format(expr, result_string),
+                    thread_ts=ts,
+                )
+            else:
+                await bot.say(
+                    channel,
+                    '`{}` == `{}⋯`'.format(expr, result_string[:LENGTH_LIMIT]),
+                    thread_ts=ts,
+                )
+        else:
+            await bot.say(
+                channel,
+                '`{}` 는 실행하면 출력할 수 없는 문자가 섞여있어요!'.format(expr),
+                thread_ts=ts,
+            )
     elif local:
         await bot.say(
             channel,
