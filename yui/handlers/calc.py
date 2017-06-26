@@ -1,6 +1,7 @@
 import ast
 import decimal
 import functools
+import hashlib
 import html
 import itertools
 import math
@@ -351,6 +352,21 @@ GLOBAL_CONTEXT = {
     'zip': zip,
     # decimal
     'Decimal': Decimal,
+    # hash algorithm
+    'sha1': lambda *x: hashlib.sha1(*x).hexdigest(),
+    'sha224': lambda *x: hashlib.sha224(*x).hexdigest(),
+    'sha256': lambda *x: hashlib.sha256(*x).hexdigest(),
+    'sha384': lambda *x: hashlib.sha384(*x).hexdigest(),
+    'sha512': lambda *x: hashlib.sha512(*x).hexdigest(),
+    'sha3_224': lambda *x: hashlib.sha3_224(*x).hexdigest(),
+    'sha3_256': lambda *x: hashlib.sha3_256(*x).hexdigest(),
+    'sha3_384': lambda *x: hashlib.sha3_384(*x).hexdigest(),
+    'sha3_512': lambda *x: hashlib.sha3_512(*x).hexdigest(),
+    'shake_128': lambda *x: hashlib.shake_128(*x).hexdigest(),
+    'shake_256': lambda *x: hashlib.shake_256(*x).hexdigest(),
+    'blake2b': lambda *x: hashlib.blake2b(*x).hexdigest(),
+    'blake2s': lambda *x: hashlib.blake2s(*x).hexdigest(),
+    'md5': lambda x: hashlib.md5(x).hexdigest(),
     # module level injection
     'functools': functools,
     'itertools': itertools,
