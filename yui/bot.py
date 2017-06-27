@@ -93,7 +93,7 @@ class Bot:
                             )
                             if not res:
                                 break
-                        except Exception:
+                        except:
                             await self.say(
                                 self.config.OWNER,
                                 ('*Message*\n```\n{}\n```\n'
@@ -115,7 +115,7 @@ class Bot:
                             )
                             if not res:
                                 break
-                        except Exception:
+                        except:
                             await self.say(
                                 self.config.OWNER,
                                 ('*Message*\n```\n{}\n```\n'
