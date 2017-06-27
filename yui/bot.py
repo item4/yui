@@ -138,19 +138,26 @@ class Bot:
 
         if match:
             func_params = handler.signature.parameters
-            kwargs = {}
-            if 'bot' in func_params:
-                kwargs['bot'] = self
-            if 'message' in func_params:
-                kwargs['message'] = message
-            if 'chunks' in func_params:
-                kwargs['chunks'] = chunks
-            if 'user' in func_params:
-                kwargs['user'] = await self.api.users.info(message.get('user'))
+            option = {}
+            try:
+                option, args = handler.parse_option(' '.join(chunks[1:]))
+            except SyntaxError as e:
+                await self.say(message['channel'], '에러! {}'.format(e))
+            else:
+                kwargs = option
+                if 'bot' in func_params:
+                    kwargs['bot'] = self
+                if 'message' in func_params:
+                    kwargs['message'] = message
+                if 'chunks' in func_params:
+                    kwargs['chunks'] = chunks
+                if 'user' in func_params:
+                    kwargs['user'] = await self.api.users.info(
+                        message.get('user'))
 
-            res = await handler.callback(**kwargs)
-            if not res:
-                return False
+                res = await handler.callback(**kwargs)
+                if not res:
+                    return False
         return True
 
     async def receive(self, put):
