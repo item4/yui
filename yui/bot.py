@@ -1,6 +1,7 @@
 import asyncio
 import importlib
 import json
+import shlex
 import traceback
 
 import aiohttp
@@ -139,8 +140,9 @@ class Bot:
         if match:
             func_params = handler.signature.parameters
             option = {}
+            chunk = shlex.split(' '.join(chunks[1:]))
             try:
-                option, args = handler.parse_option(' '.join(chunks[1:]))
+                option, chunk = handler.parse_option(chunk)
             except SyntaxError as e:
                 await self.say(message['channel'], '에러! {}'.format(e))
             else:
