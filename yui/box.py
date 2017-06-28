@@ -3,7 +3,7 @@ import functools
 import inspect
 import typing  # noqa: F401
 
-from .command import Option  # noqa: F401
+from .command import Argument, Option  # noqa: F401
 
 
 __all__ = 'Box', 'Handler', 'box'
@@ -19,17 +19,13 @@ class Handler:
         self.need_prefix = need_prefix
         self.signature = inspect.signature(callback)
 
-    def parse_option(self, chunk: typing.List[str]
-                     ) -> typing.Tuple[typing.Dict, typing.List[str]]:
+    def parse_options(self, chunk: typing.List[str]
+                      ) -> typing.Tuple[typing.Dict, typing.List[str]]:
 
         end = False
 
         result = {}
-        options: typing.List[Option] = getattr(
-            self.callback,
-            '__options__',
-            []
-        )
+        options: typing.List[Option] = self.callback.__options__
         required = {o.dest for o in options if o.required}
 
         for option in options:
@@ -60,7 +56,8 @@ class Handler:
                                 'invalid type of option value({})'.format(e)
                             )
 
-                        if len(r) != option.nargs:
+                        if isinstance(option.type_, type) and \
+                           len(r) != option.nargs:
                             raise SyntaxError(
                                 ('incorrect option value count. '
                                  'expected {}, {} given.').format(
@@ -94,6 +91,57 @@ class Handler:
 
         return result, chunk
 
+    def parse_arguments(self, chunk: typing.List[str]
+                        ) -> typing.Tuple[typing.Dict, typing.List[str]]:
+
+        result = {}
+
+        arguments: typing.List[Argument] = self.callback.__arguments__
+
+        minus = False
+        for i, argument in enumerate(arguments):
+            r = None
+            length = argument.nargs
+            if argument.nargs < 0:
+                if minus:
+                    raise TypeError('can not have two nargs<0')
+                minus = True
+                length = len(chunk) - sum(a.nargs for a in arguments[i:]) - 1
+
+            if length < 1:
+                raise SyntaxError('argument is not enough')
+
+            args = [chunk.pop(0) for _ in range(length)]
+            try:
+                if isinstance(argument.type_, type):
+                    r = tuple(map(argument.type_, args))
+                else:
+                    r = argument.type_(*args)
+            except ValueError as e:
+                raise SyntaxError(
+                    'invalid type of argument value({})'.format(e)
+                )
+
+            if isinstance(argument.type_, type) and \
+               len(r) != argument.nargs > 0:
+                raise SyntaxError(
+                    ('incorrect option value count. '
+                     'expected {}, {} given.').format(
+                        argument.nargs,
+                        len(r),
+                    )
+                )
+
+            if argument.nargs == 1:
+                r = r[0]
+            elif argument.concat:
+                r = ' '.join(r)
+
+            if r is not None:
+                result[argument.dest] = r
+
+        return result, chunk
+
 
 class Box:
     """Box, collection of handlers and aliases"""
@@ -113,10 +161,15 @@ class Box:
             while isinstance(func, Handler):
                 func = func.callback
 
+            if not hasattr(func, '__arguments__'):
+                func.__arguments__ = []
+            if not hasattr(func, '__options__'):
+                func.__options__ = []
+
             @functools.wraps(func)
             def internal(func_):
                 self.handlers['message'][subtype][name] = Handler(
-                    func,
+                    func_,
                     need_prefix=True,
                 )
 
@@ -133,6 +186,11 @@ class Box:
         def decorator(func):
             while isinstance(func, Handler):
                 func = func.callback
+
+            if not hasattr(func, '__arguments__'):
+                func.__arguments__ = []
+            if not hasattr(func, '__options__'):
+                func.__options__ = []
 
             @functools.wraps(func)
             def internal(func):

@@ -1,5 +1,5 @@
 from ..box import box
-from ..command import option
+from ..command import argument, option
 
 
 @box.command('test')
@@ -21,4 +21,14 @@ async def test(bot, message, count, lower, names, separator, end):
     await bot.say(
         message['channel'],
         res[:300]
+    )
+
+
+@box.command('test2')
+@argument('name', dest='names', nargs=-1)
+@argument('count', type_=int)
+async def test2(bot, message, names, count):
+    await bot.say(
+        message['channel'],
+        '//'.join(', '.join(names) for _ in range(count))
     )

@@ -1,6 +1,8 @@
 import asyncio
+import html
 import importlib
 import json
+import re
 import shlex
 import traceback
 
@@ -13,6 +15,8 @@ from .box import Box, box
 
 
 __all__ = 'Bot',
+
+SPACE_RE = re.compile('\s+')
 
 
 class Bot:
@@ -94,6 +98,8 @@ class Bot:
                             )
                             if not res:
                                 break
+                        except SystemExit as e:
+                            raise e
                         except:
                             await self.say(
                                 self.config.OWNER,
@@ -116,6 +122,8 @@ class Bot:
                             )
                             if not res:
                                 break
+                        except SystemExit as e:
+                            raise e
                         except:
                             await self.say(
                                 self.config.OWNER,
@@ -127,32 +135,60 @@ class Bot:
                             )
 
     async def process_message_handler(self, name: str, handler, message: dict):
-        chunks = []
+        call = ''
+        args = ''
         if 'text' in message:
-            chunks = message['text'].split(' ')
+            try:
+                call, args = SPACE_RE.split(message['text'], 1)
+            except ValueError:
+                call = message['text']
         elif 'message' in message and 'text' in message['message']:
-            chunks = message['message']['text'].split(' ')
+            try:
+                call, args = SPACE_RE.split(message['message']['text'], 1)
+            except ValueError:
+                call = message['message']['text']
 
         match = True
         if handler.need_prefix:
-            match = chunks[0] == self.config.PREFIX + name
+            match = call == self.config.PREFIX + name
 
         if match:
             func_params = handler.signature.parameters
-            option = {}
-            chunk = shlex.split(' '.join(chunks[1:]))
+            kwargs = {}
+            options = {}
+            arguments = {}
+            raw = html.unescape(args)
             try:
-                option, chunk = handler.parse_option(chunk)
+                option_chunks = shlex.split(raw)
+            except ValueError:
+                await self.say(message['channel'], 'can not parse command')
+                return False
+
+            try:
+                options, argument_chunks = handler.parse_options(option_chunks)
             except SyntaxError as e:
                 await self.say(message['channel'], '에러! {}'.format(e))
+                return False
+
+            try:
+                arguments, remain_chunks = handler.parse_arguments(
+                    argument_chunks
+                )
+            except SyntaxError as e:
+                await self.say(message['channel'], '에러! {}'.format(e))
+                return False
             else:
-                kwargs = option
+                kwargs.update(options)
+                kwargs.update(arguments)
+
                 if 'bot' in func_params:
                     kwargs['bot'] = self
                 if 'message' in func_params:
                     kwargs['message'] = message
-                if 'chunks' in func_params:
-                    kwargs['chunks'] = chunks
+                if 'raw' in func_params:
+                    kwargs['raw'] = raw
+                if 'remain_chunks' in func_params:
+                    kwargs['remain_chunks'] = remain_chunks
                 if 'user' in func_params:
                     kwargs['user'] = await self.api.users.info(
                         message.get('user'))

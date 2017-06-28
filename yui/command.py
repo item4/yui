@@ -8,19 +8,71 @@ Decorators and classes for making command.
 import functools
 import typing
 
-__all__ = 'Option', 'option'
+__all__ = 'Argument', 'Option', 'argument', 'option'
+
+
+def argument(
+    name: str,
+    dest: str=None,
+    nargs: int=1,
+    type_: typing.Union[type, typing.Callable]=str,
+    concat: bool=False
+) -> typing.Callable:
+    """
+    Add argument to command.
+
+    :param name: argument name
+    :type name: :class:`str`
+    :param dest: destination name to assign value
+    :type dest: :class:`str`
+    :param nargs: :class:`str`
+    :type nargs: :class:`int`
+    :param type_: type of argument value
+    :type type_: :class:`type` or :class:`typing.Callable`
+    :param concat: flag to concat arguments
+    :type concat: :class:`bool`
+
+    :return: decorator
+    :rtype: :class:`typing.Callable`
+
+    """
+
+    if dest is None:
+        dest = name.lower()
+
+    def decorator(func):
+
+        @functools.wraps(func)
+        def internal(func_):
+            if not hasattr(func_, '__arguments__'):
+                func_.__arguments__ = []
+            func_.__arguments__.insert(
+                0,
+                Argument(
+                    name=name,
+                    dest=dest,
+                    nargs=nargs,
+                    type_=type_,
+                    concat=concat,
+                )
+            )
+            return func_
+
+        return internal(func)
+
+    return decorator
 
 
 def option(
-        *args: str,
-        default: typing.Any=None,
-        dest: str=None,
-        is_flag: bool=False,
-        nargs: int=1,
-        multiple: bool=False,
-        required: bool=False,
-        type_: typing.Union[type, typing.Callable]=str,
-        value: typing.Any=None
+    *args: str,
+    default: typing.Any=None,
+    dest: str=None,
+    is_flag: bool=False,
+    nargs: int=1,
+    multiple: bool=False,
+    required: bool=False,
+    type_: typing.Union[type, typing.Callable]=str,
+    value: typing.Any=None
 ) -> typing.Callable:
     """
     Add option parameter to command.
@@ -118,7 +170,7 @@ def option(
         def internal(func_):
             if not hasattr(func_, '__options__'):
                 func_.__options__ = []
-            func_.__options__ += options
+            func_.__options__[:] = options + func_.__options__
 
             return func_
 
@@ -127,20 +179,40 @@ def option(
     return decorator
 
 
+class Argument:
+    """Argument"""
+
+    def __init__(
+        self,
+        name: str,
+        dest: str,
+        nargs: int,
+        type_: typing.Union[type, typing.Callable],
+        concat: bool
+    ):
+        """Initialize"""
+
+        self.name = name
+        self.dest = dest
+        self.nargs = nargs
+        self.type_ = type_
+        self.concat = concat
+
+
 class Option:
     """Option"""
 
     def __init__(
-            self,
-            key: str,
-            name: str,
-            default: typing.Any,
-            dest: str,
-            nargs: int,
-            multiple: bool,
-            required: bool,
-            type_: typing.Union[type, typing.Callable],
-            value: typing.Any
+        self,
+        key: str,
+        name: str,
+        default: typing.Any,
+        dest: str,
+        nargs: int,
+        multiple: bool,
+        required: bool,
+        type_: typing.Union[type, typing.Callable],
+        value: typing.Any
     ):
         """Initialize"""
 

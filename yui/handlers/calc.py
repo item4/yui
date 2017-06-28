@@ -3,7 +3,6 @@ import datetime
 import decimal
 import functools
 import hashlib
-import html
 import itertools
 import math
 import operator
@@ -19,13 +18,43 @@ LENGTH_LIMIT = 300
 
 BUILTIN_ITERABLE = str, bytes, list, tuple, set, frozenset, dict
 
+RESULT_TEMPLATE = {
+    True: {
+        True: {
+            True: '*Expr*\n```{expr}```\n*Result*: Empty string',
+            False: '*Expr*\n```{expr}```\n*Result*\n```{result}{more}```',
+        },
+        False: {
+            True: '*Expr*\n```{expr}```\n*Result*: Empty string',
+            False: '*Expr*\n```{expr}```\n*Result*: `{result}{more}`',
+        }
+    },
+    False: {
+        True: {
+            True: '*Expr*: `{expr}`\n*Result*: Empty string',
+            False: '*Expr*: `{expr}`\n*Result*\n```{result}{more}```',
+        },
+        False: {
+            True: '`{expr}` == Empry string',
+            False: '`{expr}` == `{result}{more}`',
+        }
+    },
+}
+
 
 def timeout_handler(signum, frame):
     raise TimeoutError()
 
 
-async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
-    expr = html.unescape(' '.join(chunks[1:]))
+async def body(
+    bot,
+    channel,
+    expr: str,
+    help: str,
+    num_to_decimal=True,
+    ts=None
+):
+    expr_is_multiline = '\n' in expr
     if not expr:
         await bot.say(channel, help)
         return
@@ -44,18 +73,32 @@ async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
         )
         return
     except ZeroDivisionError:
-        await bot.say(
-            channel,
-            '`{}`는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr),
-            thread_ts=ts,
-        )
+        if expr_is_multiline:
+            await bot.say(
+                channel,
+                '주어진 식은 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!',
+                thread_ts=ts,
+            )
+        else:
+            await bot.say(
+                channel,
+                '`{}` 는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr),
+                thread_ts=ts,
+            )
         return
     except TimeoutError:
-        await bot.say(
-            channel,
-            '`{}`는 실행하기엔 너무 오래 걸려요!'.format(expr),
-            thread_ts=ts,
-        )
+        if expr_is_multiline:
+            await bot.say(
+                channel,
+                '주어진 식은 실행하기엔 너무 오래 걸려요!',
+                thread_ts=ts,
+            )
+        else:
+            await bot.say(
+                channel,
+                '`{}` 는 실행하기엔 너무 오래 걸려요!'.format(expr),
+                thread_ts=ts,
+            )
         return
     except Exception as e:
         await bot.say(
@@ -69,62 +112,85 @@ async def body(bot, channel, chunks, help, num_to_decimal=True, ts=None):
 
     if result is not None:
         result_string = str(result)
-        if result_string.isprintable():
-            if len(result_string) <= LENGTH_LIMIT:
+
+        if result_string.count('\n') > 30:
+            await bot.say(
+                channel,
+                '계산 결과에 개행이 너무 많이 들어있어요!',
+                thread_ts=ts
+            )
+        else:
+            await bot.say(
+                channel,
+                RESULT_TEMPLATE[
+                    expr_is_multiline
+                ][
+                    '\n' in result_string
+                ][
+                    result_string.strip() == ''
+                ].format(
+                    expr=expr,
+                    result=result_string[:300],
+                    more='⋯' if len(result_string) > LENGTH_LIMIT else '',
+                ),
+                thread_ts=ts
+            )
+    elif local:
+        r = '\n'.join(
+            '{} = {}'.format(key, value)
+            for key, value in local.items()
+        )
+        if r.count('\n') > 30:
+            await bot.say(
+                channel,
+                '계산 결과에 개행이 너무 많이 들어있어요!',
+                thread_ts=ts
+            )
+        else:
+            if expr_is_multiline:
                 await bot.say(
                     channel,
-                    '`{}` == `{}`'.format(expr, result_string),
+                    '*Expr*\n```{}```\n*Local*\n```{}```'.format(expr, r),
                     thread_ts=ts,
                 )
             else:
                 await bot.say(
                     channel,
-                    '`{}` == `{}⋯`'.format(expr, result_string[:LENGTH_LIMIT]),
+                    '*Expr*: `{}`\n*Local*\n```{}```'.format(expr, r),
                     thread_ts=ts,
                 )
+    else:
+        if expr_is_multiline:
+            await bot.say(
+                channel,
+                '*Expr*\n```{}```\n*Local*: Empty'.format(expr),
+                thread_ts=ts,
+            )
         else:
             await bot.say(
                 channel,
-                '`{}` 는 실행하면 출력할 수 없는 문자가 섞여있어요!'.format(expr),
+                '*Expr*: `{}`\n*Local*: Empty'.format(expr),
                 thread_ts=ts,
             )
-    elif local:
-        await bot.say(
-            channel,
-            '`{}` 를 실행하면 지역변수가 이렇게 돼요!\n\n{}'.format(
-                expr,
-                '\n'.join(
-                    '`{}` = `{}`'.format(key, value)
-                    for key, value in local.items()
-                )
-            ),
-            thread_ts=ts,
-        )
-    else:
-        await bot.say(
-            channel,
-            '`{}` 를 실행해도 반환값도 없고, 지역변수도 비어있어요!'.format(expr),
-            thread_ts=ts,
-        )
 
 
 @box.command('=', ['calc'])
-async def calc_decimal(bot, message, chunks):
+async def calc_decimal(bot, message, raw):
     await body(
         bot,
         message['channel'],
-        chunks,
+        raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
         True,
     )
 
 
 @box.command('=', ['calc'], subtype='message_changed')
-async def calc_decimal_on_change(bot, message, chunks):
+async def calc_decimal_on_change(bot, message, raw):
     await body(
         bot,
         message['channel'],
-        chunks,
+        raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
         True,
         message['message']['ts'],
@@ -132,22 +198,22 @@ async def calc_decimal_on_change(bot, message, chunks):
 
 
 @box.command('==')
-async def calc_num(bot, message, chunks):
+async def calc_num(bot, message, raw):
     await body(
         bot,
         message['channel'],
-        chunks,
+        raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
     )
 
 
 @box.command('==', subtype='message_changed')
-async def calc_num_on_change(bot, message, chunks):
+async def calc_num_on_change(bot, message, raw):
     await body(
         bot,
         message['channel'],
-        chunks,
+        raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
         message['message']['ts'],
