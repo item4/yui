@@ -42,8 +42,8 @@ class Bot:
         loop.run_until_complete(
             asyncio.wait(
                 (
-                    self.receive(self.queue.put),
-                    self.process(self.queue.get),
+                    self.receive(),
+                    self.process(),
                 )
             )
         )
@@ -75,11 +75,11 @@ class Bot:
             **kwargs
         )
 
-    async def process(self, get):
+    async def process(self):
         """Process messages."""
 
         while True:
-            message = await get()
+            message = await self.queue.get()
 
             print(message)
 
@@ -198,7 +198,7 @@ class Bot:
                     return False
         return True
 
-    async def receive(self, put):
+    async def receive(self):
         """Receive stream from slack."""
 
         rtm = await self.call('rtm.start')
@@ -208,4 +208,4 @@ class Bot:
                 async for msg in ws:
                     assert msg.tp == aiohttp.WSMsgType.text
                     message = json.loads(msg.data)
-                    await put(message)
+                    await self.queue.put(message)
