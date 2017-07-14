@@ -53,16 +53,16 @@ class Handler:
                                 r = option.type_(*args)
                         except ValueError as e:
                             raise SyntaxError(
-                                'invalid type of option value({})'.format(e)
+                                option.type_error.format(name=option.name, e=e)
                             )
 
                         if isinstance(option.type_, type) and \
                            len(r) != option.nargs:
                             raise SyntaxError(
-                                ('incorrect option value count. '
-                                 'expected {}, {} given.').format(
-                                    option.nargs,
-                                    len(r),
+                                option.count_error.format(
+                                    name=option.name,
+                                    expected=option.nargs,
+                                    given=len(r),
                                 )
                             )
                         elif option.nargs == 1:
@@ -87,7 +87,16 @@ class Handler:
                 result[option.dest] = option.default
 
         if required:
-            raise SyntaxError('missing required options: {}'.format(required))
+            raise SyntaxError(
+                '\n'.join(o.count_error.format(
+                    name=o.name,
+                    expected=o.nargs,
+                    given=0,
+                ) for o in (
+                    list(filter(lambda x: x.dest == o, options))[0]
+                    for o in required
+                ))
+            )
 
         return result, chunk
 
@@ -109,7 +118,11 @@ class Handler:
                 length = len(chunk) - sum(a.nargs for a in arguments[i:]) - 1
 
             if length < 1:
-                raise SyntaxError('argument is not enough')
+                raise SyntaxError(argument.count_error.format(
+                    name=argument.name,
+                    expected=argument.nargs if argument.nargs > 0 else '>0',
+                    given=0,
+                ))
 
             args = [chunk.pop(0) for _ in range(length)]
             try:
@@ -119,18 +132,19 @@ class Handler:
                     r = argument.type_(*args)
             except ValueError as e:
                 raise SyntaxError(
-                    'invalid type of argument value({})'.format(e)
+                    argument.type_error.format(
+                        name=argument.name,
+                        e=e,
+                    )
                 )
 
             if isinstance(argument.type_, type) and \
                len(r) != argument.nargs > 0:
-                raise SyntaxError(
-                    ('incorrect option value count. '
-                     'expected {}, {} given.').format(
-                        argument.nargs,
-                        len(r),
-                    )
-                )
+                raise SyntaxError(argument.count_error.format(
+                    name=argument.name,
+                    expected=argument.nargs,
+                    given=len(r),
+                ))
 
             if argument.nargs == 1:
                 r = r[0]

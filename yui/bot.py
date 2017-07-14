@@ -161,13 +161,16 @@ class Bot:
             try:
                 option_chunks = shlex.split(raw)
             except ValueError:
-                await self.say(message['channel'], 'can not parse command')
+                await self.say(
+                    message['channel'],
+                    '*Error*: Can not parse this command'
+                )
                 return False
 
             try:
                 options, argument_chunks = handler.parse_options(option_chunks)
             except SyntaxError as e:
-                await self.say(message['channel'], '에러! {}'.format(e))
+                await self.say(message['channel'], '*Error*\n{}'.format(e))
                 return False
 
             try:
@@ -175,7 +178,7 @@ class Bot:
                     argument_chunks
                 )
             except SyntaxError as e:
-                await self.say(message['channel'], '에러! {}'.format(e))
+                await self.say(message['channel'], '*Error*\n{}'.format(e))
                 return False
             else:
                 kwargs.update(options)

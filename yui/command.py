@@ -16,7 +16,10 @@ def argument(
     dest: str=None,
     nargs: int=1,
     type_: typing.Union[type, typing.Callable]=str,
-    concat: bool=False
+    concat: bool=False,
+    type_error: str='{name}: invalid type of argument value({e})',
+    count_error: str=('{name}: incorrect argument value count.'
+                      ' expected {expected}, {given} given.')
 ) -> typing.Callable:
     """
     Add argument to command.
@@ -31,6 +34,10 @@ def argument(
     :type type_: :class:`type` or :class:`typing.Callable`
     :param concat: flag to concat arguments
     :type concat: :class:`bool`
+    :param type_error: error message for wrong type
+    :type type_error: :class:`str`
+    :param count_error: error message for wrong value count
+    :type count_error: :class:`str`
 
     :return: decorator
     :rtype: :class:`typing.Callable`
@@ -54,6 +61,8 @@ def argument(
                     nargs=nargs,
                     type_=type_,
                     concat=concat,
+                    type_error=type_error,
+                    count_error=count_error,
                 )
             )
             return func_
@@ -72,7 +81,10 @@ def option(
     multiple: bool=False,
     required: bool=False,
     type_: typing.Union[type, typing.Callable]=str,
-    value: typing.Any=None
+    value: typing.Any=None,
+    type_error: str='{name}: invalid type of option value({e})',
+    count_error: str=('{name}: incorrect option value count.'
+                      ' expected {expected}, {given} given.')
 ) -> typing.Callable:
     """
     Add option parameter to command.
@@ -92,7 +104,11 @@ def option(
     :type required: :class:`bool`
     :param type_: type of option value
     :type type_: :class:`type` or :class:`typing.Callable`
-    :param value: value
+    :param value: value to store flag
+    :param type_error: error message for wrong type
+    :type type_error: :class:`str`
+    :param count_error: error message for wrong value count
+    :type count_error: :class:`str`
 
     :return: real decorator
     :rtype: :class:`typing.Callable`
@@ -120,6 +136,8 @@ def option(
                     required=required,
                     type_=bool,
                     value=True,
+                    type_error=type_error,
+                    count_error=count_error,
                 )
             )
             options.append(
@@ -133,6 +151,8 @@ def option(
                     required=required,
                     type_=bool,
                     value=False,
+                    type_error=type_error,
+                    count_error=count_error,
                 )
             )
         elif is_flag:
@@ -147,6 +167,8 @@ def option(
                     required=required,
                     type_=bool,
                     value=True if value is None else value,
+                    type_error=type_error,
+                    count_error=count_error,
                 )
             )
         else:
@@ -161,6 +183,8 @@ def option(
                     required=required,
                     type_=type_,
                     value=value,
+                    type_error=type_error,
+                    count_error=count_error,
                 )
             )
 
@@ -188,7 +212,9 @@ class Argument:
         dest: str,
         nargs: int,
         type_: typing.Union[type, typing.Callable],
-        concat: bool
+        concat: bool,
+        type_error: str,
+        count_error: str
     ):
         """Initialize"""
 
@@ -197,6 +223,8 @@ class Argument:
         self.nargs = nargs
         self.type_ = type_
         self.concat = concat
+        self.type_error = type_error
+        self.count_error = count_error
 
 
 class Option:
@@ -212,7 +240,9 @@ class Option:
         multiple: bool,
         required: bool,
         type_: typing.Union[type, typing.Callable],
-        value: typing.Any
+        value: typing.Any,
+        type_error: str,
+        count_error: str
     ):
         """Initialize"""
 
@@ -225,3 +255,5 @@ class Option:
         self.required = required
         self.type_ = type_
         self.value = value
+        self.type_error = type_error
+        self.count_error = count_error
