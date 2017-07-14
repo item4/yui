@@ -4,6 +4,7 @@ import importlib
 import json
 import re
 import shlex
+import sys
 import traceback
 
 import aiohttp
@@ -14,9 +15,13 @@ from .api import SlackAPI
 from .box import Box, box
 
 
-__all__ = 'Bot',
+__all__ = 'Bot', 'BotReconnect'
 
 SPACE_RE = re.compile('\s+')
+
+
+class BotReconnect(Exception):
+    """Exception for reconnect bot"""
 
 
 class Bot:
@@ -204,11 +209,28 @@ class Bot:
     async def receive(self):
         """Receive stream from slack."""
 
-        rtm = await self.call('rtm.start')
-        assert rtm['ok'], "Error connecting to RTM."
-        with aiohttp.ClientSession() as session:
-            async with session.ws_connect(rtm['url']) as ws:
-                async for msg in ws:
-                    assert msg.tp == aiohttp.WSMsgType.text
-                    message = json.loads(msg.data)
-                    await self.queue.put(message)
+        sleep = 0
+        while True:
+            try:
+                rtm = await self.call('rtm.start')
+
+                if not rtm['ok']:
+                    await asyncio.sleep((sleep+1)*10)
+                    sleep += 1
+                    raise BotReconnect()
+                else:
+                    sleep = 0
+
+                with aiohttp.ClientSession() as session:
+                    async with session.ws_connect(rtm['url']) as ws:
+                        async for msg in ws:
+                            if msg.tp == aiohttp.WSMsgType.TEXT:
+                                message = json.loads(msg.data)
+                                await self.queue.put(message)
+                            elif msg.tp in (aiohttp.WSMsgType.ERROR,
+                                            aiohttp.WSMsgType.CLOSED):
+                                raise BotReconnect()
+                            else:
+                                print(msg.tp, msg, file=sys.stderr)
+            except BotReconnect:
+                continue
