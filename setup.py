@@ -3,6 +3,8 @@ from setuptools import find_packages, setup
 install_requires = {
     # Async request
     'aiohttp >= 2.1.0',
+    'cchardet >= 2.1.1',
+    'aiodns >= 1.1.1',
     # CLI
     'Click >= 6.7',
     # Configuration
