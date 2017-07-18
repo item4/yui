@@ -12,6 +12,15 @@ from ..command import argument, option
 @option('--sep', '-s', dest='separator', default=', ')
 @option('--end', '-e', default='!')
 async def test(bot, message, count, lower, names, separator, end):
+    """
+    봇 기능 테스트용 명령어
+
+    `{PREFIX}test --name kirito`
+    `{PREFIX}test --name kirito --name asuna`
+    `{PREFIX}test --name kirito --count=15`
+
+    """
+
     if lower:
         res = separator.join(
             name.lower() for _ in range(count) for name in names
@@ -34,6 +43,14 @@ async def test(bot, message, count, lower, names, separator, end):
           type_error='`{name}`의 값으로는 1개의 정수값만 지정해주세요.',
           count_error='`{name}`의 값으로는 1개의 정수만을 지정해주세요.')
 async def test2(bot, message, names, count):
+    """
+    봇 기능 테스트용 명령어
+
+    `{PREFIX}test2 kirito 3`
+    `{PREFIX}test2 kirito asuna 3`
+
+    """
+
     await bot.say(
         message['channel'],
         '//'.join(', '.join(names) for _ in range(count))

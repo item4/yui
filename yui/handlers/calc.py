@@ -176,6 +176,15 @@ async def body(
 
 @box.command('=', ['calc'])
 async def calc_decimal(bot, message, raw):
+    """
+    정수타입 수식 계산기
+
+    `{PREFIX}= 1+2+3`
+
+    Python 문법과 모듈 일부가 사용 가능합니다.
+
+    """
+
     await body(
         bot,
         message['channel'],
@@ -199,6 +208,15 @@ async def calc_decimal_on_change(bot, message, raw):
 
 @box.command('==')
 async def calc_num(bot, message, raw):
+    """
+    부동소숫점타입 수식 계산기
+
+    `{PREFIX}== 1+2+3`
+
+    Python 문법과 모듈 일부가 사용 가능합니다.
+
+    """
+
     await body(
         bot,
         message['channel'],

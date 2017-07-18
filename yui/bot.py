@@ -154,7 +154,7 @@ class Bot:
                 call = message['message']['text']
 
         match = True
-        if handler.need_prefix:
+        if handler.is_command:
             match = call == self.config.PREFIX + name
 
         if match:

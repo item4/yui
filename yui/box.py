@@ -12,11 +12,20 @@ __all__ = 'Box', 'Handler', 'box'
 class Handler:
     """Handler"""
 
-    def __init__(self, callback, *, need_prefix: bool=False):
+    def __init__(
+        self,
+        callback,
+        *,
+        short_help: str=None,
+        help: str=None,
+        is_command: bool=False
+    ):
         """Initialize"""
 
         self.callback = callback
-        self.need_prefix = need_prefix
+        self.short_help = short_help
+        self.help = help
+        self.is_command = is_command
         self.signature = inspect.signature(callback)
 
     def parse_options(self, chunk: typing.List[str]
@@ -168,10 +177,21 @@ class Box:
         )
         self.aliases = collections.defaultdict(dict)
 
-    def command(self, name: str, aliases=None, *, subtype=None):
+    def command(
+        self,
+        name: str,
+        aliases=None,
+        *,
+        subtype=None,
+        short_help=None,
+        help=None
+    ):
         """Shortcut decorator for make command easily."""
 
         def decorator(func):
+            _short_help = short_help
+            help_message = help
+
             while isinstance(func, Handler):
                 func = func.callback
 
@@ -180,11 +200,19 @@ class Box:
             if not hasattr(func, '__options__'):
                 func.__options__ = []
 
+            if help_message is None:
+                doc = inspect.getdoc(func)
+                if doc:
+                    _short_help, help_message = doc.split('\n\n', 1)
+                    _short_help = _short_help.replace('\n', ' ')
+
             @functools.wraps(func)
             def internal(func_):
                 self.handlers['message'][subtype][name] = Handler(
                     func_,
-                    need_prefix=True,
+                    short_help=_short_help,
+                    help=help_message,
+                    is_command=True,
                 )
 
                 if aliases is not None:
