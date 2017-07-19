@@ -9,6 +9,8 @@ install_requires = {
     'Click >= 6.7',
     # Configuration
     'toml >= 0.9.2',
+    # Fuzzy Search
+    'fuzzywuzzy[speedup] >= 0.15.0',
     # util
     'attrdict >= 2.0.0',
 }

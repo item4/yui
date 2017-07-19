@@ -23,27 +23,32 @@ class SlackAPI:
         self.users.info = self.users_info
 
     async def chat_post_message(
-            self,
-            channel: str,
-            text: str,
-            parse=None,
-            link_names: bool=None,
-            attachments: list=None,
-            unfurl_links: bool=None,
-            unfurl_media: bool=None,
-            username: str=None,
-            as_user: bool=None,
-            icon_url: str=None,
-            icon_emoji: str=None,
-            thread_ts: str=None,
-            reply_broadcast: bool=None,
+        self,
+        channel: str,
+        text: str=None,
+        parse=None,
+        link_names: bool=None,
+        attachments: list=None,
+        unfurl_links: bool=None,
+        unfurl_media: bool=None,
+        username: str=None,
+        as_user: bool=None,
+        icon_url: str=None,
+        icon_emoji: str=None,
+        thread_ts: str=None,
+        reply_broadcast: bool=None,
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 
         param = {
             'channel': channel,
-            'text': text,
         }
+
+        if text is None and attachments is None:
+            raise TypeError('text or attachement is required.')
+
+        if text is not None:
+            param['text'] = text
 
         if parse is not None:
             param['parse'] = parse
