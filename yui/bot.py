@@ -1,18 +1,21 @@
 import asyncio
 import html
 import importlib
+import inspect
 import json
 import re
 import shlex
 import sys
 import traceback
 
+import aiocron
+
 import aiohttp
 
 from attrdict import AttrDict
 
 from .api import SlackAPI
-from .box import Box, box
+from .box import Box, Crontab, box
 
 
 __all__ = 'Bot', 'BotReconnect'
@@ -37,6 +40,27 @@ class Bot:
         self.box = using_box or box
         self.queue = asyncio.Queue()
         self.api = SlackAPI(self)
+
+        self.register_crontab()
+
+    def register_crontab(self):
+        """Register cronjob to bot from box."""
+
+        def register(c: Crontab):
+            func_params = inspect.signature(c.func).parameters
+            kw = {}
+            if 'bot' in func_params:
+                kw['bot'] = self
+
+            @aiocron.crontab(c.spec, *c.args, **c.kwargs)
+            async def task():
+                await c.func(**kw)
+
+            c.start = task.start
+            c.stop = task.stop
+
+        for c in self.box.crontabs:
+            register(c)
 
     def run(self):
         """Run"""

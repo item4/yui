@@ -176,6 +176,7 @@ class Box:
             lambda: collections.defaultdict(dict)
         )
         self.aliases = collections.defaultdict(dict)
+        self.crontabs = []
 
     def command(
         self,
@@ -243,6 +244,35 @@ class Box:
             return internal(func)
 
         return decorator
+
+    def crontab(self, spec: str, *args, **kwargs):
+        """Decorator for crontab job."""
+
+        c = Crontab(self, spec, args, kwargs)
+        self.crontabs.append(c)
+        return c
+
+
+class Crontab:
+    """Crontab"""
+
+    def __init__(self, box: Box, spec: str, args, kwargs):
+        """Initialize."""
+
+        self.box = box
+        self.spec = spec
+        self.args = args
+        self.kwargs = kwargs
+        self.func = None
+        self.start = None
+        self.stop = None
+
+    def __call__(self, func):
+        """Use as decorator"""
+
+        self.func = func
+
+        return self
 
 
 # (:class:`Box`) Default Box

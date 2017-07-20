@@ -9,6 +9,8 @@ install_requires = {
     'Click >= 6.7',
     # Configuration
     'toml >= 0.9.2',
+    # Crontab
+    'aiocron >= 0.6',
     # Fuzzy Search
     'fuzzywuzzy[speedup] >= 0.15.0',
     # util

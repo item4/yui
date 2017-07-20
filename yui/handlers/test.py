@@ -55,3 +55,45 @@ async def test2(bot, message, names, count):
         message['channel'],
         '//'.join(', '.join(names) for _ in range(count))
     )
+
+
+@box.crontab('*/1 * * * *', start=False)
+async def one(bot):
+    await bot.say('test', '1분마다')
+
+
+@box.crontab('*/3 * * * *', start=False)
+async def three(bot):
+    await bot.say('test', '3분마다')
+
+
+@box.crontab('*/5 * * * *', start=False)
+async def five(bot):
+    await bot.say('test', '5분마다')
+
+
+@box.crontab('*/7 * * * *', start=False)
+async def seven(bot):
+    await bot.say('test', '7분마다')
+
+
+@box.command('cron-test-start')
+async def start(bot, message):
+    """crontab 테스트 시작"""
+
+    one.start()
+    three.start()
+    five.start()
+    seven.start()
+    await bot.say(message['channel'], 'start')
+
+
+@box.command('cron-test-stop')
+async def stop(bot, message):
+    """crontab 테스트 종료"""
+
+    one.stop()
+    three.stop()
+    five.stop()
+    seven.stop()
+    await bot.say(message['channel'], 'stop')
