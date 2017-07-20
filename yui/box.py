@@ -6,7 +6,7 @@ import typing  # noqa: F401
 from .command import Argument, Option  # noqa: F401
 
 
-__all__ = 'Box', 'Handler', 'box'
+__all__ = 'Box', 'Crontab', 'Handler', 'box'
 
 
 class Handler:
