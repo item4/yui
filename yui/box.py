@@ -204,7 +204,12 @@ class Box:
             if help_message is None:
                 doc = inspect.getdoc(func)
                 if doc:
-                    _short_help, help_message = doc.split('\n\n', 1)
+                    try:
+                        _short_help, help_message = doc.split('\n\n', 1)
+                    except ValueError:
+                        _short_help = doc
+                        help_message = None
+
                     _short_help = _short_help.replace('\n', ' ')
 
             @functools.wraps(func)
