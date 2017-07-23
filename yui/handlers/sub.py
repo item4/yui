@@ -9,6 +9,7 @@ import aiohttp
 
 from fuzzywuzzy import fuzz
 
+from ..api import Attachment
 from ..box import box
 from ..command import argument
 
@@ -169,47 +170,52 @@ async def sub(bot, message, title):
                     released_at=released_at,
                 ))
 
-            attachments = [
-                {
-                    'fallback': ('*{title}* ({dow} {time} '
-                                 '/ {genre} / {url})').format(
+            attachments: typing.List[Attachment] = [
+                Attachment(
+                    fallback=('*{title}* ({dow} {time} '
+                              '/ {genre} / {url})').format(
                         title=ohli_ani_result['s'],
                         dow=DOW[ohli_ani_result['week']],
                         time=print_time(ohli_ani_result['t']),
                         genre=anissia_ani_result['g'].replace(' ', ''),
                         url=fix_url(ohli_ani_result['l']),
                     ),
-                    'title': ohli_ani_result['s'],
-                    'title_link': fix_url(ohli_ani_result['l']),
-                    'text': '{dow} {time} / {genre}'.format(
+                    title=ohli_ani_result['s'],
+                    title_link=fix_url(ohli_ani_result['l'])
+                    if ohli_ani_result['l'] else None,
+                    text='{dow} {time} / {genre}'.format(
                         dow=DOW[ohli_ani_result['week']],
                         time=print_time(ohli_ani_result['t']),
                         genre=anissia_ani_result['g'].replace(' ', ''),
                     ),
-                    'image_url': ohli_ani_result['img'],
-                }
+                    image_url=ohli_ani_result['img'],
+                ),
             ]
             if result:
                 for sub in result:
-                    attachments.append({
-                        'fallback': '{}화 {} {} {}'.format(
-                            sub.episode_num,
-                            sub.released_at.strftime(DATE_FORMAT),
-                            sub.maker,
-                            fix_url(sub.url),
-                        ),
-                        'author_name': sub.maker,
-                        'text': '{}화 {} {}'.format(
-                            sub.episode_num,
-                            sub.released_at.strftime(DATE_FORMAT),
-                            fix_url(sub.url),
-                        ),
-                    })
+                    attachments.append(
+                        Attachment(
+                            fallback='{}화 {} {} {}'.format(
+                                sub.episode_num,
+                                sub.released_at.strftime(DATE_FORMAT),
+                                sub.maker,
+                                fix_url(sub.url),
+                            ),
+                            author_name=sub.maker,
+                            text='{}화 {} {}'.format(
+                                sub.episode_num,
+                                sub.released_at.strftime(DATE_FORMAT),
+                                fix_url(sub.url),
+                            ),
+                        )
+                    )
             else:
-                attachments.append({
-                    'fallback': '자막 제작자가 없습니다.',
-                    'text': '자막 제작자가 없습니다.',
-                })
+                attachments.append(
+                    Attachment(
+                        fallback='자막 제작자가 없습니다.',
+                        text='자막 제작자가 없습니다.',
+                    )
+                )
 
             await bot.api.chat.postMessage(
                 channel=message['channel'],
