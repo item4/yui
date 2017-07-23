@@ -188,7 +188,7 @@ async def sub(bot, message, title):
                         time=print_time(ohli_ani_result['t']),
                         genre=anissia_ani_result['g'].replace(' ', ''),
                     ),
-                    image_url=ohli_ani_result['img'],
+                    thumb_url=ohli_ani_result['img'] or None,
                 ),
             ]
             if result:
