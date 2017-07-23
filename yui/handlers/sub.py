@@ -3,6 +3,7 @@ import collections
 import datetime
 import json
 import math
+import urllib.parse
 import typing  # noqa: F401
 
 import aiohttp
@@ -11,7 +12,7 @@ from fuzzywuzzy import fuzz
 
 from ..api import Attachment
 from ..box import box
-from ..command import argument
+from ..command import argument, option
 
 
 Sub = collections.namedtuple(
@@ -41,6 +42,38 @@ def fix_url(url: str) -> str:
     return 'http://{}'.format(url)
 
 
+def make_sub_list(data: typing.List[Sub]) -> typing.List[Attachment]:
+    result: typing.List[Attachment] = []
+
+    if data:
+        for sub in data:
+            result.append(
+                Attachment(
+                    fallback='{}화 {} {} {}'.format(
+                        sub.episode_num,
+                        sub.released_at.strftime(DATE_FORMAT),
+                        sub.maker,
+                        fix_url(sub.url),
+                    ),
+                    author_name=sub.maker,
+                    text='{}화 {} {}'.format(
+                        sub.episode_num,
+                        sub.released_at.strftime(DATE_FORMAT),
+                        fix_url(sub.url),
+                    ),
+                )
+            )
+    else:
+        result.append(
+            Attachment(
+                fallback='자막 제작자가 없습니다.',
+                text='자막 제작자가 없습니다.',
+            )
+        )
+
+    return result
+
+
 async def get_json(*args, **kwargs):
     async with aiohttp.ClientSession() as session:
         async with session.get(*args, **kwargs) as res:
@@ -58,17 +91,34 @@ async def get_weekly_list(url, week):
 
 
 @box.command('sub', ['애니자막'])
+@option('--finished/--on-air', '--종영/--방영', '--fin/--on', '-f/-o')
 @argument('title', nargs=-1, concat=True, count_error='애니 제목을 입력해주세요')
-async def sub(bot, message, title):
+async def sub(bot, message, finished, title):
     """
     애니메이션 자막을 검색합니다
 
     OHLI와 애니시아 자막 편성표에서 주어진 제목과 가장 근접한 제목의 애니를 검색하여 보여줍니다.
 
-   `{PREFIX}sub 이나즈마 일레븐` (제목이 `'이나즈마 일레븐'` 에 근접하는 것을 검색)
+    방영중 애니 검색은 기본적으로 OHLI의 자막 목록에서 fuzzy search 후, OHLI에서 제공하는
+    ALIAS를 기준으로 삼아 애니시아의 자막 목록에서 검색합니다. 따라서 OHLI와 애니시아의 애니명이
+    다른 경우에는 검색이 가능하지만, OHLI에 아예 없는 애니는 검색이 불가능합니다.
+
+    종영 애니 검색은 OHLI만을 검색합니다. OHLI의 검색 API를 이용하기 때문에 fuzzy search 를
+    지원하지 않습니다.
+
+    `{PREFIX}sub 이나즈마 일레븐` (제목이 `'이나즈마 일레븐'` 에 근접하는 것을 검색)
     `{PREFIX}sub 나 히 아` (제목이 `'나 히 아'` 에 근접하는 것을 검색)
+    `{PREFIX}sub --finished aldnoah` (제목에 `'aldnoah'`가 들어가는 완결 애니를 검색)
 
     """
+
+    if finished:
+        await search_finished(bot, message, title)
+    else:
+        await search_on_air(bot, message, title)
+
+
+async def search_on_air(bot, message, title):
 
     ohli = []
     anissia = []
@@ -191,31 +241,7 @@ async def sub(bot, message, title):
                     thumb_url=ohli_ani_result['img'] or None,
                 ),
             ]
-            if result:
-                for sub in result:
-                    attachments.append(
-                        Attachment(
-                            fallback='{}화 {} {} {}'.format(
-                                sub.episode_num,
-                                sub.released_at.strftime(DATE_FORMAT),
-                                sub.maker,
-                                fix_url(sub.url),
-                            ),
-                            author_name=sub.maker,
-                            text='{}화 {} {}'.format(
-                                sub.episode_num,
-                                sub.released_at.strftime(DATE_FORMAT),
-                                fix_url(sub.url),
-                            ),
-                        )
-                    )
-            else:
-                attachments.append(
-                    Attachment(
-                        fallback='자막 제작자가 없습니다.',
-                        text='자막 제작자가 없습니다.',
-                    )
-                )
+            attachments.extend(make_sub_list(result))
 
             await bot.api.chat.postMessage(
                 channel=message['channel'],
@@ -235,4 +261,66 @@ async def sub(bot, message, title):
         await bot.say(
             message['channel'],
             '해당 제목의 애니는 찾을 수 없어요!'
+        )
+
+
+async def search_finished(bot, message, title):
+
+    data = await get_json(
+        'http://ohli.moe/timetable/search?{}'.format(
+            urllib.parse.urlencode({'query': title.encode()})
+        )
+    )
+    print('http://ohli.moe/timetable/search?{}'.format(
+        urllib.parse.urlencode({'query': title.encode()})
+    ))
+
+    filtered = list(filter(lambda x: x['status'] == '완', data))
+
+    if filtered:
+        ani = filtered[0]
+        subs = await get_json(
+            'http://ohli.moe/timetable/cap?i={}'.format(ani['i']))
+        result: typing.List[Sub] = []
+
+        for sub in subs:
+            episode_num = sub['s']
+            if sub['d'] == '00000000000000':
+                released_at = datetime.datetime.min
+            else:
+                released_at = datetime.datetime.strptime(
+                    sub['d'],
+                    '%Y%m%d%H%M%S'
+                )
+            if int(math.ceil(episode_num)) == int(episode_num):
+                episode_num = int(episode_num)
+            result.append(Sub(
+                maker=sub['n'],
+                episode_num=episode_num,
+                url=sub['a'],
+                released_at=released_at,
+            ))
+
+        attachments: typing.List[Attachment] = [
+            Attachment(
+                fallback=('*{title}* ({url})').format(
+                    title=ani['s'],
+                    url=fix_url(ani['l']),
+                ),
+                title=ani['s'],
+                title_link=fix_url(ani['l']) if ani['l'] else None,
+                thumb_url=ani['img'] or None,
+            ),
+        ]
+        attachments.extend(make_sub_list(result))
+
+        await bot.api.chat.postMessage(
+            channel=message['channel'],
+            attachments=attachments,
+            as_user=True,
+        )
+    else:
+        await bot.say(
+            message['channel'],
+            '해당 제목의 완결 애니는 찾을 수 없어요!',
         )
