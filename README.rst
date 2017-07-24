@@ -24,10 +24,44 @@ Installation
    $ pip install -e .
 
 
+
+Configuration
+-------------
+
+Yui must require `~~~.config.toml` file for run.
+You must make config file before run.
+
+Config key and value is below.
+
+TOKEN
+  string. Slack App Toekn
+
+PREFIX
+  string. Prefix for command.
+  for example, if you set PREFIX to '=' and you want to run help command,
+  you must type `=help`
+
+HANDLERS
+  list of str. Python module path of handlers.
+  Yui import given paths automatically.
+  You can use default command settings.
+
+  .. code-block:: toml
+
+     HANDLERS = [
+         'yui.handlers'
+     ]
+
+OWNER
+  string. ID of owner.
+  You can get ID value from `this test page`_
+
+
+.. _`this test page`: https://api.slack.com/methods/users.info/test
+
+
 Run
 ---
-
-`yui.config.toml` file require `TOKEN` value.
 
 .. code-block:: bash
 
