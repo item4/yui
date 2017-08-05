@@ -75,19 +75,30 @@ def make_sub_list(data: typing.List[Sub]) -> typing.List[Attachment]:
 
 
 async def get_json(*args, **kwargs):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(*args, **kwargs) as res:
+    weight = 1
+    while True:
+        async with aiohttp.ClientSession() as session:
             try:
-                return await res.json()
-            except aiohttp.client_exceptions.ClientResponseError:
-                return json.loads(await res.text())
+                async with session.get(*args, **kwargs) as res:
+                    try:
+                        return await res.json()
+                    except aiohttp.client_exceptions.ClientResponseError:
+                        return json.loads(await res.text())
+            except aiohttp.client_exceptions.ServerDisconnectedError:
+                await asyncio.sleep(weight/10)
+                weight += 1
 
 
 async def get_weekly_list(url, week):
-    res = await get_json('{}?w={}'.format(url, week))
-    for r in res:
-        r['week'] = week
-    return res
+    weight = 1
+    while True:
+        res = await get_json('{}?w={}'.format(url, week))
+        if res:
+            for r in res:
+                r['week'] = week
+            return res
+        await asyncio.sleep(weight/10)
+        weight += 1
 
 
 @box.command('sub', ['애니자막'])
@@ -136,9 +147,27 @@ async def search_on_air(bot, message, title):
     anissia_data = []
 
     for r in ohli_results:
-        ohli_data.extend(r.result())
+        try:
+            res = r.result()
+        except Exception as e:
+            await bot.say(
+                message['channel'],
+                'Error: {}: {}'.format(e.__class__.__name__, e)
+            )
+            return
+        else:
+            ohli_data.extend(res)
     for r in anissia_results:
-        anissia_data.extend(r.result())
+        try:
+            res = r.result()
+        except Exception as e:
+            await bot.say(
+                message['channel'],
+                'Error: {}: {}'.format(e.__class__.__name__, e)
+            )
+            return
+        else:
+            anissia_data.extend(res)
 
     for ani in ohli_data:
         ani['ratio'] = max(
