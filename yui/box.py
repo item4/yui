@@ -132,8 +132,14 @@ class Handler:
                     expected=argument.nargs if argument.nargs > 0 else '>0',
                     given=0,
                 ))
-
-            args = [chunk.pop(0) for _ in range(length)]
+            if length <= len(chunk):
+                args = [chunk.pop(0) for _ in range(length)]
+            else:
+                raise SyntaxError(argument.count_error.format(
+                    name=argument.name,
+                    expected=argument.nargs,
+                    given=len(chunk),
+                ))
             try:
                 if isinstance(argument.type_, type):
                     r = tuple(map(argument.type_, args))
