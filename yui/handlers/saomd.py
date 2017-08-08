@@ -1,49 +1,89 @@
 import random
+import typing
 
 from ..box import box
 from ..command import argument
 
 
-CHARACTER_TABLE = {
-    '가속': [
-        '[어그멘트 테이머] 시리카',
-        '[이피션트 스미스] 리즈벳',
-        '[프로그레시브 거너] 시논',
-        '[일어서는 영웅] 키리토',
-        '[맞서는 결의] 아스나',
-    ],
-    '기사': [
-        '[천부의 재능] 유지오',
-        '[정합기사] 엘리스',
-    ],
-    '여름': [
-        '[치유의 여름 미인] 아스나',
-        '[두근거리는 여름 처녀] 스구하',
-        '[장난스런 여름 소녀] 시논',
-        '[태양의 여름 소녀] 리즈벳',
-        '[해바라기 여름소녀] 시리카',
-    ],
+class Scout(typing.NamedTuple):
+    """NamedTuple to store saomd scout."""
+
+    name: str
+    cost: int
+    chance: float
+    items: typing.List[str]
+
+
+CHARACTER_TABLE: typing.List[Scout] = {
+    '가속': Scout(
+        name='가속하는 리얼',
+        cost=250,
+        chance=0.04,
+        items=[
+            '[어그멘트 테이머] 시리카',
+            '[이피션트 스미스] 리즈벳',
+            '[프로그레시브 거너] 시논',
+            '[일어서는 영웅] 키리토',
+            '[맞서는 결의] 아스나',
+        ],
+    ),
+    '기사': Scout(
+        name='기사들의 해후',
+        cost=250,
+        chance=0.04,
+        items=[
+            '[천부의 재능] 유지오',
+            '[정합기사] 엘리스',
+        ],
+    ),
+    '여름': Scout(
+        name='여름빛 소녀',
+        cost=250,
+        chance=0.04,
+        items=[
+            '[치유의 여름 미인] 아스나',
+            '[두근거리는 여름 처녀] 스구하',
+            '[장난스런 여름 소녀] 시논',
+            '[태양의 여름 소녀] 리즈벳',
+            '[해바라기 여름소녀] 시리카',
+        ],
+    ),
 }
 
-WEAPON_TABLE = {
-    '가속': [
-        '히로익 프로미스',
-        '컬리지',
-        '어드밴서',
-        '엣지 오브 리펜트',
-        '에레터',
-    ],
-    '기사': [
-        '청장미의 검',
-        '금목서의 검',
-    ],
-    '여름': [
-        '릴리 망고슈',
-        '아일랜드 스피어',
-        '마린 샷',
-        '선플라워 엣지',
-        '비치 버스터',
-    ],
+WEAPON_TABLE: typing.List[Scout] = {
+    '가속': Scout(
+        name='가속하는 리얼',
+        cost=150,
+        chance=0.04,
+        items=[
+            '히로익 프로미스',
+            '컬리지',
+            '어드밴서',
+            '엣지 오브 리펜트',
+            '에레터',
+        ],
+    ),
+    '기사': Scout(
+        name='기사들의 해후',
+        cost=150,
+        chance=0.04,
+        items=[
+            '청장미의 검',
+            '금목서의 검',
+        ],
+    ),
+    '여름': Scout(
+        name='여름빛 소녀',
+        cost=150,
+        chance=0.04,
+        items=[
+            '릴리 망고슈',
+            '아일랜드 스피어',
+            '마린 샷',
+            '선플라워 엣지',
+            '비치 버스터',
+        ],
+    ),
 }
 
 
@@ -60,7 +100,7 @@ async def saomd_character(bot, message, category):
     """
 
     try:
-        table = CHARACTER_TABLE[category]
+        scout = CHARACTER_TABLE[category]
     except KeyError:
         await bot.say(
             message['channel'],
@@ -72,16 +112,20 @@ async def saomd_character(bot, message, category):
 
     for x in range(11):
         r = random.random()
-        if r <= 0.04:
-            chars.append(random.choice(table))
-        elif r <= 0.04 + 0.25:
+        if r <= scout.chance:
+            chars.append(random.choice(scout.items))
+        elif r <= scout.chance + 0.25:
             chars.append('3성')
         else:
             chars.append('2성')
 
     await bot.say(
         message['channel'],
-        ', '.join(chars)
+        '메모리 다이아 {}개를 소모하여 {} 11연차에 시도합니다.\n결과: {}'.format(
+            scout.cost,
+            scout.name,
+            ', '.join(chars),
+        )
     )
 
 
@@ -98,7 +142,7 @@ async def saomd_weapon(bot, message, category):
     """
 
     try:
-        table = WEAPON_TABLE[category]
+        scout = WEAPON_TABLE[category]
     except KeyError:
         await bot.say(
             message['channel'],
@@ -109,12 +153,16 @@ async def saomd_weapon(bot, message, category):
     items = []
 
     for x in range(11):
-        if random.random() <= 0.04:
-            items.append(random.choice(table))
+        if random.random() <= scout.chance:
+            items.append(random.choice(scout.items))
         else:
             items.append('꽝')
 
     await bot.say(
         message['channel'],
-        ', '.join(items)
+        '메모리 다이아 {}개를 소모하여 {} 11연차에 시도합니다.\n결과: {}'.format(
+            scout.cost,
+            scout.name,
+            ', '.join(items),
+        )
     )
