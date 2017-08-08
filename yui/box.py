@@ -19,6 +19,7 @@ class Handler:
         *,
         short_help: Optional[str]=None,
         help: Optional[str]=None,
+        use_shlex: bool=False,
         is_command: bool=False,
         channel_validator: Optional[
             Callable[[Any, Dict], Coroutine[Any, Any, bool]]
@@ -30,6 +31,7 @@ class Handler:
         self.short_help = short_help
         self.help = help
         self.is_command = is_command
+        self.use_shlex = use_shlex
         self.channel_validator = channel_validator
         self.signature = inspect.signature(callback)
 
@@ -195,6 +197,7 @@ class Box:
         subtype: Optional[str]=None,
         short_help: Optional[str]=None,
         help: Optional[str]=None,
+        use_shlex: bool=True,
         channels: Optional[
             Callable[[Any, Dict], Coroutine[Any, Any, bool]]
         ]=None
@@ -231,6 +234,7 @@ class Box:
                     short_help=_short_help,
                     help=help_message,
                     is_command=True,
+                    use_shlex=use_shlex,
                     channel_validator=channels,
                 )
 

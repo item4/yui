@@ -245,14 +245,17 @@ class Bot:
             options = {}
             arguments = {}
             raw = html.unescape(args)
-            try:
-                option_chunks = shlex.split(raw)
-            except ValueError:
-                await self.say(
-                    message['channel'],
-                    '*Error*: Can not parse this command'
-                )
-                return False
+            if handler.use_shlex:
+                try:
+                    option_chunks = shlex.split(raw)
+                except ValueError:
+                    await self.say(
+                        message['channel'],
+                        '*Error*: Can not parse this command'
+                    )
+                    return False
+            else:
+                option_chunks = raw.split(' ')
 
             try:
                 options, argument_chunks = handler.parse_options(option_chunks)
