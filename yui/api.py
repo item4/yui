@@ -6,7 +6,7 @@ from attrdict import AttrDict
 from .util import bool2str
 
 
-__all__ = 'SlackAPI',
+__all__ = 'Attachment', 'Field', 'SlackAPI', 'SlackEncoder'
 
 
 class Field:
