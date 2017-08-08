@@ -6,7 +6,8 @@ Decorators and classes for making command.
 """
 
 import functools
-import typing
+
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Type, Union  # noqa: F401,E501
 
 __all__ = 'Argument', 'DM', 'Option', 'argument', 'not_', 'only', 'option'
 
@@ -15,11 +16,8 @@ class DM:
     """Direct Message"""
 
 
-def only(*channels: typing.Union[typing.Type[DM], str], error: str=None)\
-        -> typing.Callable[
-            [typing.Any, typing.Dict],
-            typing.Coroutine[typing.Any, typing.Any, bool]
-        ]:
+def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
+        -> Callable[[Any, Dict], Coroutine[Any, Any, bool]]:
     """Mark channel to allow to use handler."""
 
     allow_dm = False
@@ -52,11 +50,8 @@ def only(*channels: typing.Union[typing.Type[DM], str], error: str=None)\
     return callback
 
 
-def not_(*channels: typing.Union[typing.Type[DM], str], error: str=None) \
-        -> typing.Callable[
-            [typing.Any, typing.Dict],
-            typing.Coroutine[typing.Any, typing.Any, bool]
-        ]:
+def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
+        -> Callable[[Any, Dict], Coroutine[Any, Any, bool]]:
     """Mark channel to deny to use handler."""
 
     deny_dm = False
@@ -91,14 +86,14 @@ def not_(*channels: typing.Union[typing.Type[DM], str], error: str=None) \
 
 def argument(
     name: str,
-    dest: str=None,
+    dest: Optional[str]=None,
     nargs: int=1,
-    type_: typing.Union[type, typing.Callable]=str,
-    concat: bool=False,
+    type_: Union[type, Callable]=str,
+    concat: Optional[bool]=False,
     type_error: str='{name}: invalid type of argument value({e})',
     count_error: str=('{name}: incorrect argument value count.'
                       ' expected {expected}, {given} given.')
-) -> typing.Callable:
+) -> Callable:
     """
     Add argument to command.
 
@@ -152,18 +147,18 @@ def argument(
 
 def option(
     *args: str,
-    default: typing.Any=None,
-    dest: str=None,
+    default: Optional[Any]=None,
+    dest: Optional[str]=None,
     is_flag: bool=False,
     nargs: int=1,
     multiple: bool=False,
     required: bool=False,
-    type_: typing.Union[type, typing.Callable]=str,
-    value: typing.Any=None,
+    type_: Union[type, Callable]=str,
+    value: Optional[Any]=None,
     type_error: str='{name}: invalid type of option value({e})',
     count_error: str=('{name}: incorrect option value count.'
                       ' expected {expected}, {given} given.')
-) -> typing.Callable:
+) -> Callable:
     """
     Add option parameter to command.
 
@@ -193,7 +188,7 @@ def option(
 
     """
 
-    options: typing.List[Option] = []
+    options: List[Option] = []
 
     key: str = ' '.join(args)
 
@@ -289,7 +284,7 @@ class Argument:
         name: str,
         dest: str,
         nargs: int,
-        type_: typing.Union[type, typing.Callable],
+        type_: Union[type, Callable],
         concat: bool,
         type_error: str,
         count_error: str
@@ -312,13 +307,13 @@ class Option:
         self,
         key: str,
         name: str,
-        default: typing.Any,
+        default: Any,
         dest: str,
         nargs: int,
         multiple: bool,
         required: bool,
-        type_: typing.Union[type, typing.Callable],
-        value: typing.Any,
+        type_: Union[type, Callable],
+        value: Any,
         type_error: str,
         count_error: str
     ):

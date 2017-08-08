@@ -1,6 +1,7 @@
 import enum
 import random
-import typing
+
+from typing import List, NamedTuple, Optional, Tuple
 
 from ..box import box
 from ..command import DM, argument, only
@@ -13,7 +14,7 @@ class CostType(enum.Enum):
     record_crystal = '기록결정 크리스탈'
 
 
-class Scout(typing.NamedTuple):
+class Scout(NamedTuple):
     """NamedTuple to store saomd scout."""
 
     name: str
@@ -21,11 +22,11 @@ class Scout(typing.NamedTuple):
     cost_type: CostType
     count: int
     chance: float
-    items: typing.List[str]
-    record_crystal: typing.Optional[typing.List[typing.Tuple[int, float]]]
+    items: List[str]
+    record_crystal: Optional[List[Tuple[int, float]]]
 
 
-CHARACTER_TABLE: typing.List[Scout] = {
+CHARACTER_TABLE: List[Scout] = {
     '가속': Scout(
         name='가속하는 리얼',
         cost=250,
@@ -209,7 +210,7 @@ CHARACTER_TABLE: typing.List[Scout] = {
     )
 }
 
-WEAPON_TABLE: typing.List[Scout] = {
+WEAPON_TABLE: List[Scout] = {
     '가속': Scout(
         name='가속하는 리얼',
         cost=150,

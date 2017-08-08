@@ -1,7 +1,8 @@
 import collections
 import functools
 import inspect
-import typing  # noqa: F401
+
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple
 
 from .command import Argument, Option  # noqa: F401
 
@@ -16,14 +17,11 @@ class Handler:
         self,
         callback,
         *,
-        short_help: str=None,
-        help: str=None,
+        short_help: Optional[str]=None,
+        help: Optional[str]=None,
         is_command: bool=False,
-        channel_validator: typing.Optional[
-            typing.Callable[
-                [typing.Any, typing.Dict],
-                typing.Coroutine[typing.Any, typing.Any, bool]
-            ]
+        channel_validator: Optional[
+            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
         ]=None
     ):
         """Initialize"""
@@ -35,13 +33,12 @@ class Handler:
         self.channel_validator = channel_validator
         self.signature = inspect.signature(callback)
 
-    def parse_options(self, chunk: typing.List[str]
-                      ) -> typing.Tuple[typing.Dict, typing.List[str]]:
+    def parse_options(self, chunk: List[str]) -> Tuple[Dict, List[str]]:
 
         end = False
 
         result = {}
-        options: typing.List[Option] = self.callback.__options__
+        options: List[Option] = self.callback.__options__
         required = {o.dest for o in options if o.required}
 
         for option in options:
@@ -116,12 +113,11 @@ class Handler:
 
         return result, chunk
 
-    def parse_arguments(self, chunk: typing.List[str]
-                        ) -> typing.Tuple[typing.Dict, typing.List[str]]:
+    def parse_arguments(self, chunk: List[str]) -> Tuple[Dict, List[str]]:
 
         result = {}
 
-        arguments: typing.List[Argument] = self.callback.__arguments__
+        arguments: List[Argument] = self.callback.__arguments__
 
         minus = False
         for i, argument in enumerate(arguments):
@@ -194,16 +190,13 @@ class Box:
     def command(
         self,
         name: str,
-        aliases=None,
+        aliases: Optional[List[str]]=None,
         *,
-        subtype=None,
-        short_help=None,
-        help=None,
-        channels: typing.Optional[
-            typing.Callable[
-                [typing.Any, typing.Dict],
-                typing.Coroutine[typing.Any, typing.Any, bool]
-            ]
+        subtype: Optional[str]=None,
+        short_help: Optional[str]=None,
+        help: Optional[str]=None,
+        channels: Optional[
+            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
         ]=None
     ):
         """Shortcut decorator for make command easily."""
@@ -252,12 +245,9 @@ class Box:
         self,
         type_: str,
         *,
-        subtype=None,
-        channels: typing.Optional[
-            typing.Callable[
-                [typing.Any, typing.Dict],
-                typing.Coroutine[typing.Any, typing.Any, bool]
-            ]
+        subtype: Optional[str]=None,
+        channels: Optional[
+            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
         ]=None
     ):
         """Decorator for make handler."""
@@ -293,7 +283,7 @@ class Box:
 class Crontab:
     """Crontab"""
 
-    def __init__(self, box: Box, spec: str, args, kwargs):
+    def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict):
         """Initialize."""
 
         self.box = box

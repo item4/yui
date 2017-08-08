@@ -15,7 +15,7 @@ import aiohttp
 from attrdict import AttrDict
 
 from .api import SlackAPI
-from .box import Box, Crontab, box
+from .box import Box, Crontab, Handler, box
 
 
 __all__ = 'Bot', 'BotReconnect'
@@ -184,7 +184,12 @@ class Bot:
                                 )
                             )
 
-    async def process_handler(self, name: str, handler, message: dict):
+    async def process_handler(
+        self,
+        name: str,
+        handler: Handler,
+        message: dict
+    ):
         func_params = handler.signature.parameters
         kwargs = {}
 
@@ -210,7 +215,12 @@ class Bot:
 
         return True
 
-    async def process_message_handler(self, name: str, handler, message: dict):
+    async def process_message_handler(
+        self,
+        name: str,
+        handler: Handler,
+        message: dict
+    ):
 
         call = ''
         args = ''

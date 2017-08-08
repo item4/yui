@@ -1,10 +1,10 @@
 import asyncio
-import collections
 import datetime
 import json
 import math
 import urllib.parse
-import typing  # noqa: F401
+
+from typing import List, NamedTuple
 
 import aiohttp
 
@@ -15,10 +15,14 @@ from ..box import box
 from ..command import argument, option
 
 
-Sub = collections.namedtuple(
-    'Sub',
-    ['maker', 'episode_num', 'url', 'released_at']
-)
+class Sub(NamedTuple):
+
+    maker: str
+    episode_num: float
+    url: str
+    released_at: datetime.datetime
+
+
 DOW = [
     '일요일',
     '월요일',
@@ -42,8 +46,8 @@ def fix_url(url: str) -> str:
     return 'http://{}'.format(url)
 
 
-def make_sub_list(data: typing.List[Sub]) -> typing.List[Attachment]:
-    result: typing.List[Attachment] = []
+def make_sub_list(data: List[Sub]) -> List[Attachment]:
+    result: List[Attachment] = []
 
     if data:
         for sub in data:
@@ -209,7 +213,7 @@ async def search_on_air(bot, message, title):
                 else:
                     sub['duplicated'] = False
 
-            result: typing.List[Sub] = []
+            result: List[Sub] = []
 
             for sub in ohli_sub_result:
                 episode_num = sub['s']
@@ -249,7 +253,7 @@ async def search_on_air(bot, message, title):
                     released_at=released_at,
                 ))
 
-            attachments: typing.List[Attachment] = [
+            attachments: List[Attachment] = [
                 Attachment(
                     fallback=('*{title}* ({dow} {time} '
                               '/ {genre} / {url})').format(
@@ -310,7 +314,7 @@ async def search_finished(bot, message, title):
         ani = filtered[0]
         subs = await get_json(
             'http://ohli.moe/timetable/cap?i={}'.format(ani['i']))
-        result: typing.List[Sub] = []
+        result: List[Sub] = []
 
         for sub in subs:
             episode_num = sub['s']
@@ -330,7 +334,7 @@ async def search_finished(bot, message, title):
                 released_at=released_at,
             ))
 
-        attachments: typing.List[Attachment] = [
+        attachments: List[Attachment] = [
             Attachment(
                 fallback=('*{title}* ({url})').format(
                     title=ani['s'],

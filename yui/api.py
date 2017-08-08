@@ -1,5 +1,6 @@
 import json
-import typing
+
+from typing import List, Optional
 
 from attrdict import AttrDict
 
@@ -26,21 +27,21 @@ class Attachment:
     def __init__(
         self,
         *,
-        fallback: str=None,
-        color: str=None,
-        pretext: str=None,
-        author_name: str=None,
-        author_link: str=None,
-        author_icon: str=None,
-        title: str=None,
-        title_link: str=None,
-        text: str=None,
-        fields: typing.List[Field]=None,
-        image_url: str=None,
-        thumb_url: str=None,
-        footer: str=None,
-        footer_icon: str=None,
-        ts: int=None
+        fallback: Optional[str]=None,
+        color: Optional[str]=None,
+        pretext: Optional[str]=None,
+        author_name: Optional[str]=None,
+        author_link: Optional[str]=None,
+        author_icon: Optional[str]=None,
+        title: Optional[str]=None,
+        title_link: Optional[str]=None,
+        text: Optional[str]=None,
+        fields: Optional[List[Field]]=None,
+        image_url: Optional[str]=None,
+        thumb_url: Optional[str]=None,
+        footer: Optional[str]=None,
+        footer_icon: Optional[str]=None,
+        ts: Optional[int]=None
     ):
         """Initialize"""
 
@@ -60,7 +61,7 @@ class Attachment:
         self.footer_icon = footer_icon
         self.ts = ts
 
-    def add_field(self, title: str, value: str, short: bool=False):
+    def add_field(self, title: str, value: str, short: Optional[bool]=False):
         self.fields.append(Field(title, value, short))
 
 
@@ -94,18 +95,18 @@ class SlackAPI:
     async def chat_post_message(
         self,
         channel: str,
-        text: str=None,
+        text: Optional[str]=None,
         parse=None,
-        link_names: bool=None,
-        attachments: typing.List[Attachment]=None,
-        unfurl_links: bool=None,
-        unfurl_media: bool=None,
-        username: str=None,
-        as_user: bool=None,
-        icon_url: str=None,
-        icon_emoji: str=None,
-        thread_ts: str=None,
-        reply_broadcast: bool=None,
+        link_names: Optional[bool]=None,
+        attachments: Optional[List[Attachment]]=None,
+        unfurl_links: Optional[bool]=None,
+        unfurl_media: Optional[bool]=None,
+        username: Optional[str]=None,
+        as_user: Optional[bool]=None,
+        icon_url: Optional[str]=None,
+        icon_emoji: Optional[str]=None,
+        thread_ts: Optional[str]=None,
+        reply_broadcast: Optional[bool]=None,
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 
