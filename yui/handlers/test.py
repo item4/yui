@@ -1,8 +1,8 @@
 from ..box import box
-from ..command import argument, option
+from ..command import argument, not_, only, option
 
 
-@box.command('test')
+@box.command('test', channels=only('test'))
 @option('--count', '-c', default=1, type_=int,
         type_error='`{name}`의 값으로는 1개의 정수값만 지정해주세요.',
         count_error='`{name}`의 값으로는 1개의 정수만을 지정해주세요.')
@@ -36,7 +36,7 @@ async def test(bot, message, count, lower, names, separator, end):
     )
 
 
-@box.command('test2')
+@box.command('test2', channels=only('test'))
 @argument('name', dest='names', nargs=-1,
           count_error='`{name}`가 최소 1개 필요합니다.')
 @argument('count', type_=int,
@@ -54,6 +54,14 @@ async def test2(bot, message, names, count):
     await bot.say(
         message['channel'],
         '//'.join(', '.join(names) for _ in range(count))
+    )
+
+
+@box.command('test3', channels=not_('_general', 'dev'))
+async def test3(bot, message):
+    await bot.say(
+        message['channel'],
+        'test3'
     )
 
 
@@ -77,7 +85,7 @@ async def seven(bot):
     await bot.say('test', '7분마다')
 
 
-@box.command('cron-test-start')
+@box.command('cron-test-start', channels=only('test'))
 async def start(bot, message):
     """crontab 테스트 시작"""
 
@@ -88,7 +96,7 @@ async def start(bot, message):
     await bot.say(message['channel'], 'start')
 
 
-@box.command('cron-test-stop')
+@box.command('cron-test-stop', channels=only('test'))
 async def stop(bot, message):
     """crontab 테스트 종료"""
 

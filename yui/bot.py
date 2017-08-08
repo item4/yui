@@ -40,6 +40,7 @@ class Bot:
         self.box = using_box or box
         self.queue = asyncio.Queue()
         self.api = SlackAPI(self)
+        self.channels = {}
 
         self.register_crontab()
 
@@ -138,6 +139,26 @@ class Bot:
                                     traceback.format_exc(),
                                 )
                             )
+                    else:
+                        try:
+                            res = await self.process_handler(
+                                name,
+                                handler,
+                                message
+                            )
+                            if not res:
+                                break
+                        except SystemExit as e:
+                            raise e
+                        except:
+                            await self.say(
+                                self.config.OWNER,
+                                ('*Message*\n```\n{}\n```\n'
+                                 '*Traceback*\n```\n{}\n```\n').format(
+                                    message,
+                                    traceback.format_exc(),
+                                )
+                            )
 
             if type == 'message':
                 for name, alias_to in self.box.aliases[subtype].items():
@@ -163,7 +184,34 @@ class Bot:
                                 )
                             )
 
+    async def process_handler(self, name: str, handler, message: dict):
+        func_params = handler.signature.parameters
+        kwargs = {}
+
+        if 'bot' in func_params:
+            kwargs['bot'] = self
+        if 'message' in func_params:
+            kwargs['message'] = message
+        if 'user' in func_params:
+            kwargs['user'] = await self.api.users.info(
+                message.get('user'))
+
+        validation = True
+        if handler.channel_validator:
+            validation = await handler.channel_validator(self, message)
+
+        if validation:
+            res = await handler.callback(**kwargs)
+        else:
+            return True
+
+        if not res:
+            return False
+
+        return True
+
     async def process_message_handler(self, name: str, handler, message: dict):
+
         call = ''
         args = ''
         if 'text' in message:
@@ -225,7 +273,15 @@ class Bot:
                     kwargs['user'] = await self.api.users.info(
                         message.get('user'))
 
-                res = await handler.callback(**kwargs)
+                validation = True
+                if handler.channel_validator:
+                    validation = await handler.channel_validator(self, message)
+
+                if validation:
+                    res = await handler.callback(**kwargs)
+                else:
+                    return True
+
                 if not res:
                     return False
         return True
@@ -244,6 +300,8 @@ class Bot:
                     raise BotReconnect()
                 else:
                     sleep = 0
+
+                self.channels = {c['id']: c for c in rtm['channels']}
 
                 with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm['url']) as ws:

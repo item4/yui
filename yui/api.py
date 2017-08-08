@@ -72,11 +72,24 @@ class SlackAPI:
 
         self.bot = bot
 
+        self.channels = AttrDict()
+        self.channels.info = self.channels_info
+
         self.chat = AttrDict()
         self.chat.postMessage = self.chat_post_message
 
         self.users = AttrDict()
         self.users.info = self.users_info
+
+    async def channels_info(self, channel: str):
+        """https://api.slack.com/methods/channels.info"""
+
+        return await self.bot.call(
+            'channels.info',
+            {
+                'channel': channel,
+            }
+        )
 
     async def chat_post_message(
         self,

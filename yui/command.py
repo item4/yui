@@ -8,7 +8,85 @@ Decorators and classes for making command.
 import functools
 import typing
 
-__all__ = 'Argument', 'Option', 'argument', 'option'
+__all__ = 'Argument', 'DM', 'Option', 'argument', 'not_', 'only', 'option'
+
+
+class DM:
+    """Direct Message"""
+
+
+def only(*channels: typing.Union[typing.Type[DM], str], error: str=None)\
+        -> typing.Callable[
+            [typing.Any, typing.Dict],
+            typing.Coroutine[typing.Any, typing.Any, bool]
+        ]:
+    """Mark channel to allow to use handler."""
+
+    allow_dm = False
+    if DM in channels:
+        channels = tuple(x for x in channels if x is not DM)
+        allow_dm = True
+
+    async def callback(bot, message) -> bool:
+        if message['channel'].startswith('C'):
+            if bot.channels[message['channel']]['name'] in channels:
+                return True
+            else:
+                if error:
+                    await bot.say(
+                        message['channel'],
+                        error
+                    )
+                return False
+        elif message['channel'].startswith('D'):
+            if allow_dm:
+                return True
+            else:
+                if error:
+                    await bot.say(
+                        message['channel'],
+                        error
+                    )
+                return False
+
+    return callback
+
+
+def not_(*channels: typing.Union[typing.Type[DM], str], error: str=None) \
+        -> typing.Callable[
+            [typing.Any, typing.Dict],
+            typing.Coroutine[typing.Any, typing.Any, bool]
+        ]:
+    """Mark channel to deny to use handler."""
+
+    deny_dm = False
+    if DM in channels:
+        channels = tuple(x for x in channels if x is not DM)
+        deny_dm = True
+
+    async def callback(bot, message) -> bool:
+        if message['channel'].startswith('C'):
+            if bot.channels[message['channel']]['name'] in channels:
+                if error:
+                    await bot.say(
+                        message['channel'],
+                        error
+                    )
+                return False
+            else:
+                return True
+        elif message['channel'].startswith('D'):
+            if deny_dm:
+                if error:
+                    await bot.say(
+                        message['channel'],
+                        error
+                    )
+                return False
+            else:
+                return True
+
+    return callback
 
 
 def argument(

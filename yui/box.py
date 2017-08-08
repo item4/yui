@@ -18,7 +18,13 @@ class Handler:
         *,
         short_help: str=None,
         help: str=None,
-        is_command: bool=False
+        is_command: bool=False,
+        channel_validator: typing.Optional[
+            typing.Callable[
+                [typing.Any, typing.Dict],
+                typing.Coroutine[typing.Any, typing.Any, bool]
+            ]
+        ]=None
     ):
         """Initialize"""
 
@@ -26,6 +32,7 @@ class Handler:
         self.short_help = short_help
         self.help = help
         self.is_command = is_command
+        self.channel_validator = channel_validator
         self.signature = inspect.signature(callback)
 
     def parse_options(self, chunk: typing.List[str]
@@ -191,7 +198,13 @@ class Box:
         *,
         subtype=None,
         short_help=None,
-        help=None
+        help=None,
+        channels: typing.Optional[
+            typing.Callable[
+                [typing.Any, typing.Dict],
+                typing.Coroutine[typing.Any, typing.Any, bool]
+            ]
+        ]=None
     ):
         """Shortcut decorator for make command easily."""
 
@@ -225,6 +238,7 @@ class Box:
                     short_help=_short_help,
                     help=help_message,
                     is_command=True,
+                    channel_validator=channels,
                 )
 
                 if aliases is not None:
@@ -234,7 +248,18 @@ class Box:
 
         return decorator
 
-    def on(self, type_: str, *, subtype=None):
+    def on(
+        self,
+        type_: str,
+        *,
+        subtype=None,
+        channels: typing.Optional[
+            typing.Callable[
+                [typing.Any, typing.Dict],
+                typing.Coroutine[typing.Any, typing.Any, bool]
+            ]
+        ]=None
+    ):
         """Decorator for make handler."""
 
         def decorator(func):
@@ -250,6 +275,7 @@ class Box:
             def internal(func):
                 self.handlers[type_][subtype][func.__name__] = Handler(
                     func,
+                    channel_validator=channels,
                 )
 
             return internal(func)

@@ -3,7 +3,7 @@ import random
 import typing
 
 from ..box import box
-from ..command import argument
+from ..command import DM, argument, only
 
 
 class CostType(enum.Enum):
@@ -268,7 +268,9 @@ WEAPON_TABLE: typing.List[Scout] = {
 }
 
 
-@box.command('캐릭뽑기', ['캐뽑'])
+@box.command('캐릭뽑기', ['캐뽑'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 @argument('category', count_error='카테고리를 입력해주세요')
 async def saomd_character(bot, message, category):
     """
@@ -326,7 +328,9 @@ async def saomd_character(bot, message, category):
     )
 
 
-@box.command('무기뽑기', ['무뽑'])
+@box.command('무기뽑기', ['무뽑'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 @argument('category', count_error='카테고리를 입력해주세요')
 async def saomd_weapon(bot, message, category):
     """

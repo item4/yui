@@ -1,4 +1,5 @@
 from .calc import *  # noqa
+from .core import *  # noqa
 from .help import *  # noqa
 from .hi import *  # noqa
 from .ping import *  # noqa
