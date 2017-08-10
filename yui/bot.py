@@ -8,6 +8,8 @@ import shlex
 import sys
 import traceback
 
+from typing import Dict
+
 import aiocron
 
 import aiohttp
@@ -18,13 +20,17 @@ from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
 
 
-__all__ = 'Bot', 'BotReconnect'
+__all__ = 'APICallError', 'Bot', 'BotReconnect'
 
 SPACE_RE = re.compile('\s+')
 
 
 class BotReconnect(Exception):
     """Exception for reconnect bot"""
+
+
+class APICallError(Exception):
+    """Fail to call API"""
 
 
 class Bot:
@@ -79,7 +85,7 @@ class Bot:
         )
         loop.close()
 
-    async def call(self, method: str, data: dict=None):
+    async def call(self, method: str, data: Dict[str, str]=None):
         """Call API methods."""
 
         with aiohttp.ClientSession() as session:
@@ -90,9 +96,12 @@ class Bot:
                 'https://slack.com/api/{}'.format(method),
                 data=form
             ) as response:
-                assert 200 == response.status, ('{0} with {1} failed.'
-                                                .format(method, data))
-                return await response.json()
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    raise APICallError('fail to call {} with {}'.format(
+                        method, data
+                    ))
 
     async def say(self, channel: str, text: str, **kwargs) -> dict:
         """Shortcut for bot saying."""
