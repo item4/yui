@@ -2,6 +2,7 @@ from .calc import *  # noqa
 from .core import *  # noqa
 from .help import *  # noqa
 from .hi import *  # noqa
+from .nyaa import *  # noqa
 from .ping import *  # noqa
 from .quit import *  # noqa
 from .saomd import *  # noqa

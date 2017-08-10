@@ -13,6 +13,9 @@ install_requires = {
     'aiocron >= 0.6',
     # Fuzzy Search
     'fuzzywuzzy[speedup] >= 0.15.0',
+    # HTML
+    'lxml >= 3.8.0',
+    'cssselect >= 1.0.1',
     # util
     'attrdict >= 2.0.0',
 }
