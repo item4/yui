@@ -411,16 +411,18 @@ async def saomd_character(bot, message, category):
         )
         return
 
-    chars = []
+    chars: List[Tuple[int, str]] = []
 
     for x in range(scout.count):
         r = random.random()
         if r <= scout.chance:
-            chars.append(random.choice(scout.items))
+            chars.append((4, random.choice(scout.items)))
         elif r <= scout.chance + 0.25:
-            chars.append('3성')
+            chars.append((3, '3성'))
         else:
-            chars.append('2성')
+            chars.append((2, '2성'))
+
+    chars.sort(key=lambda x: -x[0])
 
     record_crystal = 0
 
@@ -438,7 +440,7 @@ async def saomd_character(bot, message, category):
             scout.name,
             scout.count,
             '연' if scout.count > 1 else '단',
-            ', '.join(chars),
+            ', '.join(c[1] for c in chars),
             '\n기록결정 크라스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
         )
