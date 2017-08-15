@@ -442,7 +442,7 @@ async def saomd_character(bot, message, category):
             scout.count,
             '연' if scout.count > 1 else '단',
             ', '.join(c[1] for c in chars),
-            '\n기록결정 크라스탈을 {}개 획득하셨습니다.'.format(record_crystal)
+            '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
         )
     )
@@ -502,7 +502,7 @@ async def saomd_weapon(bot, message, category):
             scout.count,
             '연' if scout.count > 1 else '단',
             ', '.join(items),
-            '\n기록결정 크라스탈을 {}개 획득하셨습니다.'.format(record_crystal)
+            '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
         )
     )
