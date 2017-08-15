@@ -4,6 +4,7 @@ from typing import List, NamedTuple, Optional, Tuple
 
 from ..box import box
 from ..command import DM, argument, only
+from ..util import bold
 
 DIAMOND = '메모리 다이아'
 
@@ -416,7 +417,7 @@ async def saomd_character(bot, message, category):
     for x in range(scout.count):
         r = random.random()
         if r <= scout.chance:
-            chars.append((4, random.choice(scout.items)))
+            chars.append((4, bold(random.choice(scout.items))))
         elif r <= scout.chance + 0.25:
             chars.append((3, '3성'))
         else:
@@ -480,7 +481,7 @@ async def saomd_weapon(bot, message, category):
 
     for x in range(scout.count):
         if random.random() <= scout.chance:
-            items.append(random.choice(scout.items))
+            items.append(bold(random.choice(scout.items)))
         else:
             items.append('꽝')
 
