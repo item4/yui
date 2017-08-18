@@ -305,6 +305,66 @@ CHARACTER_TABLE: List[Scout] = {
         ],
         record_crystal=None,
     ),
+    '카운트': Scout(
+        name='1주년 카운트다운! 앙케이트 스카우트 Step 2/4',
+        cost=250,
+        cost_type=DIAMOND,
+        count=11,
+        chance=0.04,
+        items=[
+            '[일어서는 영웅] 키리토',
+            '[맞서는 결의] 아스나',
+            '[황금의 기사] 엘리스',
+            '[숙련된 손님 맞이 메이드] 레인',
+            '[고고히 포효하는 레오] 시논',
+        ],
+        record_crystal=None,
+    ),
+    '카운트1': Scout(
+        name='1주년 카운트다운! 앙케이트 스카우트 Step 1',
+        cost=200,
+        cost_type=DIAMOND,
+        count=11,
+        chance=0.04,
+        items=[
+            '[일어서는 영웅] 키리토',
+            '[맞서는 결의] 아스나',
+            '[황금의 기사] 엘리스',
+            '[숙련된 손님 맞이 메이드] 레인',
+            '[고고히 포효하는 레오] 시논',
+        ],
+        record_crystal=None,
+    ),
+    '카운트3': Scout(
+        name='1주년 카운트다운! 앙케이트 스카우트 Step 3',
+        cost=200,
+        cost_type=DIAMOND,
+        count=11,
+        chance=0.04*1.5,
+        items=[
+            '[일어서는 영웅] 키리토',
+            '[맞서는 결의] 아스나',
+            '[황금의 기사] 엘리스',
+            '[숙련된 손님 맞이 메이드] 레인',
+            '[고고히 포효하는 레오] 시논',
+        ],
+        record_crystal=None,
+    ),
+    '카운트5': Scout(
+        name='1주년 카운트다운! 앙케이트 스카우트 Step 5',
+        cost=250,
+        cost_type=DIAMOND,
+        count=11,
+        chance=0.04*2,
+        items=[
+            '[일어서는 영웅] 키리토',
+            '[맞서는 결의] 아스나',
+            '[황금의 기사] 엘리스',
+            '[숙련된 손님 맞이 메이드] 레인',
+            '[고고히 포효하는 레오] 시논',
+        ],
+        record_crystal=None,
+    ),
 }
 
 WEAPON_TABLE: List[Scout] = {
@@ -378,6 +438,21 @@ WEAPON_TABLE: List[Scout] = {
         ],
         record_crystal=None,
     ),
+    '카운트': Scout(
+        name='1주년 카운트다운! 앙케이트 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        count=11,
+        chance=0.04,
+        items=[
+            '히로익 프로미스+1',
+            '컬리지+1',
+            '금목서의 검+1',
+            '티타임 세이버+1',
+            '레오의 창+1',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -400,6 +475,7 @@ async def saomd_character(bot, message, category):
     * `축제`: 여름밤의 축제 스카우트 (`축제1`/`축제3`/`축제5`)
     * `해적`: 폭풍에 휘날리는 해적기
     * `해적기록결정`: 폭풍에 휘날리는 해적기 기록결정 스카우트
+    * `카운트`: 1주년 카운트다운! 앙케이트 스카우트 (`카운트1`/`카운트3`/`카운트5`)
 
     """
 
@@ -465,6 +541,7 @@ async def saomd_weapon(bot, message, category):
     * `여름`: 매력 분출★여름빛 소녀 스카우트
     * `축제`: 여름밤의 축제 스카우트
     * `해적`: 폭풍에 휘날리는 해적기
+    * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
 
     """
 
