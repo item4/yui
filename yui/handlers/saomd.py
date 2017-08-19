@@ -2,6 +2,13 @@ import random
 
 from typing import List, NamedTuple, Optional, Tuple
 
+import aiohttp
+
+from fuzzywuzzy import fuzz
+
+import lxml.html
+
+from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
 from ..util import bold
@@ -19,6 +26,19 @@ class Scout(NamedTuple):
     chance: float
     items: List[str]
     record_crystal: Optional[List[Tuple[int, float]]]
+
+
+class Weapon(NamedTuple):
+    """NamedTuple to store saomd weapon"""
+
+    name: str
+    grade: str
+    ratio: int
+    category: str
+    attribute: str
+    attack: int
+    critical: int
+    battle_skills: Optional[List[str]]
 
 
 CHARACTER_TABLE: List[Scout] = {
@@ -583,3 +603,178 @@ async def saomd_weapon(bot, message, category):
             if record_crystal > 0 else ''
         )
     )
+
+
+@box.command('캐릭정보', ['캐정'])
+@argument('keyword', nargs=-1, concat=True)
+async def character_info(bot, message, keyword):
+    """
+    소드 아트 온라인 메모리 디프래그 DB에서 캐릭터 정보를 조회합니다.
+
+    `{PREFIX}캐정 남국소년` (이름에 `남국소년`이 들어가는 가장 유사한 캐릭터 정보 조회)
+
+    DB출처: 헝그리
+
+    이 명령어는 `캐릭정보`, `캐정` 중 편한 이름으로 사용할 수 있습니다.
+
+    """
+
+    html = ''
+    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_char.php'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    h = lxml.html.fromstring(html)
+    tr_list = h.cssselect('div table tr')[1:]
+
+    matching: List[Tuple[float, str, str]] = []
+    for tr in tr_list:
+        name = tr[1].text_content().replace('★', '').strip()
+        matching.append((
+            fuzz.ratio(keyword, name),
+            name,
+            tr[1][0].get('href'),
+        ))
+
+    matching.sort(key=lambda x: -x[0])
+
+    if matching[0][0] >= 40:
+        html = ''
+        url = f'http://www.hungryapp.co.kr{matching[0][2]}'
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as res:
+                html = await res.text()
+
+        h = lxml.html.fromstring(html)
+
+        image = h.cssselect('.skill_detail b img')[0].get('src')
+        name = h.cssselect('.DB_view_title span')[0].text_content()
+
+        tables = h.cssselect('.card_info_view table')
+
+        grade = tables[0][1][1].text_content()
+        weapon = tables[0][1][3].text_content()
+        attribute = tables[0][1][5].text_content()
+
+        scout_from = tables[0][2][1].text_content()
+
+        hp = int(tables[1][2][0].text_content())
+        mp = int(tables[1][2][1].text_content())
+        attack = int(tables[1][2][2].text_content())
+        defence = int(tables[1][2][3].text_content())
+        critical = int(tables[1][2][4].text_content())
+
+        score = float(tables[2][2][1].text_content())
+
+        attachment = Attachment(
+            fallback=f'{name} - {url}',
+            title=name,
+            title_link=url,
+            text=(
+                f'{grade} / {weapon} / {attribute}속성 / {score}점\n'
+                f'{scout_from}에서 획득 가능\n'
+                f'HP {hp:,} / MP {mp:,} / '
+                f'ATK {attack:,} / DEF {defence:,} / CRI {critical:,}'
+            ),
+            image_url=image,
+        )
+
+        await bot.api.chat.postMessage(
+            channel=message['channel'],
+            attachments=[attachment],
+            as_user=True,
+        )
+    else:
+        await bot.say(
+            message['channel'],
+            '주어진 키워드로 검색해서 일치하는 것을 찾을 수 없어요!\n'
+            '혹시 {} 중에 하나 아닌가요?'.format(
+                ', '.join(x[1] for x in matching[:3])
+            )
+        )
+
+
+@box.command('무기정보', ['무정'])
+@argument('keyword', nargs=-1, concat=True)
+async def weapon_info(bot, message, keyword):
+    """
+    소드 아트 온라인 메모리 디프래그 DB에서 무기 정보를 조회합니다.
+
+    `{PREFIX}캐정 히로익` (이름에 `히로익`이 들어가는 가장 유사한 무기 정보 조회)
+
+    DB출처: 헝그리앱
+
+    이 명령어는 `무기정보`, `무정` 중 편한 이름으로 사용할 수 있습니다.
+
+    """
+
+    html = ''
+    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_weap.php'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    h = lxml.html.fromstring(html)
+    tr_list = h.cssselect('div table tr')[1:]
+
+    weapons: List[Weapon] = []
+
+    for tr in tr_list:
+        name = tr[0][0].text_content()
+        grade = tr[0].text_content().replace(name, '').strip()
+        ratio = fuzz.ratio(name, keyword)
+        category = tr[1].text_content()
+        attribute = tr[2].text_content()
+        attack = int(tr[3].text_content())
+        critical = int(tr[4].text_content())
+        battle_skills = [x.strip() for x in tr[5].text_content().split('/')]
+
+        weapons.append(Weapon(
+            name=name,
+            grade=grade,
+            ratio=ratio,
+            category=category,
+            attribute=attribute,
+            attack=attack,
+            critical=critical,
+            battle_skills=battle_skills,
+        ))
+
+    weapons.sort(key=lambda x: -x.ratio)
+
+    if weapons[0].ratio >= 40:
+        weapon = weapons[0]
+        attachment = Attachment(
+            fallback='{} {} - {} / {}속성 / ATK {:,} / CRI {:,} / {}'.format(
+                weapon.grade,
+                weapon.name,
+                weapon.category,
+                weapon.attribute,
+                weapon.attack,
+                weapon.critical,
+                ' | '.join(weapon.battle_skills),
+            ),
+            title=weapon.name,
+            text='{} / {} / {}속성 / ATK {:,} / CRI {:,}\n{}'.format(
+                weapon.grade,
+                weapon.category,
+                weapon.attribute,
+                weapon.attack,
+                weapon.critical,
+                ' | '.join(weapon.battle_skills),
+            )
+        )
+        await bot.api.chat.postMessage(
+            channel=message['channel'],
+            attachments=[attachment],
+            as_user=True,
+        )
+    else:
+        await bot.say(
+            message['channel'],
+            '주어진 키워드로 검색해서 일치하는 것을 찾을 수 없어요!\n'
+            '혹시 {} 중에 하나 아닌가요?'.format(
+                ', '.join(x.name for x in weapons[:3])
+            )
+        )
