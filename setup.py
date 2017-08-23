@@ -5,6 +5,9 @@ install_requires = {
     'aiohttp >= 2.1.0',
     'cchardet >= 2.1.1',
     'aiodns >= 1.1.1',
+    # Database
+    'SQLAlchemy >= 1.1.13',
+    'alembic >= 0.9.5',
     # CLI
     'Click >= 6.7',
     # Configuration

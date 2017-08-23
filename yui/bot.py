@@ -16,11 +16,16 @@ import aiohttp
 
 from attrdict import AttrDict
 
+from sqlalchemy.orm import sessionmaker
+
 from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
+from .orm import Base, get_database_engine
 
 
-__all__ = 'APICallError', 'Bot', 'BotReconnect'
+__all__ = 'APICallError', 'Bot', 'BotReconnect', 'Session'
+
+Session = sessionmaker(autocommit=True)
 
 SPACE_RE = re.compile('\s+')
 
@@ -36,13 +41,26 @@ class APICallError(Exception):
 class Bot:
     """Yui."""
 
-    def __init__(self, config: AttrDict, using_box: Box=None):
+    def __init__(
+        self,
+        config: AttrDict,
+        *,
+        orm_base=None,
+        using_box: Box=None
+    ):
         """Initialize"""
+
+        config.DATABASE_ENGINE = get_database_engine(config)
 
         for module_name in config.HANDLERS:
             importlib.import_module(module_name)
 
+        for module_name in config.MODELS:
+            importlib.import_module(module_name)
+
         self.config = config
+
+        self.orm_base = orm_base or Base
         self.box = using_box or box
         self.queue = asyncio.Queue()
         self.api = SlackAPI(self)
@@ -61,7 +79,13 @@ class Bot:
 
             @aiocron.crontab(c.spec, *c.args, **c.kwargs)
             async def task():
-                await c.func(**kw)
+                sess = Session(bind=self.config.DATABASE_ENGINE)
+                if 'sess' in func_params:
+                    kw['sess'] = sess
+                try:
+                    await c.func(**kw)
+                finally:
+                    sess.close()
 
             c.start = task.start
             c.stop = task.stop
@@ -202,10 +226,14 @@ class Bot:
         func_params = handler.signature.parameters
         kwargs = {}
 
+        sess = Session(bind=self.config.DATABASE_ENGINE)
+
         if 'bot' in func_params:
             kwargs['bot'] = self
         if 'message' in func_params:
             kwargs['message'] = message
+        if 'sess' in func_params:
+            kwargs['sess'] = sess
         if 'user' in func_params:
             kwargs['user'] = await self.api.users.info(
                 message.get('user'))
@@ -215,8 +243,12 @@ class Bot:
             validation = await handler.channel_validator(self, message)
 
         if validation:
-            res = await handler.callback(**kwargs)
+            try:
+                res = await handler.callback(**kwargs)
+            finally:
+                sess.close()
         else:
+            sess.close()
             return True
 
         if not res:
@@ -283,10 +315,14 @@ class Bot:
                 kwargs.update(options)
                 kwargs.update(arguments)
 
+                sess = Session(bind=self.config.DATABASE_ENGINE)
+
                 if 'bot' in func_params:
                     kwargs['bot'] = self
                 if 'message' in func_params:
                     kwargs['message'] = message
+                if 'sess' in func_params:
+                    kwargs['sess'] = sess
                 if 'raw' in func_params:
                     kwargs['raw'] = raw
                 if 'remain_chunks' in func_params:
@@ -300,8 +336,12 @@ class Bot:
                     validation = await handler.channel_validator(self, message)
 
                 if validation:
-                    res = await handler.callback(**kwargs)
+                    try:
+                        res = await handler.callback(**kwargs)
+                    finally:
+                        sess.close()
                 else:
+                    sess.close()
                     return True
 
                 if not res:

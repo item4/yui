@@ -12,6 +12,9 @@ DEFAULT = {
     'DEBUG': False,
     'PREFIX': '',
     'HANDLERS': (),
+    'DATABASE_URL': '',
+    'DATABASE_ECHO': False,
+    'MODELS': (),
 }
 
 

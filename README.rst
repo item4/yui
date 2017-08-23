@@ -52,6 +52,25 @@ HANDLERS
          'yui.handlers'
      ]
 
+MODELS
+  list of str. Python module path of ORM Models.
+  Yui import given path automatically.
+  You can define ORM Model with SQLAlchemy (see this_ and use `yui.orm.Base`)
+
+  .. warning::
+
+     Yui **DO NOT** make table automatically.
+     You must need to run `yui migrate` and `yui upgrade` to make table.
+
+.. _this: http://docs.sqlalchemy.org/en/rel_1_1/orm/extensions/declarative/basic_use.html
+
+
+DATABASE_URL
+  string. URL to connect Database via SQLAlchemy.
+
+DATABASE_ECHO
+  bool. If you set it to true, you can see raw SQL in log
+
 OWNER
   string. ID of owner.
   You can get ID value from `this test page`_
@@ -66,6 +85,13 @@ Run
 .. code-block:: bash
 
    $ yui run -c yui.config.toml
+
+
+CLI for Database
+----------------
+
+Yui CLI support most of command of Alembic_.
+You can use command with `yui` such as `yui revision --autogenerate -m "Test"`.
 
 
 Contribute to YUI
