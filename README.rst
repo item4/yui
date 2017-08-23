@@ -12,6 +12,7 @@ Requirements
 - Git
 - Slack bot permission for bot account
 - Python 3.6 or higher
+- Linux OS (can not use in Windows)
 
 
 Installation
