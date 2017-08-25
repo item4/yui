@@ -1,3 +1,4 @@
+from .aws import *  # noqa
 from .calc import *  # noqa
 from .core import *  # noqa
 from .help import *  # noqa

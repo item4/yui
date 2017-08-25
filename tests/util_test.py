@@ -1,4 +1,21 @@
-from yui.util import bold, bool2str, code, italics, preformatted, quote, strike
+import datetime
+
+from yui.util import (bold, bool2str, code, italics, preformatted, quote,
+                      strike, tz_none_to_kst, tz_none_to_utc)
+
+
+def test_datetime_utils():
+    """Test utils for datetime."""
+
+    now = datetime.datetime.utcnow()
+
+    utcnow = tz_none_to_utc(now)
+
+    assert utcnow.tzinfo.tzname(dt=None) == 'UTC'
+
+    kstnow = tz_none_to_kst(now)
+
+    assert kstnow.tzinfo.tzname(dt=None) == 'Asia/Seoul'
 
 
 def test_bool2str():
