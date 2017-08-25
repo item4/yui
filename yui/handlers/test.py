@@ -1,11 +1,12 @@
 from ..box import box
 from ..command import argument, not_, only, option
+from ..type import IntRange
 
 
 @box.command('test', channels=only('test'))
-@option('--count', '-c', default=1, type_=int,
-        type_error='`{name}`의 값으로는 1개의 정수값만 지정해주세요.',
-        count_error='`{name}`의 값으로는 1개의 정수만을 지정해주세요.')
+@option('--count', '-c', default=1, type_=IntRange(1, 15),
+        type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
+        count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
 @option('--lower/--upper', '-l/-u', default=True)
 @option('--name', '-n', dest='names', multiple=True, required=True,
         count_error='`{name}`가 최소 1개 필요합니다.')
@@ -39,9 +40,9 @@ async def test(bot, message, count, lower, names, separator, end):
 @box.command('test2', channels=only('test'))
 @argument('name', dest='names', nargs=-1,
           count_error='`{name}`가 최소 1개 필요합니다.')
-@argument('count', type_=int,
-          type_error='`{name}`의 값으로는 1개의 정수값만 지정해주세요.',
-          count_error='`{name}`의 값으로는 1개의 정수만을 지정해주세요.')
+@argument('count', type_=IntRange(1, 15),
+          type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
+          count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
 async def test2(bot, message, names, count):
     """
     봇 기능 테스트용 명령어

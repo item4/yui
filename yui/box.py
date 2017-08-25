@@ -51,6 +51,7 @@ class Handler:
 
         while not end and chunk:
             for option in options:
+                option_type_is_type = isinstance(option.type_, type)
                 name = chunk.pop(0)
                 if name.startswith(option.name + '='):
                     name, new_chunk = name.split('=', 1)
@@ -62,7 +63,7 @@ class Handler:
                     else:
                         args = [chunk.pop(0) for _ in range(option.nargs)]
                         try:
-                            if isinstance(option.type_, type):
+                            if option_type_is_type:
                                 r = tuple(map(option.type_, args))
                             else:
                                 r = option.type_(*args)
@@ -80,7 +81,7 @@ class Handler:
                                     given=len(r),
                                 )
                             )
-                        elif option.nargs == 1:
+                        elif option.nargs == 1 and option_type_is_type:
                             r = r[0]
 
                         if option.multiple:
@@ -123,6 +124,7 @@ class Handler:
 
         minus = False
         for i, argument in enumerate(arguments):
+            argument_type_is_type = isinstance(argument.type_, type)
             r = None
             length = argument.nargs
             if argument.nargs < 0:
@@ -146,7 +148,7 @@ class Handler:
                     given=len(chunk),
                 ))
             try:
-                if isinstance(argument.type_, type):
+                if argument_type_is_type:
                     r = tuple(map(argument.type_, args))
                 else:
                     r = argument.type_(*args)
@@ -158,15 +160,14 @@ class Handler:
                     )
                 )
 
-            if isinstance(argument.type_, type) and \
-               len(r) != argument.nargs > 0:
+            if argument_type_is_type and len(r) != argument.nargs > 0:
                 raise SyntaxError(argument.count_error.format(
                     name=argument.name,
                     expected=argument.nargs,
                     given=len(r),
                 ))
 
-            if argument.nargs == 1:
+            if argument.nargs == 1 and argument_type_is_type:
                 r = r[0]
             elif argument.concat:
                 r = ' '.join(r)
