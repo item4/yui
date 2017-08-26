@@ -41,6 +41,22 @@ class Handler:
 
         result = {}
         options: List[Option] = self.callback.__options__
+
+        for x in options:
+            if x.type_ is None:
+                type_ = self.signature.parameters[x.dest].annotation
+
+                while True:
+                    if type_ is None:
+                        type_ = str
+                    elif issubclass(type_, List):
+                        type_ = type_.__args__[0]
+                        x.container_cls = list
+                    else:
+                        break
+
+                x.type_ = type_
+
         required = {o.dest for o in options if o.required}
 
         for option in options:
@@ -64,7 +80,7 @@ class Handler:
                         args = [chunk.pop(0) for _ in range(option.nargs)]
                         try:
                             if option_type_is_type:
-                                r = tuple(map(option.type_, args))
+                                r = x.container_cls(map(option.type_, args))
                             else:
                                 r = option.type_(*args)
                         except ValueError as e:
@@ -122,6 +138,21 @@ class Handler:
 
         arguments: List[Argument] = self.callback.__arguments__
 
+        for x in arguments:
+            if x.type_ is None:
+                type_ = self.signature.parameters[x.dest].annotation
+
+                while True:
+                    if type_ is None:
+                        type_ = str
+                    elif issubclass(type_, List):
+                        type_ = type_.__args__[0]
+                        x.container_cls = list
+                    else:
+                        break
+
+                x.type_ = type_
+
         minus = False
         for i, argument in enumerate(arguments):
             argument_type_is_type = isinstance(argument.type_, type)
@@ -149,7 +180,7 @@ class Handler:
                 ))
             try:
                 if argument_type_is_type:
-                    r = tuple(map(argument.type_, args))
+                    r = argument.container_cls(map(argument.type_, args))
                 else:
                     r = argument.type_(*args)
             except ValueError as e:

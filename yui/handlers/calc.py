@@ -175,7 +175,7 @@ async def body(
 
 
 @box.command('=', ['calc'])
-async def calc_decimal(bot, message, raw):
+async def calc_decimal(bot, message, raw: str):
     """
     정수타입 수식 계산기
 
@@ -195,7 +195,7 @@ async def calc_decimal(bot, message, raw):
 
 
 @box.command('=', ['calc'], subtype='message_changed')
-async def calc_decimal_on_change(bot, message, raw):
+async def calc_decimal_on_change(bot, message, raw: str):
     await body(
         bot,
         message['channel'],
@@ -207,7 +207,7 @@ async def calc_decimal_on_change(bot, message, raw):
 
 
 @box.command('==')
-async def calc_num(bot, message, raw):
+async def calc_num(bot, message, raw: str):
     """
     부동소숫점타입 수식 계산기
 
@@ -227,7 +227,7 @@ async def calc_num(bot, message, raw):
 
 
 @box.command('==', subtype='message_changed')
-async def calc_num_on_change(bot, message, raw):
+async def calc_num_on_change(bot, message, raw: str):
     await body(
         bot,
         message['channel'],

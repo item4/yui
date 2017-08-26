@@ -2,7 +2,7 @@ from ..box import box
 
 
 @box.command('help', ['도움', '도움말'])
-async def help(bot, message, raw):
+async def help(bot, message, raw: str):
     """
     봇 명령어들의 도움말 모음
 

@@ -7,7 +7,7 @@ from ..command import argument, option
 @box.command('select', ['선택', '골라'])
 @option('--sep', '-s', default=' ')
 @argument('items', nargs=-1, concat=True)
-async def select(bot, message, sep, items):
+async def select(bot, message, sep: str, items: str):
     """
     주어진 항목중에 랜덤으로 선택해서 알려줍니다.
 

@@ -29,10 +29,14 @@ CATEGORIES = {
 
 @box.command('nyaa', ['냐'])
 @option('--category', '-c', dest='category_name',
-        type_=choice(list(CATEGORIES.keys()), case_insensitive=True),
         default='anime-raw', type_error='지원되지 않는 카테고리에요!')
 @argument('keyword', nargs=-1, concat=True, count_error='검색어를 입력해주세요')
-async def nyaa(bot, message, category_name, keyword):
+async def nyaa(
+    bot,
+    message,
+    category_name: choice(list(CATEGORIES.keys()), case_insensitive=True),
+    keyword: str
+):
     """
     냐토렌트에서 주어진 검색어로 파일을 찾습니다
 

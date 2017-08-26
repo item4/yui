@@ -88,7 +88,8 @@ def argument(
     name: str,
     dest: Optional[str]=None,
     nargs: int=1,
-    type_: Union[type, Callable]=str,
+    type_: Optional[Union[type, Callable]]=None,
+    container_cls: Type=tuple,
     concat: Optional[bool]=False,
     type_error: str='{name}: invalid type of argument value({e})',
     count_error: str=('{name}: incorrect argument value count.'
@@ -104,7 +105,9 @@ def argument(
     :param nargs: :class:`str`
     :type nargs: :class:`int`
     :param type_: type of argument value
-    :type type_: :class:`type` or :class:`typing.Callable`
+    :type type_: :class:`type` or :class:`typing.Callable` or `None`
+    :param container_cls: type of arguments container
+    :type container_cls: :class:`type`
     :param concat: flag to concat arguments
     :type concat: :class:`bool`
     :param type_error: error message for wrong type
@@ -133,6 +136,7 @@ def argument(
                     dest=dest,
                     nargs=nargs,
                     type_=type_,
+                    container_cls=container_cls,
                     concat=concat,
                     type_error=type_error,
                     count_error=count_error,
@@ -152,8 +156,9 @@ def option(
     is_flag: bool=False,
     nargs: int=1,
     multiple: bool=False,
+    container_cls: Type=tuple,
     required: bool=False,
-    type_: Union[type, Callable]=str,
+    type_: Optional[Union[type, Callable]]=None,
     value: Optional[Any]=None,
     type_error: str='{name}: invalid type of option value({e})',
     count_error: str=('{name}: incorrect option value count.'
@@ -173,10 +178,12 @@ def option(
     :type nargs: :class:`int`
     :param multiple: flag for assume values as list
     :type multiple: :class:`bool`
+    :param container_cls: type of options container
+    :type container_cls: :class:`type`
     :param required: set to required option
     :type required: :class:`bool`
     :param type_: type of option value
-    :type type_: :class:`type` or :class:`typing.Callable`
+    :type type_: :class:`type` or :class:`typing.Callable` or `None`
     :param value: value to store flag
     :param type_error: error message for wrong type
     :type type_error: :class:`str`
@@ -206,6 +213,7 @@ def option(
                     dest=dest,
                     nargs=0,
                     multiple=multiple,
+                    container_cls=container_cls,
                     required=required,
                     type_=bool,
                     value=True,
@@ -221,6 +229,7 @@ def option(
                     dest=dest,
                     nargs=0,
                     multiple=multiple,
+                    container_cls=container_cls,
                     required=required,
                     type_=bool,
                     value=False,
@@ -237,6 +246,7 @@ def option(
                     dest=dest,
                     nargs=0,
                     multiple=multiple,
+                    container_cls=container_cls,
                     required=required,
                     type_=bool,
                     value=True if value is None else value,
@@ -253,6 +263,7 @@ def option(
                     dest=dest,
                     nargs=nargs,
                     multiple=multiple,
+                    container_cls=container_cls,
                     required=required,
                     type_=type_,
                     value=value,
@@ -284,7 +295,8 @@ class Argument:
         name: str,
         dest: str,
         nargs: int,
-        type_: Union[type, Callable],
+        type_: Optional[Union[type, Callable]],
+        container_cls: Type,
         concat: bool,
         type_error: str,
         count_error: str
@@ -295,6 +307,7 @@ class Argument:
         self.dest = dest
         self.nargs = nargs
         self.type_ = type_
+        self.container_cls = container_cls
         self.concat = concat
         self.type_error = type_error
         self.count_error = count_error
@@ -311,8 +324,9 @@ class Option:
         dest: str,
         nargs: int,
         multiple: bool,
+        container_cls: Type,
         required: bool,
-        type_: Union[type, Callable],
+        type_: Optional[Union[type, Callable]],
         value: Any,
         type_error: str,
         count_error: str
@@ -325,6 +339,7 @@ class Option:
         self.dest = dest
         self.nargs = nargs
         self.multiple = multiple
+        self.container_cls = container_cls
         self.required = required
         self.type_ = type_
         self.value = value
