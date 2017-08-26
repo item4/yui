@@ -1,5 +1,7 @@
 import datetime
 
+from typing import Any, Callable, Optional
+
 from babel.dates import get_timezone
 
 from sqlalchemy.sql.expression import func
@@ -11,6 +13,7 @@ __all__ = (
     'bold',
     'bool2str',
     'code',
+    'enum_getitem',
     'get_count',
     'italics',
     'preformatted',
@@ -29,6 +32,39 @@ TRUNCATE_QUERY = {
     'postgresql': 'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;',
     'sqlite': 'DELETE FROM {};',
 }
+
+
+def enum_getitem(cls, *, fallback: Optional[str]=None) -> Callable[[str], Any]:
+    """
+    Helper to select item by enum object name from given enum.
+
+    .. warning::
+       Do not use in type annotation.
+       Static type checker will omit error because
+       this function did not return ``type`` object.
+
+       .. sourcecode:: python
+          @box.command('ok')
+          @option('--key', type_=enum_getitem(KeyEnum))
+          async def ok(key: KeyEnum):  # It's OK
+              pass
+
+          @box.command('no')
+          @option('--key')
+          async def no(key: enum_getitem(KeyEnum):  # Do not this
+              pass
+
+    """
+    def callback(keyword: str):
+        try:
+            return cls[keyword]
+        except KeyError as e:
+            if fallback:
+                return cls[fallback]
+            else:
+                raise ValueError(e)
+
+    return callback
 
 
 def tz_none_to_kst(dt: datetime.datetime) -> datetime.datetime:

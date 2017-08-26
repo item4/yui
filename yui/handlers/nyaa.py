@@ -7,27 +7,30 @@ import lxml.html
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
+from ..type import choice
 
 
 CATEGORIES = {
-    'All': '0_0',
-    'Anime': '1_0',
-    'Anime-AMV': '1_1',
-    'Anime-ET': '1_2',
-    'Anime-NET': '1_3',
-    'Anime-Raw': '1_4',
-    'Audio': '2_0',
-    'Audio-Lossless': '2_1',
-    'Audio-Lossy': '2_2',
-    'Literature': '3_0',
-    'Literature-ET': '3_1',
-    'Literature-NET': '3_2',
-    'Literature-Raw': '3_3',
+    'all': '0_0',
+    'anime': '1_0',
+    'anime-amv': '1_1',
+    'anime-et': '1_2',
+    'anime-net': '1_3',
+    'anime-raw': '1_4',
+    'audio': '2_0',
+    'audio-lossless': '2_1',
+    'audio-lossy': '2_2',
+    'literature': '3_0',
+    'literature-et': '3_1',
+    'literature-net': '3_2',
+    'literature-raw': '3_3',
 }
 
 
 @box.command('nyaa', ['냐'])
-@option('--category', '-c', dest='category_name', default='Anime-Raw')
+@option('--category', '-c', dest='category_name',
+        type_=choice(list(CATEGORIES.keys()), case_insensitive=True),
+        default='anime-raw', type_error='지원되지 않는 카테고리에요!')
 @argument('keyword', nargs=-1, concat=True, count_error='검색어를 입력해주세요')
 async def nyaa(bot, message, category_name, keyword):
     """
@@ -47,14 +50,7 @@ async def nyaa(bot, message, category_name, keyword):
 
     """
 
-    try:
-        category = CATEGORIES[category_name]
-    except KeyError:
-        await bot.say(
-            message['channel'],
-            '지원되지 않는 카테고리에요!'
-        )
-        return
+    category = CATEGORIES[category_name.lower()]
 
     html = None
 

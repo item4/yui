@@ -2,7 +2,41 @@ from decimal import Decimal
 
 import pytest
 
-from yui.type import decimal_range, float_range, int_range
+from yui.type import choice, decimal_range, float_range, int_range
+
+
+@pytest.mark.parametrize('cases', [
+    ['Dog', 'cat', 'fish'],
+    ('Dog', 'cat', 'fish'),
+])
+def test_choice(cases):
+
+    assert choice(cases)('cat') == 'cat'
+
+    with pytest.raises(ValueError):
+        choice(cases)('bird')
+
+    assert choice(cases, fallback='fish')('cat') == 'cat'
+    assert choice(cases, fallback='fish')('bird') == 'fish'
+
+    assert choice(cases, case_insensitive=True)('cat') == 'cat'
+    assert choice(cases, case_insensitive=True)('dog') == 'dog'
+    assert choice(cases, case_insensitive=True)('Dog') == 'Dog'
+    assert choice(cases, case_insensitive=True)('DOG') == 'DOG'
+
+    with pytest.raises(ValueError):
+        choice(cases, case_insensitive=True)('bird')
+
+    assert choice(cases, fallback='fish', case_insensitive=True)('cat') == \
+        'cat'
+    assert choice(cases, fallback='fish', case_insensitive=True)('bird') == \
+        'fish'
+    assert choice(cases, fallback='fish', case_insensitive=True)('dog') == \
+        'dog'
+    assert choice(cases, fallback='fish', case_insensitive=True)('Dog') == \
+        'Dog'
+    assert choice(cases, fallback='fish', case_insensitive=True)('DOG') == \
+        'DOG'
 
 
 def test_decimal_range():

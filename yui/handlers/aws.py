@@ -11,6 +11,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from ..box import box
 from ..command import argument, option
 from ..models.aws import AWS
+from ..type import choice
 from ..util import truncate_table
 
 
@@ -190,7 +191,8 @@ async def aws(bot, message, sess, keyword):
 
 
 @box.command('날씨지역검색', ['search-aws-zone'])
-@option('--by', default='name')
+@option('--by', type_=choice(['name', 'location']), default='name',
+        type_error='`{name}`의 값으로는 `name` 이나 `location`만 가능합니다.')
 @argument('keyword', nargs=-1, concat=True)
 async def search_aws_zone(bot, message, sess, by, keyword):
     """

@@ -1,8 +1,43 @@
 from decimal import Decimal
 
-from typing import Type
+
+from typing import Optional, Sequence, Type
 
 __all__ = 'decimal_range', 'float_range', 'int_range'
+
+
+def choice(
+    cases: Sequence[str],
+    *,
+    fallback: Optional[str]=None,
+    case_insensitive: bool=False
+) -> Type[str]:
+    """Helper for constraint input value must be in cases."""
+
+    class _Str(str):
+
+        def __new__(cls, *args, **kwargs) -> str:  # type: ignore
+            snew = super(_Str, cls).__new__
+            val = snew(cls, *args, **kwargs)  # type: ignore
+
+            if case_insensitive:
+                if val.lower() in map(lambda x: x.lower(), cases):
+                    return val
+                else:
+                    if fallback is not None:
+                        return fallback
+                    else:
+                        raise ValueError('given value is not in allowed cases')
+            else:
+                if val in cases:
+                    return val
+                else:
+                    if fallback is not None:
+                        return fallback
+                    else:
+                        raise ValueError('given value is not in allowed cases')
+
+    return _Str
 
 
 def decimal_range(
@@ -15,8 +50,9 @@ def decimal_range(
 
     class _Decimal(Decimal):
 
-        def __new__(cls, *args, **kwargs) -> Decimal:
-            val = super(_Decimal, cls).__new__(cls, *args, **kwargs)
+        def __new__(cls, *args, **kwargs) -> Decimal:  # type: ignore
+            snew = super(_Decimal, cls).__new__
+            val = snew(cls, *args, **kwargs)  # type: ignore
 
             if start <= val <= end:
                 return val
@@ -44,8 +80,9 @@ def float_range(
 
     class _Float(float):
 
-        def __new__(cls, *args, **kwargs) -> float:
-            val = super(_Float, cls).__new__(cls, *args, **kwargs)
+        def __new__(cls, *args, **kwargs) -> float:  # type: ignore
+            snew = super(_Float, cls).__new__
+            val = snew(cls, *args, **kwargs)  # type: ignore
 
             if start <= val <= end:
                 return val
@@ -68,8 +105,9 @@ def int_range(start: int, end: int, *, autofix: bool=False) -> Type[int]:
 
     class _Int(int):
 
-        def __new__(cls, *args, **kwargs) -> int:
-            val = super(_Int, cls).__new__(cls, *args, **kwargs)
+        def __new__(cls, *args, **kwargs) -> int:  # type: ignore
+            snew = super(_Int, cls).__new__
+            val = snew(cls, *args, **kwargs)  # type: ignore
 
             if start <= val <= end:
                 return val
