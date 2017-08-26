@@ -74,7 +74,7 @@ async def nyaa(
         for i in range(min(5, len(tr_list))):
             tr = tr_list[i]
 
-            title = tr[1][0].text_content().strip()
+            title = tr[1][-1].text_content().strip()
             download_link = 'https://nyaa.si{}'.format(tr[2][0].get('href'))
 
             attachments.append(Attachment(
