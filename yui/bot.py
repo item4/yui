@@ -84,6 +84,13 @@ class Bot:
                     kw['sess'] = sess
                 try:
                     await c.func(**kw)
+                except:
+                    await self.say(
+                        self.config.OWNER,
+                        '*Traceback*\n```\n{}\n```\n'.format(
+                            traceback.format_exc(),
+                        )
+                    )
                 finally:
                     sess.close()
 
