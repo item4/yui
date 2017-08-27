@@ -2,8 +2,27 @@ from typing import Any, Dict, List, Mapping, Optional, Union
 
 import attrdict
 
-from .type import (Channel, ChannelID, Comment, CommentID, FileID, SubteamID,
-                   TeamID, Ts, UserID)
+from .type import (
+    Bot,
+    ChannelID,
+    Comment,
+    CommentID,
+    DirectMessageChannel,
+    DirectMessageChannelID,
+    DnDStatus,
+    File,
+    FileID,
+    PrivateGroupChannel,
+    PrivateGroupChannelID,
+    PublicChannel,
+    PublicChannelID,
+    Subteam,
+    SubteamID,
+    TeamID,
+    Ts,
+    User,
+    UserID,
+)
 
 __all__ = (
     'AccountsChanged',
@@ -116,21 +135,21 @@ class BotAdded(Event):
     """An bot user was added."""
 
     type: str = 'bot_added'
-    bot: Mapping[str, Any]
+    bot: Bot
 
 
 class BotChanged(Event):
     """An bot user was changed."""
 
     type: str = 'bot_changed'
-    bot: Mapping[str, Any]
+    bot: Bot
 
 
 class ChannelArchive(Event):
     """A channel was archived."""
 
     type: str = 'channel_archive'
-    channel: ChannelID
+    channel: PublicChannelID
     user: UserID
 
 
@@ -138,14 +157,14 @@ class ChannelCreated(Event):
     """A channel was created."""
 
     type: str = 'channel_created'
-    channel: Mapping[str, Any]
+    channel: PublicChannel
 
 
 class ChannelDeleted(Event):
     """A channel was deleted."""
 
     type: str = 'channel_deleted'
-    channel: ChannelID
+    channel: PublicChannelID
 
 
 class ChannelHistoryChanged(Event):
@@ -161,21 +180,21 @@ class ChannelJoined(Event):
     """You joined a channel."""
 
     type: str = 'channel_joined'
-    channel: Mapping[str, Any]
+    channel: PublicChannel
 
 
 class ChannelLeft(Event):
     """You left a channel."""
 
     type: str = 'channel_left'
-    channel: ChannelID
+    channel: PublicChannelID
 
 
 class ChannelMarked(Event):
     """Your channel read marker was updated."""
 
     type: str = 'channel_marked'
-    channel: ChannelID
+    channel: PublicChannelID
     ts: Ts
 
 
@@ -183,14 +202,14 @@ class ChannelRename(Event):
     """A channel was renamed."""
 
     type: str = 'channel_rename'
-    channel: Mapping[str, Any]
+    channel: PublicChannel
 
 
 class ChannelUnarchive(Event):
     """A channel was unarchived."""
 
     type: str = 'channel_unarchive'
-    channel: ChannelID
+    channel: PublicChannelID
     user: UserID
 
 
@@ -199,7 +218,7 @@ class DnDUpdated(Event):
 
     type: str = 'dnd_updated'
     user: UserID
-    dnd_status: Mapping[str, Union[bool, int]]
+    dnd_status: DnDStatus
 
 
 class DnDUpdatedUser(Event):
@@ -207,7 +226,7 @@ class DnDUpdatedUser(Event):
 
     type: str = 'dnd_updated_user'
     user: UserID
-    dnd_status: Mapping[str, Union[bool, int]]
+    dnd_status: DnDStatus
 
 
 class EmailDomainChanged(Event):
@@ -234,7 +253,7 @@ class FileChange(Event):
 
     type: str = 'file_change'
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileCommentAdded(Event):
@@ -243,7 +262,7 @@ class FileCommentAdded(Event):
     type: str = 'file_comment_added'
     comment: Comment
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileCommentDeleted(Event):
@@ -252,7 +271,7 @@ class FileCommentDeleted(Event):
     type: str = 'file_comment_deleted'
     comment: CommentID
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileCommentEdited(Event):
@@ -261,7 +280,7 @@ class FileCommentEdited(Event):
     type: str = 'file_comment_edited'
     comment: Comment
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileCreated(Event):
@@ -269,7 +288,7 @@ class FileCreated(Event):
 
     type: str = 'type_created'
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileDeleted(Event):
@@ -285,7 +304,7 @@ class FilePublic(Event):
 
     type: str = 'file_public'
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileShared(Event):
@@ -293,7 +312,7 @@ class FileShared(Event):
 
     type: str = 'file_shared'
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class FileUnshared(Event):
@@ -301,7 +320,7 @@ class FileUnshared(Event):
 
     type: str = 'file_unshared'
     file_id: FileID
-    file: Mapping[str, FileID]
+    file: File
 
 
 class GoodBye(Event):
@@ -314,7 +333,7 @@ class GroupArchive(Event):
     """A private channel was archived."""
 
     type: str = 'group_archive'
-    channel: ChannelID
+    channel: PrivateGroupChannelID
 
 
 class GroupClose(Event):
@@ -322,7 +341,7 @@ class GroupClose(Event):
 
     type: str = 'group_close'
     user: UserID
-    channel: ChannelID
+    channel: PrivateGroupChannelID
 
 
 class GroupHistoryChanged(Event):
@@ -338,21 +357,21 @@ class GroupJoined(Event):
     """You joined a private channel."""
 
     type: str = 'group_joined'
-    channel: Channel
+    channel: PrivateGroupChannelID
 
 
 class GroupLeft(Event):
     """You left a private channel."""
 
     type: str = 'group_left'
-    channel: ChannelID
+    channel: PrivateGroupChannelID
 
 
 class GroupMarked(Event):
     """A private channel read marker was updated."""
 
     type: str = 'group_marked'
-    channel: ChannelID
+    channel: PrivateGroupChannelID
     ts: Ts
 
 
@@ -361,21 +380,21 @@ class GroupOpen(Event):
 
     type: str = 'group_open'
     user: UserID
-    channel: ChannelID
+    channel: PrivateGroupChannelID
 
 
 class GroupRename(Event):
     """A private channel was renamed"""
 
     type: str = 'group_rename'
-    channel: Channel
+    channel: PrivateGroupChannel
 
 
 class GroupUnarchive(Event):
     """A private channel was unarchived."""
 
     type: str = 'group_unarchive'
-    channel: ChannelID
+    channel: PrivateGroupChannelID
 
 
 class Hello(Event):
@@ -389,7 +408,7 @@ class IMClose(Event):
 
     type: str = 'im_close'
     user: UserID
-    channel: ChannelID
+    channel: DirectMessageChannelID
 
 
 class IMCreated(Event):
@@ -397,7 +416,7 @@ class IMCreated(Event):
 
     type: str = 'im_created'
     user: UserID
-    channel: Channel
+    channel: DirectMessageChannel
 
 
 class IMHistoryChanged(Event):
@@ -413,7 +432,7 @@ class IMMarked(Event):
     """A direct message read marker was updated."""
 
     type: str = 'im_marked'
-    channel: ChannelID
+    channel: DirectMessageChannelID
     ts: Ts
 
 
@@ -422,7 +441,7 @@ class IMOpen(Event):
 
     type: str = 'im_open'
     user: UserID
-    channel: ChannelID
+    channel: DirectMessageChannelID
 
 
 class ManualPresenceChange(Event):
@@ -437,7 +456,7 @@ class MemberJoinedChannel(Event):
 
     type: str = 'member_joined_channel'
     user: UserID
-    channel: ChannelID
+    channel: Union[PublicChannelID, PrivateGroupChannelID]
     channel_type: str
     inviter: UserID
 
@@ -447,7 +466,7 @@ class MemberLeftChannel(Event):
 
     type: str = 'member_left_channel'
     user: UserID
-    channel: ChannelID
+    channel: Union[PublicChannelID, PrivateGroupChannelID]
     channel_type: str
 
 
@@ -555,7 +574,7 @@ class SubteamCreated(Event):
     """A User Group has been added to the team."""
 
     type: str = 'subteam_created'
-    subteam: Mapping
+    subteam: Subteam
 
 
 class SubteamMembersChanged(Event):
@@ -590,7 +609,7 @@ class SubteamUpdated(Event):
     """An existing User Group has been updated or its members changed."""
 
     type: str = 'subteam_updated'
-    subteam: Mapping[str, Any]
+    subteam: Subteam
 
 
 class TeamDomainChange(Event):
@@ -605,6 +624,7 @@ class TeamJoin(Event):
     """A new team member has joined."""
 
     type: str = 'team_join'
+    user: User
 
 
 class TeamMigrationStarted(Event):
@@ -660,7 +680,7 @@ class UserChange(Event):
     """A team member's data has changed."""
 
     type: str = 'user_change'
-    user: Mapping
+    user: User
 
 
 class UserTyping(Event):
