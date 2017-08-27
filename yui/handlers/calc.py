@@ -12,6 +12,7 @@ import statistics
 from collections.abc import Iterable
 
 from ..box import box
+from ..event import Message
 
 TIMEOUT = 3
 LENGTH_LIMIT = 300
@@ -48,11 +49,11 @@ def timeout_handler(signum, frame):
 
 async def body(
     bot,
-    channel,
+    channel: str,
     expr: str,
     help: str,
-    num_to_decimal=True,
-    ts=None
+    num_to_decimal: bool=True,
+    ts: str=None
 ):
     expr_is_multiline = '\n' in expr
     if not expr:
@@ -175,7 +176,7 @@ async def body(
 
 
 @box.command('=', ['calc'])
-async def calc_decimal(bot, message, raw: str):
+async def calc_decimal(bot, event: Message, raw: str):
     """
     정수타입 수식 계산기
 
@@ -187,7 +188,7 @@ async def calc_decimal(bot, message, raw: str):
 
     await body(
         bot,
-        message['channel'],
+        event.channel,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
         True,
@@ -195,19 +196,19 @@ async def calc_decimal(bot, message, raw: str):
 
 
 @box.command('=', ['calc'], subtype='message_changed')
-async def calc_decimal_on_change(bot, message, raw: str):
+async def calc_decimal_on_change(bot, event: Message, raw: str):
     await body(
         bot,
-        message['channel'],
+        event.channel,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
         True,
-        message['message']['ts'],
+        event.message.ts,
     )
 
 
 @box.command('==')
-async def calc_num(bot, message, raw: str):
+async def calc_num(bot, event: Message, raw: str):
     """
     부동소숫점타입 수식 계산기
 
@@ -219,7 +220,7 @@ async def calc_num(bot, message, raw: str):
 
     await body(
         bot,
-        message['channel'],
+        event.channel,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
@@ -227,14 +228,14 @@ async def calc_num(bot, message, raw: str):
 
 
 @box.command('==', subtype='message_changed')
-async def calc_num_on_change(bot, message, raw: str):
+async def calc_num_on_change(bot, event: Message, raw: str):
     await body(
         bot,
-        message['channel'],
+        event.channel,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
-        message['message']['ts'],
+        event.message.ts,
     )
 
 

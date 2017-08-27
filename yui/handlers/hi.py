@@ -1,14 +1,15 @@
 from ..box import box
+from ..event import Message
 
 __all__ = 'hi',
 
 
-@box.on('message')
-async def hi(bot, message):
-    if message['text'] in ['안녕', '안녕 유이', '유이 안녕']:
-        user = await bot.api.users.info(message.get('user'))
+@box.on(Message)
+async def hi(bot, event: Message):
+    if event.text in ['안녕', '안녕 유이', '유이 안녕']:
+        user = await bot.api.users.info(event.user)
         await bot.say(
-            message['channel'],
+            event.channel,
             '안녕하세요! @{}'.format(user['user']['name'])
         )
         return False

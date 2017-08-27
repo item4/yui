@@ -7,6 +7,7 @@ import lxml.html
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
+from ..event import Message
 from ..type import choice
 
 
@@ -33,7 +34,7 @@ CATEGORIES = {
 @argument('keyword', nargs=-1, concat=True, count_error='검색어를 입력해주세요')
 async def nyaa(
     bot,
-    message,
+    event: Message,
     category_name: choice(list(CATEGORIES.keys()), case_insensitive=True),
     keyword: str
 ):
@@ -93,12 +94,12 @@ async def nyaa(
             ))
 
         await bot.api.chat.postMessage(
-            channel=message['channel'],
+            channel=event.channel,
             attachments=attachments,
             as_user=True,
         )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '검색결과가 없어요!',
         )

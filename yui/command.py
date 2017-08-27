@@ -9,6 +9,8 @@ import functools
 
 from typing import Any, Callable, Coroutine, Dict, List, Optional, Type, Union  # noqa: F401,E501
 
+from .event import Event
+
 __all__ = 'Argument', 'DM', 'Option', 'argument', 'not_', 'only', 'option'
 
 
@@ -25,24 +27,24 @@ def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
         channels = tuple(x for x in channels if x is not DM)
         allow_dm = True
 
-    async def callback(bot, message) -> bool:
-        if message['channel'].startswith('C'):
-            if bot.channels[message['channel']]['name'] in channels:
+    async def callback(bot, event: Event) -> bool:
+        if event.channel.startswith('C'):
+            if bot.channels[event.channel]['name'] in channels:
                 return True
             else:
                 if error:
                     await bot.say(
-                        message['channel'],
+                        event.channel,
                         error
                     )
                 return False
-        elif message['channel'].startswith('D'):
+        elif event.channel.startswith('D'):
             if allow_dm:
                 return True
             else:
                 if error:
                     await bot.say(
-                        message['channel'],
+                        event.channel,
                         error
                     )
                 return False
@@ -59,22 +61,22 @@ def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
         channels = tuple(x for x in channels if x is not DM)
         deny_dm = True
 
-    async def callback(bot, message) -> bool:
-        if message['channel'].startswith('C'):
-            if bot.channels[message['channel']]['name'] in channels:
+    async def callback(bot, event: Event) -> bool:
+        if event.channel.startswith('C'):
+            if bot.channels[event.channel]['name'] in channels:
                 if error:
                     await bot.say(
-                        message['channel'],
+                        event.channel,
                         error
                     )
                 return False
             else:
                 return True
-        elif message['channel'].startswith('D'):
+        elif event.channel.startswith('D'):
             if deny_dm:
                 if error:
                     await bot.say(
-                        message['channel'],
+                        event.channel,
                         error
                     )
                 return False

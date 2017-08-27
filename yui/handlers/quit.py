@@ -1,8 +1,9 @@
 from ..box import box
+from ..event import Message
 
 
 @box.command('quit')
-async def quit(bot, message, user):
+async def quit(bot, event: Message, user):
     """
     봇을 종료합니다
 
@@ -12,11 +13,11 @@ async def quit(bot, message, user):
 
     """
 
-    if message['user'] == bot.config.OWNER:
-        await bot.say(message['channel'], '안녕히 주무세요!')
+    if event.user == bot.config.OWNER:
+        await bot.say(event.channel, '안녕히 주무세요!')
         raise SystemExit()
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '@{} 이 명령어는 아빠만 사용할 수 있어요!'.format(user['user']['name'])
         )

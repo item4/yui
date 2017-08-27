@@ -10,6 +10,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from ..box import box
 from ..command import argument, option
+from ..event import Message
 from ..models.aws import AWS
 from ..type import choice
 from ..util import truncate_table
@@ -107,7 +108,7 @@ async def crawl(bot, sess):
 
 @box.command('날씨', ['aws', 'weather'])
 @argument('keyword', nargs=-1, concat=True)
-async def aws(bot, message, sess, keyword: str):
+async def aws(bot, event: Message, sess, keyword: str):
     """
     지역의 현재 기상상태를 조회합니다.
 
@@ -122,13 +123,13 @@ async def aws(bot, message, sess, keyword: str):
         record = sess.query(AWS).filter_by(name=keyword).one()
     except NoResultFound:
         await bot.say(
-            message['channel'],
+            event.channel,
             '검색 결과가 없어요!'
         )
         return
     except MultipleResultsFound:
         await bot.say(
-            message['channel'],
+            event.channel,
             '검색 결과가 여러가지 있어요! 시스템 관리자에게 문의해주세요!'
         )
         return
@@ -185,7 +186,7 @@ async def aws(bot, message, sess, keyword: str):
         res += ' / 해면기압: {}'.format(pressure)
 
     await bot.say(
-        message['channel'],
+        event.channel,
         res
     )
 
@@ -194,7 +195,7 @@ async def aws(bot, message, sess, keyword: str):
 @option('--by', type_=choice(['name', 'location']), default='name',
         type_error='`{name}`의 값으로는 `name` 이나 `location`만 가능합니다.')
 @argument('keyword', nargs=-1, concat=True)
-async def search_aws_zone(bot, message, sess, by: str, keyword: str):
+async def search_aws_zone(bot, event: Message, sess, by: str, keyword: str):
     """
     날씨 명령어에 사용되는 지역명 검색기능
 
@@ -218,15 +219,15 @@ async def search_aws_zone(bot, message, sess, by: str, keyword: str):
 
     if result:
         await bot.say(
-            message['channel'],
+            event.channel,
             '검색 결과는 다음과 같습니다.\n\n{}'.format(
                 '\n'.join('{}({})'.format(x.name, x.location) for x in result)
             ),
-            thread_ts=message['ts'],
+            thread_ts=event.ts,
         )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '검색결과가 없어요!',
-            thread_ts=message['ts'],
+            thread_ts=event.ts,
         )

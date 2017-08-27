@@ -2,12 +2,13 @@ import random
 
 from ..box import box
 from ..command import argument, option
+from ..event import Message
 
 
 @box.command('select', ['선택', '골라'])
 @option('--sep', '-s', default=' ')
 @argument('items', nargs=-1, concat=True)
-async def select(bot, message, sep: str, items: str):
+async def select(bot, event: Message, sep: str, items: str):
     """
     주어진 항목중에 랜덤으로 선택해서 알려줍니다.
 
@@ -21,6 +22,6 @@ async def select(bot, message, sep: str, items: str):
     items = [x.strip() for x in items.split(sep)]
 
     await bot.say(
-        message['channel'],
+        event.channel,
         random.choice(items)
     )

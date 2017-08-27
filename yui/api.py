@@ -4,6 +4,7 @@ from typing import List, Optional
 
 from attrdict import AttrDict
 
+from .type import ChannelID, Ts, UserID
 from .util import bool2str
 
 
@@ -82,7 +83,7 @@ class SlackAPI:
         self.users = AttrDict()
         self.users.info = self.users_info
 
-    async def channels_info(self, channel: str):
+    async def channels_info(self, channel: ChannelID):
         """https://api.slack.com/methods/channels.info"""
 
         return await self.bot.call(
@@ -94,7 +95,7 @@ class SlackAPI:
 
     async def chat_post_message(
         self,
-        channel: str,
+        channel: ChannelID,
         text: Optional[str]=None,
         parse=None,
         link_names: Optional[bool]=None,
@@ -105,7 +106,7 @@ class SlackAPI:
         as_user: Optional[bool]=None,
         icon_url: Optional[str]=None,
         icon_emoji: Optional[str]=None,
-        thread_ts: Optional[str]=None,
+        thread_ts: Optional[Ts]=None,
         reply_broadcast: Optional[bool]=None,
     ):
         """https://api.slack.com/methods/chat.postMessage"""
@@ -155,7 +156,7 @@ class SlackAPI:
 
         return await self.bot.call('chat.postMessage', param)
 
-    async def users_info(self, user: str):
+    async def users_info(self, user: UserID):
         """https://api.slack.com/methods/users.info"""
 
         return await self.bot.call(

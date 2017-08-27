@@ -2,6 +2,7 @@ from typing import List
 
 from ..box import box
 from ..command import argument, not_, only, option
+from ..event import Message
 from ..type import int_range
 
 
@@ -16,7 +17,7 @@ from ..type import int_range
 @option('--end', '-e', default='!')
 async def test(
     bot,
-    message,
+    event: Message,
     count: int_range(1, 15),
     lower: bool,
     names: List[str],
@@ -42,7 +43,7 @@ async def test(
         ) + end
 
     await bot.say(
-        message['channel'],
+        event.channel,
         res[:300]
     )
 
@@ -55,7 +56,7 @@ async def test(
           count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
 async def test2(
     bot,
-    message,
+    event: Message,
     names: List[str],
     count: int_range(1, 15)
 ):
@@ -68,16 +69,16 @@ async def test2(
     """
 
     await bot.say(
-        message['channel'],
+        event.channel,
         '//'.join(', '.join(names) for _ in range(count))
     )
 
 
 @box.command('test3', channels=not_('_general', 'dev'))
 @argument('number', nargs=-1)
-async def test3(bot, message, number: List[int_range(1, 10)]):
+async def test3(bot, event: Message, number: List[int_range(1, 10)]):
     await bot.say(
-        message['channel'],
+        event.channel,
         ','.join(map(str, number))
     )
 
@@ -103,22 +104,22 @@ async def seven(bot):
 
 
 @box.command('cron-test-start', channels=only('test'))
-async def start(bot, message):
+async def start(bot, event: Message):
     """crontab 테스트 시작"""
 
     one.start()
     three.start()
     five.start()
     seven.start()
-    await bot.say(message['channel'], 'start')
+    await bot.say(event.channel, 'start')
 
 
 @box.command('cron-test-stop', channels=only('test'))
-async def stop(bot, message):
+async def stop(bot, event: Message):
     """crontab 테스트 종료"""
 
     one.stop()
     three.stop()
     five.stop()
     seven.stop()
-    await bot.say(message['channel'], 'stop')
+    await bot.say(event.channel, 'stop')

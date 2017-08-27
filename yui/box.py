@@ -2,9 +2,10 @@ import collections
 import functools
 import inspect
 
-from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple
+from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple, Union
 
 from .command import Argument, Option  # noqa: F401
+from .event import Event
 
 
 __all__ = 'Box', 'Crontab', 'Handler', 'box'
@@ -279,7 +280,7 @@ class Box:
 
     def on(
         self,
-        type_: str,
+        type_: Union[str, Event],
         *,
         subtype: Optional[str]=None,
         channels: Optional[
@@ -287,6 +288,9 @@ class Box:
         ]=None
     ):
         """Decorator for make handler."""
+
+        if not isinstance(type_, str):
+            type_ = type_.type
 
         def decorator(func):
             while isinstance(func, Handler):

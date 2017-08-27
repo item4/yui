@@ -1,35 +1,43 @@
+from ..bot import BotReconnect
 from ..box import box
+from ..event import (ChannelArchive, ChannelCreated, ChannelDeleted,
+                     ChannelRename, ChannelUnarchive, TeamMigrationStarted)
 
 
-@box.on('channel_created')
-async def channel_created(bot, message):
-    bot.channels[message['channel']['id']] = message['channel']
+@box.on(ChannelCreated)
+async def channel_created(bot, event: ChannelCreated):
+    bot.channels[event.channel.id] = event.channel
 
 
-@box.on('channel_deleted')
-async def channel_deleted(bot, message):
-    del bot.channels[message['channel']]
+@box.on(ChannelDeleted)
+async def channel_deleted(bot, event: ChannelDeleted):
+    del bot.channels[event.channel]
 
 
-@box.on('channel_archive')
-async def channel_archive(bot, message):
+@box.on(ChannelArchive)
+async def channel_archive(bot, event: ChannelArchive):
     res = await bot.api.channels.info(
-        message['channel']
+        event.channel
     )
-    bot.channels[message['channel']] = res['channel']
+    bot.channels[event.channel] = res['channel']
 
 
-@box.on('channel_unarchive')
-async def channel_unarchive(bot, message):
+@box.on(ChannelUnarchive)
+async def channel_unarchive(bot, event: ChannelUnarchive):
     res = await bot.api.channels.info(
-        message['channel']
+        event.channel
     )
-    bot.channels[message['channel']] = res['channel']
+    bot.channels[event.channel] = res['channel']
 
 
-@box.on('channel_rename')
-async def channel_rename(bot, message):
+@box.on(ChannelRename)
+async def channel_rename(bot, event: ChannelRename):
     res = await bot.api.channels.info(
-        message['channel']['id']
+        event.channel.id
     )
-    bot.channels[message['channel']['id']] = res['channel']
+    bot.channels[event.channel.id] = res['channel']
+
+
+@box.on(TeamMigrationStarted)
+async def team_migration_started():
+    raise BotReconnect()

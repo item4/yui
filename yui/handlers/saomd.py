@@ -11,6 +11,7 @@ import lxml.html
 from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
+from ..event import Message
 from ..util import bold
 
 DIAMOND = '메모리 다이아'
@@ -556,7 +557,7 @@ WEAPON_TABLE: List[Scout] = {
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
 @argument('category', count_error='카테고리를 입력해주세요')
-async def saomd_character(bot, message, category):
+async def saomd_character(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
 
@@ -580,7 +581,7 @@ async def saomd_character(bot, message, category):
         scout = CHARACTER_TABLE[category]
     except KeyError:
         await bot.say(
-            message['channel'],
+            event.channel,
             '`{}`은 지원하지 않는 카테고리입니다. 도움말을 참조해주세요'.format(category)
         )
         return
@@ -607,7 +608,7 @@ async def saomd_character(bot, message, category):
         )[0]
 
     await bot.say(
-        message['channel'],
+        event.channel,
         '{} {}개를 소모하여 {} {}{}차를 시도합니다.\n결과: {}{}'.format(
             scout.cost_type,
             scout.cost,
@@ -625,7 +626,7 @@ async def saomd_character(bot, message, category):
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
 @argument('category', count_error='카테고리를 입력해주세요')
-async def saomd_weapon(bot, message, category):
+async def saomd_weapon(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
@@ -646,7 +647,7 @@ async def saomd_weapon(bot, message, category):
         scout = WEAPON_TABLE[category]
     except KeyError:
         await bot.say(
-            message['channel'],
+            event.channel,
             '`{}`은 지원하지 않는 카테고리입니다. 도움말을 참조해주세요'.format(category)
         )
         return
@@ -668,7 +669,7 @@ async def saomd_weapon(bot, message, category):
         )[0]
 
     await bot.say(
-        message['channel'],
+        event.channel,
         '{} {}개를 소모하여 {} {}{}차를 시도합니다.\n결과: {}{}'.format(
             scout.cost_type,
             scout.cost,
@@ -684,7 +685,7 @@ async def saomd_weapon(bot, message, category):
 
 @box.command('캐릭정보', ['캐정'])
 @argument('keyword', nargs=-1, concat=True)
-async def character_info(bot, message, keyword):
+async def character_info(bot, event: Message, keyword: str):
     """
     소드 아트 온라인 메모리 디프래그 DB에서 캐릭터 정보를 조회합니다.
 
@@ -758,13 +759,13 @@ async def character_info(bot, message, keyword):
         )
 
         await bot.api.chat.postMessage(
-            channel=message['channel'],
+            channel=event.channel,
             attachments=[attachment],
             as_user=True,
         )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '주어진 키워드로 검색해서 일치하는 것을 찾을 수 없어요!\n'
             '혹시 {} 중에 하나 아닌가요?'.format(
                 ', '.join(x[1] for x in matching[:3])
@@ -774,7 +775,7 @@ async def character_info(bot, message, keyword):
 
 @box.command('무기정보', ['무정'])
 @argument('keyword', nargs=-1, concat=True)
-async def weapon_info(bot, message, keyword):
+async def weapon_info(bot, event: Message, keyword: str):
     """
     소드 아트 온라인 메모리 디프래그 DB에서 무기 정보를 조회합니다.
 
@@ -843,13 +844,13 @@ async def weapon_info(bot, message, keyword):
             )
         )
         await bot.api.chat.postMessage(
-            channel=message['channel'],
+            channel=event.channel,
             attachments=[attachment],
             as_user=True,
         )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '주어진 키워드로 검색해서 일치하는 것을 찾을 수 없어요!\n'
             '혹시 {} 중에 하나 아닌가요?'.format(
                 ', '.join(x.name for x in weapons[:3])

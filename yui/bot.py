@@ -20,6 +20,7 @@ from sqlalchemy.orm import sessionmaker
 
 from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
+from .event import Event, Message, create_event
 from .orm import Base, get_database_engine
 
 
@@ -149,12 +150,12 @@ class Bot:
         """Process messages."""
 
         while True:
-            message = await self.queue.get()
+            event = await self.queue.get()
 
-            print(message)
+            print(event)
 
-            type = message.get('type')
-            subtype = message.get('subtype')
+            type = event.type
+            subtype = event.subtype
 
             handlers = self.box.handlers.get(type)
             if handlers:
@@ -164,7 +165,7 @@ class Bot:
                             res = await self.process_message_handler(
                                 name,
                                 handler,
-                                message
+                                event
                             )
                             if not res:
                                 break
@@ -173,9 +174,9 @@ class Bot:
                         except:
                             await self.say(
                                 self.config.OWNER,
-                                ('*Message*\n```\n{}\n```\n'
+                                ('*Event*\n```\n{}\n```\n'
                                  '*Traceback*\n```\n{}\n```\n').format(
-                                    message,
+                                    event,
                                     traceback.format_exc(),
                                 )
                             )
@@ -184,7 +185,7 @@ class Bot:
                             res = await self.process_handler(
                                 name,
                                 handler,
-                                message
+                                event
                             )
                             if not res:
                                 break
@@ -193,9 +194,9 @@ class Bot:
                         except:
                             await self.say(
                                 self.config.OWNER,
-                                ('*Message*\n```\n{}\n```\n'
+                                ('*Event*\n```\n{}\n```\n'
                                  '*Traceback*\n```\n{}\n```\n').format(
-                                    message,
+                                    event,
                                     traceback.format_exc(),
                                 )
                             )
@@ -208,7 +209,7 @@ class Bot:
                             res = await self.process_message_handler(
                                 name,
                                 handler,
-                                message
+                                event
                             )
                             if not res:
                                 break
@@ -217,9 +218,9 @@ class Bot:
                         except:
                             await self.say(
                                 self.config.OWNER,
-                                ('*Message*\n```\n{}\n```\n'
+                                ('*Event*\n```\n{}\n```\n'
                                  '*Traceback*\n```\n{}\n```\n').format(
-                                    message,
+                                    event,
                                     traceback.format_exc(),
                                 )
                             )
@@ -228,7 +229,7 @@ class Bot:
         self,
         name: str,
         handler: Handler,
-        message: dict
+        event: Event
     ):
         func_params = handler.signature.parameters
         kwargs = {}
@@ -237,17 +238,16 @@ class Bot:
 
         if 'bot' in func_params:
             kwargs['bot'] = self
-        if 'message' in func_params:
-            kwargs['message'] = message
+        if 'event' in func_params:
+            kwargs['event'] = event
         if 'sess' in func_params:
             kwargs['sess'] = sess
         if 'user' in func_params:
-            kwargs['user'] = await self.api.users.info(
-                message.get('user'))
+            kwargs['user'] = await self.api.users.info(event.user)
 
         validation = True
         if handler.channel_validator:
-            validation = await handler.channel_validator(self, message)
+            validation = await handler.channel_validator(self, event)
 
         if validation:
             try:
@@ -267,21 +267,21 @@ class Bot:
         self,
         name: str,
         handler: Handler,
-        message: dict
+        event: Message
     ):
 
         call = ''
         args = ''
-        if 'text' in message:
+        if hasattr(event, 'text'):
             try:
-                call, args = SPACE_RE.split(message['text'], 1)
+                call, args = SPACE_RE.split(event.text, 1)
             except ValueError:
-                call = message['text']
-        elif 'message' in message and 'text' in message['message']:
+                call = event.text
+        elif hasattr(event, 'message') and 'text' in event.message:
             try:
-                call, args = SPACE_RE.split(message['message']['text'], 1)
+                call, args = SPACE_RE.split(event.message.text, 1)
             except ValueError:
-                call = message['message']['text']
+                call = event.message.text
 
         match = True
         if handler.is_command:
@@ -298,7 +298,7 @@ class Bot:
                     option_chunks = shlex.split(raw)
                 except ValueError:
                     await self.say(
-                        message['channel'],
+                        event.channel,
                         '*Error*: Can not parse this command'
                     )
                     return False
@@ -308,7 +308,7 @@ class Bot:
             try:
                 options, argument_chunks = handler.parse_options(option_chunks)
             except SyntaxError as e:
-                await self.say(message['channel'], '*Error*\n{}'.format(e))
+                await self.say(event.channel, '*Error*\n{}'.format(e))
                 return False
 
             try:
@@ -316,7 +316,7 @@ class Bot:
                     argument_chunks
                 )
             except SyntaxError as e:
-                await self.say(message['channel'], '*Error*\n{}'.format(e))
+                await self.say(event.channel, '*Error*\n{}'.format(e))
                 return False
             else:
                 kwargs.update(options)
@@ -326,8 +326,8 @@ class Bot:
 
                 if 'bot' in func_params:
                     kwargs['bot'] = self
-                if 'message' in func_params:
-                    kwargs['message'] = message
+                if 'event' in func_params:
+                    kwargs['event'] = event
                 if 'sess' in func_params:
                     kwargs['sess'] = sess
                 if 'raw' in func_params:
@@ -335,12 +335,11 @@ class Bot:
                 if 'remain_chunks' in func_params:
                     kwargs['remain_chunks'] = remain_chunks
                 if 'user' in func_params:
-                    kwargs['user'] = await self.api.users.info(
-                        message.get('user'))
+                    kwargs['user'] = await self.api.users.info(event.user)
 
                 validation = True
                 if handler.channel_validator:
-                    validation = await handler.channel_validator(self, message)
+                    validation = await handler.channel_validator(self, event)
 
                 if validation:
                     try:
@@ -376,8 +375,8 @@ class Bot:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
                             if msg.tp == aiohttp.WSMsgType.TEXT:
-                                message = json.loads(msg.data)
-                                await self.queue.put(message)
+                                event = create_event(json.loads(msg.data))
+                                await self.queue.put(event)
                             elif msg.tp in (aiohttp.WSMsgType.ERROR,
                                             aiohttp.WSMsgType.CLOSED):
                                 raise BotReconnect()

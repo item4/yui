@@ -1,9 +1,36 @@
 from decimal import Decimal
 
+from typing import NewType, Optional, Sequence, Type, Union
 
-from typing import Optional, Sequence, Type
+__all__ = (
+    'Channel',
+    'ChannelID',
+    'Comment',
+    'CommentID',
+    'CommonChannelID',
+    'DirectMessageChannelID',
+    'FileID',
+    'SubteamID',
+    'TeamID',
+    'Ts',
+    'UserID',
+    'decimal_range',
+    'float_range',
+    'int_range',
+)
 
-__all__ = 'decimal_range', 'float_range', 'int_range'
+
+UserID = NewType('UserID', str)
+Channel = NewType('Channel', dict)
+CommonChannelID = NewType('CommonChannelID', str)
+DirectMessageChannelID = NewType('DirectMessageChannelID', str)
+ChannelID = Union[CommonChannelID, DirectMessageChannelID]
+FileID = NewType('FileID', str)
+Comment = NewType('Comment', dict)
+CommentID = NewType('CommentID', str)
+Ts = NewType('Ts', str)
+TeamID = NewType('TeamID', str)
+SubteamID = NewType('SubteamID', str)
 
 
 def choice(

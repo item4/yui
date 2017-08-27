@@ -1,10 +1,11 @@
 from ..box import box
+from ..event import Message
 
 __all__ = 'ping',
 
 
 @box.command('ping', ['핑'])
-async def ping(bot, message, user):
+async def ping(bot, event: Message, user):
     """
     간단한 핑퐁
 
@@ -13,6 +14,6 @@ async def ping(bot, message, user):
     """
 
     await bot.say(
-        message['channel'],
+        event.channel,
         '@{}, pong!'.format(user['user']['name'])
     )

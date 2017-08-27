@@ -13,6 +13,7 @@ from fuzzywuzzy import fuzz
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
+from ..event import Message
 
 
 class Sub(NamedTuple):
@@ -108,7 +109,7 @@ async def get_weekly_list(url, week):
 @box.command('sub', ['애니자막'])
 @option('--finished/--on-air', '--종영/--방영', '--fin/--on', '-f/-o')
 @argument('title', nargs=-1, concat=True, count_error='애니 제목을 입력해주세요')
-async def sub(bot, message, finished: bool, title: str):
+async def sub(bot, event: Message, finished: bool, title: str):
     """
     애니메이션 자막을 검색합니다
 
@@ -128,12 +129,12 @@ async def sub(bot, message, finished: bool, title: str):
     """
 
     if finished:
-        await search_finished(bot, message, title)
+        await search_finished(bot, event, title)
     else:
-        await search_on_air(bot, message, title)
+        await search_on_air(bot, event, title)
 
 
-async def search_on_air(bot, message, title):
+async def search_on_air(bot, event: Message, title: str):
 
     ohli = []
     anissia = []
@@ -155,7 +156,7 @@ async def search_on_air(bot, message, title):
             res = r.result()
         except Exception as e:
             await bot.say(
-                message['channel'],
+                event.channel,
                 'Error: {}: {}'.format(e.__class__.__name__, e)
             )
             return
@@ -166,7 +167,7 @@ async def search_on_air(bot, message, title):
             res = r.result()
         except Exception as e:
             await bot.say(
-                message['channel'],
+                event.channel,
                 'Error: {}: {}'.format(e.__class__.__name__, e)
             )
             return
@@ -277,13 +278,13 @@ async def search_on_air(bot, message, title):
             attachments.extend(make_sub_list(result))
 
             await bot.api.chat.postMessage(
-                channel=message['channel'],
+                channel=event.channel,
                 attachments=attachments,
                 as_user=True,
             )
         else:
             await bot.say(
-                message['channel'],
+                event.channel,
                 '입력해주신 키워드로 애니메이션 제목을 특정하지 못하겠어요! '
                 'OHLI에선 {}, Anissia에선 {}이(가) 가장 비슷한 것으로 보여요.'.format(
                     ohli_ani_result['s'],
@@ -292,12 +293,12 @@ async def search_on_air(bot, message, title):
             )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '해당 제목의 애니는 찾을 수 없어요!'
         )
 
 
-async def search_finished(bot, message, title):
+async def search_finished(bot, event: Message, title: str):
 
     data = await get_json(
         'http://ohli.moe/timetable/search?{}'.format(
@@ -336,7 +337,7 @@ async def search_finished(bot, message, title):
 
         attachments: List[Attachment] = [
             Attachment(
-                fallback=('*{title}* ({url})').format(
+                fallback='*{title}* ({url})'.format(
                     title=ani['s'],
                     url=fix_url(ani['l']),
                 ),
@@ -348,12 +349,12 @@ async def search_finished(bot, message, title):
         attachments.extend(make_sub_list(result))
 
         await bot.api.chat.postMessage(
-            channel=message['channel'],
+            channel=event.channel,
             attachments=attachments,
             as_user=True,
         )
     else:
         await bot.say(
-            message['channel'],
+            event.channel,
             '해당 제목의 완결 애니는 찾을 수 없어요!',
         )
