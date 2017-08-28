@@ -24,8 +24,10 @@ class Scout(NamedTuple):
     cost: int
     cost_type: str
     count: int
-    chance: float
-    items: List[str]
+    chance_5star: float
+    chance_4star: float
+    items_5star: List[str]
+    items_4star: List[str]
     record_crystal: Optional[List[Tuple[int, float]]]
 
 
@@ -48,14 +50,17 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[어그멘트 테이머] 시리카',
             '[이피션트 스미스] 리즈벳',
             '[프로그레시브 거너] 시논',
             '[일어서는 영웅] 키리토',
             '[맞서는 결의] 아스나',
         ],
+
         record_crystal=None,
     ),
     '기사': Scout(
@@ -63,8 +68,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[천부의 재능] 유지오',
             '[정합기사] 엘리스',
         ],
@@ -75,8 +82,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[치유의 여름 미인] 아스나',
             '[두근거리는 여름 처녀] 스구하',
             '[장난스런 여름 소녀] 시논',
@@ -101,8 +110,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=10,
         cost_type='매력 분출★여름빛 소녀 기록결정',
         count=1,
-        chance=1,
-        items=[
+        chance_5star=0.0,
+        chance_4star=1.0,
+        items_5star=[],
+        items_4star=[
             '[치유의 여름 미인] 아스나',
             '[해바라기 여름소녀] 시리카',
             '[태양의 여름 소녀] 리즈벳',
@@ -177,8 +188,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[긍지 높은 선장] 키리토',
             '[갑판을 채색하는 부선장] 아스나',
             '[감시대의 명저격수] 시논',
@@ -203,8 +216,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=10,
         cost_type='폭풍에 휘날리는 해적기 기록결정',
         count=1,
-        chance=1,
-        items=[
+        chance_5star=0.0,
+        chance_4star=1.0,
+        items_5star=[],
+        items_4star=[
             '[긍지 높은 선장] 키리토',
             '[갑판을 채색하는 부선장] 아스나',
             '[감시대의 명저격수] 시논',
@@ -279,8 +294,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[일어서는 영웅] 키리토',
             '[맞서는 결의] 아스나',
             '[황금의 기사] 엘리스',
@@ -294,8 +311,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=200,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '[일어서는 영웅] 키리토',
             '[맞서는 결의] 아스나',
             '[황금의 기사] 엘리스',
@@ -309,8 +328,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=200,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04*1.5,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04*1.5,
+        items_5star=[],
+        items_4star=[
             '[일어서는 영웅] 키리토',
             '[맞서는 결의] 아스나',
             '[황금의 기사] 엘리스',
@@ -324,8 +345,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04*2,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04*2,
+        items_5star=[],
+        items_4star=[
             '[일어서는 영웅] 키리토',
             '[맞서는 결의] 아스나',
             '[황금의 기사] 엘리스',
@@ -339,8 +362,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
            '[명계의 여신] 시논',
            '[냉철한 저격수] 시논',
            '[프로그레시브 거너] 시논',
@@ -358,8 +383,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=125,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
            '[명계의 여신] 시논',
            '[냉철한 저격수] 시논',
            '[프로그레시브 거너] 시논',
@@ -377,8 +404,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=200,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04*1.5,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04*1.5,
+        items_5star=[],
+        items_4star=[
            '[명계의 여신] 시논',
            '[냉철한 저격수] 시논',
            '[프로그레시브 거너] 시논',
@@ -396,8 +425,10 @@ CHARACTER_TABLE: List[Scout] = {
         cost=250,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04*2,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04*2,
+        items_5star=[],
+        items_4star=[
            '[명계의 여신] 시논',
            '[냉철한 저격수] 시논',
            '[프로그레시브 거너] 시논',
@@ -418,8 +449,10 @@ WEAPON_TABLE: List[Scout] = {
         cost=150,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '히로익 프로미스',
             '컬리지',
             '어드밴서',
@@ -433,8 +466,10 @@ WEAPON_TABLE: List[Scout] = {
         cost=150,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '청장미의 검',
             '금목서의 검',
         ],
@@ -445,8 +480,10 @@ WEAPON_TABLE: List[Scout] = {
         cost=150,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '릴리 망고슈',
             '아일랜드 스피어',
             '마린 샷',
@@ -460,8 +497,10 @@ WEAPON_TABLE: List[Scout] = {
         cost=150,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '오션 에스파다',
             '파이어릿 대거',
             '하버 라이플',
@@ -475,8 +514,10 @@ WEAPON_TABLE: List[Scout] = {
         cost=150,
         cost_type=DIAMOND,
         count=11,
-        chance=0.04,
-        items=[
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
             '히로익 프로미스+1',
             '컬리지+1',
             '금목서의 검+1',
@@ -511,6 +552,8 @@ async def saomd_character(bot, event: Message, category: str):
 
     """
 
+    print(category)
+
     try:
         scout = CHARACTER_TABLE[category]
     except KeyError:
@@ -522,11 +565,16 @@ async def saomd_character(bot, event: Message, category: str):
 
     chars: List[Tuple[int, str]] = []
 
+    five = scout.chance_5star
+    four = five + scout.chance_4star
+    three = four + 0.25
     for x in range(scout.count):
         r = random.random()
-        if r <= scout.chance:
-            chars.append((4, bold(random.choice(scout.items))))
-        elif r <= scout.chance + 0.25:
+        if r <= five:
+            chars.append((5, bold(random.choice(scout.items_5star))))
+        elif r <= four:
+            chars.append((4, bold(random.choice(scout.items_4star))))
+        elif r <= three:
             chars.append((3, '3성'))
         else:
             chars.append((2, '2성'))
@@ -587,11 +635,19 @@ async def saomd_weapon(bot, event: Message, category: str):
 
     items = []
 
+    five = scout.chance_5star
+    four = five + scout.chance_4star
+    three = four + 0.25
     for x in range(scout.count):
-        if random.random() <= scout.chance:
-            items.append(bold(random.choice(scout.items)))
+        r = random.random()
+        if r <= five:
+            items.append(bold(random.choice(scout.items_5star)))
+        elif r <= four:
+            items.append(bold(random.choice(scout.items_4star)))
+        elif r <= three:
+            items.append('3성')
         else:
-            items.append('꽝')
+            items.append('2성')
 
     record_crystal = 0
 
