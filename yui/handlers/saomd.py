@@ -1,6 +1,6 @@
 import random
 
-from typing import List, NamedTuple, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import aiohttp
 
@@ -44,7 +44,7 @@ class Weapon(NamedTuple):
     battle_skills: Optional[List[str]]
 
 
-CHARACTER_TABLE: List[Scout] = {
+CHARACTER_TABLE: Dict[str, Scout] = {
     '가속': Scout(
         name='가속하는 리얼',
         cost=250,
@@ -443,7 +443,7 @@ CHARACTER_TABLE: List[Scout] = {
     ),
 }
 
-WEAPON_TABLE: List[Scout] = {
+WEAPON_TABLE: Dict[str, Scout] = {
     '가속': Scout(
         name='가속하는 리얼',
         cost=150,
