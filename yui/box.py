@@ -6,6 +6,7 @@ from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple, Union
 
 from .command import Argument, Option  # noqa: F401
 from .event import Event
+from .type import cast
 
 
 __all__ = 'Box', 'Crontab', 'Handler', 'box'
@@ -47,14 +48,8 @@ class Handler:
             if x.type_ is None:
                 type_ = self.signature.parameters[x.dest].annotation
 
-                while True:
-                    if type_ is None:
-                        type_ = str
-                    elif issubclass(type_, List):
-                        type_ = type_.__args__[0]
-                        x.container_cls = list
-                    else:
-                        break
+                if type_ is None:
+                    type_ = str
 
                 x.type_ = type_
 
@@ -68,7 +63,6 @@ class Handler:
 
         while not end and chunk:
             for option in options:
-                option_type_is_type = isinstance(option.type_, type)
                 name = chunk.pop(0)
                 if name.startswith(option.name + '='):
                     name, new_chunk = name.split('=', 1)
@@ -80,29 +74,32 @@ class Handler:
                     else:
                         args = [chunk.pop(0) for _ in range(option.nargs)]
                         try:
-                            if option_type_is_type:
-                                r = x.container_cls(map(option.type_, args))
+                            if option.container_cls:
+                                if option.multiple:
+                                    r = cast(option.type_, args)
+                                else:
+                                    r = option.container_cls(
+                                        cast(option.type_, x) for x in args
+                                    )
                             else:
-                                r = option.type_(*args)
+                                r = cast(option.type_, args[0])
                         except ValueError as e:
                             raise SyntaxError(
                                 option.type_error.format(name=option.name, e=e)
                             )
 
-                        if isinstance(option.type_, type) and \
-                           len(r) != option.nargs:
-                            raise SyntaxError(
-                                option.count_error.format(
-                                    name=option.name,
-                                    expected=option.nargs,
-                                    given=len(r),
+                        if option.container_cls is not None:
+                            if len(r) != option.nargs:
+                                raise SyntaxError(
+                                    option.count_error.format(
+                                        name=option.name,
+                                        expected=option.nargs,
+                                        given=len(r),
+                                    )
                                 )
-                            )
-                        elif option.nargs == 1 and option_type_is_type:
-                            r = r[0]
 
                         if option.multiple:
-                            result[option.dest].append(r)
+                            result[option.dest].append(r[0])
                         else:
                             result[option.dest] = r
 
@@ -156,7 +153,6 @@ class Handler:
 
         minus = False
         for i, argument in enumerate(arguments):
-            argument_type_is_type = isinstance(argument.type_, type)
             r = None
             length = argument.nargs
             if argument.nargs < 0:
@@ -180,10 +176,13 @@ class Handler:
                     given=len(chunk),
                 ))
             try:
-                if argument_type_is_type:
-                    r = argument.container_cls(map(argument.type_, args))
+                if argument.container_cls:
+                    r = argument.container_cls(
+                        cast(argument.type_, x) for x in args
+                    )
                 else:
-                    r = argument.type_(*args)
+                    r = cast(argument.type_, args[0])
+
             except ValueError as e:
                 raise SyntaxError(
                     argument.type_error.format(
@@ -192,16 +191,15 @@ class Handler:
                     )
                 )
 
-            if argument_type_is_type and len(r) != argument.nargs > 0:
-                raise SyntaxError(argument.count_error.format(
-                    name=argument.name,
-                    expected=argument.nargs,
-                    given=len(r),
-                ))
+            if argument.container_cls:
+                if len(r) != argument.nargs > 0:
+                    raise SyntaxError(argument.count_error.format(
+                        name=argument.name,
+                        expected=argument.nargs,
+                        given=len(r),
+                    ))
 
-            if argument.nargs == 1 and argument_type_is_type:
-                r = r[0]
-            elif argument.concat:
+            if argument.concat:
                 r = ' '.join(r)
 
             if r is not None:

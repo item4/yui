@@ -91,7 +91,7 @@ def argument(
     dest: Optional[str]=None,
     nargs: int=1,
     type_: Optional[Union[type, Callable]]=None,
-    container_cls: Type=tuple,
+    container_cls: Optional[Type]=None,
     concat: Optional[bool]=False,
     type_error: str='{name}: invalid type of argument value({e})',
     count_error: str=('{name}: incorrect argument value count.'
@@ -108,7 +108,7 @@ def argument(
     :type nargs: :class:`int`
     :param type_: type of argument value
     :type type_: :class:`type` or :class:`typing.Callable` or `None`
-    :param container_cls: type of arguments container
+    :param container_cls: type of arguments container. It use if nargs!=1.
     :type container_cls: :class:`type`
     :param concat: flag to concat arguments
     :type concat: :class:`bool`
@@ -121,6 +121,15 @@ def argument(
     :rtype: :class:`typing.Callable`
 
     """
+
+    if nargs == 1 and container_cls:
+        container_cls = None
+    elif nargs != 1 and container_cls is None:
+        if concat:
+            type_ = str
+            container_cls = list
+        else:
+            container_cls = tuple
 
     if dest is None:
         dest = name.lower()
@@ -158,7 +167,7 @@ def option(
     is_flag: bool=False,
     nargs: int=1,
     multiple: bool=False,
-    container_cls: Type=tuple,
+    container_cls: Optional[Type]=None,
     required: bool=False,
     type_: Optional[Union[type, Callable]]=None,
     value: Optional[Any]=None,
@@ -170,7 +179,7 @@ def option(
     Add option parameter to command.
 
     :param args: names
-    :type id: :class:`tuple` of :class:`str`
+    :type args: :class:`tuple` of :class:`str`
     :param default: default value
     :param dest: destination name to assign value
     :type dest: :class:`str`
@@ -180,7 +189,7 @@ def option(
     :type nargs: :class:`int`
     :param multiple: flag for assume values as list
     :type multiple: :class:`bool`
-    :param container_cls: type of options container
+    :param container_cls: type of options container. It use if nargs!=1.
     :type container_cls: :class:`type`
     :param required: set to required option
     :type required: :class:`bool`
@@ -198,6 +207,11 @@ def option(
     """
 
     options: List[Option] = []
+
+    if nargs == 1 and container_cls:
+        container_cls = None
+    elif (multiple or nargs != 1) and container_cls is None:
+        container_cls = tuple
 
     key: str = ' '.join(args)
 
@@ -298,7 +312,7 @@ class Argument:
         dest: str,
         nargs: int,
         type_: Optional[Union[type, Callable]],
-        container_cls: Type,
+        container_cls: Optional[Type],
         concat: bool,
         type_error: str,
         count_error: str
@@ -326,7 +340,7 @@ class Option:
         dest: str,
         nargs: int,
         multiple: bool,
-        container_cls: Type,
+        container_cls: Optional[Type],
         required: bool,
         type_: Optional[Union[type, Callable]],
         value: Any,

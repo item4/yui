@@ -38,6 +38,7 @@ def test_cast():
     ID = NewType('ID', str)
 
     assert cast(int, '3') == 3
+    assert cast(List[str], ('kirito', 'asuna')) == ['kirito', 'asuna']
     assert cast(List[int], ('1', '2', '3')) == [1, 2, 3]
     assert cast(Sequence[int], ('1', '2', '3')) == [1, 2, 3]
     assert cast(MutableSequence[int], ('1', '2', '3')) == [1, 2, 3]

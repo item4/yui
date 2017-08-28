@@ -417,6 +417,8 @@ def cast(t, value):
         return value
     elif t == NoneType:
         return None
+    elif t in (str, bytes):
+        return t(value)
 
     if inspect.isclass(t):
         if issubclass(t, Namespace):
@@ -434,8 +436,7 @@ def cast(t, value):
             else:
                 return set(value)
 
-        if t not in (str, bytes) and issubclass(t, (
-                List, MutableSequence, Sequence)):
+        if issubclass(t, (List, MutableSequence, Sequence)):
             if t.__args__[0]:
                 return [cast(t.__args__[0], x) for x in value]
             else:
