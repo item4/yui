@@ -2,6 +2,7 @@ import inspect
 
 from decimal import Decimal
 
+from types import SimpleNamespace
 
 from typing import (
     Any,
@@ -24,6 +25,8 @@ __all__ = (
     'Channel',
     'ChannelBase',
     'ChannelID',
+    'ChannelPurpose',
+    'ChannelTopic',
     'Comment',
     'CommentID',
     'DirectMessageChannel',
@@ -31,6 +34,7 @@ __all__ = (
     'DnDStatus',
     'File',
     'FileID',
+    'Namespace',
     'NoneType',
     'PrivateGroupChannel',
     'PrivateGroupChannelID',
@@ -38,6 +42,7 @@ __all__ = (
     'PublicChannelID',
     'Subteam',
     'SubteamID',
+    'SubteamPrefs',
     'TeamID',
     'Ts',
     'UnionType',
@@ -96,7 +101,33 @@ BotID = NewType('BotID', str)
 UnixTimestamp = NewType('UnixTimestamp', int)
 
 
-class ChannelBase(TypedDict, total=False):
+class Namespace(SimpleNamespace):
+    """Typed Namespace."""
+
+    def __init__(self, **kwargs) -> None:
+        for k, t in self.__annotations__.items():
+            kwargs[k] = cast(t, kwargs.get(k))
+
+        super(Namespace, self).__init__(**kwargs)
+
+
+class ChannelTopic(Namespace):
+    """Topic of Channel."""
+
+    value: str
+    creator: UserID
+    last_set: UnixTimestamp
+
+
+class ChannelPurpose(Namespace):
+    """Purpose of Channel."""
+
+    value: str
+    creator: UserID
+    last_set: UnixTimestamp
+
+
+class ChannelBase(Namespace):
     """Channel type base."""
 
     name: str
@@ -106,24 +137,8 @@ class ChannelBase(TypedDict, total=False):
     is_archived: bool
     is_general: bool
     members: List[UserID]
-    topic: TypedDict(
-        'Topic',
-        {
-            'value': str,
-            'creator': UserID,
-            'last_set': UnixTimestamp,
-        },
-        total=False,
-    )
-    purpose: TypedDict(
-        'Purpose',
-        {
-            'value': str,
-            'creator': UserID,
-            'last_set': UnixTimestamp,
-        },
-        total=False,
-    )
+    topic: ChannelTopic
+    purpose: ChannelPurpose
     is_member: bool
     last_read: Ts
     latest: Mapping
@@ -131,7 +146,7 @@ class ChannelBase(TypedDict, total=False):
     unread_count_display: int
 
 
-class PublicChannel(ChannelBase, total=False):
+class PublicChannel(ChannelBase):
     """
     Public Channel.
 
@@ -142,7 +157,7 @@ class PublicChannel(ChannelBase, total=False):
     id: PublicChannelID
 
 
-class DirectMessageChannel(TypedDict, total=False):
+class DirectMessageChannel(Namespace):
     """
     IM(Direct Message) Channel.
 
@@ -157,7 +172,7 @@ class DirectMessageChannel(TypedDict, total=False):
     is_user_deleted: bool
 
 
-class PrivateGroupChannel(ChannelBase, total=False):
+class PrivateGroupChannel(ChannelBase):
     """
     Private Group Channel.
 
@@ -173,7 +188,7 @@ class PrivateGroupChannel(ChannelBase, total=False):
 Channel = Union[PublicChannel, DirectMessageChannel, PrivateGroupChannel]
 
 
-class Bot(TypedDict, total=False):
+class Bot(Namespace):
     """Bot."""
 
     id: BotID
@@ -182,7 +197,7 @@ class Bot(TypedDict, total=False):
     icons: Mapping[str, str]
 
 
-class DnDStatus(TypedDict, total=False):
+class DnDStatus(Namespace):
     """DnD status."""
 
     dnd_enabled: bool
@@ -192,36 +207,40 @@ class DnDStatus(TypedDict, total=False):
     snooze_endtime: Optional[UnixTimestamp]
 
 
-class File(TypedDict, total=False):
+class File(Namespace):
     """https://api.slack.com/types/file"""
 
     id: FileID
 
 
-class User(TypedDict, total=False):
+class UserProfile(Namespace):
+    """Profile of User."""
+
+    avatar_hash: str
+    status_emoji: Optional[str]
+    status_text: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    real_name: Optional[str]
+    email: str
+    skype: Optional[str]
+    phone: Optional[str]
+    image_24: Optional[str]
+    image_32: Optional[str]
+    image_48: Optional[str]
+    image_72: Optional[str]
+    image_192: Optional[str]
+    image_512: Optional[str]
+
+
+class User(Namespace):
     """https://api.slack.com/types/user"""
 
     id: UserID
     name: str
     deleted: bool
     color: str
-    profile: TypedDict('Profile', {
-        'avatar_hash': str,
-        'status_emoji': str,
-        'status_text': str,
-        'first_name': Optional[str],
-        'last_name': Optional[str],
-        'real_name': Optional[str],
-        'email': str,
-        'skype': Optional[str],
-        'phone': Optional[str],
-        'image_24': Optional[str],
-        'image_32': Optional[str],
-        'image_48': Optional[str],
-        'image_72': Optional[str],
-        'image_192': Optional[str],
-        'image_512': Optional[str],
-    }, total=False)
+    profile: UserProfile
     is_admin: bool
     is_owner: bool
     is_primary_owner: bool
@@ -232,7 +251,14 @@ class User(TypedDict, total=False):
     two_factor_type: str
 
 
-class Subteam(TypedDict, total=False):
+class SubteamPrefs(Namespace):
+    """Prefs of Subteam."""
+
+    channels: List
+    groups: List
+
+
+class Subteam(Namespace):
     """https://api.slack.com/types/usergroup"""
 
     id: SubteamID
@@ -249,10 +275,7 @@ class Subteam(TypedDict, total=False):
     created_by: UserID
     updated_by: Optional[UserID]
     deleted_by: Optional[UserID]
-    perfs: TypedDict('Prefs', {
-        'channels': List,
-        'groups': List,
-    }, total=False)
+    perfs: SubteamPrefs
     users: List[UserID]
     user_count: str
 
@@ -396,23 +419,29 @@ def cast(t, value):
         return None
 
     if inspect.isclass(t):
+        if issubclass(t, Namespace):
+            return t(**value)
+
         if issubclass(t, Tuple):
             if t.__args__:
                 return tuple(cast(ty, x) for ty, x in zip(t.__args__, value))
             else:
                 return tuple(value)
-        elif issubclass(t, Set):
+
+        if issubclass(t, Set):
             if t.__args__:
                 return {cast(t.__args__[0], x) for x in value}
             else:
                 return set(value)
-        elif t not in (str, bytes) and issubclass(t, (
+
+        if t not in (str, bytes) and issubclass(t, (
                 List, MutableSequence, Sequence)):
             if t.__args__[0]:
                 return [cast(t.__args__[0], x) for x in value]
             else:
                 return list(value)
-        elif issubclass(t, (Dict, Mapping)):
+
+        if issubclass(t, (Dict, Mapping)):
             if t.__args__:
                 return {
                     cast(t.__args__[0], k): cast(t.__args__[1], v)

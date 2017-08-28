@@ -1,7 +1,5 @@
 from typing import Any, Dict, List, Mapping, Optional, Union
 
-import attrdict
-
 from .type import (
     Bot,
     ChannelID,
@@ -12,6 +10,7 @@ from .type import (
     DnDStatus,
     File,
     FileID,
+    Namespace,
     PrivateGroupChannel,
     PrivateGroupChannelID,
     PublicChannel,
@@ -100,29 +99,11 @@ __all__ = (
 )
 
 
-class Event:
+class Event(Namespace):
     """Event from RTM."""
 
     type: str
     subtype: Optional[str] = None
-
-    def __init__(self, **kwargs) -> None:
-        self._keys = list(kwargs.keys())
-        for key, value in kwargs.items():
-            if isinstance(value, dict):
-                value = attrdict.AttrDict(value)
-            setattr(self, key, value)
-
-    def __str__(self) -> str:
-        return '<{}({})>'.format(
-            self.__class__.__name__,
-            ', '.join(
-                '{}={!r}'.format(
-                    key,
-                    getattr(self, key)
-                ) for key in self._keys
-            )
-        )
 
 
 class AccountsChanged(Event):
