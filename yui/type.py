@@ -1,8 +1,22 @@
+import inspect
+
 from decimal import Decimal
 
-from typing import List, Mapping, NewType, Optional, Sequence, Type, Union
 
-from mypy_extensions import TypedDict
+from typing import (
+    Any,
+    Dict,
+    List,
+    Mapping,
+    MutableSequence,
+    NewType,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 __all__ = (
     'AppID',
@@ -17,6 +31,7 @@ __all__ = (
     'DnDStatus',
     'File',
     'FileID',
+    'NoneType',
     'PrivateGroupChannel',
     'PrivateGroupChannelID',
     'PublicChannel',
@@ -25,8 +40,10 @@ __all__ = (
     'SubteamID',
     'TeamID',
     'Ts',
+    'UnionType',
     'UnixTimestamp',
     'UserID',
+    'cast',
     'decimal_range',
     'float_range',
     'int_range',
@@ -357,3 +374,51 @@ def int_range(start: int, end: int, *, autofix: bool=False) -> Type[int]:
                     raise ValueError('given value is too big.')
 
     return _Int
+
+
+NoneType = type(None)
+UnionType = type(Union)
+
+
+def cast(t, value):
+    """Magical casting."""
+
+    if type(t) == UnionType:
+        for ty in t.__args__:
+            try:
+                return cast(ty, value)
+            except:
+                continue
+        raise ValueError()
+    elif t == Any:
+        return value
+    elif t == NoneType:
+        return None
+
+    if inspect.isclass(t):
+        if issubclass(t, Tuple):
+            if t.__args__:
+                return tuple(cast(ty, x) for ty, x in zip(t.__args__, value))
+            else:
+                return tuple(value)
+        elif issubclass(t, Set):
+            if t.__args__:
+                return {cast(t.__args__[0], x) for x in value}
+            else:
+                return set(value)
+        elif t not in (str, bytes) and issubclass(t, (
+                List, MutableSequence, Sequence)):
+            if t.__args__[0]:
+                return [cast(t.__args__[0], x) for x in value]
+            else:
+                return list(value)
+        elif issubclass(t, (Dict, Mapping)):
+            if t.__args__:
+                return {
+                    cast(t.__args__[0], k): cast(t.__args__[1], v)
+                    for k, v in value.items()
+                }
+            else:
+                return dict(value)
+
+    return t(value)
