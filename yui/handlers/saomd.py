@@ -96,58 +96,6 @@ CHARACTER_TABLE: List[Scout] = {
             (10, 0.5),
         ],
     ),
-    '축제': Scout(
-        name='여름밤의 축제 Step 2 or 4',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        chance=0.04,
-        items=[
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-        ],
-        record_crystal=None,
-    ),
-    '축제1': Scout(
-        name='여름밤의 축제 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        count=11,
-        chance=0.04,
-        items=[
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-        ],
-        record_crystal=None,
-    ),
-    '축제3': Scout(
-        name='여름밤의 축제 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        count=11,
-        chance=0.04*1.5,
-        items=[
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-        ],
-        record_crystal=None,
-    ),
-    '축제5': Scout(
-        name='여름밤의 축제 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        chance=0.04*2,
-        items=[
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-        ],
-        record_crystal=None,
-    ),
     '여름기록결정': Scout(
         name='매력 분출★여름빛 소녀 기록결정 스카우트',
         cost=10,
@@ -507,19 +455,6 @@ WEAPON_TABLE: List[Scout] = {
         ],
         record_crystal=None,
     ),
-    '축제': Scout(
-        name='여름밤의 축제',
-        cost=150,
-        cost_type=DIAMOND,
-        count=11,
-        chance=0.04,
-        items=[
-            '풍차의 신검',
-            '천신의 폭풍검',
-            '보구의 신창',
-        ],
-        record_crystal=None,
-    ),
     '해적': Scout(
         name='폭풍에 휘날리는 해적기',
         cost=150,
@@ -569,7 +504,6 @@ async def saomd_character(bot, event: Message, category: str):
     * `기사`: 기사들의 해후 스카우트
     * `여름`: 매력 분출★여름빛 소녀 스카우트
     * `여름기록결정`: 매력 분출★여름빛 소녀 기록결정 스카우트
-    * `축제`: 여름밤의 축제 스카우트 (`축제1`/`축제3`/`축제5`)
     * `해적`: 폭풍에 휘날리는 해적기
     * `해적기록결정`: 폭풍에 휘날리는 해적기 기록결정 스카우트
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트 (`카운트1`/`카운트3`/`카운트5`)
@@ -637,7 +571,6 @@ async def saomd_weapon(bot, event: Message, category: str):
     * `가속`: 가속하는 리얼 스카우트
     * `기사`: 기사들의 해후 스카우트
     * `여름`: 매력 분출★여름빛 소녀 스카우트
-    * `축제`: 여름밤의 축제 스카우트
     * `해적`: 폭풍에 휘날리는 해적기
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
 
