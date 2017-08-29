@@ -1045,6 +1045,24 @@ WEAPON_TABLE: Dict[str, Scout] = {
         ],
         record_crystal=None,
     ),
+    '1주년': Scout(
+        name='신뢰의 증거 운명의 인연 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        count=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
+            '인라이트먼트 x 섀도우 엘리미네이터',
+            '다즐링 블링크',
+            '이레디케이트 세이버',
+            '구시스나우탈',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -1148,6 +1166,7 @@ async def saomd_weapon(bot, event: Message, category: str):
     * `여름`: 매력 분출★여름빛 소녀 스카우트
     * `해적`: 폭풍에 휘날리는 해적기
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
+    * `1주년`: 신뢰의 증거 운명의 인연 스카우트
 
     """
 
