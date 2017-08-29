@@ -47,41 +47,6 @@ class Weapon(NamedTuple):
 
 
 CHARACTER_TABLE: Dict[str, Scout] = {
-    '가속': Scout(
-        name='가속하는 리얼',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '[어그멘트 테이머] 시리카',
-            '[이피션트 스미스] 리즈벳',
-            '[프로그레시브 거너] 시논',
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-        ],
-        record_crystal=None,
-    ),
-    '기사': Scout(
-        name='기사들의 해후',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '[천부의 재능] 유지오',
-            '[정합기사] 엘리스',
-        ],
-        record_crystal=None,
-    ),
     '여름': Scout(
         name='매력 분출★여름빛 소녀',
         cost=250,
@@ -191,36 +156,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[볼 빨간 여름의 프린세스] 엘리스',
         ],
         record_crystal=None,
-    ),
-    '해적': Scout(
-        name='폭풍에 휘날리는 해적기',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '[긍지 높은 선장] 키리토',
-            '[갑판을 채색하는 부선장] 아스나',
-            '[감시대의 명저격수] 시논',
-            '[쾌활한 항해사] 리파',
-            '[직감의 조타수] 유우키',
-        ],
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
     ),
     '해적기록결정': Scout(
         name='폭풍에 휘날리는 해적기 기록결정 스카우트',
@@ -375,98 +310,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[황금의 기사] 엘리스',
             '[숙련된 손님 맞이 메이드] 레인',
             '[고고히 포효하는 레오] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '시논': Scout(
-        name='시논 생일 기념 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-           '[명계의 여신] 시논',
-           '[냉철한 저격수] 시논',
-           '[프로그레시브 거너] 시논',
-           '[필승 걸] 시논',
-           '[변화무쌍한 아티스트] 시논',
-           '[위험한 키스] 시논',
-           '[순심의 다과 담당 메이드] 시논',
-           '[하이힐의 신부] 시논',
-           '[신참 경찰] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '시논1': Scout(
-        name='시논 생일 기념 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-           '[명계의 여신] 시논',
-           '[냉철한 저격수] 시논',
-           '[프로그레시브 거너] 시논',
-           '[필승 걸] 시논',
-           '[변화무쌍한 아티스트] 시논',
-           '[위험한 키스] 시논',
-           '[순심의 다과 담당 메이드] 시논',
-           '[하이힐의 신부] 시논',
-           '[신참 경찰] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '시논3': Scout(
-        name='시논 생일 기념 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04*1.5,
-        items_5star=[],
-        items_4star=[
-           '[명계의 여신] 시논',
-           '[냉철한 저격수] 시논',
-           '[프로그레시브 거너] 시논',
-           '[필승 걸] 시논',
-           '[변화무쌍한 아티스트] 시논',
-           '[위험한 키스] 시논',
-           '[순심의 다과 담당 메이드] 시논',
-           '[하이힐의 신부] 시논',
-           '[신참 경찰] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '시논5': Scout(
-        name='시논 생일 기념 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04*2,
-        items_5star=[],
-        items_4star=[
-           '[명계의 여신] 시논',
-           '[냉철한 저격수] 시논',
-           '[프로그레시브 거너] 시논',
-           '[필승 걸] 시논',
-           '[변화무쌍한 아티스트] 시논',
-           '[위험한 키스] 시논',
-           '[순심의 다과 담당 메이드] 시논',
-           '[하이힐의 신부] 시논',
-           '[신참 경찰] 시논',
         ],
         record_crystal=None,
     ),
@@ -953,41 +796,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
-    '가속': Scout(
-        name='가속하는 리얼',
-        cost=150,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '히로익 프로미스',
-            '컬리지',
-            '어드밴서',
-            '엣지 오브 리펜트',
-            '에레터',
-        ],
-        record_crystal=None,
-    ),
-    '기사': Scout(
-        name='기사들의 해후',
-        cost=150,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '청장미의 검',
-            '금목서의 검',
-        ],
-        record_crystal=None,
-    ),
     '여름': Scout(
         name='여름빛 소녀',
         cost=150,
@@ -1004,25 +812,6 @@ WEAPON_TABLE: Dict[str, Scout] = {
             '마린 샷',
             '선플라워 엣지',
             '비치 버스터',
-        ],
-        record_crystal=None,
-    ),
-    '해적': Scout(
-        name='폭풍에 휘날리는 해적기',
-        cost=150,
-        cost_type=DIAMOND,
-        count=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '오션 에스파다',
-            '파이어릿 대거',
-            '하버 라이플',
-            '졸리 로저 사벨',
-            '인쇼어 소드 x 오프쇼어 소드',
         ],
         record_crystal=None,
     ),
@@ -1074,18 +863,14 @@ async def saomd_character(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}캐뽑 가속` (가속하는 리얼 11연차를 시뮬레이션)
+    `{PREFIX}캐뽑 1주년` (신뢰의 증거 운명의 인연 스카우트 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `가속`: 가속하는 리얼 스카우트
-    * `기사`: 기사들의 해후 스카우트
     * `여름`: 매력 분출★여름빛 소녀 스카우트
     * `여름기록결정`: 매력 분출★여름빛 소녀 기록결정 스카우트
-    * `해적`: 폭풍에 휘날리는 해적기
     * `해적기록결정`: 폭풍에 휘날리는 해적기 기록결정 스카우트
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트 (`카운트1`/`카운트3`/`카운트5`)
-    * `시논`: 시논 생일 기념 스카우트 (`시논1`/`시논3`/`시논5`)
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트 (`1주년1`/`1주년3`/`1주년5`/`1주년6`)
 
     """
@@ -1158,14 +943,11 @@ async def saomd_weapon(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}무뽑 가속` (가속하는 리얼 11연차를 시뮬레이션)
+    `{PREFIX}무뽑 1주년` (신뢰의 증거 운명의 인연 스카우트 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `가속`: 가속하는 리얼 스카우트
-    * `기사`: 기사들의 해후 스카우트
     * `여름`: 매력 분출★여름빛 소녀 스카우트
-    * `해적`: 폭풍에 휘날리는 해적기
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트
 
