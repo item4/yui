@@ -765,8 +765,6 @@ ALLOWED_GLOBAL_ATTRS = list(set(
     ALLOWED_ITERTOOLS_ATTRS + ALLOWED_OPERATOR_ATTRS +
     ALLOWED_RANDOM_ATTRS + ALLOWED_STATISTICS_ATTRS
 )) + [
-    # global
-    '__name__',
     # datetime
     'min',
     'max',
@@ -820,8 +818,6 @@ ALLOWED_ATTRS = [
 ] + [
     'math.{}'.format(method) for method in MATH_CONTEXT.keys()
 ] + [
-    'math.{}.__name__'.format(method) for method in MATH_CONTEXT.keys()
-] + [
     'str.{}'.format(method) for method in ALLOWED_STR_ATTRS
 ] + [
     'bytes.{}'.format(method) for method in ALLOWED_BYTES_ATTRS
@@ -836,33 +832,22 @@ ALLOWED_ATTRS = [
 ] + [
     'functools.{}'.format(method) for method in FUNCTOOLS_CONTEXT.keys()
 ] + [
-    'functools.{}.__name__'.format(method)
-    for method in FUNCTOOLS_CONTEXT.keys()
-] + [
     'itertools.{}'.format(method) for method in ALLOWED_ITERTOOLS_ATTRS
-] + [
-    'itertools.{}.__name__'.format(method)
-    for method in ALLOWED_ITERTOOLS_ATTRS
 ] + [
     'operator.{}'.format(method) for method in ALLOWED_OPERATOR_ATTRS
 ] + [
-    'operator.{}.__name__'.format(method) for method in ALLOWED_OPERATOR_ATTRS
-] + [
     'random.{}'.format(method) for method in ALLOWED_RANDOM_ATTRS
 ] + [
-    'random.{}.__name__'.format(method) for method in ALLOWED_RANDOM_ATTRS
-] + [
     'statistics.{}'.format(method) for method in ALLOWED_STATISTICS_ATTRS
-] + [
-    'statistics.{}.__name__'.format(method)
-    for method in ALLOWED_STATISTICS_ATTRS
 ]
 
 
 def resolve_attr_id(node):
-    if isinstance(node, ast.Attribute):
+    if isinstance(node, (ast.Attribute, ast.Subscript)):
         value_id = None
-        if isinstance(node.value, (ast.Name, ast.Attribute)):
+        if isinstance(node.value, (ast.Name, ast.Attribute, ast.Subscript)):
+            value_id = resolve_attr_id(node.value)
+        elif isinstance(node.value, ast.Call):
             value_id = resolve_attr_id(node.value)
         elif isinstance(node.value, ast.Str):
             value_id = 'str'
@@ -881,7 +866,19 @@ def resolve_attr_id(node):
                 'unsupport type: {}'.format(ast.dump(node.value))
             )
 
-        return '{}.{}'.format(value_id, node.attr)
+        if isinstance(node, ast.Attribute):
+            return '{}.{}'.format(value_id, node.attr)
+        elif isinstance(node, ast.Subscript):
+            slice = None
+            if isinstance(node.slice.value, ast.Str):
+                slice = node.slice.value.s
+            elif isinstance(node.slice.value, ast.Num):
+                slice = node.slice.value.n
+            elif isinstance(node.slice.value, ast.Name):
+                slice = resolve_attr_id(node.slice.value)
+            return '{}[{}]'.format(value_id, slice)
+    elif isinstance(node, ast.Call):
+        return '{}()'.format(resolve_attr_id(node.func))
     return node.id
 
 
