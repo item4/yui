@@ -1,28 +1,8 @@
 import datetime
-import enum
-
-import pytest
-
-from yui.util import (bold, bool2str, code, enum_getitem, italics,
-                      preformatted, quote, strike, tz_none_to_kst,
-                      tz_none_to_utc)
 
 
-def test_enum_getitem():
-    """Test enum_getitem helper."""
-
-    class A(enum.Enum):
-        a = 1
-        b = 2
-        c = 3
-
-    assert enum_getitem(A)('a') == A.a
-
-    with pytest.raises(ValueError):
-        enum_getitem(A)('zzz')
-
-    assert enum_getitem(A, fallback='b')('a') == A.a
-    assert enum_getitem(A, fallback='b')('zzz') == A.b
+from yui.util import (bold, bool2str, code, italics, preformatted, quote,
+                      strike, tz_none_to_kst, tz_none_to_utc)
 
 
 def test_datetime_utils():

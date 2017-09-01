@@ -4,7 +4,7 @@ import json
 import math
 import urllib.parse
 
-from typing import List, NamedTuple
+from typing import Any, Dict, List, NamedTuple  # noqa: F401
 
 import aiohttp
 
@@ -148,8 +148,8 @@ async def search_on_air(bot, event: Message, title: str):
 
     ohli_results, _ = await asyncio.wait(ohli)
     anissia_results, _ = await asyncio.wait(anissia)
-    ohli_data = []
-    anissia_data = []
+    ohli_data: List[Dict[str, Any]] = []
+    anissia_data: List[Dict[str, Any]] = []
 
     for r in ohli_results:
         try:

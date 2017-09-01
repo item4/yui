@@ -1,6 +1,6 @@
 import json
 
-from typing import List, Optional
+from typing import Dict, List, Optional  # noqa: F401
 
 from attrdict import AttrDict
 
@@ -14,7 +14,7 @@ __all__ = 'Attachment', 'Field', 'SlackAPI', 'SlackEncoder'
 class Field:
     """Field on Attachment"""
 
-    def __init__(self, title: str, value: str, short: bool):
+    def __init__(self, title: str, value: str, short: bool) -> None:
         """Initialize"""
 
         self.title = title
@@ -43,7 +43,7 @@ class Attachment:
         footer: Optional[str]=None,
         footer_icon: Optional[str]=None,
         ts: Optional[int]=None
-    ):
+    ) -> None:
         """Initialize"""
 
         self.fallback = fallback
@@ -111,7 +111,7 @@ class SlackAPI:
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 
-        param = {
+        param: Dict[str, str] = {
             'channel': channel,
         }
 

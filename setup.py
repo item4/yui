@@ -26,6 +26,7 @@ install_requires = {
 }
 
 tests_require = {
+    'mypy >= 0.521',
     'pytest >= 3.1.2',
 }
 

@@ -2,13 +2,13 @@ from typing import List  # noqa: F401
 
 import aiohttp
 
-import lxml.html
+from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
 from ..event import Message
-from ..type import choice
+from ..transform import choice
 
 
 CATEGORIES = {
@@ -30,12 +30,16 @@ CATEGORIES = {
 
 @box.command('nyaa', ['냐'])
 @option('--category', '-c', dest='category_name',
-        default='anime-raw', type_error='지원되지 않는 카테고리에요!')
+        default='anime-raw', transform_error='지원되지 않는 카테고리에요!',
+        transform_func=choice(
+            list(CATEGORIES.keys()),
+            case_insensitive=True,
+            case='lower'))
 @argument('keyword', nargs=-1, concat=True, count_error='검색어를 입력해주세요')
 async def nyaa(
     bot,
     event: Message,
-    category_name: choice(list(CATEGORIES.keys()), case_insensitive=True),
+    category_name: str,
     keyword: str
 ):
     """
@@ -55,7 +59,7 @@ async def nyaa(
 
     """
 
-    category = CATEGORIES[category_name.lower()]
+    category = CATEGORIES[category_name]
 
     html = None
 
@@ -65,7 +69,7 @@ async def nyaa(
         async with session.get(url) as res:
             html = await res.text()
 
-    h = lxml.html.fromstring(html)
+    h = fromstring(html)
 
     tr_list = h.cssselect('table.torrent-list > tbody > tr')
 

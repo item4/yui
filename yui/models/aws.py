@@ -71,7 +71,7 @@ class AWS(Base):
         return tz_none_to_kst(self.observed_datetime)
 
     @observed_at.setter
-    def observed_at(self, value):
+    def observed_at_setter(self, value):
         """관측 시간."""
 
         self.observed_datetime = tz_none_to_utc(value)

@@ -2,7 +2,8 @@ import collections
 import functools
 import inspect
 
-from typing import Any, Callable, Coroutine, Dict, List, Optional, Tuple, Union
+from typing import (Any, Awaitable, Callable, Dict, List, Optional, Tuple,
+                    Type, Union)
 
 from .command import Argument, Option  # noqa: F401
 from .event import Event
@@ -24,9 +25,9 @@ class Handler:
         use_shlex: bool=False,
         is_command: bool=False,
         channel_validator: Optional[
-            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
+            Callable[[Any, Event], Awaitable[bool]]
         ]=None
-    ):
+    ) -> None:
         """Initialize"""
 
         self.callback = callback
@@ -41,7 +42,7 @@ class Handler:
 
         end = False
 
-        result = {}
+        result: Dict[str, Any] = {}
         options: List[Option] = self.callback.__options__
 
         for x in options:
@@ -98,6 +99,31 @@ class Handler:
                                     )
                                 )
 
+                        if option.transform_func:
+                            if option.container_cls:
+                                try:
+                                    r = option.container_cls(
+                                        option.transform_func(x)
+                                        for x in r
+                                    )
+                                except ValueError as e:
+                                    raise SyntaxError(
+                                        option.transform_error.format(
+                                            name=option.name,
+                                            e=e,
+                                        )
+                                    )
+                            else:
+                                try:
+                                    r = option.transform_func(r)
+                                except ValueError as e:
+                                    raise SyntaxError(
+                                        option.transform_error.format(
+                                            name=option.name,
+                                            e=e,
+                                        )
+                                    )
+
                         if option.multiple:
                             result[option.dest].append(r[0])
                         else:
@@ -132,7 +158,7 @@ class Handler:
 
     def parse_arguments(self, chunk: List[str]) -> Tuple[Dict, List[str]]:
 
-        result = {}
+        result: Dict[str, Any] = {}
 
         arguments: List[Argument] = self.callback.__arguments__
 
@@ -199,6 +225,27 @@ class Handler:
                         given=len(r),
                     ))
 
+            if argument.transform_func:
+                if argument.container_cls:
+                    try:
+                        r = argument.container_cls(
+                            argument.transform_func(x)
+                            for x in r
+                        )
+                    except ValueError as e:
+                        raise SyntaxError(argument.transform_error.format(
+                            name=argument.name,
+                            e=e,
+                        ))
+                else:
+                    try:
+                        r = argument.transform_func(r)
+                    except ValueError as e:
+                        raise SyntaxError(argument.transform_error.format(
+                            name=argument.name,
+                            e=e,
+                        ))
+
             if argument.concat:
                 r = ' '.join(r)
 
@@ -211,14 +258,20 @@ class Handler:
 class Box:
     """Box, collection of handlers and aliases"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize"""
 
-        self.handlers = collections.defaultdict(
+        self.handlers: Dict[
+            Optional[str],
+            Dict[Optional[str], Dict[str, Awaitable]]
+        ] = collections.defaultdict(
             lambda: collections.defaultdict(dict)
         )
-        self.aliases = collections.defaultdict(dict)
-        self.crontabs = []
+        self.aliases: Dict[
+            Optional[str],
+            Dict[str, str]
+        ] = collections.defaultdict(dict)
+        self.crontabs: List[Crontab] = []
 
     def command(
         self,
@@ -230,7 +283,7 @@ class Box:
         help: Optional[str]=None,
         use_shlex: bool=True,
         channels: Optional[
-            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
+            Callable[[Any, Event], Awaitable[bool]]
         ]=None
     ):
         """Shortcut decorator for make command easily."""
@@ -278,11 +331,11 @@ class Box:
 
     def on(
         self,
-        type_: Union[str, Event],
+        type_: Union[str, Type[Event]],
         *,
         subtype: Optional[str]=None,
         channels: Optional[
-            Callable[[Any, Dict], Coroutine[Any, Any, bool]]
+            Callable[[Any, Event], Awaitable[bool]]
         ]=None
     ):
         """Decorator for make handler."""
@@ -321,7 +374,7 @@ class Box:
 class Crontab:
     """Crontab"""
 
-    def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict):
+    def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict) -> None:
         """Initialize."""
 
         self.box = box

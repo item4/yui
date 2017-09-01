@@ -12,7 +12,7 @@ from ..box import box
 from ..command import argument, option
 from ..event import Message
 from ..models.aws import AWS
-from ..type import choice
+from ..transform import choice
 from ..util import truncate_table
 
 
@@ -192,7 +192,7 @@ async def aws(bot, event: Message, sess, keyword: str):
 
 
 @box.command('날씨지역검색', ['search-aws-zone'])
-@option('--by', type_=choice(['name', 'location']), default='name',
+@option('--by', transform_func=choice(['name', 'location']), default='name',
         type_error='`{name}`의 값으로는 `name` 이나 `location`만 가능합니다.')
 @argument('keyword', nargs=-1, concat=True)
 async def search_aws_zone(bot, event: Message, sess, by: str, keyword: str):

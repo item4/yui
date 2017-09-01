@@ -1,12 +1,12 @@
-from .aws import *  # noqa
-from .calc import *  # noqa
-from .core import *  # noqa
-from .help import *  # noqa
-from .hi import *  # noqa
-from .nyaa import *  # noqa
-from .ping import *  # noqa
-from .quit import *  # noqa
-from .saomd import *  # noqa
-from .select import *  # noqa
-from .sub import *  # noqa
-from .test import *  # noqa
+from .aws import *  # type: ignore
+from .calc import *  # type: ignore
+from .core import *  # type: ignore
+from .help import *  # type: ignore
+from .hi import *  # type: ignore
+from .nyaa import *  # type: ignore
+from .ping import *  # type: ignore
+from .quit import *  # type: ignore
+from .saomd import *  # type: ignore
+from .select import *  # type: ignore
+from .sub import *  # type: ignore
+from .test import *  # type: ignore

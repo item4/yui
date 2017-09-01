@@ -10,6 +10,8 @@ from .type import (
     DnDStatus,
     File,
     FileID,
+    MessageMessage,
+    MessagePreviousMessage,
     Namespace,
     PrivateGroupChannel,
     PrivateGroupChannelID,
@@ -462,8 +464,8 @@ class Message(Event):
     event_ts: Optional[Ts]
     attachments: Optional[List[Dict[str, Any]]]
     hidden: Optional[bool]
-    message: Optional[Mapping[str, Any]]
-    previous_message: Optional[Mapping[str, Any]]
+    message: Optional[MessageMessage]
+    previous_message: Optional[MessagePreviousMessage]
 
 
 class PinAdded(Event):

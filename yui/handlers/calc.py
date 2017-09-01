@@ -11,6 +11,8 @@ import signal
 import statistics
 from collections.abc import Iterable
 
+from typing import Any, Dict  # noqa: F401
+
 from ..box import box
 from ..event import Message
 
@@ -450,11 +452,7 @@ GLOBAL_CONTEXT = {
     'sha3_256': lambda *x: hashlib.sha3_256(*x).hexdigest(),
     'sha3_384': lambda *x: hashlib.sha3_384(*x).hexdigest(),
     'sha3_512': lambda *x: hashlib.sha3_512(*x).hexdigest(),
-    'shake_128': lambda *x: hashlib.shake_128(*x).hexdigest(),
-    'shake_256': lambda *x: hashlib.shake_256(*x).hexdigest(),
-    'blake2b': lambda *x: hashlib.blake2b(*x).hexdigest(),
-    'blake2s': lambda *x: hashlib.blake2s(*x).hexdigest(),
-    'md5': lambda x: hashlib.md5(x).hexdigest(),
+    'md5': lambda x: hashlib.md5(*x).hexdigest(),
     # datetime
     'date': datetime.date,
     'time': datetime.time,
@@ -1021,7 +1019,7 @@ def calculate(
     replace_num_to_decimal: bool=True
 ):
     node = ast.parse(expr, filename='<ast>', mode='exec')
-    local = {}
+    local: Dict[str, Any] = {}
 
     if replace_num_to_decimal:
         Transformer().visit(node)

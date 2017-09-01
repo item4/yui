@@ -6,7 +6,7 @@ import aiohttp
 
 from fuzzywuzzy import fuzz
 
-import lxml.html
+from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
@@ -23,7 +23,7 @@ class Scout(NamedTuple):
     name: str
     cost: int
     cost_type: str
-    count: int
+    result_length: int
     fixed_5star: int
     fixed_4star: int
     chance_5star: float
@@ -51,7 +51,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='매력 분출★여름빛 소녀',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -81,7 +81,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='매력 분출★여름빛 소녀 기록결정 스카우트',
         cost=10,
         cost_type='매력 분출★여름빛 소녀 기록결정',
-        count=1,
+        result_length=1,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -161,7 +161,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='폭풍에 휘날리는 해적기 기록결정 스카우트',
         cost=10,
         cost_type='폭풍에 휘날리는 해적기 기록결정',
-        count=1,
+        result_length=1,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -241,7 +241,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='1주년 카운트다운! 앙케이트 스카우트 Step 2/4',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -260,7 +260,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='1주년 카운트다운! 앙케이트 스카우트 Step 1',
         cost=200,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0,
@@ -279,7 +279,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='1주년 카운트다운! 앙케이트 스카우트 Step 3',
         cost=200,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -298,7 +298,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='1주년 카운트다운! 앙케이트 스카우트 Step 5',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -317,7 +317,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트 Step 2/4',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.02,
@@ -413,7 +413,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트 Step 1',
         cost=200,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.02,
@@ -509,7 +509,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트 Step 3',
         cost=200,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.02*1.5,
@@ -605,7 +605,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트 Step 5',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=1,
         fixed_4star=0,
         chance_5star=0.02,
@@ -701,7 +701,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트 Step 6',
         cost=250,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.02*2,
@@ -800,7 +800,7 @@ WEAPON_TABLE: Dict[str, Scout] = {
         name='여름빛 소녀',
         cost=150,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -819,7 +819,7 @@ WEAPON_TABLE: Dict[str, Scout] = {
         name='1주년 카운트다운! 앙케이트 스카우트',
         cost=150,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -838,7 +838,7 @@ WEAPON_TABLE: Dict[str, Scout] = {
         name='신뢰의 증거 운명의 인연 스카우트',
         cost=150,
         cost_type=DIAMOND,
-        count=11,
+        result_length=11,
         fixed_5star=0,
         fixed_4star=0,
         chance_5star=0.0,
@@ -892,14 +892,14 @@ async def saomd_character(bot, event: Message, category: str):
     four = five + scout.chance_4star
     three = four + 0.25
 
-    count = scout.count
+    result_length = scout.result_length
     for x in range(scout.fixed_5star):
         chars.append((5, bold(random.choice(scout.items_5star))))
-        count -= 1
+        result_length -= 1
     for x in range(scout.fixed_4star):
         chars.append((4, bold(random.choice(scout.items_4star))))
-        count -= 1
-    for x in range(count):
+        result_length -= 1
+    for x in range(result_length):
         r = random.random()
         if r <= five:
             chars.append((5, bold(random.choice(scout.items_5star))))
@@ -915,10 +915,12 @@ async def saomd_character(bot, event: Message, category: str):
     record_crystal = 0
 
     if scout.record_crystal:
-        record_crystal = random.choices(
-            [x[0] for x in scout.record_crystal],
-            [x[1] for x in scout.record_crystal]
-        )[0]
+        cases: List[int] = []
+        chances: List[float] = []
+        for case, chance in scout.record_crystal:
+            cases.append(case)
+            chances.append(chance)
+        record_crystal = random.choices(cases, chances)[0]
 
     await bot.say(
         event.channel,
@@ -926,8 +928,8 @@ async def saomd_character(bot, event: Message, category: str):
             scout.cost_type,
             scout.cost,
             scout.name,
-            scout.count,
-            '연' if scout.count > 1 else '단',
+            scout.result_length,
+            '연' if scout.result_length > 1 else '단',
             ', '.join(c[1] for c in chars),
             '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
@@ -967,14 +969,14 @@ async def saomd_weapon(bot, event: Message, category: str):
     five = scout.chance_5star
     four = five + scout.chance_4star
     three = four + 0.25
-    count = scout.count
+    result_length = scout.result_length
     for x in range(scout.fixed_5star):
         items.append(bold(random.choice(scout.items_5star)))
-        count -= 1
+        result_length -= 1
     for x in range(scout.fixed_4star):
         items.append(bold(random.choice(scout.items_4star)))
-        count -= 1
-    for x in range(count):
+        result_length -= 1
+    for x in range(result_length):
         r = random.random()
         if r <= five:
             items.append(bold(random.choice(scout.items_5star)))
@@ -988,10 +990,12 @@ async def saomd_weapon(bot, event: Message, category: str):
     record_crystal = 0
 
     if scout.record_crystal:
-        record_crystal = random.choices(
-            [x[0] for x in scout.record_crystal],
-            [x[1] for x in scout.record_crystal]
-        )[0]
+        cases: List[int] = []
+        chances: List[float] = []
+        for case, chance in scout.record_crystal:
+            cases.append(case)
+            chances.append(chance)
+        record_crystal = random.choices(cases, chances)[0]
 
     await bot.say(
         event.channel,
@@ -999,8 +1003,8 @@ async def saomd_weapon(bot, event: Message, category: str):
             scout.cost_type,
             scout.cost,
             scout.name,
-            scout.count,
-            '연' if scout.count > 1 else '단',
+            scout.result_length,
+            '연' if scout.result_length > 1 else '단',
             ', '.join(items),
             '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
@@ -1028,7 +1032,7 @@ async def character_info(bot, event: Message, keyword: str):
         async with session.get(url) as res:
             html = await res.text()
 
-    h = lxml.html.fromstring(html)
+    h = fromstring(html)
     tr_list = h.cssselect('div table tr')[1:]
 
     matching: List[Tuple[float, str, str]] = []
@@ -1049,7 +1053,7 @@ async def character_info(bot, event: Message, keyword: str):
             async with session.get(url) as res:
                 html = await res.text()
 
-        h = lxml.html.fromstring(html)
+        h = fromstring(html)
 
         image = h.cssselect('.skill_detail b img')[0].get('src')
         name = h.cssselect('.DB_view_title span')[0].text_content()
@@ -1118,7 +1122,7 @@ async def weapon_info(bot, event: Message, keyword: str):
         async with session.get(url) as res:
             html = await res.text()
 
-    h = lxml.html.fromstring(html)
+    h = fromstring(html)
     tr_list = h.cssselect('div table tr')[1:]
 
     weapons: List[Weapon] = []

@@ -19,9 +19,9 @@ async def select(bot, event: Message, sep: str, items: str):
 
     """
 
-    items = [x.strip() for x in items.split(sep)]
+    chunks = [x.strip() for x in items.split(sep)]
 
     await bot.say(
         event.channel,
-        random.choice(items)
+        random.choice(chunks)
     )

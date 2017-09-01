@@ -162,6 +162,11 @@ ENV/
 
 # End of https://www.gitignore.io/api/python,intellij+iml
 
+# Mypy
+.mypy_cache
+
 *.config.toml
 
 *.db
+
+

@@ -7,7 +7,7 @@ Decorators and classes for making command.
 
 import functools
 
-from typing import Any, Callable, Coroutine, Dict, List, Optional, Type, Union  # noqa: F401,E501
+from typing import Any, Awaitable, Callable, List, Optional, Type, Union  # noqa: F401,E501
 
 from .event import Event
 
@@ -19,7 +19,7 @@ class DM:
 
 
 def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
-        -> Callable[[Any, Dict], Coroutine[Any, Any, bool]]:
+        -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to allow to use handler."""
 
     allow_dm = False
@@ -48,12 +48,13 @@ def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
                         error
                     )
                 return False
+        return False
 
     return callback
 
 
 def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
-        -> Callable[[Any, Dict], Coroutine[Any, Any, bool]]:
+        -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to deny to use handler."""
 
     deny_dm = False
@@ -82,6 +83,7 @@ def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
                 return False
             else:
                 return True
+        return False
 
     return callback
 
@@ -90,12 +92,14 @@ def argument(
     name: str,
     dest: Optional[str]=None,
     nargs: int=1,
-    type_: Optional[Union[type, Callable]]=None,
+    transform_func: Optional[Callable]=None,
+    type_: Optional[Type]=None,
     container_cls: Optional[Type]=None,
     concat: Optional[bool]=False,
     type_error: str='{name}: invalid type of argument value({e})',
     count_error: str=('{name}: incorrect argument value count.'
-                      ' expected {expected}, {given} given.')
+                      ' expected {expected}, {given} given.'),
+    transform_error: str='{name}: fail to transform argument value ({e})'
 ) -> Callable:
     """
     Add argument to command.
@@ -106,8 +110,10 @@ def argument(
     :type dest: :class:`str`
     :param nargs: :class:`str`
     :type nargs: :class:`int`
+    :param transform_func: function for transform value to correct type
+    :type transform_func: :class:`Callable`
     :param type_: type of argument value
-    :type type_: :class:`type` or :class:`typing.Callable` or `None`
+    :type type_: :class:`type` or `None`
     :param container_cls: type of arguments container. It use if nargs!=1.
     :type container_cls: :class:`type`
     :param concat: flag to concat arguments
@@ -116,6 +122,8 @@ def argument(
     :type type_error: :class:`str`
     :param count_error: error message for wrong value count
     :type count_error: :class:`str`
+    :param transform_error: error message for fail transform value
+    :type transform_error: :class:`str`
 
     :return: decorator
     :rtype: :class:`typing.Callable`
@@ -146,11 +154,13 @@ def argument(
                     name=name,
                     dest=dest,
                     nargs=nargs,
+                    transform_func=transform_func,
                     type_=type_,
                     container_cls=container_cls,
                     concat=concat,
                     type_error=type_error,
                     count_error=count_error,
+                    transform_error=transform_error,
                 )
             )
             return func_
@@ -169,11 +179,13 @@ def option(
     multiple: bool=False,
     container_cls: Optional[Type]=None,
     required: bool=False,
-    type_: Optional[Union[type, Callable]]=None,
+    transform_func: Optional[Callable]=None,
+    type_: Optional[Type]=None,
     value: Optional[Any]=None,
     type_error: str='{name}: invalid type of option value({e})',
     count_error: str=('{name}: incorrect option value count.'
-                      ' expected {expected}, {given} given.')
+                      ' expected {expected}, {given} given.'),
+    transform_error: str='{name}: fail to transform option value ({e})'
 ) -> Callable:
     """
     Add option parameter to command.
@@ -193,13 +205,17 @@ def option(
     :type container_cls: :class:`type`
     :param required: set to required option
     :type required: :class:`bool`
-    :param type_: type of option value
-    :type type_: :class:`type` or :class:`typing.Callable` or `None`
+    :param transform_func: function for transform value to correct type
+    :type transform_func: :class:`typing.Callable`
+    :param type_: type of argument value
+    :type type_: :class:`type` or `None`
     :param value: value to store flag
     :param type_error: error message for wrong type
     :type type_error: :class:`str`
     :param count_error: error message for wrong value count
     :type count_error: :class:`str`
+    :param transform_error: error message for fail transform value
+    :type transform_error: :class:`str`
 
     :return: real decorator
     :rtype: :class:`typing.Callable`
@@ -231,10 +247,12 @@ def option(
                     multiple=multiple,
                     container_cls=container_cls,
                     required=required,
+                    transform_func=transform_func,
                     type_=bool,
                     value=True,
                     type_error=type_error,
                     count_error=count_error,
+                    transform_error=transform_error,
                 )
             )
             options.append(
@@ -247,10 +265,12 @@ def option(
                     multiple=multiple,
                     container_cls=container_cls,
                     required=required,
+                    transform_func=transform_func,
                     type_=bool,
                     value=False,
                     type_error=type_error,
                     count_error=count_error,
+                    transform_error=transform_error,
                 )
             )
         elif is_flag:
@@ -264,10 +284,12 @@ def option(
                     multiple=multiple,
                     container_cls=container_cls,
                     required=required,
+                    transform_func=transform_func,
                     type_=bool,
                     value=True if value is None else value,
                     type_error=type_error,
                     count_error=count_error,
+                    transform_error=transform_error,
                 )
             )
         else:
@@ -281,10 +303,12 @@ def option(
                     multiple=multiple,
                     container_cls=container_cls,
                     required=required,
+                    transform_func=transform_func,
                     type_=type_,
                     value=value,
                     type_error=type_error,
                     count_error=count_error,
+                    transform_error=transform_error,
                 )
             )
 
@@ -311,22 +335,26 @@ class Argument:
         name: str,
         dest: str,
         nargs: int,
-        type_: Optional[Union[type, Callable]],
+        transform_func: Optional[Callable],
+        type_: Optional[Type],
         container_cls: Optional[Type],
         concat: bool,
         type_error: str,
-        count_error: str
-    ):
+        count_error: str,
+        transform_error: str
+    ) -> None:
         """Initialize"""
 
         self.name = name
         self.dest = dest
         self.nargs = nargs
+        self.transform_func = transform_func
         self.type_ = type_
         self.container_cls = container_cls
         self.concat = concat
         self.type_error = type_error
         self.count_error = count_error
+        self.transform_error = transform_error
 
 
 class Option:
@@ -342,11 +370,13 @@ class Option:
         multiple: bool,
         container_cls: Optional[Type],
         required: bool,
-        type_: Optional[Union[type, Callable]],
+        transform_func: Optional[Callable],
+        type_: Optional[Type],
         value: Any,
         type_error: str,
-        count_error: str
-    ):
+        count_error: str,
+        transform_error: str
+    ) -> None:
         """Initialize"""
 
         self.key = key
@@ -357,7 +387,9 @@ class Option:
         self.multiple = multiple
         self.container_cls = container_cls
         self.required = required
+        self.transform_func = transform_func
         self.type_ = type_
         self.value = value
         self.type_error = type_error
         self.count_error = count_error
+        self.transform_error = transform_error

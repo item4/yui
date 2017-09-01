@@ -3,13 +3,14 @@ from typing import List
 from ..box import box
 from ..command import argument, not_, only, option
 from ..event import Message
-from ..type import int_range
+from ..transform import value_range
 
 
 @box.command('test', channels=only('test'))
-@option('--count', '-c', default=1,
+@option('--count', '-c', default=1, transform_func=value_range(1, 15),
         type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
-        count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
+        count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.',
+        transform_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
 @option('--lower/--upper', '-l/-u', default=True)
 @option('--name', '-n', dest='names', multiple=True, required=True,
         count_error='`{name}`가 최소 1개 필요합니다.')
@@ -18,7 +19,7 @@ from ..type import int_range
 async def test(
     bot,
     event: Message,
-    count: int_range(1, 15),
+    count: int,
     lower: bool,
     names: List[str],
     separator: str,
@@ -51,14 +52,15 @@ async def test(
 @box.command('test2', channels=only('test'))
 @argument('name', dest='names', nargs=-1,
           count_error='`{name}`가 최소 1개 필요합니다.')
-@argument('count',
+@argument('count', transform_func=value_range(1, 15),
           type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
-          count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
+          count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.',
+          transform_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
 async def test2(
     bot,
     event: Message,
     names: List[str],
-    count: int_range(1, 15)
+    count: int
 ):
     """
     봇 기능 테스트용 명령어
@@ -75,8 +77,8 @@ async def test2(
 
 
 @box.command('test3', channels=not_('_general', 'dev'))
-@argument('number', nargs=-1)
-async def test3(bot, event: Message, number: List[int_range(1, 10)]):
+@argument('number', nargs=-1, transform_func=value_range(1, 10))
+async def test3(bot, event: Message, number: List[int]):
     await bot.say(
         event.channel,
         ','.join(map(str, number))

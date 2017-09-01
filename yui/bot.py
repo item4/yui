@@ -8,7 +8,7 @@ import shlex
 import sys
 import traceback
 
-from typing import Dict
+from typing import Any, Dict  # noqa: F401
 
 import aiocron
 
@@ -48,7 +48,7 @@ class Bot:
         *,
         orm_base=None,
         using_box: Box=None
-    ):
+    ) -> None:
         """Initialize"""
 
         config.DATABASE_ENGINE = get_database_engine(config)
@@ -63,9 +63,9 @@ class Bot:
 
         self.orm_base = orm_base or Base
         self.box = using_box or box
-        self.queue = asyncio.Queue()
+        self.queue: asyncio.Queue = asyncio.Queue()
         self.api = SlackAPI(self)
-        self.channels = {}
+        self.channels: Dict[str, Dict[str, Any]] = {}
 
         self.register_crontab()
 
@@ -290,8 +290,8 @@ class Bot:
         if match:
             func_params = handler.signature.parameters
             kwargs = {}
-            options = {}
-            arguments = {}
+            options: Dict[str, Any] = {}
+            arguments: Dict[str, Any] = {}
             raw = html.unescape(args)
             if handler.use_shlex:
                 try:

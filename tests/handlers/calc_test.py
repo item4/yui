@@ -187,6 +187,8 @@ def test_calculate_magic():
         ('a.a()', SyntaxError, 'call a.a is not permitted.'),
         ('floor.__func__', SyntaxError,
          'access to floor.__func__ attr is not permitted.'),
+        ('(1).__class__', SyntaxError,
+         'access to Decimal\\(\\).__class__ attr is not permitted.'),
     ]
 )
 def test_calculate_error(expr: str, error, message: str):
