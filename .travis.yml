@@ -1,0 +1,17 @@
+language: python
+python: 3.6
+sudo: false
+cache:
+  directories:
+  - .mypy_cache
+  - $HOME/.cache/pip
+install:
+- pip install --upgrade pip setuptools wheel
+- pip install --upgrade -e .[tests,lint]
+script:
+- pytest tests
+- flake8 yui tests
+- mypy yui
+notifications:
+  slack:
+    secure: iQXTafhzZzhNBksWJVK95D2lbVG+4mtZfHjK+CdzUATQfmq7Iv8OB2Q7c75eOkHceTdvXM2rsz21FiD+XsJqGR9i4feCtGe8kXEGUN7W0jYpllbDuIB78OOnN/qkwfItMnyLUbwT86NmgDA2S0GfUpkAxvsZF+LnSwCCzQNXfFkt6Z7Z2RGJRo/Q7DohMX2irnnfmGjjOjpPlIWhbt5pROY/C/JZd8wxd/P11o5Wu2kyikhdzs1qgVqBv8FX0oejPutjf8LsFVxcL4AiwS5hXpGrSo6wEzD8NxZ/QC10Vg6HQkK4rRe/Z4ru0m9XP3WhKIyS6bdLCbHVGbWTJhDBZJTxJnZo3A0DGaegsV0xAe/qusR14KG55pOsQgasKMoAZUKp7Gyh4445RD59HAcoWYLlkSlLdIch0IwC1RoLdsirZAid1XuHQ8MJdhfjJmuUrpXCWuGHIFurXdO8PSyGPFaIXBRG0/I7K11Idjdy4W+K7trW7DrMxQQHwpq0dG4leRzDsRr7cyl1ZTgezF7SPe9TWkAUzr51PXvMqvXmm0ahw70kJRr1i/15DWPhKRIWuwifcKQ/1oZBpuBPVGzl+g54AskD8/nC9rRHvp8c2ZySsxLc7G0LXNxkWaXYgWSbh6jNo1YC2oO1hhP4IeBT81kuwrMfHZQs1V0zmclOISI=
