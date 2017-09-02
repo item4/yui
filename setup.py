@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 install_requires = {
     # Async request
-    'aiohttp >= 2.1.0',
+    'aiohttp >= 2.2.5',
     'cchardet >= 2.1.1',
     'aiodns >= 1.1.1',
     # Database
@@ -15,7 +15,7 @@ install_requires = {
     # Crontab
     'aiocron >= 0.6',
     # Fuzzy Search
-    'fuzzywuzzy[speedup] >= 0.15.0',
+    'fuzzywuzzy[speedup] >= 0.15.1',
     # HTML
     'lxml >= 3.8.0',
     'cssselect >= 1.0.1',
@@ -27,14 +27,14 @@ install_requires = {
 
 tests_require = {
     'mypy >= 0.521',
-    'pytest >= 3.1.2',
+    'pytest >= 3.2.1',
 }
 
 extras_require = {
     'tests': tests_require,
     'lint': {
-        'flake8 >= 3.3.0',
-        'flake8-import-order >= 0.12',
+        'flake8 >= 3.4.1',
+        'flake8-import-order >= 0.13',
     },
 }
 
