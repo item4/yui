@@ -169,9 +169,6 @@ class Handler:
                 while True:
                     if type_ is None:
                         type_ = str
-                    elif issubclass(type_, List):
-                        type_ = type_.__args__[0]
-                        x.container_cls = list
                     else:
                         break
 
