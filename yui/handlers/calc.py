@@ -16,7 +16,7 @@ from typing import Any, Dict  # noqa: F401
 from ..box import box
 from ..event import Message
 
-TIMEOUT = 3
+TIMEOUT = 1
 LENGTH_LIMIT = 300
 
 BUILTIN_ITERABLE = str, bytes, list, tuple, set, frozenset, dict
