@@ -51,6 +51,8 @@ class Bot:
     ) -> None:
         """Initialize"""
 
+        self.loop = None
+
         config.DATABASE_ENGINE = get_database_engine(config)
 
         for module_name in config.HANDLERS:
@@ -106,6 +108,7 @@ class Bot:
 
         loop = asyncio.get_event_loop()
         loop.set_debug(self.config.DEBUG)
+        self.loop = loop
 
         loop.run_until_complete(
             asyncio.wait(
@@ -238,6 +241,8 @@ class Bot:
 
         if 'bot' in func_params:
             kwargs['bot'] = self
+        if 'loop' in func_params:
+            kwargs['loop'] = self.loop
         if 'event' in func_params:
             kwargs['event'] = event
         if 'sess' in func_params:
@@ -326,6 +331,8 @@ class Bot:
 
                 if 'bot' in func_params:
                     kwargs['bot'] = self
+                if 'loop' in func_params:
+                    kwargs['loop'] = self.loop
                 if 'event' in func_params:
                     kwargs['event'] = event
                 if 'sess' in func_params:

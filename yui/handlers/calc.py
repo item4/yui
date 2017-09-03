@@ -1,4 +1,5 @@
 import ast
+import asyncio
 import datetime
 import decimal
 import functools
@@ -7,11 +8,13 @@ import itertools
 import math
 import operator
 import random
-import signal
 import statistics
 from collections.abc import Iterable
+from concurrent.futures import ProcessPoolExecutor
 
 from typing import Any, Dict  # noqa: F401
+
+from async_timeout import timeout
 
 from ..box import box
 from ..event import Message
@@ -51,6 +54,7 @@ def timeout_handler(signum, frame):
 
 async def body(
     bot,
+    loop,
     channel: str,
     expr: str,
     help: str,
@@ -62,12 +66,19 @@ async def body(
         await bot.say(channel, help)
         return
 
-    signal.signal(signal.SIGALRM, timeout_handler)
-
     result = None
+    local = None
     try:
-        signal.alarm(TIMEOUT)
-        result, local = calculate(expr, replace_num_to_decimal=num_to_decimal)
+        async with timeout(TIMEOUT):
+            ex = ProcessPoolExecutor()
+            result, local = await loop.run_in_executor(
+                ex,
+                functools.partial(
+                    calculate,
+                    expr,
+                    replace_num_to_decimal=num_to_decimal,
+                ),
+            )
     except SyntaxError as e:
         await bot.say(
             channel,
@@ -89,7 +100,7 @@ async def body(
                 thread_ts=ts,
             )
         return
-    except TimeoutError:
+    except asyncio.TimeoutError:
         if expr_is_multiline:
             await bot.say(
                 channel,
@@ -110,8 +121,6 @@ async def body(
             thread_ts=ts,
         )
         return
-    finally:
-        signal.alarm(0)
 
     if result is not None:
         result_string = str(result)
@@ -178,7 +187,7 @@ async def body(
 
 
 @box.command('=', ['calc'])
-async def calc_decimal(bot, event: Message, raw: str):
+async def calc_decimal(bot, loop, event: Message, raw: str):
     """
     정수타입 수식 계산기
 
@@ -190,6 +199,7 @@ async def calc_decimal(bot, event: Message, raw: str):
 
     await body(
         bot,
+        loop,
         event.channel,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
@@ -198,9 +208,10 @@ async def calc_decimal(bot, event: Message, raw: str):
 
 
 @box.command('=', ['calc'], subtype='message_changed')
-async def calc_decimal_on_change(bot, event: Message, raw: str):
+async def calc_decimal_on_change(bot, loop, event: Message, raw: str):
     await body(
         bot,
+        loop,
         event.channel,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
@@ -210,7 +221,7 @@ async def calc_decimal_on_change(bot, event: Message, raw: str):
 
 
 @box.command('==')
-async def calc_num(bot, event: Message, raw: str):
+async def calc_num(bot, loop, event: Message, raw: str):
     """
     부동소숫점타입 수식 계산기
 
@@ -222,6 +233,7 @@ async def calc_num(bot, event: Message, raw: str):
 
     await body(
         bot,
+        loop,
         event.channel,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
@@ -230,9 +242,10 @@ async def calc_num(bot, event: Message, raw: str):
 
 
 @box.command('==', subtype='message_changed')
-async def calc_num_on_change(bot, event: Message, raw: str):
+async def calc_num_on_change(bot, loop, event: Message, raw: str):
     await body(
         bot,
+        loop,
         event.channel,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),

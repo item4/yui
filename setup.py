@@ -5,6 +5,8 @@ install_requires = {
     'aiohttp >= 2.2.5',
     'cchardet >= 2.1.1',
     'aiodns >= 1.1.1',
+    # Async util
+    'async-timeout >= 1.3.0',
     # Database
     'SQLAlchemy >= 1.1.13',
     'alembic >= 0.9.5',
