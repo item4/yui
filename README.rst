@@ -93,8 +93,26 @@ Run
 CLI for Database
 ----------------
 
-Yui CLI support most of command of Alembic_.
+Yui CLI support most of command of Alembic_\.
 You can use command with `yui` such as `yui revision --autogenerate -m "Test"`.
+
+List of commands are below.
+
+* `init_db`
+* `revision`
+* `migrate` (same as `revision` with `--autogenerate`
+* `edit`
+* `merge`
+* `upgrade`
+* `downgrade`
+* `show`
+* `history`
+* `heads`
+* `branches`
+* `current`
+* `stamp`
+
+.. _Alembic: http://alembic.zzzcomputing.com/en/latest/
 
 
 Contribute to YUI
