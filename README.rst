@@ -78,8 +78,17 @@ OWNER
   string. ID of owner.
   You can get ID value from `this test page`_
 
+NAVER_CLIENT_ID
+  string. ID for using Naver API.
+  Yui use it for searching book.
+  You might visit `Naver developer page`_
+
+NAVER_CLIENT_SECRET
+  string. SECRET Key for using Naver API.
+  Do not upload this value on VCS.
 
 .. _`this test page`: https://api.slack.com/methods/users.info/test
+.. _`Naver developer page`: https://developers.naver.com
 
 
 Run
