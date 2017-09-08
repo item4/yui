@@ -24,18 +24,24 @@ async def crawl(bot, sess):
 
     html = ''
     url = 'http://www.kma.go.kr/cgi-bin/aws/nph-aws_txt_min'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as res:
+                html = await res.text()
+    except aiohttp.client_exceptions.ClientConnectorError:
+        return
 
     h = lxml.html.fromstring(html)
-    observed_at = datetime.datetime.strptime(
-        h.cssselect('span.ehead')[0].text_content().replace(
-            '[ 매분관측자료 ] ',
-            ''
-        ),
-        '%Y.%m.%d.%H:%M'
-    )
+    try:
+        observed_at = datetime.datetime.strptime(
+            h.cssselect('span.ehead')[0].text_content().replace(
+                '[ 매분관측자료 ] ',
+                ''
+            ),
+            '%Y.%m.%d.%H:%M'
+        )
+    except IndexError:
+        return
 
     records: List[AWS] = []
     for tr in h.cssselect('table table tr')[1:]:
