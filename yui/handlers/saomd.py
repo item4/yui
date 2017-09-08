@@ -668,8 +668,6 @@ async def saomd_character(bot, event: Message, category: str):
 
     """
 
-    print(category)
-
     try:
         scout = CHARACTER_TABLE[category]
     except KeyError:
