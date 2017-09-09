@@ -71,6 +71,18 @@ async def query(domain: str, server: DNSServer) -> Dict[str, str]:
 @option('--dns', '-d', dest='server_list', multiple=True)
 @argument('domain', transform_func=extract_url)
 async def dns(bot, event: Message, server_list: List[str], domain: str):
+    """
+    주어진 도메인의 A레코드 조회
+
+    주어진 도메인에 대해 많이 쓰이는 DNS들에서 A레코드 값을 가져옵니다.
+
+    `{PREFIX}dns item4.net` (`item4.net`의 A 레코드를 국내에서 많이 쓰이는 DNS들에서 조회)
+    `{PREFIX}dns --dns 8.8.8.8 item4.net` (`8.8.8.8`에서 A레코드 조회)
+
+    `--dns`/`-d` 인자는 여러개 지정 가능합니다.
+
+    """
+
     await bot.say(
         event.channel,
         f'{domain} 에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
