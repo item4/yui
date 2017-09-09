@@ -2,9 +2,17 @@ from decimal import Decimal
 
 from typing import Any, Callable, Optional, Sequence, TypeVar
 
-__all__ = 'choice', 'enum_getitem', 'value_range'
+__all__ = 'choice', 'enum_getitem', 'extract_url', 'value_range'
 
 T = TypeVar('T', int, float, Decimal)
+
+
+def extract_url(value: str) -> str:
+    """Helper to extract URL from given value."""
+
+    if value.startswith('<') and value.endswith('>'):
+        return value[1:-1].split('|')[1]
+    return value
 
 
 def enum_getitem(cls, *, fallback: Optional[str]=None) -> Callable[[str], Any]:
