@@ -1,8 +1,8 @@
 from .age import *  # type: ignore
 from .aws import *  # type: ignore
+from .book import *  # type: ignore
 from .calc import *  # type: ignore
 from .core import *  # type: ignore
-from .book import *  # type: ignore
 from .exchange import *  # type: ignore
 from .help import *  # type: ignore
 from .hi import *  # type: ignore
