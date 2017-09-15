@@ -4,6 +4,7 @@ from .book import *  # type: ignore
 from .calc import *  # type: ignore
 from .core import *  # type: ignore
 from .dday import *  # type: ignore
+from .dic import *  # type: ignore
 from .dns import *  # type: ignore
 from .exchange import *  # type: ignore
 from .help import *  # type: ignore
