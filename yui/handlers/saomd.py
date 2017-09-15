@@ -128,82 +128,6 @@ class Weapon(NamedTuple):
 
 
 CHARACTER_TABLE: Dict[str, Scout] = {
-    '카운트': Scout(
-        name='1주년 카운트다운! 앙케이트 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 엘리스',
-            '[숙련된 손님 맞이 메이드] 레인',
-            '[고고히 포효하는 레오] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '카운트1': Scout(
-        name='1주년 카운트다운! 앙케이트 스카우트 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 엘리스',
-            '[숙련된 손님 맞이 메이드] 레인',
-            '[고고히 포효하는 레오] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '카운트3': Scout(
-        name='1주년 카운트다운! 앙케이트 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04*1.5,
-        items_5star=[],
-        items_4star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 엘리스',
-            '[숙련된 손님 맞이 메이드] 레인',
-            '[고고히 포효하는 레오] 시논',
-        ],
-        record_crystal=None,
-    ),
-    '카운트5': Scout(
-        name='1주년 카운트다운! 앙케이트 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04*2,
-        items_5star=[],
-        items_4star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 엘리스',
-            '[숙련된 손님 맞이 메이드] 레인',
-            '[고고히 포효하는 레오] 시논',
-        ],
-        record_crystal=None,
-    ),
     '1주년': Scout(
         name='신뢰의 증거 운명의 인연 스카우트 Step 2/4',
         cost=250,
@@ -467,25 +391,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
-    '카운트': Scout(
-        name='1주년 카운트다운! 앙케이트 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '히로익 프로미스+1',
-            '컬리지+1',
-            '금목서의 검+1',
-            '티타임 세이버+1',
-            '레오의 창+1',
-        ],
-        record_crystal=None,
-    ),
     '1주년': Scout(
         name='신뢰의 증거 운명의 인연 스카우트',
         cost=150,
@@ -553,7 +458,6 @@ async def saomd_character(bot, event: Message, category: str):
 
     카테고리는 다음과 같습니다.
 
-    * `카운트`: 1주년 카운트다운! 앙케이트 스카우트 (`카운트1`/`카운트3`/`카운트5`)
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트 (`1주년1`/`1주년3`/`1주년5`/`1주년6`)
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트 (`돌검1`/`돌검3`/`돌검5`/`돌검6`)
     * `지나`: 지나가는 시간과 우정의 기억 스카우트 (`지나1`/`지나3`/`지나5`/`지나6`)
@@ -632,7 +536,6 @@ async def saomd_weapon(bot, event: Message, category: str):
 
     카테고리는 다음과 같습니다.
 
-    * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트
     * `지나`: 지나가는 시간과 우정의 기억 스카우트
