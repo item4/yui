@@ -374,6 +374,96 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=None,
     ),
+    '지나': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트 Step 2/4',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[마음을 잇는 물요정] 아스나',
+            '[희망을 이루는 검호] 유우키',
+            '[순수한 미소의 수호자] 시리카',
+            '[조화를 지키는 자] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '지나1': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트 Step 1',
+        cost=200,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[마음을 잇는 물요정] 아스나',
+            '[희망을 이루는 검호] 유우키',
+            '[순수한 미소의 수호자] 시리카',
+            '[조화를 지키는 자] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '지나3': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트 Step 3',
+        cost=200,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02*1.5,
+        chance_4star=0.04,
+        items_5star=[
+            '[마음을 잇는 물요정] 아스나',
+            '[희망을 이루는 검호] 유우키',
+            '[순수한 미소의 수호자] 시리카',
+            '[조화를 지키는 자] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '지나5': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트 Step 5',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=1,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[마음을 잇는 물요정] 아스나',
+            '[희망을 이루는 검호] 유우키',
+            '[순수한 미소의 수호자] 시리카',
+            '[조화를 지키는 자] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '지나6': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트 Step 6',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=1,
+        fixed_4star=0,
+        chance_5star=0.02*2,
+        chance_4star=0.04,
+        items_5star=[
+            '[마음을 잇는 물요정] 아스나',
+            '[희망을 이루는 검호] 유우키',
+            '[순수한 미소의 수호자] 시리카',
+            '[조화를 지키는 자] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
@@ -430,6 +520,24 @@ WEAPON_TABLE: Dict[str, Scout] = {
         ],
         record_crystal=None,
     ),
+    '지나': Scout(
+        name='지나가는 시간과 우정의 기억 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
+            '아틀탄티스 소드',
+            '철운석의 검',
+            '카른웨난',
+            '플라네타리 메이스',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -448,6 +556,7 @@ async def saomd_character(bot, event: Message, category: str):
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트 (`카운트1`/`카운트3`/`카운트5`)
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트 (`1주년1`/`1주년3`/`1주년5`/`1주년6`)
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트 (`돌검1`/`돌검3`/`돌검5`/`돌검6`)
+    * `지나`: 지나가는 시간과 우정의 기억 스카우트 (`지나1`/`지나3`/`지나5`/`지나6`)
 
     """
 
@@ -526,6 +635,7 @@ async def saomd_weapon(bot, event: Message, category: str):
     * `카운트`: 1주년 카운트다운! 앙케이트 스카우트
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트
+    * `지나`: 지나가는 시간과 우정의 기억 스카우트
 
     """
 
