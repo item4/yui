@@ -7,7 +7,7 @@ from typing import (Any, Awaitable, Callable, Dict, List, Optional, Tuple,
 
 from .command import Argument, Option  # noqa: F401
 from .event import Event
-from .type import cast
+from .type import cast, is_container
 
 
 __all__ = 'Box', 'Crontab', 'Handler', 'box'
@@ -51,6 +51,9 @@ class Handler:
 
                 if type_ is None:
                     type_ = str
+                else:
+                    if x.transform_func:
+                        type_ = str
 
                 x.type_ = type_
 
@@ -60,7 +63,10 @@ class Handler:
             if option.multiple:
                 result[option.dest] = []
             else:
-                result[option.dest] = option.default
+                if callable(option.default):
+                    result[option.dest] = option.default()
+                else:
+                    result[option.dest] = option.default
 
         while not end and chunk:
             for option in options:
@@ -166,13 +172,16 @@ class Handler:
             if x.type_ is None:
                 type_ = self.signature.parameters[x.dest].annotation
 
-                while True:
-                    if type_ is None:
+                if type_ is None:
+                    type_ = str
+                else:
+                    if x.transform_func:
                         type_ = str
-                    else:
-                        break
 
                 x.type_ = type_
+                if is_container(x.type_):
+                    x.container_cls = None
+                    x.typing_has_container = True
 
         minus = False
         for i, argument in enumerate(arguments):
@@ -199,10 +208,14 @@ class Handler:
                     given=len(chunk),
                 ))
             try:
-                if argument.container_cls:
+                if argument.concat:
+                    r = ' '.join(args)
+                elif argument.container_cls:
                     r = argument.container_cls(
                         cast(argument.type_, x) for x in args
                     )
+                elif argument.typing_has_container:
+                    r = cast(argument.type_, args)
                 else:
                     r = cast(argument.type_, args[0])
 
@@ -242,9 +255,6 @@ class Handler:
                             name=argument.name,
                             e=e,
                         ))
-
-            if argument.concat:
-                r = ' '.join(r)
 
             if r is not None:
                 result[argument.dest] = r

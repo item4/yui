@@ -1,10 +1,47 @@
+import datetime
+import re
 from decimal import Decimal
 
 from typing import Any, Callable, Optional, Sequence, TypeVar
 
-__all__ = 'choice', 'enum_getitem', 'extract_url', 'value_range'
+__all__ = (
+    'DATE_FORMAT_RE',
+    'choice',
+    'enum_getitem',
+    'extract_url',
+    'str_to_date',
+    'value_range',
+)
 
 T = TypeVar('T', int, float, Decimal)
+
+DATE_FORMAT_RE = re.compile(
+    '(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?'
+)
+
+
+def str_to_date(
+    fallback: Optional[Callable[[], datetime.date]]=None
+) -> Callable[[str], Any]:
+    """Helper to make date object from given string."""
+
+    def callback(value: str) -> datetime.date:
+        match = DATE_FORMAT_RE.match(value)
+        if match:
+            try:
+                return datetime.date(
+                    int(match.group(1)),
+                    int(match.group(2)),
+                    int(match.group(3)),
+                )
+            except ValueError:
+                if fallback is None:
+                    raise
+                else:
+                    return fallback()
+        raise ValueError('Incorrect date string')
+
+    return callback
 
 
 def extract_url(value: str) -> str:

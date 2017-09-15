@@ -1,23 +1,23 @@
 import datetime
-import re
-
-from typing import Optional
 
 from ..box import box
 from ..command import argument, option
 from ..event import Message
-
-
-FORMAT_RE = re.compile(
-    '(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?'
-)
+from ..transform import str_to_date
 
 
 @box.command('나이', ['age'])
-@option('--at')
-@argument('birthday_string', nargs=-1, concat=True,
-          count_error='생일을 입력해주세요')
-async def age(bot, event: Message, at: Optional[str], birthday_string: str):
+@option('--at', dest='today', default=datetime.date.today,
+        transform_func=str_to_date(datetime.date.today))
+@argument('birthday', nargs=-1, concat=True,
+          count_error='생일을 입력해주세요', transform_func=str_to_date(),
+          transform_error='인식할 수 있는 날짜가 아니에요!')
+async def age(
+    bot,
+    event: Message,
+    today: datetime.date,
+    birthday: datetime.date
+):
     """
     나이 계산
 
@@ -30,40 +30,6 @@ async def age(bot, event: Message, at: Optional[str], birthday_string: str):
     (띄어쓰기 허용)
 
     """
-
-    today = datetime.date.today()
-    birthday = None
-    if at:
-        at_match = FORMAT_RE.match(at)
-        if at_match:
-            try:
-                today = datetime.date(
-                    int(at_match.group(1)),
-                    int(at_match.group(2)),
-                    int(at_match.group(3)),
-                )
-            except ValueError:
-                pass
-    birthday_match = FORMAT_RE.match(birthday_string)
-    if birthday_match:
-        try:
-            birthday = datetime.date(
-                int(birthday_match.group(1)),
-                int(birthday_match.group(2)),
-                int(birthday_match.group(3)),
-            )
-        except ValueError:
-            await bot.say(
-                event.channel,
-                '정상적인 날짜가 아니에요!'
-            )
-            return
-    else:
-        await bot.say(
-            event.channel,
-            '인식할 수 는 날짜가 아니에요!'
-        )
-        return
 
     if today < birthday:
         await bot.say(

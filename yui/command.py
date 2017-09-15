@@ -135,7 +135,6 @@ def argument(
     elif nargs != 1 and container_cls is None:
         if concat:
             type_ = str
-            container_cls = list
         else:
             container_cls = tuple
 
@@ -351,6 +350,7 @@ class Argument:
         self.transform_func = transform_func
         self.type_ = type_
         self.container_cls = container_cls
+        self.typing_has_container = False
         self.concat = concat
         self.type_error = type_error
         self.count_error = count_error

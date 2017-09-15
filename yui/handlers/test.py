@@ -8,6 +8,7 @@ from ..transform import value_range
 
 @box.command('test', channels=only('test'))
 @option('--count', '-c', default=1, transform_func=value_range(1, 15),
+        type_=int,
         type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
         count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.',
         transform_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')
@@ -52,7 +53,7 @@ async def test(
 @box.command('test2', channels=only('test'))
 @argument('name', dest='names', nargs=-1,
           count_error='`{name}`가 최소 1개 필요합니다.')
-@argument('count', transform_func=value_range(1, 15),
+@argument('count', transform_func=value_range(1, 15), type_=int,
           type_error='`{name}`의 값으로는 1개의 1~15 사이의 정수값만 지정해주세요.',
           count_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.',
           transform_error='`{name}`의 값으로는 1개의 1~15 사이의 정수만을 지정해주세요.')

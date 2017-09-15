@@ -48,6 +48,7 @@ __all__ = (
     'UnixTimestamp',
     'UserID',
     'cast',
+    'is_container',
 )
 
 #: :type:`type` User ID type. It must start with 'U'.
@@ -350,3 +351,9 @@ def cast(t, value):
                 return dict(value)
 
     return t(value)
+
+
+def is_container(value) -> bool:
+    """Check given value is container type?"""
+
+    return issubclass(value, (Tuple, Set, List, MutableSequence, Sequence))
