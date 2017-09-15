@@ -11,8 +11,6 @@ from typing import (
     NewType,
     Optional,
     Sequence,
-    Set,
-    Tuple,
     Union,
 )
 
@@ -323,19 +321,19 @@ def cast(t, value):
         if issubclass(t, Namespace):
             return t(**value)
 
-        if issubclass(t, Tuple):
+        if issubclass(t, tuple):
             if t.__args__:
                 return tuple(cast(ty, x) for ty, x in zip(t.__args__, value))
             else:
                 return tuple(value)
 
-        if issubclass(t, Set):
+        if issubclass(t, set):
             if t.__args__:
                 return {cast(t.__args__[0], x) for x in value}
             else:
                 return set(value)
 
-        if issubclass(t, (List, MutableSequence, Sequence)):
+        if issubclass(t, (list, MutableSequence, Sequence)):
             if t.__args__[0]:
                 return [cast(t.__args__[0], x) for x in value]
             else:
@@ -353,7 +351,7 @@ def cast(t, value):
     return t(value)
 
 
-def is_container(value) -> bool:
+def is_container(t) -> bool:
     """Check given value is container type?"""
 
-    return issubclass(value, (Tuple, Set, List, MutableSequence, Sequence))
+    return any(issubclass(t, x) for x in [set, tuple, list])
