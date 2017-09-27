@@ -388,6 +388,86 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=None,
     ),
+    '남자': Scout(
+        name='남자들의 광연 스카우트 Step 2/4',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[꺾이지 않는 마음] 클라인',
+            '[결속의 힘] 에길',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '남자1': Scout(
+        name='남자들의 광연 스카우트 Step 1',
+        cost=200,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[꺾이지 않는 마음] 클라인',
+            '[결속의 힘] 에길',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '남자3': Scout(
+        name='남자들의 광연 스카우트 Step 3',
+        cost=200,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02*1.5,
+        chance_4star=0.04,
+        items_5star=[
+            '[꺾이지 않는 마음] 클라인',
+            '[결속의 힘] 에길',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '남자5': Scout(
+        name='남자들의 광연 스카우트 Step 5',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=1,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[꺾이지 않는 마음] 클라인',
+            '[결속의 힘] 에길',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
+    '남자6': Scout(
+        name='남자들의 광연 스카우트 Step 6',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02*2,
+        chance_4star=0.04,
+        items_5star=[
+            '[꺾이지 않는 마음] 클라인',
+            '[결속의 힘] 에길',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=None,
+    ),
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
@@ -443,6 +523,22 @@ WEAPON_TABLE: Dict[str, Scout] = {
         ],
         record_crystal=None,
     ),
+    '남자': Scout(
+        name='남자들의 광연 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
+            '명도 아카츠키',
+            '그레이트 넘버',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -461,6 +557,7 @@ async def saomd_character(bot, event: Message, category: str):
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트 (`1주년1`/`1주년3`/`1주년5`/`1주년6`)
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트 (`돌검1`/`돌검3`/`돌검5`/`돌검6`)
     * `지나`: 지나가는 시간과 우정의 기억 스카우트 (`지나1`/`지나3`/`지나5`/`지나6`)
+    * `남자`: 남자들의 광연 스카우트 (`남자1`/`남자3`/`남자5`/`남자6`)
 
     """
 
@@ -539,6 +636,7 @@ async def saomd_weapon(bot, event: Message, category: str):
     * `1주년`: 신뢰의 증거 운명의 인연 스카우트
     * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트
     * `지나`: 지나가는 시간과 우정의 기억 스카우트
+    * `남자`: 남자들의 광연 스카우트
 
     """
 
