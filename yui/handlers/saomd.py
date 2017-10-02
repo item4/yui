@@ -128,266 +128,6 @@ class Weapon(NamedTuple):
 
 
 CHARACTER_TABLE: Dict[str, Scout] = {
-    '1주년': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[시스템을 뛰어넘는 의지] 키리토',
-            '[운명을 바꾸는 의사] 아스나',
-            '[마음과 마주하는 검사] 리파',
-            '[과거를 극복하는 사수] 시논',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '1주년1': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[시스템을 뛰어넘는 의지] 키리토',
-            '[운명을 바꾸는 의사] 아스나',
-            '[마음과 마주하는 검사] 리파',
-            '[과거를 극복하는 사수] 시논',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '1주년3': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*1.5,
-        chance_4star=0.04,
-        items_5star=[
-            '[시스템을 뛰어넘는 의지] 키리토',
-            '[운명을 바꾸는 의사] 아스나',
-            '[마음과 마주하는 검사] 리파',
-            '[과거를 극복하는 사수] 시논',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '1주년5': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=1,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[시스템을 뛰어넘는 의지] 키리토',
-            '[운명을 바꾸는 의사] 아스나',
-            '[마음과 마주하는 검사] 리파',
-            '[과거를 극복하는 사수] 시논',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '1주년6': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트 Step 6',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[시스템을 뛰어넘는 의지] 키리토',
-            '[운명을 바꾸는 의사] 아스나',
-            '[마음과 마주하는 검사] 리파',
-            '[과거를 극복하는 사수] 시논',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '돌검': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[청장미의 정합기사] 유지오',
-            '[금목서의 정합기사] 엘리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '돌검1': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[청장미의 정합기사] 유지오',
-            '[금목서의 정합기사] 엘리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '돌검3': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*1.5,
-        chance_4star=0.04,
-        items_5star=[
-            '[청장미의 정합기사] 유지오',
-            '[금목서의 정합기사] 엘리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '돌검5': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=1,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[청장미의 정합기사] 유지오',
-            '[금목서의 정합기사] 엘리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '돌검6': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트 Step 6',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[청장미의 정합기사] 유지오',
-            '[금목서의 정합기사] 엘리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '지나': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[마음을 잇는 물요정] 아스나',
-            '[희망을 이루는 검호] 유우키',
-            '[순수한 미소의 수호자] 시리카',
-            '[조화를 지키는 자] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '지나1': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[마음을 잇는 물요정] 아스나',
-            '[희망을 이루는 검호] 유우키',
-            '[순수한 미소의 수호자] 시리카',
-            '[조화를 지키는 자] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '지나3': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*1.5,
-        chance_4star=0.04,
-        items_5star=[
-            '[마음을 잇는 물요정] 아스나',
-            '[희망을 이루는 검호] 유우키',
-            '[순수한 미소의 수호자] 시리카',
-            '[조화를 지키는 자] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '지나5': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=1,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[마음을 잇는 물요정] 아스나',
-            '[희망을 이루는 검호] 유우키',
-            '[순수한 미소의 수호자] 시리카',
-            '[조화를 지키는 자] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '지나6': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트 Step 6',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[마음을 잇는 물요정] 아스나',
-            '[희망을 이루는 검호] 유우키',
-            '[순수한 미소의 수호자] 시리카',
-            '[조화를 지키는 자] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
     '남자': Scout(
         name='남자들의 광연 스카우트 Step 2/4',
         cost=250,
@@ -471,58 +211,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
-    '1주년': Scout(
-        name='신뢰의 증거 운명의 인연 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '인라이트먼트 x 섀도우 엘리미네이터',
-            '다즐링 블링크',
-            '이레디케이트 세이버',
-            '구시스나우탈',
-        ],
-        record_crystal=None,
-    ),
-    '돌검': Scout(
-        name='돌아가는 세계에 겁쳐진 검 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '영겁불후의 검',
-            '영구빙괴의 검',
-        ],
-        record_crystal=None,
-    ),
-    '지나': Scout(
-        name='지나가는 시간과 우정의 기억 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '아틀탄티스 소드',
-            '철운석의 검',
-            '카른웨난',
-            '플라네타리 메이스',
-        ],
-        record_crystal=None,
-    ),
     '남자': Scout(
         name='남자들의 광연 스카우트',
         cost=150,
@@ -550,13 +238,10 @@ async def saomd_character(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}캐뽑 1주년` (신뢰의 증거 운명의 인연 스카우트 11연차를 시뮬레이션)
+    `{PREFIX}캐뽑 남자` (남자들의 광연 스카우트 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `1주년`: 신뢰의 증거 운명의 인연 스카우트 (`1주년1`/`1주년3`/`1주년5`/`1주년6`)
-    * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트 (`돌검1`/`돌검3`/`돌검5`/`돌검6`)
-    * `지나`: 지나가는 시간과 우정의 기억 스카우트 (`지나1`/`지나3`/`지나5`/`지나6`)
     * `남자`: 남자들의 광연 스카우트 (`남자1`/`남자3`/`남자5`/`남자6`)
 
     """
@@ -629,13 +314,10 @@ async def saomd_weapon(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}무뽑 1주년` (신뢰의 증거 운명의 인연 스카우트 11연차를 시뮬레이션)
+    `{PREFIX}무뽑 남자` (남자들의 광연 스카우트 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `1주년`: 신뢰의 증거 운명의 인연 스카우트
-    * `돌검`: 돌아가는 세계에 겁쳐진 검 스카우트
-    * `지나`: 지나가는 시간과 우정의 기억 스카우트
     * `남자`: 남자들의 광연 스카우트
 
     """
