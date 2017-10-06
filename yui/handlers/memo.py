@@ -49,7 +49,7 @@ async def memo_show(bot, event: Message, sess, keyword: str):
     if memos:
         await bot.say(
             event.channel,
-            ' | '.join(x.text for x in memos)
+            f'`{keyword}`: ' + ' | '.join(x.text for x in memos)
         )
     else:
         await bot.say(
