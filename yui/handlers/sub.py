@@ -305,9 +305,6 @@ async def search_finished(bot, event: Message, title: str):
             urllib.parse.urlencode({'query': title.encode()})
         )
     )
-    print('http://ohli.moe/timetable/search?{}'.format(
-        urllib.parse.urlencode({'query': title.encode()})
-    ))
 
     filtered = list(filter(lambda x: x['status'] == '완', data))
 
