@@ -54,15 +54,17 @@ def make_sub_list(data: List[Sub]) -> List[Attachment]:
         for sub in data:
             result.append(
                 Attachment(
-                    fallback='{}화 {} {} {}'.format(
-                        sub.episode_num,
+                    fallback='{} {} {} {}'.format(
+                        '완결' if sub.episode_num == 9999
+                        else f'{sub.episode_num}화',
                         sub.released_at.strftime(DATE_FORMAT),
                         sub.maker,
                         fix_url(sub.url),
                     ),
                     author_name=sub.maker,
-                    text='{}화 {} {}'.format(
-                        sub.episode_num,
+                    text='{} {} {}'.format(
+                        '완결' if sub.episode_num == 9999
+                        else f'{sub.episode_num}화',
                         sub.released_at.strftime(DATE_FORMAT),
                         fix_url(sub.url),
                     ),
