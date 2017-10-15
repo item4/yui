@@ -290,6 +290,88 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             (10, 0.5),
         ],
     ),
+    '장난': Scout(
+        name='장난스런 할로윈 나이트 스카우트 Step 2+',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[사랑에 빠진 뱀파이어] 유우키',
+            '[상냥한 몬스터] 리파',
+            '[스파이더 위치] 시논',
+            '[새끼고양이 마녀] 시리카',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS + [
+            '[치유의 여름 미인] 아스나',
+            '[두근거리는 여름 처녀] 스구하',
+            '[장난스런 여름 소녀] 시논',
+            '[해바라기 여름소녀] 시리카',
+            '[장사수완 좋은 노점상] 리즈벳',
+            '[여름밤에 울리는 소리] 리파',
+            '[신락의 춤] 프리미어',
+            '[긍지 높은 선장] 키리토',
+            '[갑판을 채색하는 부선장] 아스나',
+            '[감시대의 명저격수] 시논',
+            '[직감의 조타수] 유우키',
+        ],
+        record_crystal=[
+            (1, 3.0),
+            (2, 37.0),
+            (3, 40.0),
+            (4, 10.0),
+            (5, 3.5),
+            (6, 3.5),
+            (7, 1.0),
+            (8, 1.0),
+            (9, 0.5),
+            (10, 0.5),
+        ],
+    ),
+    '장난1': Scout(
+        name='장난스런 할로윈 나이트 스카우트 Step 1',
+        cost=125,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[사랑에 빠진 뱀파이어] 유우키',
+            '[상냥한 몬스터] 리파',
+            '[스파이더 위치] 시논',
+            '[새끼고양이 마녀] 시리카',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS + [
+            '[치유의 여름 미인] 아스나',
+            '[두근거리는 여름 처녀] 스구하',
+            '[장난스런 여름 소녀] 시논',
+            '[해바라기 여름소녀] 시리카',
+            '[장사수완 좋은 노점상] 리즈벳',
+            '[여름밤에 울리는 소리] 리파',
+            '[신락의 춤] 프리미어',
+            '[긍지 높은 선장] 키리토',
+            '[갑판을 채색하는 부선장] 아스나',
+            '[감시대의 명저격수] 시논',
+            '[직감의 조타수] 유우키',
+        ],
+        record_crystal=[
+            (1, 3.0),
+            (2, 37.0),
+            (3, 40.0),
+            (4, 10.0),
+            (5, 3.5),
+            (6, 3.5),
+            (7, 1.0),
+            (8, 1.0),
+            (9, 0.5),
+            (10, 0.5),
+        ],
+    ),
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
@@ -327,6 +409,24 @@ WEAPON_TABLE: Dict[str, Scout] = {
         ],
         record_crystal=None,
     ),
+    '장난': Scout(
+        name='장난스런 할로윈 나이트 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
+            '트릭 오어 바렛',
+            '샤노와르',
+            '데빌 스태프',
+            '머시너리 소드',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -344,6 +444,7 @@ async def saomd_character(bot, event: Message, category: str):
 
     * `남자`: 남자들의 광연 스카우트 (`남자1`/`남자3`/`남자5`/`남자6`)
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트 (`할로윈1`)
+    * `장난`: 장난스런 할로윈 나이트 스카우트 (`장난1`)
 
     """
 
@@ -421,6 +522,7 @@ async def saomd_weapon(bot, event: Message, category: str):
 
     * `남자`: 남자들의 광연 스카우트
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트
+    * `장난`: 장난스런 할로윈 나이트 스카우트
 
     """
 
