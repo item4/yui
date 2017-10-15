@@ -210,7 +210,7 @@ async def search_on_air(bot, event: Message, title: str):
             for sub in anissia_sub_result:
                 if ohli_sub_result:
                     sub['duplicated'] = max(
-                        fuzz.ratio(sub['a'].lower(), s['a'].lower())
+                        fuzz.ratio(fix_url(sub['a']).lower(), s['a'].lower())
                         for s in ohli_sub_result
                     ) > 95
                 else:
