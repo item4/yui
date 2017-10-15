@@ -195,7 +195,7 @@ async def search_on_air(bot, event: Message, title: str):
 
         if anissia_ani_result['ratio'] > 80:
             ohli_sub_result = await get_json(
-                'http://ohli.moe/timetable/cap?i={}'.format(
+                'http://ohli.moe/cap/{}'.format(
                     ohli_ani_result['i']
                 )
             )
@@ -311,7 +311,7 @@ async def search_finished(bot, event: Message, title: str):
     if filtered:
         ani = filtered[0]
         subs = await get_json(
-            'http://ohli.moe/timetable/cap?i={}'.format(ani['i']))
+            'http://ohli.moe/cap/{}'.format(ani['i']))
         result: List[Sub] = []
 
         for sub in subs:
