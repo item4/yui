@@ -87,6 +87,8 @@ async def get_json(*args, **kwargs):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(*args, **kwargs) as res:
+                    if res.status != 200:
+                        return []
                     try:
                         return await res.json()
                     except aiohttp.client_exceptions.ClientResponseError:
@@ -94,6 +96,8 @@ async def get_json(*args, **kwargs):
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(weight/10)
                 weight += 1
+            except json.JSONDecodeError:
+                return []
 
 
 async def get_weekly_list(url, week):
