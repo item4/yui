@@ -5,6 +5,8 @@ from urllib.parse import urlencode
 
 import aiohttp
 
+import ujson
+
 from ..box import box
 from ..command import argument, option
 from ..event import Message
@@ -61,7 +63,7 @@ async def query(domain: str, server: DNSServer) -> Dict[str, str]:
     )
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            result = await res.json()
+            result = await res.json(loads=ujson.loads)
             result['server_name'] = server.name
             result['server_ip'] = server.ip
             return result

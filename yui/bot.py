@@ -2,7 +2,6 @@ import asyncio
 import html
 import importlib
 import inspect
-import json
 import re
 import shlex
 import sys
@@ -17,6 +16,8 @@ import aiohttp
 from attrdict import AttrDict
 
 from sqlalchemy.orm import sessionmaker
+
+import ujson
 
 from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
@@ -132,7 +133,7 @@ class Bot:
                 data=form
             ) as response:
                 if response.status == 200:
-                    return await response.json()
+                    return await response.json(loads=ujson.loads)
                 else:
                     raise APICallError('fail to call {} with {}'.format(
                         method, data
@@ -382,7 +383,7 @@ class Bot:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
                             if msg.tp == aiohttp.WSMsgType.TEXT:
-                                event = create_event(json.loads(msg.data))
+                                event = create_event(ujson.loads(msg.data))
                                 await self.queue.put(event)
                             elif msg.tp in (aiohttp.WSMsgType.ERROR,
                                             aiohttp.WSMsgType.CLOSED):

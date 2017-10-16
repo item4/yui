@@ -1,5 +1,4 @@
 import datetime
-import json
 import math
 from typing import Dict, Tuple
 from urllib.parse import urlencode
@@ -7,6 +6,8 @@ from urllib.parse import urlencode
 import aiohttp
 
 from fuzzywuzzy import fuzz
+
+import ujson
 
 from ..box import box
 from ..command import argument, option
@@ -56,10 +57,10 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
 
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(metadata_url) as res:
-            data = await res.json()
+            data = await res.json(loads=ujson.loads)
 
         async with session.get(timestamp_url) as res:
-            timestamp = json.loads(await res.text())
+            timestamp = ujson.loads(await res.text())
 
     find_start = None
     find_start_ratio = -1
@@ -113,7 +114,7 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
 
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(url) as res:
-            result = json.loads(await res.text())
+            result = ujson.loads(await res.text())
 
     text = ''
 

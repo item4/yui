@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import json
 import math
 import urllib.parse
 
@@ -9,6 +8,8 @@ from typing import Any, Dict, List, NamedTuple  # noqa: F401
 import aiohttp
 
 from fuzzywuzzy import fuzz
+
+import ujson
 
 from ..api import Attachment
 from ..box import box
@@ -90,13 +91,13 @@ async def get_json(*args, **kwargs):
                     if res.status != 200:
                         return []
                     try:
-                        return await res.json()
+                        return await res.json(loads=ujson.loads)
                     except aiohttp.client_exceptions.ClientResponseError:
-                        return json.loads(await res.text())
+                        return ujson.loads(await res.text())
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(weight/10)
                 weight += 1
-            except json.JSONDecodeError:
+            except ValueError:
                 return []
 
 

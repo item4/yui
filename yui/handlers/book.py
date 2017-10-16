@@ -6,6 +6,8 @@ from urllib.parse import urlencode
 
 import aiohttp
 
+import ujson
+
 from ..api import Attachment
 from ..box import box
 from ..command import argument
@@ -38,7 +40,7 @@ async def book(bot, event: Message, keyword: str):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as res:
-            data = await res.json()
+            data = await res.json(loads=ujson.loads)
 
     print(data)
 

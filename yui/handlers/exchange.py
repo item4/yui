@@ -6,6 +6,8 @@ from urllib.parse import urlencode
 
 import aiohttp
 
+import ujson
+
 from ..box import box
 from ..command import argument
 from ..event import Message
@@ -53,7 +55,7 @@ async def get_exchange_rate(base: str, to: str) -> Dict:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as res:
-                data = await res.json()
+                data = await res.json(loads=ujson.loads)
                 if to in data['rates']:
                     return data
                 else:

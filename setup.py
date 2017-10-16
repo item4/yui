@@ -23,6 +23,8 @@ install_requires = {
     'cssselect >= 1.0.1',
     # i18n
     'babel >= 2.5.0',
+    # JSON
+    'ujson >= 1.35',
     # util
     'attrdict >= 2.0.0',
 }
