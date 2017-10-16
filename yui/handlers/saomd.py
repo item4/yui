@@ -4,15 +4,13 @@ from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import aiohttp
 
-from fuzzywuzzy import fuzz
-
 from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
 from ..event import Message
-from ..util import bold
+from ..util import bold, fuzzy_korean_ratio
 
 DIAMOND = '메모리 다이아'
 
@@ -942,7 +940,7 @@ async def character_info(bot, event: Message, keyword: str):
     for tr in tr_list:
         name = tr[1].text_content().replace('★', '').strip()
         matching.append((
-            fuzz.ratio(keyword, name),
+            fuzzy_korean_ratio(keyword, name),
             name,
             tr[1][0].get('href'),
         ))
@@ -1033,7 +1031,7 @@ async def weapon_info(bot, event: Message, keyword: str):
     for tr in tr_list:
         name = tr[0][0].text_content()
         grade = tr[0].text_content().replace(name, '').strip()
-        ratio = fuzz.ratio(name, keyword)
+        ratio = fuzzy_korean_ratio(name, keyword)
         category = tr[1].text_content()
         attribute = tr[2].text_content()
         attack = int(tr[3].text_content())

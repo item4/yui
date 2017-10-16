@@ -1,8 +1,21 @@
 import datetime
 
+from fuzzywuzzy import fuzz
 
-from yui.util import (bold, bool2str, code, italics, preformatted, quote,
-                      strike, tz_none_to_kst, tz_none_to_utc)
+
+from yui.util import (
+    bold,
+    bool2str,
+    code,
+    fuzzy_korean_ratio,
+    italics,
+    normalize_korean_nfc_to_nfd,
+    preformatted,
+    quote,
+    strike,
+    tz_none_to_kst,
+    tz_none_to_utc
+)
 
 
 def test_datetime_utils():
@@ -35,3 +48,24 @@ def text_slack_syntax():
     assert preformatted('item4') == '```item4```'
     assert strike('item4') == '~item4~'
     assert quote('item4') == '>item4'
+
+
+def test_normalize_nfd():
+    """Test Korean to NFD tool."""
+
+    assert normalize_korean_nfc_to_nfd('123ㄱㄴㄷㄹ가나다라밯맣희ㅏㅑㅓㅕ') == ''.join(
+        chr(x) for x in
+        [49, 50, 51, 12593, 12596, 12599, 12601, 4352, 4449, 4354, 4449, 4355,
+         4449, 4357, 4449, 4359, 4449, 4546, 4358, 4449, 4546, 4370, 4468,
+         12623, 12625, 12627, 12629]
+    )
+
+
+def test_fuzzy_korean_ratio():
+    """Test Korean-specific fuzzy search."""
+
+    assert fuzz.ratio('강', '공') == 0
+    assert fuzzy_korean_ratio('강', '공') == 67
+
+    assert fuzz.ratio('안녕', '인형') == 0
+    assert fuzzy_korean_ratio('안녕', '인형') == 67

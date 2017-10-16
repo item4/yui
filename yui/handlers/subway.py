@@ -5,14 +5,13 @@ from urllib.parse import urlencode
 
 import aiohttp
 
-from fuzzywuzzy import fuzz
-
 import ujson
 
 from ..box import box
 from ..command import argument, option
 from ..event import Message
 from ..transform import choice
+from ..util import fuzzy_korean_ratio
 
 
 headers: Dict[str, str] = {
@@ -67,8 +66,8 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
     find_end = None
     find_end_ratio = -1
     for x in data[0]['realInfo']:
-        start_ratio = fuzz.ratio(x['name'], start)
-        end_ratio = fuzz.ratio(x['name'], end)
+        start_ratio = fuzzy_korean_ratio(x['name'], start)
+        end_ratio = fuzzy_korean_ratio(x['name'], end)
         if find_start_ratio < start_ratio:
             find_start = x
             find_start_ratio = start_ratio

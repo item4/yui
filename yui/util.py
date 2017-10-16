@@ -1,18 +1,25 @@
 import datetime
+import unicodedata
 
 from babel.dates import get_timezone
+
+from fuzzywuzzy import fuzz
 
 from sqlalchemy.sql.expression import func
 
 __all__ = (
+    'KOREAN_END',
+    'KOREAN_START',
     'KST',
     'TRUNCATE_QUERY',
     'UTC',
     'bold',
     'bool2str',
     'code',
+    'fuzzy_korean_ratio',
     'get_count',
     'italics',
+    'normalize_korean_nfc_to_nfd',
     'preformatted',
     'quote',
     'strike',
@@ -29,6 +36,27 @@ TRUNCATE_QUERY = {
     'postgresql': 'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;',
     'sqlite': 'DELETE FROM {};',
 }
+
+KOREAN_START = ord('가')
+KOREAN_END = ord('힣')
+
+
+def normalize_korean_nfc_to_nfd(value: str) -> str:
+    """Normalize Korean string to NFD."""
+
+    return ''.join(
+        unicodedata.normalize('NFD', x) if KOREAN_START <= ord(x) <= KOREAN_END
+        else x for x in list(value)
+    )
+
+
+def fuzzy_korean_ratio(str1: str, str2: str) -> int:
+    """Fuzzy Search with Korean."""
+
+    return fuzz.ratio(
+        normalize_korean_nfc_to_nfd(str1),
+        normalize_korean_nfc_to_nfd(str2),
+    )
 
 
 def tz_none_to_kst(dt: datetime.datetime) -> datetime.datetime:
