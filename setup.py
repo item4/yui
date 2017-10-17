@@ -25,6 +25,8 @@ install_requires = {
     'babel >= 2.5.0',
     # JSON
     'ujson >= 1.35',
+    # RSS
+    'libearth >= 0.3.3',
     # util
     'attrdict >= 2.0.0',
 }

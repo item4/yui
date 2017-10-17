@@ -14,6 +14,7 @@ from .nyaa import *  # type: ignore
 from .ping import *  # type: ignore
 from .quit import *  # type: ignore
 from .ref import *  # type: ignore
+from .rss import *  # type: ignore
 from .saomd import *  # type: ignore
 from .select import *  # type: ignore
 from .sub import *  # type: ignore
