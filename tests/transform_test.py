@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import pytest
 
-from yui.transform import choice, enum_getitem, value_range
+from yui.transform import choice, enum_getitem, extract_url, value_range
 
 
 def test_enum_getitem():
@@ -22,6 +22,14 @@ def test_enum_getitem():
 
     assert enum_getitem(A, fallback='b')('a') == A.a
     assert enum_getitem(A, fallback='b')('zzz') == A.b
+
+
+def test_extract_url():
+    """Test extract_url helper."""
+
+    assert extract_url('http://item4.net') == 'http://item4.net'
+    assert extract_url('<http://item4.net>') == 'http://item4.net'
+    assert extract_url('<innocent|http://item4.net>') == 'http://item4.net'
 
 
 @pytest.mark.parametrize('items', [

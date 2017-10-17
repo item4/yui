@@ -48,7 +48,10 @@ def extract_url(value: str) -> str:
     """Helper to extract URL from given value."""
 
     if value.startswith('<') and value.endswith('>'):
-        return value[1:-1].split('|')[1]
+        if '|' in value:
+            return value[1:-1].split('|', 1)[1]
+        else:
+            return value[1:-1]
     return value
 
 
