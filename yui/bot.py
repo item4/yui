@@ -7,7 +7,7 @@ import shlex
 import sys
 import traceback
 
-from typing import Any, Dict  # noqa: F401
+from typing import Any, Dict
 
 import aiocron
 

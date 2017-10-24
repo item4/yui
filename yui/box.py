@@ -5,7 +5,7 @@ import inspect
 from typing import (Any, Awaitable, Callable, Dict, List, Optional, Tuple,
                     Type, Union)
 
-from .command import Argument, Option  # noqa: F401
+from .command import Argument, Option
 from .event import Event
 from .type import cast, is_container
 

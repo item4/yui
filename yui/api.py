@@ -1,6 +1,6 @@
 import json
 
-from typing import Dict, List, Optional  # noqa: F401
+from typing import Dict, List, Optional
 
 from attrdict import AttrDict
 

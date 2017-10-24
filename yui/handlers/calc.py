@@ -12,7 +12,7 @@ import statistics
 from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor
 
-from typing import Any, Dict  # noqa: F401
+from typing import Any, Dict
 
 from async_timeout import timeout
 

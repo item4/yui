@@ -7,7 +7,7 @@ Decorators and classes for making command.
 
 import functools
 
-from typing import Any, Awaitable, Callable, List, Optional, Type, Union  # noqa: F401,E501
+from typing import Any, Awaitable, Callable, List, Optional, Type, Union
 
 from .event import Event
 

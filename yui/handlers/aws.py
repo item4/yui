@@ -1,6 +1,6 @@
 import datetime
 
-from typing import List  # noqa: F401
+from typing import List
 
 import aiohttp
 

@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List  # noqa: F401
+from typing import Dict, List
 from urllib.parse import urlencode
 
 import aiohttp

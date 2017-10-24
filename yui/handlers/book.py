@@ -1,7 +1,7 @@
 import re
 
 from decimal import Decimal
-from typing import List  # noqa: F401
+from typing import List
 from urllib.parse import urlencode
 
 import aiohttp
