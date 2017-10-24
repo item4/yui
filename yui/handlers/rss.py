@@ -15,9 +15,24 @@ async def crawl(bot, sess):
     feeds = sess.query(Feed).all()
 
     for feed in feeds:
+        data = ''
         async with aiohttp.ClientSession() as session:
-            async with session.get(feed.url) as res:
-                data = await res.read()
+            try:
+                async with session.get(feed.url) as res:
+                    data = await res.read()
+            except aiohttp.client_exceptions.ClientConnectorError:
+                await bot.say(
+                    feed.channel,
+                    f'*Error*: `{feed.url}`에 접속할 수 없어요!'
+                )
+                continue
+
+        if not data:
+            await bot.say(
+                feed.channel,
+                f'*Error*: `{feed.url}`에 접속해도 자료를 가져올 수 없어요!'
+            )
+            continue
 
         parser = get_format(data)
 
