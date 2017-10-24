@@ -20,6 +20,13 @@ async def crawl(bot, sess):
                 data = await res.read()
 
         parser = get_format(data)
+
+        if parser is None:
+            await bot.say(
+                feed.channel,
+                f'*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!'
+            )
+            continue
         f, _ = parser(data, feed.url)
 
         attachments = []
@@ -76,6 +83,14 @@ async def rss_add(bot, event: Message, sess, url: str):
         return
 
     parser = get_format(data)
+
+    if parser is None:
+        await bot.say(
+            event.channel,
+            f'`{url}`은 올바른 RSS 문서가 아니에요!'
+        )
+        return
+
     f, _ = parser(data, url)
 
     feed = Feed()
