@@ -103,7 +103,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
     for r in ok:
         try:
             res = r.result()
-        except:
+        except aiohttp.client_exceptions.ClientConnectionError:
             continue
         result.append(Result(
             server_name=res['server_name'],

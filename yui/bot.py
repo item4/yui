@@ -88,7 +88,7 @@ class Bot:
                     kw['sess'] = sess
                 try:
                     await c.func(**kw)
-                except:
+                except:  # noqa: E722
                     await self.say(
                         self.config.OWNER,
                         '*Traceback*\n```\n{}\n```\n'.format(
@@ -175,7 +175,7 @@ class Bot:
                                 break
                         except SystemExit as e:
                             raise e
-                        except:
+                        except:  # noqa: E722
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'
@@ -195,7 +195,7 @@ class Bot:
                                 break
                         except SystemExit as e:
                             raise e
-                        except:
+                        except:  # noqa: E722
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'
@@ -219,7 +219,7 @@ class Bot:
                                 break
                         except SystemExit as e:
                             raise e
-                        except:
+                        except:  # noqa: E722
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'

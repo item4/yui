@@ -37,13 +37,13 @@ async def html(bot, event: Message, keyword: str):
     link = None
     ratio = -1
     for a in a_tags:
-        n = a.text_content()
-        l = a.get('href')
-        r = fuzz.ratio(keyword, n)
-        if r > ratio:
-            name = n
-            link = l
-            ratio = r
+        _name = a.text_content()
+        _link = a.get('href')
+        _ratio = fuzz.ratio(keyword, _name)
+        if _ratio > ratio:
+            name = _name
+            link = _link
+            ratio = _ratio
 
     if ratio > 40:
         await bot.say(
@@ -80,13 +80,13 @@ async def css(bot, event: Message, keyword: str):
     link = None
     ratio = -1
     for a in a_tags:
-        n = a.text_content()
-        l = a.get('href')
-        r = fuzz.ratio(keyword, n)
-        if r > ratio:
-            name = n
-            link = l
-            ratio = r
+        _name = a.text_content()
+        _link = a.get('href')
+        _ratio = fuzz.ratio(keyword, _name)
+        if _ratio > ratio:
+            name = _name
+            link = _link
+            ratio = _ratio
 
     if ratio > 40:
         await bot.say(
@@ -171,16 +171,16 @@ async def py(bot, event: Message, keyword: str):
     ratio = -1
     for a in a_tags:
         code = a.cssselect('code.docutils.literal')
-        n = INDEX_NUM_RE.sub('', a.text_content())
-        l = a.get('href')
+        _name = INDEX_NUM_RE.sub('', a.text_content())
+        _link = a.get('href')
         if code:
-            r = fuzz.ratio(keyword, code[0].text_content())
+            _ratio = fuzz.ratio(keyword, code[0].text_content())
         else:
-            r = fuzz.ratio(keyword, n)
-        if r > ratio:
-            name = n
-            link = l
-            ratio = r
+            _ratio = fuzz.ratio(keyword, _name)
+        if _ratio > ratio:
+            name = _name
+            link = _link
+            ratio = _ratio
 
     if ratio > 40:
         await bot.say(

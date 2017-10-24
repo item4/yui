@@ -307,7 +307,7 @@ def cast(t, value):
         for ty in t.__args__:
             try:
                 return cast(ty, value)
-            except:
+            except:  # noqa: E722
                 continue
         raise ValueError()
     elif t == Any:

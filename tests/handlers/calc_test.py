@@ -94,29 +94,29 @@ def test_calculate_fine(
     assert expected_decimal_local.keys() == decimal_local.keys()
 
     for key in decimal_local.keys():
-        e = expected_decimal_local[key]
-        l = decimal_local[key]
+        expected = expected_decimal_local[key]
+        local = decimal_local[key]
 
-        assert type(e) == type(l)
+        assert type(expected) == type(local)
 
-        if callable(e):
-            assert e(1) == l(1)
+        if callable(expected):
+            assert expected(1) == local(1)
         else:
-            assert e == l
+            assert expected == local
 
     assert expected_num_result == num_result
     assert expected_num_local.keys() == num_local.keys()
 
     for key in num_local.keys():
-        e = expected_num_local[key]
-        l = num_local[key]
+        expected = expected_num_local[key]
+        local = num_local[key]
 
-        assert type(e) == type(l)
+        assert type(expected) == type(local)
 
-        if callable(e):
-            assert e(1) == l(1)
+        if callable(expected):
+            assert expected(1) == local(1)
         else:
-            assert e == l
+            assert expected == local
 
 
 def test_calculate_magic():
