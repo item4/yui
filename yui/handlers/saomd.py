@@ -322,6 +322,60 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         }),
         record_crystal=None,
     ),
+    '결혼1': Scout(
+        name='키리토&아스나 Wedding Anniversary 스카우트 Step 1',
+        cost=125,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[그 날의 약속] 키리토',
+            '[그 날의 약속] 아스나',
+        ],
+        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
+            '[그 날의 약속] 아스나',
+        }),
+        record_crystal=None,
+    ),
+    '결혼2': Scout(
+        name='키리토&아스나 Wedding Anniversary 스카우트 Step 2',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[그 날의 약속] 키리토',
+            '[그 날의 약속] 아스나',
+        ],
+        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
+            '[그 날의 약속] 아스나',
+        }),
+        record_crystal=None,
+    ),
+    '결혼3': Scout(
+        name='키리토&아스나 Wedding Anniversary 스카우트 Step 3',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02*2,
+        chance_4star=0.04,
+        items_5star=[
+            '[그 날의 약속] 키리토',
+            '[그 날의 약속] 아스나',
+        ],
+        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
+            '[그 날의 약속] 아스나',
+        }),
+        record_crystal=None,
+    ),
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
@@ -397,6 +451,7 @@ async def saomd_character(bot, event: Message, category: str):
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트 (`할로윈1`)
     * `장난`: 장난스런 할로윈 나이트 스카우트 (`장난1`)
     * `앙케1`/`앙케2`/`앙케3`: 1주년기념 5성진화 앙케이트 스카우트
+    * `결혼1`/`결혼2`/`결혼3`: 키리토&아스나 Wedding Anniversary 스카우트
 
     """
 
