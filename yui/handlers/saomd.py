@@ -93,6 +93,17 @@ FOUR_STAR_CHARACTERS: List[str] = [
     '[천승의 무희] 유우키',
     '[재회의 약속] 필리아',
     '[별 그림자의 기도] 시리카',
+    '[치유의 여름 미인] 아스나',
+    '[두근거리는 여름 처녀] 스구하',
+    '[장난스런 여름 소녀] 시논',
+    '[해바라기 여름소녀] 시리카',
+    '[장사수완 좋은 노점상] 리즈벳',
+    '[여름밤에 울리는 소리] 리파',
+    '[신락의 춤] 프리미어',
+    '[긍지 높은 선장] 키리토',
+    '[갑판을 채색하는 부선장] 아스나',
+    '[감시대의 명저격수] 시논',
+    '[직감의 조타수] 유우키',
 ]
 
 
@@ -126,86 +137,6 @@ class Weapon(NamedTuple):
 
 
 CHARACTER_TABLE: Dict[str, Scout] = {
-    '남자': Scout(
-        name='남자들의 광연 스카우트 Step 2/4',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[꺾이지 않는 마음] 클라인',
-            '[결속의 힘] 에길',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '남자1': Scout(
-        name='남자들의 광연 스카우트 Step 1',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[꺾이지 않는 마음] 클라인',
-            '[결속의 힘] 에길',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '남자3': Scout(
-        name='남자들의 광연 스카우트 Step 3',
-        cost=200,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*1.5,
-        chance_4star=0.04,
-        items_5star=[
-            '[꺾이지 않는 마음] 클라인',
-            '[결속의 힘] 에길',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '남자5': Scout(
-        name='남자들의 광연 스카우트 Step 5',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=1,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[꺾이지 않는 마음] 클라인',
-            '[결속의 힘] 에길',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
-    '남자6': Scout(
-        name='남자들의 광연 스카우트 Step 6',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[꺾이지 않는 마음] 클라인',
-            '[결속의 힘] 에길',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=None,
-    ),
     '할로윈': Scout(
         name='달밤의 할로윈 퍼레이드 스카우트 Step 2+',
         cost=250,
@@ -221,19 +152,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[한밤중의 유혹] 아스나',
             '[호박의 기사] 앨리스',
         ],
-        items_4star=FOUR_STAR_CHARACTERS + [
-            '[치유의 여름 미인] 아스나',
-            '[두근거리는 여름 처녀] 스구하',
-            '[장난스런 여름 소녀] 시논',
-            '[해바라기 여름소녀] 시리카',
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-            '[긍지 높은 선장] 키리토',
-            '[갑판을 채색하는 부선장] 아스나',
-            '[감시대의 명저격수] 시논',
-            '[직감의 조타수] 유우키',
-        ],
+        items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=[
             (1, 3.0),
             (2, 37.0),
@@ -262,19 +181,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[한밤중의 유혹] 아스나',
             '[호박의 기사] 앨리스',
         ],
-        items_4star=FOUR_STAR_CHARACTERS + [
-            '[치유의 여름 미인] 아스나',
-            '[두근거리는 여름 처녀] 스구하',
-            '[장난스런 여름 소녀] 시논',
-            '[해바라기 여름소녀] 시리카',
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-            '[긍지 높은 선장] 키리토',
-            '[갑판을 채색하는 부선장] 아스나',
-            '[감시대의 명저격수] 시논',
-            '[직감의 조타수] 유우키',
-        ],
+        items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=[
             (1, 3.0),
             (2, 37.0),
@@ -303,19 +210,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[스파이더 위치] 시논',
             '[새끼고양이 마녀] 시리카',
         ],
-        items_4star=FOUR_STAR_CHARACTERS + [
-            '[치유의 여름 미인] 아스나',
-            '[두근거리는 여름 처녀] 스구하',
-            '[장난스런 여름 소녀] 시논',
-            '[해바라기 여름소녀] 시리카',
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-            '[긍지 높은 선장] 키리토',
-            '[갑판을 채색하는 부선장] 아스나',
-            '[감시대의 명저격수] 시논',
-            '[직감의 조타수] 유우키',
-        ],
+        items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=[
             (1, 3.0),
             (2, 37.0),
@@ -344,19 +239,7 @@ CHARACTER_TABLE: Dict[str, Scout] = {
             '[스파이더 위치] 시논',
             '[새끼고양이 마녀] 시리카',
         ],
-        items_4star=FOUR_STAR_CHARACTERS + [
-            '[치유의 여름 미인] 아스나',
-            '[두근거리는 여름 처녀] 스구하',
-            '[장난스런 여름 소녀] 시논',
-            '[해바라기 여름소녀] 시리카',
-            '[장사수완 좋은 노점상] 리즈벳',
-            '[여름밤에 울리는 소리] 리파',
-            '[신락의 춤] 프리미어',
-            '[긍지 높은 선장] 키리토',
-            '[갑판을 채색하는 부선장] 아스나',
-            '[감시대의 명저격수] 시논',
-            '[직감의 조타수] 유우키',
-        ],
+        items_4star=FOUR_STAR_CHARACTERS,
         record_crystal=[
             (1, 3.0),
             (2, 37.0),
@@ -685,22 +568,6 @@ CHARACTER_TABLE: Dict[str, Scout] = {
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
-    '남자': Scout(
-        name='남자들의 광연 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '명도 아카츠키',
-            '그레이트 넘버',
-        ],
-        record_crystal=None,
-    ),
     '할로윈': Scout(
         name='달밤의 할로윈 퍼레이드 스카우트',
         cost=150,
@@ -766,11 +633,10 @@ async def saomd_character(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}캐뽑 남자` (남자들의 광연 스카우트 11연차를 시뮬레이션)
+    `{PREFIX}캐뽑 할로윈` (달밤의 할로윈 퍼레이드 스카우트 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `남자`: 남자들의 광연 스카우트 (`남자1`/`남자3`/`남자5`/`남자6`)
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트 (`할로윈1`)
     * `장난`: 장난스런 할로윈 나이트 스카우트 (`장난1`)
     * `앙케1`/`앙케2`/`앙케3`: 1주년기념 5성진화 앙케이트 스카우트
@@ -845,11 +711,10 @@ async def saomd_weapon(bot, event: Message, category: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}무뽑 남자` (남자들의 광연 스카우트 11연차를 시뮬레이션)
+    `{PREFIX}무뽑 할로윈` (달밤의 할로윈 퍼레이드 11연차를 시뮬레이션)
 
     카테고리는 다음과 같습니다.
 
-    * `남자`: 남자들의 광연 스카우트
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트
     * `장난`: 장난스런 할로윈 나이트 스카우트
     * `앙케`: 1주년기념 5성진화 앙케이트 스카우트
