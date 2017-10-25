@@ -376,6 +376,64 @@ CHARACTER_TABLE: Dict[str, Scout] = {
         }),
         record_crystal=None,
     ),
+    '운동회': Scout(
+        name='우정의 바톤! 가을 대운동회 스카우트 Step 2+',
+        cost=250,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[화려한 골] 아스나',
+            '[일등상을 목표로] 유이',
+            '[빛나는 땀과 청춘의 빛] 리파',
+            '[네버 기브업] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=[
+            (1, 3.0),
+            (2, 37.0),
+            (3, 40.0),
+            (4, 10.0),
+            (5, 3.5),
+            (6, 3.5),
+            (7, 1.0),
+            (8, 1.0),
+            (9, 0.5),
+            (10, 0.5),
+        ],
+    ),
+    '운동회1': Scout(
+        name='우정의 바톤! 가을 대운동회 스카우트 Step 1',
+        cost=125,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.02,
+        chance_4star=0.04,
+        items_5star=[
+            '[화려한 골] 아스나',
+            '[일등상을 목표로] 유이',
+            '[빛나는 땀과 청춘의 빛] 리파',
+            '[네버 기브업] 리즈벳',
+        ],
+        items_4star=FOUR_STAR_CHARACTERS,
+        record_crystal=[
+            (1, 3.0),
+            (2, 37.0),
+            (3, 40.0),
+            (4, 10.0),
+            (5, 3.5),
+            (6, 3.5),
+            (7, 1.0),
+            (8, 1.0),
+            (9, 0.5),
+            (10, 0.5),
+        ],
+    ),
 }
 
 WEAPON_TABLE: Dict[str, Scout] = {
@@ -433,6 +491,24 @@ WEAPON_TABLE: Dict[str, Scout] = {
         ],
         record_crystal=None,
     ),
+    '운동회': Scout(
+        name='우정의 바톤! 가을 대운동회 스카우트',
+        cost=150,
+        cost_type=DIAMOND,
+        result_length=11,
+        fixed_5star=0,
+        fixed_4star=0,
+        chance_5star=0.0,
+        chance_4star=0.04,
+        items_5star=[],
+        items_4star=[
+            '빅토리 플뢰레',
+            '챔피언 대거',
+            '글로리어스 블레이드',
+            '위너즈 스피어',
+        ],
+        record_crystal=None,
+    ),
 }
 
 
@@ -452,6 +528,7 @@ async def saomd_character(bot, event: Message, category: str):
     * `장난`: 장난스런 할로윈 나이트 스카우트 (`장난1`)
     * `앙케1`/`앙케2`/`앙케3`: 1주년기념 5성진화 앙케이트 스카우트
     * `결혼1`/`결혼2`/`결혼3`: 키리토&아스나 Wedding Anniversary 스카우트
+    * `운동회`: 우정의 바톤! 가을 대운동회 스카우트 (`운동회1`)
 
     """
 
@@ -530,6 +607,7 @@ async def saomd_weapon(bot, event: Message, category: str):
     * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트
     * `장난`: 장난스런 할로윈 나이트 스카우트
     * `앙케`: 1주년기념 5성진화 앙케이트 스카우트
+    * `운동회`: 우정의 바톤! 가을 대운동회 스카우트
 
     """
 
