@@ -549,17 +549,17 @@ async def saomd_character(bot, event: Message, category: str):
 
     result_length = scout.result_length
     for x in range(scout.fixed_5star):
-        chars.append((5, bold(random.choice(scout.items_5star))))
+        chars.append((5, random.choice(scout.items_5star)))
         result_length -= 1
     for x in range(scout.fixed_4star):
-        chars.append((4, bold(random.choice(scout.items_4star))))
+        chars.append((4, random.choice(scout.items_4star)))
         result_length -= 1
     for x in range(result_length):
         r = random.random()
         if r <= five:
-            chars.append((5, bold(random.choice(scout.items_5star))))
+            chars.append((5, random.choice(scout.items_5star)))
         elif r <= four:
-            chars.append((4, bold(random.choice(scout.items_4star))))
+            chars.append((4, random.choice(scout.items_4star)))
         elif r <= three:
             chars.append((3, '3성'))
         else:
@@ -585,7 +585,9 @@ async def saomd_character(bot, event: Message, category: str):
             scout.name,
             scout.result_length,
             '연' if scout.result_length > 1 else '단',
-            ', '.join(c[1] for c in chars),
+            ', '.join(
+                f'★{c[0]} {bold(c[1])}' if c[0] > 3 else c[1] for c in chars
+            ),
             '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
             if record_crystal > 0 else ''
         )
