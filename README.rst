@@ -24,6 +24,7 @@ Installation
 
    $ git clone https://github.com/item4/yui.git
    $ cd yui
+   $ mkdir log
    $ pip install -e .
 
 
@@ -86,6 +87,43 @@ NAVER_CLIENT_ID
 NAVER_CLIENT_SECRET
   string. SECRET Key for using Naver API.
   Do not upload this value on VCS.
+
+LOGGING
+  complex dict. Python logging config.
+  You can use default setting.
+  But if you want to change some value, you can override below example.
+
+  .. code-block:: toml
+
+      [LOGGING]
+      version = 1
+
+      [LOGGING.formatters.brief]
+      format = '%(message)s'
+
+      [LOGGING.formatters.default]
+      format = '%(asctime)s %(levelname)s %(name)s %(message)s'
+      datefmt = '%Y-%m-%d %H:%M:%S'
+
+      [LOGGING.handlers.console]
+      class = 'logging.StreamHandler'
+      formatter = 'brief'
+      level = 'DEBUG'
+      filters = []
+      stream = 'ext://sys.stdout'
+
+      [LOGGING.handlers.file]
+      class = 'logging.handlers.RotatingFileHandler'
+      formatter = 'default'
+      level = 'WARNING'
+      filename = 'log/warning.log'
+      maxBytes = 1024
+      backupCount = 3
+
+      [LOGGING.loggers.yui]
+      handlers = ['console', 'file']
+      propagate = true
+      level = 'DEBUG'
 
 .. _`this test page`: https://api.slack.com/methods/users.info/test
 .. _`Naver developer page`: https://developers.naver.com

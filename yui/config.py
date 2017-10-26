@@ -15,6 +15,42 @@ DEFAULT = {
     'DATABASE_URL': '',
     'DATABASE_ECHO': False,
     'MODELS': (),
+    'LOGGING': {
+        'version': 1,
+        'formatters': {
+            'brief': {
+                'format': '%(message)s',
+            },
+            'default': {
+                'format': '%(asctime)s %(levelname)s %(name)s %(message)s',
+                'datefmt': '%Y-%m-%d %H:%M:%S',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'brief',
+                'level': 'INFO',
+                'filters': [],
+                'stream': 'ext://sys.stdout',
+            },
+            'file': {
+                'class': 'logging.handlers.RotatingFileHandler',
+                'formatter': 'default',
+                'level': 'WARNING',
+                'filename': 'log/warning.log',
+                'maxBytes': 1024,
+                'backupCount': 3,
+            },
+        },
+        'loggers': {
+            'yui': {
+                'handlers': ['console', 'file'],
+                'propagate': True,
+                'level': 'INFO',
+            },
+        },
+    },
 }
 
 

@@ -2,9 +2,10 @@ import asyncio
 import html
 import importlib
 import inspect
+import logging
+import logging.config
 import re
 import shlex
-import sys
 import traceback
 
 from typing import Any, Dict
@@ -52,14 +53,25 @@ class Bot:
     ) -> None:
         """Initialize"""
 
+        logging.config.dictConfig(config['LOGGING'])
+
+        logger = logging.getLogger(f'{__name__}.Bot.__init__')
+
+        logger.info('start')
+
         self.loop = None
 
+        logger.info('connect to DB')
         config.DATABASE_ENGINE = get_database_engine(config)
 
+        logger.info('import handlers')
         for module_name in config.HANDLERS:
+            logger.debug('import handlers: %s', module_name)
             importlib.import_module(module_name)
 
+        logger.info('import models')
         for module_name in config.MODELS:
+            logger.debug('import models: %s', module_name)
             importlib.import_module(module_name)
 
         self.config = config
@@ -70,10 +82,15 @@ class Bot:
         self.api = SlackAPI(self)
         self.channels: Dict[str, Dict[str, Any]] = {}
 
+        logger.info('register crontab')
         self.register_crontab()
 
     def register_crontab(self):
         """Register cronjob to bot from box."""
+
+        logger = logging.getLogger(
+            f'{__name__}.Bot.register_crontab'
+        )
 
         def register(c: Crontab):
             func_params = inspect.signature(c.func).parameters
@@ -89,6 +106,7 @@ class Bot:
                 try:
                     await c.func(**kw)
                 except:  # noqa: E722
+                    logger.error(f'Error: {traceback.format_exc()}')
                     await self.say(
                         self.config.OWNER,
                         '*Traceback*\n```\n{}\n```\n'.format(
@@ -153,10 +171,12 @@ class Bot:
     async def process(self):
         """Process messages."""
 
+        logger = logging.getLogger(f'{__name__}.Bot.process')
+
         while True:
             event = await self.queue.get()
 
-            print(event)
+            logger.info(event)
 
             type = event.type
             subtype = event.subtype
@@ -174,8 +194,13 @@ class Bot:
                             if not res:
                                 break
                         except SystemExit as e:
+                            logger.info('SystemExit')
                             raise e
                         except:  # noqa: E722
+                            logger.error(
+                                f'Event: {event} / '
+                                f'Traceback: {traceback.format_exc()}'
+                            )
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'
@@ -194,8 +219,13 @@ class Bot:
                             if not res:
                                 break
                         except SystemExit as e:
+                            logger.info('SystemExit')
                             raise e
                         except:  # noqa: E722
+                            logger.error(
+                                f'Event: {event} / '
+                                f'Traceback: {traceback.format_exc()}'
+                            )
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'
@@ -218,8 +248,13 @@ class Bot:
                             if not res:
                                 break
                         except SystemExit as e:
+                            logger.info('SystemExit')
                             raise e
                         except:  # noqa: E722
+                            logger.error(
+                                f'Event: {event} / '
+                                f'Traceback: {traceback.format_exc()}'
+                            )
                             await self.say(
                                 self.config.OWNER,
                                 ('*Event*\n```\n{}\n```\n'
@@ -365,6 +400,8 @@ class Bot:
     async def receive(self):
         """Receive stream from slack."""
 
+        logger = logging.getLogger(f'{__name__}.Bot.receive')
+
         sleep = 0
         while True:
             try:
@@ -387,8 +424,11 @@ class Bot:
                                 await self.queue.put(event)
                             elif msg.tp in (aiohttp.WSMsgType.ERROR,
                                             aiohttp.WSMsgType.CLOSED):
+                                logger.error(
+                                    f'Error: {traceback.format_exc()}'
+                                )
                                 raise BotReconnect()
                             else:
-                                print(msg.tp, msg, file=sys.stderr)
+                                logger.error('Type: %s / MSG: %s', msg.tp, msg)
             except BotReconnect:
                 continue
