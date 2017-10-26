@@ -42,8 +42,6 @@ async def book(bot, event: Message, keyword: str):
         async with session.get(url, headers=headers) as res:
             data = await res.json(loads=ujson.loads)
 
-    print(data)
-
     attachments: List[Attachment] = []
 
     count = 3

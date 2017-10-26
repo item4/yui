@@ -109,8 +109,6 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
         })
     )
 
-    print(url)
-
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(url) as res:
             result = ujson.loads(await res.text())
