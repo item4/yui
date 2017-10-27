@@ -16,6 +16,7 @@ script:
 - pytest tests
 - flake8 yui tests
 - mypy yui
+- docker pull item4/yui
 - docker build --tag item4/yui:latest .
 after_success:
 - '[ "${TRAVIS_BRANCH}" = "master" ] && docker push item4/yui:latest'
