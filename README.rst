@@ -28,7 +28,6 @@ Installation
    $ pip install -e .
 
 
-
 Configuration
 -------------
 
@@ -160,6 +159,30 @@ List of commands are below.
 * `stamp`
 
 .. _Alembic: http://alembic.zzzcomputing.com/en/latest/
+
+
+Yui on Docker
+-------------
+
+You can launch yui on docker.
+
+.. code-block:: bash
+
+   $ pwd
+   /home/item4/
+   $ mkdir yui
+   $ cd yui
+   $ vi my.config.toml
+   $ docker pull item4/yui
+   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui upgrade head -c data/my.config.toml
+   $ docker run -d --name my-yui -v /home/item4/yui:/yui/data item4/yui yui run -c my.config.toml
+
+
+If you finished above lines, you can launch yui simply with this command.
+
+.. code-block:: bash
+
+   $ docker start my-yui
 
 
 Contribute to YUI
