@@ -81,6 +81,7 @@ class Bot:
         self.queue: asyncio.Queue = asyncio.Queue()
         self.api = SlackAPI(self)
         self.channels: Dict[str, Dict[str, Any]] = {}
+        self.restart = False
 
         logger.info('register crontab')
         self.register_crontab()
@@ -196,6 +197,8 @@ class Bot:
                         except SystemExit as e:
                             logger.info('SystemExit')
                             raise e
+                        except BotReconnect:
+                            self.restart = True
                         except:  # noqa: E722
                             logger.error(
                                 f'Event: {event} / '
@@ -221,6 +224,8 @@ class Bot:
                         except SystemExit as e:
                             logger.info('SystemExit')
                             raise e
+                        except BotReconnect:
+                            self.restart = True
                         except:  # noqa: E722
                             logger.error(
                                 f'Event: {event} / '
@@ -250,6 +255,8 @@ class Bot:
                         except SystemExit as e:
                             logger.info('SystemExit')
                             raise e
+                        except BotReconnect:
+                            self.restart = True
                         except:  # noqa: E722
                             logger.error(
                                 f'Event: {event} / '
@@ -419,6 +426,10 @@ class Bot:
                 with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
+                            if self.restart:
+                                self.restart = False
+                                raise BotReconnect()
+
                             if msg.tp == aiohttp.WSMsgType.TEXT:
                                 event = create_event(ujson.loads(msg.data))
                                 await self.queue.put(event)
