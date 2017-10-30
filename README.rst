@@ -175,14 +175,7 @@ You can launch yui on docker.
    $ vi my.config.toml
    $ docker pull item4/yui
    $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui upgrade head -c data/my.config.toml
-   $ docker run -d --name my-yui -v /home/item4/yui:/yui/data item4/yui yui run -c my.config.toml
-
-
-If you finished above lines, you can launch yui simply with this command.
-
-.. code-block:: bash
-
-   $ docker start my-yui
+   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui run -c my.config.toml
 
 
 Contribute to YUI
