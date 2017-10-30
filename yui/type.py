@@ -334,7 +334,7 @@ def cast(t, value):
                 return set(value)
 
         if issubclass(t, (list, MutableSequence, Sequence)):
-            if t.__args__[0]:
+            if t.__args__:
                 return [cast(t.__args__[0], x) for x in value]
             else:
                 return list(value)
