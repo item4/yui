@@ -147,6 +147,10 @@ def argument(
         def internal(func_):
             if not hasattr(func_, '__arguments__'):
                 func_.__arguments__ = []
+
+            if nargs < 1 and any(a.nargs < 1 for a in func_.__arguments__):
+                raise TypeError('can not have two nargs<0')
+
             func_.__arguments__.insert(
                 0,
                 Argument(
