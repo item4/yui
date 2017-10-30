@@ -1,10 +1,37 @@
+import datetime
 import enum
 
 from decimal import Decimal
 
 import pytest
 
-from yui.transform import choice, enum_getitem, extract_url, value_range
+from yui.transform import (
+    choice,
+    enum_getitem,
+    extract_url,
+    str_to_date,
+    value_range,
+)
+
+
+def test_str_to_date():
+    """Test str_to_date helper."""
+
+    with pytest.raises(ValueError):
+        str_to_date()('9999')
+
+    assert str_to_date()('2017-10-07') == datetime.date(2017, 10, 7)
+    assert str_to_date()('2017년 10월 7일') == datetime.date(2017, 10, 7)
+
+    with pytest.raises(ValueError):
+        str_to_date()('2017-10-99')
+
+    assert str_to_date(datetime.date.today)('2017-10-07') == \
+        datetime.date(2017, 10, 7)
+    assert str_to_date(datetime.date.today)('2017년 10월 7일') == \
+        datetime.date(2017, 10, 7)
+    assert str_to_date(datetime.date.today)('2017-10-99') == \
+        datetime.date.today()
 
 
 def test_enum_getitem():
