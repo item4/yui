@@ -44,6 +44,9 @@ extras_require = {
         'flake8 >= 3.5.0',
         'flake8-import-order >= 0.13',
     },
+    'ci': {
+        'codecov >= 2.0.9',
+    }
 }
 
 setup(

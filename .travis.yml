@@ -9,7 +9,7 @@ cache:
   - $HOME/.cache/pip
 install:
 - pip install --upgrade pip setuptools wheel
-- pip install --upgrade -e .[tests,lint]
+- pip install --upgrade -e .[tests,lint,ci]
 before_install:
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 script:
@@ -19,6 +19,7 @@ script:
 - docker pull item4/yui:latest
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .
 after_success:
+- codecov
 - '[ "${TRAVIS_BRANCH}" = "master" ] && docker push item4/yui:latest'
 notifications:
   slack:
