@@ -128,7 +128,11 @@ class SlackAPI:
             param['link_names'] = bool2str(link_names)
 
         if attachments is not None:
-            param['attachments'] = json.dumps(attachments, cls=SlackEncoder)
+            param['attachments'] = json.dumps(
+                attachments,
+                cls=SlackEncoder,
+                separators=(',', ':'),
+            )
 
         if unfurl_links is not None:
             param['unfurl_links'] = bool2str(unfurl_links)
@@ -171,9 +175,7 @@ class SlackEncoder(json.JSONEncoder):
     """JSON Encoder for slack"""
 
     def default(self, o):
-        if isinstance(o, bool):
-            return bool2str(o)
-        elif isinstance(o, Field):
+        if isinstance(o, Field):
             return {
                 'title': o.title,
                 'value': o.value,

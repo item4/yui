@@ -34,6 +34,8 @@ install_requires = {
 tests_require = {
     'mypy >= 0.521',
     'pytest >= 3.2.3',
+    'pytest-asyncio >= 0.8.0',
+    'pytest-cov >= 2.5.1',
 }
 
 extras_require = {

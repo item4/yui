@@ -39,7 +39,7 @@ def test_bool2str():
     assert bool2str(False) == 'false'
 
 
-def text_slack_syntax():
+def test_slack_syntax():
     """Test slack syntax helpers."""
 
     assert bold('item4') == '*item4*'

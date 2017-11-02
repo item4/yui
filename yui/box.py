@@ -49,7 +49,7 @@ class Handler:
             if x.type_ is None:
                 type_ = self.signature.parameters[x.dest].annotation
 
-                if type_ is None:
+                if type_ == inspect._empty:  # type: ignore
                     type_ = str
                 else:
                     if x.transform_func:
@@ -79,7 +79,17 @@ class Handler:
                     if option.nargs == 0:
                         result[option.dest] = option.value
                     else:
-                        args = [chunk.pop(0) for _ in range(option.nargs)]
+                        try:
+                            length = len(chunk)
+                            args = [chunk.pop(0) for _ in range(option.nargs)]
+                        except IndexError:
+                            raise SyntaxError(
+                                option.count_error.format(
+                                    name=option.name,
+                                    expected=option.nargs,
+                                    given=length,
+                                )
+                            )
                         try:
                             if option.container_cls:
                                 if option.multiple:
@@ -94,16 +104,6 @@ class Handler:
                             raise SyntaxError(
                                 option.type_error.format(name=option.name, e=e)
                             )
-
-                        if option.container_cls is not None:
-                            if len(r) != option.nargs:
-                                raise SyntaxError(
-                                    option.count_error.format(
-                                        name=option.name,
-                                        expected=option.nargs,
-                                        given=len(r),
-                                    )
-                                )
 
                         if option.transform_func:
                             if option.container_cls:
@@ -144,10 +144,6 @@ class Handler:
             else:
                 end = True
 
-        for option in options:
-            if not result[option.dest] and option.default is not None:
-                result[option.dest] = option.default
-
         if required:
             raise SyntaxError(
                 '\n'.join(o.count_error.format(
@@ -172,7 +168,7 @@ class Handler:
             if x.type_ is None:
                 type_ = self.signature.parameters[x.dest].annotation
 
-                if type_ is None:
+                if type_ == inspect._empty:  # type: ignore
                     type_ = str
                 else:
                     if x.transform_func:
@@ -183,20 +179,16 @@ class Handler:
                     x.container_cls = None
                     x.typing_has_container = True
 
-        minus = False
         for i, argument in enumerate(arguments):
             r = None
             length = argument.nargs
             if argument.nargs < 0:
-                if minus:
-                    raise TypeError('can not have two nargs<0')
-                minus = True
                 length = len(chunk) - sum(a.nargs for a in arguments[i:]) - 1
 
             if length < 1:
                 raise SyntaxError(argument.count_error.format(
                     name=argument.name,
-                    expected=argument.nargs if argument.nargs > 0 else '>0',
+                    expected='>0',
                     given=0,
                 ))
             if length <= len(chunk):
@@ -218,7 +210,6 @@ class Handler:
                     r = cast(argument.type_, args)
                 else:
                     r = cast(argument.type_, args[0])
-
             except ValueError as e:
                 raise SyntaxError(
                     argument.type_error.format(
@@ -226,14 +217,6 @@ class Handler:
                         e=e,
                     )
                 )
-
-            if argument.container_cls:
-                if len(r) != argument.nargs > 0:
-                    raise SyntaxError(argument.count_error.format(
-                        name=argument.name,
-                        expected=argument.nargs,
-                        given=len(r),
-                    ))
 
             if argument.transform_func:
                 if argument.container_cls:
@@ -299,9 +282,6 @@ class Box:
             _short_help = short_help
             help_message = help
 
-            while isinstance(func, Handler):
-                func = func.callback
-
             if not hasattr(func, '__arguments__'):
                 func.__arguments__ = []
             if not hasattr(func, '__options__'):
@@ -332,6 +312,9 @@ class Box:
                 if aliases is not None:
                     for alias in aliases:
                         self.aliases[subtype][alias] = name
+
+                return func
+
             return internal(func)
 
         return decorator
@@ -351,9 +334,6 @@ class Box:
             type_ = type_.type
 
         def decorator(func):
-            while isinstance(func, Handler):
-                func = func.callback
-
             if not hasattr(func, '__arguments__'):
                 func.__arguments__ = []
             if not hasattr(func, '__options__'):
@@ -365,6 +345,7 @@ class Box:
                     func,
                     channel_validator=channels,
                 )
+                return func
 
             return internal(func)
 
@@ -397,7 +378,7 @@ class Crontab:
 
         self.func = func
 
-        return self
+        return func
 
 
 # (:class:`Box`) Default Box

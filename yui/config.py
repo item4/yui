@@ -1,3 +1,4 @@
+import copy
 import pathlib
 import sys
 
@@ -72,7 +73,7 @@ def load(path: pathlib.Path) -> AttrDict:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = AttrDict(DEFAULT.copy())
+    config = AttrDict(copy.deepcopy(DEFAULT))
     config.update(toml.load(path.open()))
 
     return config

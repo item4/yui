@@ -48,6 +48,11 @@ def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
                         error
                     )
                 return False
+        if error:
+            await bot.say(
+                event.channel,
+                error
+            )
         return False
 
     return callback
@@ -83,6 +88,11 @@ def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
                 return False
             else:
                 return True
+        if error:
+            await bot.say(
+                event.channel,
+                error
+            )
         return False
 
     return callback
@@ -139,7 +149,9 @@ def argument(
             container_cls = tuple
 
     if dest is None:
-        dest = name.lower()
+        dest = name
+
+    dest = dest.lower()
 
     def decorator(func):
 
@@ -147,6 +159,10 @@ def argument(
         def internal(func_):
             if not hasattr(func_, '__arguments__'):
                 func_.__arguments__ = []
+
+            if nargs < 0 and any(a.nargs < 0 for a in func_.__arguments__):
+                raise TypeError('can not have two nargs<0')
+
             func_.__arguments__.insert(
                 0,
                 Argument(
