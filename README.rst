@@ -4,6 +4,9 @@ YUI
 .. image:: https://travis-ci.org/item4/yui.svg?branch=master
    :target: https://travis-ci.org/item4/yui
 
+.. image:: https://codecov.io/gh/item4/yui/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/item4/yui
+
 YUI is Slack Bot for `item4.slack.com`_\.
 
 .. _`item4.slack.com`: https://item4.slack.com
