@@ -9,8 +9,12 @@ from alembic.config import Config as AlembicConfig
 
 import click
 
-from .bot import Bot
+from sqlalchemy.orm.exc import NoResultFound
+
+from .bot import Bot, Session
 from .config import load
+from .models.saomd import SCOUT_TYPE_LABEL, Scout
+from .saomd import SCOUT
 
 
 __all__ = 'error', 'load_config', 'main', 'yui'
@@ -363,6 +367,36 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
     c.attributes['Base'] = bot.orm_base
 
     command.stamp(c, revision, sql=sql, tag=tag)
+
+
+@yui.command('create-saomd-scout-data')
+@load_config
+def create_saomd_scout_data(config):
+    """Create SAOMD scout data."""
+
+    bot = Bot(config)
+
+    sess = Session(bind=bot.config.DATABASE_ENGINE)
+
+    for title, type_, callback in SCOUT:
+        try:
+            sess.query(Scout).filter_by(
+                title=title,
+                type=type_,
+            ).one()
+        except NoResultFound:
+            click.echo('{} ({}) 가 없으므로 생성합니다.'.format(
+                title,
+                SCOUT_TYPE_LABEL[type_]
+            ))
+            callback(sess)
+        else:
+            click.echo('{} ({}) 는 있으므로 건너뜁니다.'.format(
+                title,
+                SCOUT_TYPE_LABEL[type_]
+            ))
+
+    click.echo('처리 완료')
 
 
 main = yui

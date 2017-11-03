@@ -9,6 +9,7 @@ install_requires = {
     'async-timeout >= 2.0.0',
     # Database
     'SQLAlchemy >= 1.1.14',
+    'sqlalchemy-utils >= 0.32.19',
     'alembic >= 0.9.6',
     # CLI
     'Click >= 6.7',

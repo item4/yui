@@ -1,126 +1,139 @@
+import copy
 import random
 
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import List, NamedTuple, Optional, Tuple
 
 import aiohttp
 
 from lxml.html import fromstring
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
 from ..event import Message
-from ..util import bold, fuzzy_korean_ratio
+from ..models.saomd import (
+    COST_TYPE_LABEL,
+    CostType,
+    Player,
+    PlayerScout,
+    Scout,
+    ScoutType,
+    Step,
+)
+from ..util import bold, fuzzy_korean_ratio, strike
 
-DIAMOND = '메모리 다이아'
-
-FOUR_STAR_CHARACTERS: List[str] = [
-    '[일어서는 영웅] 키리토',
-    '[맞서는 결의] 아스나',
-    '[어그멘트 테이머] 시리카',
-    '[이피션트 스미스] 리즈벳',
-    '[프로그레시브 거너] 시논',
-    '[사랑의 성원] 아스나',
-    '[필승 걸] 시논',
-    '[터져나온 함성] 시리카',
-    '[반짝이는 청춘] 스트레아',
-    '[천사의 성원] 유이',
-    '[천부의 재능] 유지오',
-    '[정합기사] 엘리스',
-    '[참영비검] 아스나',
-    '[허공질주] 리파',
-    '[절영비상] 유우키',
-    '[용술인법] 시리카',
-    '[어둠속의 검무] 리즈벳',
-    '[사랑과 노력의 히트 아이돌] 아스나',
-    '[반짝이는 그라비아 아이돌] 리파',
-    '[변화무쌍한 아티스트] 시논',
-    '[천성의 팝스타] 유우키',
-    '[미소녀 차일드] 시리카',
-    '[매혹의 MC퍼포머] 리즈벳',
-    '[벚꽃빛 소녀] 스트레아',
-    '[흔들리는 청춘] 필리아',
-    '[벚꽃 필 무렵의 소녀] 유이',
-    '[섬광의 무도] 아스나',
-    '[진주의 눈물] 유이',
-    '[인어의 마음] 리파',
-    '[작은 연인] 시리카',
-    '[위험한 키스] 시논',
-    '[파격의 빨간망토] 유우키',
-    '[청은의 기사] 유지오',
-    '[황금의 기사] 엘리스',
-    '[순애의 메이드] 아스나',
-    '[순심의 다과 담당 메이드] 시논',
-    '[트위니 메이드] 유우키',
-    '[달콤한 낙농 메이드] 리파',
-    '[숙련된 손님맞이 메이드] 레인',
-    '[박식한 접시닦이 메이드] 세븐',
-    '[초여름을 장식하는 처녀] 스구하',
-    '[수면에 비친 미소] 리즈벳',
-    '[맑은 헌터의 혼] 필리아',
-    '[천상의 심판 리브라] 아스나',
-    '[고고히 포효하는 레오] 시논',
-    '[인연의 제미니] 유우키',
-    '[깊은 자비의 아리에스] 리파',
-    '[떨어지는 빗방울의 처녀] 레인',
-    '[장마철의 즐거움] 리파',
-    '[지붕 아래의 즐거움] 사쿠야',
-    '[주사 시간입니다] 아스나',
-    '[신참 경찰] 시논',
-    '[어텐션 플리즈] 시리카',
-    '[스파르타 여교사] 스트레아',
-    '[출발합니다!!] 유이',
-    '[롤러 웨이트리스] 유나',
-    '[해변의 남국소년] 키리토',
-    '[여름의 연인] 아스나',
-    '[생기발랄 여름빛 소녀] 유우키',
-    '[파도 타는 소년] 유지오',
-    '[볼 빨간 여름의 프린세스] 엘리스',
-    '[여름 밤을 비추는 수양버들] 아스나',
-    '[탄도에 피는 나팔꽃] 시논',
-    '[시원한 저녁놀의 싸리꽃] 스구하',
-    '[노래하는 백일홍] 세븐',
-    '[춤추듯 지는 벚꽃] 레인',
-    '[저편의 검객] 스구하',
-    '[소생하는 검극] 키리토',
-    '[마음의 섬광] 아스나',
-    '[그 날의 약속] 아스나',
-    '[유월의 금목서] 엘리스',
-    '[맹세의 입맞춤] 리파',
-    '[하이힐의 신부] 시논',
-    '[부케 토스 점프] 유우키',
-    '[축복의 숨결] 시리카',
-    '[천승의 무희] 유우키',
-    '[재회의 약속] 필리아',
-    '[별 그림자의 기도] 시리카',
-    '[치유의 여름 미인] 아스나',
-    '[두근거리는 여름 처녀] 스구하',
-    '[장난스런 여름 소녀] 시논',
-    '[해바라기 여름소녀] 시리카',
-    '[장사수완 좋은 노점상] 리즈벳',
-    '[여름밤에 울리는 소리] 리파',
-    '[신락의 춤] 프리미어',
-    '[긍지 높은 선장] 키리토',
-    '[갑판을 채색하는 부선장] 아스나',
-    '[감시대의 명저격수] 시논',
-    '[직감의 조타수] 유우키',
+THREE_STAR_CHARACTERS: List[str] = [
+    '[검은 스프리건] 키리토',
+    '[고독한 공략조] 키리토',
+    '[검사] 클라인',
+    '[불요정 사무라이] 클라인',
+    '스메라기',
+    '[혈맹 기사단 단장] 히스클리프',
+    '붉은 눈의 자자',
+    '크라딜',
+    '유진',
+    '[자유분방한 땅요정] 스트레아',
+    '[컨버트 성공] 사치',
+    '[공략의 화신] 아스나',
+    '[싸우는 대장장이 요정] 리즈벳',
+    '[아이템 마스터] 레인',
+    '룩스',
+    '[중간층의 아이돌] 시리카',
+    '[신속한 정보상] 아르고',
+    '[고양이 요정의 정보] 아르고',
+    '[강인한 방어자] 에길',
+    '[수수께끼의 여전사] 유우키',
+    '[명장을 목표로] 리즈벳',
+    '[총의 세계] 시논',
+    '[고양이 궁사] 시논',
+    '[날렵한 고양이 요정] 시리카',
+    '[탐구하는 그림자 요정] 필리아',
+    '사쿠야',
+    '[바람의 마법사] 리파',
+    '[어린 음악 요정] 세븐',
+    '알리샤 루',
+    '시우네',
 ]
 
+TWO_STAR_CHARACTERS: List[str] = [
+    '[전 베타 테스터] 키리토',
+    '클라인',
+    '디어벨',
+    '코바츠',
+    '싱커',
+    '시구르드',
+    '스트레아',
+    '사치',
+    '아스나',
+    '요루코',
+    '유리엘',
+    '시리카',
+    '필리아',
+    '아르고',
+    '사샤',
+    '에길',
+    '키바오',
+    '카게무네',
+    '리즈벳',
+    '로자리아',
+    '시논',
+]
 
-class Scout(NamedTuple):
-    """NamedTuple to store saomd scout."""
+THREE_STAR_WEAPONS: List[str] = [
+    '문릿 소드',
+    '명장의 롱 소드',
+    '홍염도',
+    '아이스 블레이드',
+    '명장의 롱 소드x2',
+    '시밸릭 레이피어',
+    '지룡의 스팅어',
+    '브레이브 레이피어',
+    '문라이트 쿠크리',
+    '미세리코르데',
+    '미드나이트 크리스',
+    '바르바로이 메이스',
+    '게일 자그널',
+    '블러디 클럽',
+    '화이트 슈터',
+    '롱 레인지 배럿',
+    '자이언트 스나이퍼',
+    '시밸릭 보우',
+    '페트라 보우',
+    '팔콘 슈터',
+    '에메랄드 로드',
+    '타이들 로드',
+    '결정의 마법 지팡이',
+    '게일 할버드',
+    '페트라 트윈스',
+]
 
-    name: str
-    cost: int
-    cost_type: str
-    result_length: int
-    fixed_5star: int
-    fixed_4star: int
-    chance_5star: float
-    chance_4star: float
-    items_5star: List[str]
-    items_4star: List[str]
-    record_crystal: Optional[List[Tuple[int, float]]]
+TWO_STAR_WEAPONS: List[str] = [
+    '퀸즈 나이트소드',
+    '브레이브 젬 소드',
+    '바람이 깃든 칼',
+    'Q 나이트 소드 x B 젬 소드',
+    '플레임 레이피어',
+    '미스릴 레이피어',
+    '스트라이크  대거',
+    '윈드 대거',
+    '플레임 나이프',
+    '워 픽',
+    '아쿠아 메이스',
+    '미스릴 메이스',
+    '스텔스 라이플',
+    '프리시전 라이플',
+    '더블칼럼 매거진',
+    '아쿠아 스프레드',
+    '플레임 슈터',
+    '다크 보우',
+    '플레임 완드',
+    '이블 완드',
+    '에텔 스태프',
+    '미스릴 스피어',
+    '다크니스 글레이브',
+]
 
 
 class Weapon(NamedTuple):
@@ -136,547 +149,82 @@ class Weapon(NamedTuple):
     battle_skills: Optional[List[str]]
 
 
-CHARACTER_TABLE: Dict[str, Scout] = {
-    '할로윈': Scout(
-        name='달밤의 할로윈 퍼레이드 스카우트 Step 2+',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[생피를 바쳐라] 키리토',
-            '[달밤의 포효] 유지오',
-            '[한밤중의 유혹] 아스나',
-            '[호박의 기사] 앨리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '할로윈1': Scout(
-        name='달밤의 할로윈 퍼레이드 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[생피를 바쳐라] 키리토',
-            '[달밤의 포효] 유지오',
-            '[한밤중의 유혹] 아스나',
-            '[호박의 기사] 앨리스',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '장난': Scout(
-        name='장난스런 할로윈 나이트 스카우트 Step 2+',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[사랑에 빠진 뱀파이어] 유우키',
-            '[상냥한 몬스터] 리파',
-            '[스파이더 위치] 시논',
-            '[새끼고양이 마녀] 시리카',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '장난1': Scout(
-        name='장난스런 할로윈 나이트 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[사랑에 빠진 뱀파이어] 유우키',
-            '[상냥한 몬스터] 리파',
-            '[스파이더 위치] 시논',
-            '[새끼고양이 마녀] 시리카',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '앙케1': Scout(
-        name='1주년기념 5성진화 앙케이트 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        }),
-        record_crystal=None,
-    ),
-    '앙케2': Scout(
-        name='1주년기념 5성진화 앙케이트 스카우트 Step 2',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        }),
-        record_crystal=None,
-    ),
-    '앙케3': Scout(
-        name='1주년기념 5성진화 앙케이트 스카우트 Step 3',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[일어서는 영웅] 키리토',
-            '[맞서는 결의] 아스나',
-            '[황금의 기사] 앨리스',
-            '[떨어지는 빗방울의 처녀] 레인',
-        }),
-        record_crystal=None,
-    ),
-    '결혼1': Scout(
-        name='키리토&아스나 Wedding Anniversary 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[그 날의 약속] 키리토',
-            '[그 날의 약속] 아스나',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[그 날의 약속] 아스나',
-        }),
-        record_crystal=None,
-    ),
-    '결혼2': Scout(
-        name='키리토&아스나 Wedding Anniversary 스카우트 Step 2',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[그 날의 약속] 키리토',
-            '[그 날의 약속] 아스나',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[그 날의 약속] 아스나',
-        }),
-        record_crystal=None,
-    ),
-    '결혼3': Scout(
-        name='키리토&아스나 Wedding Anniversary 스카우트 Step 3',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02*2,
-        chance_4star=0.04,
-        items_5star=[
-            '[그 날의 약속] 키리토',
-            '[그 날의 약속] 아스나',
-        ],
-        items_4star=list(set(FOUR_STAR_CHARACTERS) - {
-            '[그 날의 약속] 아스나',
-        }),
-        record_crystal=None,
-    ),
-    '운동회': Scout(
-        name='우정의 바톤! 가을 대운동회 스카우트 Step 2+',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[화려한 골] 아스나',
-            '[일등상을 목표로] 유이',
-            '[빛나는 땀과 청춘의 빛] 리파',
-            '[네버 기브업] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '운동회1': Scout(
-        name='우정의 바톤! 가을 대운동회 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[화려한 골] 아스나',
-            '[일등상을 목표로] 유이',
-            '[빛나는 땀과 청춘의 빛] 리파',
-            '[네버 기브업] 리즈벳',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '온천': Scout(
-        name='두근두근 수증기와 미인의 온천 스카우트 Step 2+',
-        cost=250,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[고운 피부의 여신] 아스나',
-            '[되돌아보는 미인] 시논',
-            '[비밀탕의 미인] 리파',
-            '[단풍탕의 미인] 시리카',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-    '온천1': Scout(
-        name='두근두근 수증기와 미인의 온천 스카우트 Step 1',
-        cost=125,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.02,
-        chance_4star=0.04,
-        items_5star=[
-            '[고운 피부의 여신] 아스나',
-            '[되돌아보는 미인] 시논',
-            '[비밀탕의 미인] 리파',
-            '[단풍탕의 미인] 시리카',
-        ],
-        items_4star=FOUR_STAR_CHARACTERS,
-        record_crystal=[
-            (1, 3.0),
-            (2, 37.0),
-            (3, 40.0),
-            (4, 10.0),
-            (5, 3.5),
-            (6, 3.5),
-            (7, 1.0),
-            (8, 1.0),
-            (9, 0.5),
-            (10, 0.5),
-        ],
-    ),
-}
-
-WEAPON_TABLE: Dict[str, Scout] = {
-    '할로윈': Scout(
-        name='달밤의 할로윈 퍼레이드 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '웨어울프팡',
-            '데몬즈 블레이트x배트 에스파다',
-            '펌프킨 블레이드',
-            '나이트메어 완드',
-        ],
-        record_crystal=None,
-    ),
-    '장난': Scout(
-        name='장난스런 할로윈 나이트 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '트릭 오어 바렛',
-            '샤노와르',
-            '데빌 스태프',
-            '머시너리 소드',
-        ],
-        record_crystal=None,
-    ),
-    '앙케': Scout(
-        name='1주년기념 5성진화 앙케이트 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '하이드런지아 소드+1x2',
-            '히로익 프로미스+1',
-            '컬리지+1',
-            '금목서의 검+1',
-        ],
-        record_crystal=None,
-    ),
-    '운동회': Scout(
-        name='우정의 바톤! 가을 대운동회 스카우트',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '빅토리 플뢰레',
-            '챔피언 대거',
-            '글로리어스 블레이드',
-            '위너즈 스피어',
-        ],
-        record_crystal=None,
-    ),
-    '온천1': Scout(
-        name='두근두근 수증기와 미인의 온천 스카우트 Step 1',
-        cost=100,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '성화의 레이피어',
-            '신을 섬기는 미창',
-            '붉게 칠한 비도',
-            '빛나는 물의 검',
-        ],
-        record_crystal=None,
-    ),
-    '온천2': Scout(
-        name='두근두근 수증기와 미인의 온천 스카우트 Step 2',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04,
-        items_5star=[],
-        items_4star=[
-            '성화의 레이피어',
-            '신을 섬기는 미창',
-            '붉게 칠한 비도',
-            '빛나는 물의 검',
-        ],
-        record_crystal=None,
-    ),
-    '온천3': Scout(
-        name='두근두근 수증기와 미인의 온천 스카우트 Step 3',
-        cost=150,
-        cost_type=DIAMOND,
-        result_length=11,
-        fixed_5star=0,
-        fixed_4star=0,
-        chance_5star=0.0,
-        chance_4star=0.04*2,
-        items_5star=[],
-        items_4star=[
-            '성화의 레이피어',
-            '신을 섬기는 미창',
-            '붉게 칠한 비도',
-            '빛나는 물의 검',
-        ],
-        record_crystal=None,
-    ),
-}
-
-
 @box.command('캐릭뽑기', ['캐뽑'], channels=only(
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
-@argument('category', count_error='카테고리를 입력해주세요')
-async def saomd_character(bot, event: Message, category: str):
+@argument('scout_title', nargs=-1, concat=True,
+          count_error='스카우트 타이틀을 입력해주세요')
+async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
     """
     소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}캐뽑 할로윈` (달밤의 할로윈 퍼레이드 스카우트 11연차를 시뮬레이션)
+    `{PREFIX}캐뽑 두근두근` (두근두근 수증기와 미인의 온천 스카우트 11연차를 시뮬레이션)
 
-    카테고리는 다음과 같습니다.
-
-    * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트 (`할로윈1`)
-    * `장난`: 장난스런 할로윈 나이트 스카우트 (`장난1`)
-    * `앙케1`/`앙케2`/`앙케3`: 1주년기념 5성진화 앙케이트 스카우트
-    * `결혼1`/`결혼2`/`결혼3`: 키리토&아스나 Wedding Anniversary 스카우트
-    * `운동회`: 우정의 바톤! 가을 대운동회 스카우트 (`운동회1`)
-    * `온천`: 두근두근 수증기와 미인의 온천 스카우트 (`온천1`)
+    지원되는 스카우트 타이틀은 `{PREFIX}캐뽑종류` 로 확인하세요.
 
     """
 
     try:
-        scout = CHARACTER_TABLE[category]
-    except KeyError:
-        await bot.say(
-            event.channel,
-            '`{}`은 지원하지 않는 카테고리입니다. 도움말을 참조해주세요'.format(category)
-        )
-        return
+        player = sess.query(Player).filter_by(user=event.user).one()
+    except NoResultFound:
+        player = Player()
+        player.user = event.user
+        with sess.begin():
+            sess.add(player)
+
+    scouts = sess.query(Scout).filter_by(type=ScoutType.character).all()
+
+    scout = scouts[0]
+    ratio = fuzzy_korean_ratio(scout.title, scout_title)
+    for s in scouts[1:]:
+        _ratio = fuzzy_korean_ratio(s.title, scout_title)
+        if ratio < _ratio:
+            ratio = _ratio
+            scout = s
+
+    try:
+        player_scout = sess.query(PlayerScout).filter(
+            PlayerScout.player == player,
+            PlayerScout.scout == scout,
+        ).one()
+    except NoResultFound:
+        first = sess.query(Step).filter(
+            Step.scout == scout,
+            Step.is_first == True,  # noqa
+        ).one()
+        player_scout = PlayerScout()
+        player_scout.player = player
+        player_scout.scout = scout
+        player_scout.next_step = first
+
+        with sess.begin():
+            sess.add(player_scout)
+
+    step: Step = player_scout.next_step
 
     chars: List[Tuple[int, str]] = []
 
-    five = scout.chance_5star
-    four = five + scout.chance_4star
+    five = step.s5_chance
+    four = five + step.s4_chance
     three = four + 0.25
 
-    result_length = scout.result_length
-    for x in range(scout.fixed_5star):
-        chars.append((5, random.choice(scout.items_5star)))
+    result_length = step.count
+    for x in range(step.s5_fixed):
+        chars.append((5, random.choice(scout.s5_units)))
         result_length -= 1
-    for x in range(scout.fixed_4star):
-        chars.append((4, random.choice(scout.items_4star)))
+    for x in range(step.s4_fixed):
+        chars.append((4, random.choice(scout.s4_units)))
         result_length -= 1
     for x in range(result_length):
         r = random.random()
         if r <= five:
-            chars.append((5, random.choice(scout.items_5star)))
+            chars.append((5, random.choice(scout.s5_units)))
         elif r <= four:
-            chars.append((4, random.choice(scout.items_4star)))
+            chars.append((4, random.choice(scout.s4_units)))
         elif r <= three:
-            chars.append((3, '3성'))
+            chars.append((3, random.choice(THREE_STAR_CHARACTERS)))
         else:
-            chars.append((2, '2성'))
+            chars.append((2, random.choice(TWO_STAR_CHARACTERS)))
 
     chars.sort(key=lambda x: -x[0])
 
@@ -690,19 +238,87 @@ async def saomd_character(bot, event: Message, category: str):
             chances.append(chance)
         record_crystal = random.choices(cases, chances)[0]
 
+    results: List[str] = []
+    release_crystal = 0
+    characters = copy.deepcopy(player.characters)
+    for c in chars:
+        character = characters.get(c[1])
+        if character:
+            if c[0] == 5:
+                if character['rarity'] == 5:
+                    release_crystal += 100
+                    results.append(f'★5 {strike(c[1])} → 해방결정 100개')
+                else:
+                    release_crystal += 50
+                    character['rarity'] = 5
+                    results.append(f'★4→5 {bold(c[1])} + 해방결정 50개')
+            elif c[0] == 4:
+                release_crystal += 50
+                results.append(f'★4 {strike(c[1])} → 해방결정 50개')
+            elif c[0] == 3:
+                release_crystal += 2
+                results.append(f'★3 {strike(c[1])} → 해방결정 2개')
+            else:
+                release_crystal += 1
+                results.append(f'★2 {strike(c[1])} → 해방결정 1개')
+        else:
+            characters[c[1]] = {
+                'rarity': c[0],
+            }
+            if c[0] in [4, 5]:
+                results.append(f'★{c[0]} {bold(c[1])}')
+            else:
+                results.append(f'★{c[0]} {c[1]}')
+
+    player.characters = characters
+    player.release_crystal += release_crystal
+
+    record_crystal_name = (
+        f'{scout.title} {COST_TYPE_LABEL[CostType.record_crystal]}'
+    )
+    record_crystals = copy.deepcopy(player.record_crystals)
+    if step.cost_type == CostType.diamond:
+        player.used_diamond += step.cost
+
+        if record_crystal:
+            if record_crystal_name in player.record_crystals:
+                record_crystals[record_crystal_name] += record_crystal
+            else:
+                record_crystals[record_crystal_name] = record_crystal
+    elif step.cost_type == CostType.record_crystal:
+        if record_crystal_name in player.record_crystals:
+            record_crystals[record_crystal_name] += (
+                record_crystal - step.cost
+            )
+        else:
+            record_crystals[record_crystal_name] = (
+                record_crystal - step.cost
+            )
+
+    player.record_crystals = record_crystals
+    player_scout.next_step = step.next_step or step
+
+    with sess.begin():
+        sess.add(player)
+        sess.add(player_scout)
+
     await bot.say(
         event.channel,
-        '{} {}개를 소모하여 {} {}{}차를 시도합니다.\n결과: {}{}'.format(
-            scout.cost_type,
-            scout.cost,
-            scout.name,
-            scout.result_length,
-            '연' if scout.result_length > 1 else '단',
-            ', '.join(
-                f'★{c[0]} {bold(c[1])}' if c[0] > 3 else c[1] for c in chars
+        ('{cost_type} {cost}개를 소모하여 {title} {step} {count}{c}차를 시도합니다.'
+         '\n\n{result}\n\n해방 결정을 {release_crystal}개'
+         '{record_crystal} 획득했습니다.').format(
+            cost_type=COST_TYPE_LABEL[step.cost_type],
+            cost=step.cost,
+            title=scout.title,
+            step=step.name,
+            count=step.count,
+            c='연' if step.count > 1 else '단',
+            result='\n'.join(results),
+            release_crystal=release_crystal,
+            record_crystal=(
+                f', 기록결정 크리스탈을 {record_crystal}개'
+                if record_crystal > 0 else ''
             ),
-            '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
-            if record_crystal > 0 else ''
         )
     )
 
@@ -710,54 +326,79 @@ async def saomd_character(bot, event: Message, category: str):
 @box.command('무기뽑기', ['무뽑'], channels=only(
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
-@argument('category', count_error='카테고리를 입력해주세요')
-async def saomd_weapon(bot, event: Message, category: str):
+@argument('scout_title', nargs=-1, concat=True,
+          count_error='스카우트 타이틀을 입력해주세요')
+async def saomd_weapon_scout(bot, event: Message, sess, scout_title: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
-    `{PREFIX}무뽑 할로윈` (달밤의 할로윈 퍼레이드 11연차를 시뮬레이션)
+    `{PREFIX}무뽑 두근두근` (두근두근 수증기와 미인의 온천 스카우트 11연차를 시뮬레이션)
 
-    카테고리는 다음과 같습니다.
-
-    * `할로윈`: 달밤의 할로윈 퍼레이드 스카우트
-    * `장난`: 장난스런 할로윈 나이트 스카우트
-    * `앙케`: 1주년기념 5성진화 앙케이트 스카우트
-    * `운동회`: 우정의 바톤! 가을 대운동회 스카우트
-    * `온천1`/`온천2`/`온천3`: 두근두근 수증기와 미인의 온천 스카우트
+    지원되는 스카우트 타이틀은 `{PREFIX}무뽑종류` 로 확인하세요.
 
     """
 
     try:
-        scout = WEAPON_TABLE[category]
-    except KeyError:
-        await bot.say(
-            event.channel,
-            '`{}`은 지원하지 않는 카테고리입니다. 도움말을 참조해주세요'.format(category)
-        )
-        return
+        player = sess.query(Player).filter_by(user=event.user).one()
+    except NoResultFound:
+        player = Player()
+        player.user = event.user
+        with sess.begin():
+            sess.add(player)
 
-    items = []
+    scouts = sess.query(Scout).filter_by(type=ScoutType.weapon).all()
 
-    five = scout.chance_5star
-    four = five + scout.chance_4star
+    scout = scouts[0]
+    ratio = fuzzy_korean_ratio(scout.title, scout_title)
+    for s in scouts[1:]:
+        _ratio = fuzzy_korean_ratio(s.title, scout_title)
+        if ratio < _ratio:
+            ratio = _ratio
+            scout = s
+
+    try:
+        player_scout = sess.query(PlayerScout).filter(
+            PlayerScout.player == player,
+            PlayerScout.scout == scout,
+            ).one()
+    except NoResultFound:
+        first = sess.query(Step).filter(
+            Step.scout == scout,
+            Step.is_first == True,  # noqa
+        ).one()
+        player_scout = PlayerScout()
+        player_scout.player = player
+        player_scout.scout = scout
+        player_scout.next_step = first
+
+        with sess.begin():
+            sess.add(player_scout)
+
+    step: Step = player_scout.next_step
+
+    weapons: List[Tuple[int, str]] = []
+
+    five = step.s5_chance
+    four = five + step.s4_chance
     three = four + 0.25
-    result_length = scout.result_length
-    for x in range(scout.fixed_5star):
-        items.append(bold(random.choice(scout.items_5star)))
+
+    result_length = step.count
+    for x in range(step.s5_fixed):
+        weapons.append((5, random.choice(scout.s5_units)))
         result_length -= 1
-    for x in range(scout.fixed_4star):
-        items.append(bold(random.choice(scout.items_4star)))
+    for x in range(step.s4_fixed):
+        weapons.append((4, random.choice(scout.s4_units)))
         result_length -= 1
     for x in range(result_length):
         r = random.random()
         if r <= five:
-            items.append(bold(random.choice(scout.items_5star)))
+            weapons.append((5, random.choice(scout.s5_units)))
         elif r <= four:
-            items.append(bold(random.choice(scout.items_4star)))
+            weapons.append((4, random.choice(scout.s4_units)))
         elif r <= three:
-            items.append('3성')
+            weapons.append((3, random.choice(THREE_STAR_WEAPONS)))
         else:
-            items.append('2성')
+            weapons.append((2, random.choice(TWO_STAR_WEAPONS)))
 
     record_crystal = 0
 
@@ -769,18 +410,192 @@ async def saomd_weapon(bot, event: Message, category: str):
             chances.append(chance)
         record_crystal = random.choices(cases, chances)[0]
 
+    results: List[str] = []
+    player_weapons = copy.deepcopy(player.weapons)
+    for w in weapons:
+        weapon = player_weapons.get(w[1])
+        if weapon:
+            player_weapons[w[1]]['count'] += 1
+        else:
+            player_weapons[w[1]] = {
+                'rarity': w[0],
+                'count': 1,
+            }
+
+        if w[0] in [4, 5]:
+            results.append(f'★{w[0]} {bold(w[1])}')
+        else:
+            results.append(f'★{w[0]} {w[1]}')
+
+    player.weapons = player_weapons
+
+    record_crystal_name = (
+        f'{scout.title} {COST_TYPE_LABEL[CostType.record_crystal]}'
+    )
+    record_crystals = copy.deepcopy(player.record_crystals)
+    if step.cost_type == CostType.diamond:
+        player.used_diamond += step.cost
+
+        if record_crystal:
+            if record_crystal_name in player.record_crystals:
+                record_crystals[record_crystal_name] += record_crystal
+            else:
+                record_crystals[record_crystal_name] = record_crystal
+    elif step.cost_type == CostType.record_crystal:
+        if record_crystal_name in player.record_crystals:
+            record_crystals[record_crystal_name] += (
+                record_crystal - step.cost
+            )
+        else:
+            record_crystals[record_crystal_name] = (
+                record_crystal - step.cost
+            )
+
+    player.record_crystals = record_crystals
+    player_scout.next_step = step.next_step or step
+
+    with sess.begin():
+        sess.add(player)
+        sess.add(player_scout)
+
     await bot.say(
         event.channel,
-        '{} {}개를 소모하여 {} {}{}차를 시도합니다.\n결과: {}{}'.format(
-            scout.cost_type,
-            scout.cost,
-            scout.name,
-            scout.result_length,
-            '연' if scout.result_length > 1 else '단',
-            ', '.join(items),
-            '\n기록결정 크리스탈을 {}개 획득하셨습니다.'.format(record_crystal)
-            if record_crystal > 0 else ''
+        ('{cost_type} {cost}개를 소모하여 {title} {step} {count}{c}차를 시도합니다.'
+         '\n\n{result}\n\n{record_crystal}').format(
+            cost_type=COST_TYPE_LABEL[step.cost_type],
+            cost=step.cost,
+            title=scout.title,
+            step=step.name,
+            count=step.count,
+            c='연' if step.count > 1 else '단',
+            result='\n'.join(results),
+            record_crystal=(
+                f'기록결정 크리스탈을 {record_crystal}개 획득했습니다.'
+                if record_crystal > 0 else ''
+            ),
         )
+    )
+
+
+@box.command('캐릭뽑기종류', ['캐뽑종류'])
+async def saomd_character_scouts_list(bot, event: Message, sess):
+    """
+    SAOMD 캐릭뽑기 스카우트 타이틀 목록
+
+    `{PREFIX}캐뽑종류` (목록을 thread로 전송)
+
+    """
+
+    scouts = sess.query(Scout).filter_by(type=ScoutType.character).all()
+    await bot.say(
+        event.channel,
+        '\n'.join(f'- {s.title}' for s in scouts),
+        thread_ts=event.ts,
+    )
+
+
+@box.command('무기뽑기종류', ['무뽑종류'])
+async def saomd_weapon_scouts_list(bot, event: Message, sess):
+    """
+    SAOMD 무기뽑기 스카우트 타이틀 목록
+
+    `{PREFIX}무뽑종류` (목록을 thread로 전송)
+
+    """
+
+    scouts = sess.query(Scout).filter_by(type=ScoutType.weapon).all()
+    await bot.say(
+        event.channel,
+        '\n'.join(f'- {s.title}' for s in scouts),
+        thread_ts=event.ts,
+    )
+
+
+@box.command('시뮬결과')
+async def saomd_sim_result(bot, event: Message, sess):
+    """
+    SAOMD 시뮬레이션 결과
+
+    `{PREFIX}시뮬결과` (SAOMD 시뮬레이션 결과를 thread로 출력)
+
+    """
+
+    try:
+        player = sess.query(Player).filter_by(user=event.user).one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '시뮬을 해보신 적 없으신 것 같아요!'
+        )
+        return
+
+    await bot.say(
+        event.channel,
+        ('소모한 메모리 다이아: {used_diamond:,}\n'
+         '소지중인 해방 결정: {release_crystal}\n'
+         '소지중인 캐릭터:\n{characters}\n'
+         '소지중인 무기:\n{weapons}\n'
+         '소지중인 기록 결정:\n{record_crystals}').format(
+            used_diamond=player.used_diamond,
+            release_crystal=player.release_crystal,
+            characters='\n'.join(
+                f"- ★{data['rarity']} {bold(name)}"
+                if data['rarity'] >= 4 else f"* ★{data['rarity']} {name}"
+                for name, data in sorted(
+                    player.characters.items(),
+                    key=lambda x: -x[1]['rarity'],
+                )
+            ),
+            weapons='\n'.join(
+                f"- ★{data['rarity']} {bold(name)}: {data['count']:,}개"
+                if data['rarity'] >= 4 else
+                f"- ★{data['rarity']} {name}: {data['count']:,}개"
+                for name, data in sorted(
+                    player.weapons.items(),
+                    key=lambda x: -x[1]['rarity'],
+                )
+            ),
+            record_crystals='\n'.join(
+                f"- {name}: {count:,}"
+                for name, count in player.record_crystals.items()
+            ),
+        ),
+        thread_ts=event.ts,
+    )
+
+
+@box.command('시뮬결과리셋')
+async def saomd_sim_result_reset(bot, event: Message, sess):
+    """
+    SAOMD 시뮬 결과 리셋
+
+    `{PREFIX}시뮬결과리셋` (SAOMD 시뮬레이션 결과를 모두 삭제)
+
+    """
+
+    try:
+        player = sess.query(Player).filter_by(user=event.user).one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '리셋할 데이터가 없어요!'
+        )
+        return
+
+    sess.query(PlayerScout).filter_by(player=player).delete()
+
+    player.record_crystals = {}
+    player.weapons = {}
+    player.characters = {}
+    player.release_crystal = 0
+    player.used_diamond = 0
+
+    with sess.begin():
+        sess.add(player)
+
+    await bot.say(
+        event.channel,
+        '리셋했어요!'
     )
 
 
