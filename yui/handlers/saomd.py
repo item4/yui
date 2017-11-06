@@ -22,6 +22,7 @@ from ..models.saomd import (
     ScoutType,
     Step,
 )
+from ..type import UserID
 from ..util import bold, fuzzy_korean_ratio, strike
 
 THREE_STAR_CHARACTERS: List[str] = [
@@ -149,39 +150,35 @@ class Weapon(NamedTuple):
     battle_skills: Optional[List[str]]
 
 
-@box.command('캐릭뽑기', ['캐뽑'], channels=only(
-    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
-))
-@argument('scout_title', nargs=-1, concat=True,
-          count_error='스카우트 타이틀을 입력해주세요')
-async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
-    """
-    소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
-
-    `{PREFIX}캐뽑 두근두근` (두근두근 수증기와 미인의 온천 스카우트 11연차를 시뮬레이션)
-
-    지원되는 스카우트 타이틀은 `{PREFIX}캐뽑종류` 로 확인하세요.
-
-    """
-
+def get_or_create_player(sess, user: UserID) -> Player:
     try:
-        player = sess.query(Player).filter_by(user=event.user).one()
+        player = sess.query(Player).filter_by(user=user).one()
     except NoResultFound:
         player = Player()
-        player.user = event.user
+        player.user = user
         with sess.begin():
             sess.add(player)
+    return player
 
-    scouts = sess.query(Scout).filter_by(type=ScoutType.character).all()
+
+def get_similar_scout_by_title(sess, type: ScoutType, title: str) -> Scout:
+    scouts = sess.query(Scout).filter_by(type=type).all()
 
     scout = scouts[0]
-    ratio = fuzzy_korean_ratio(scout.title, scout_title)
+    ratio = fuzzy_korean_ratio(scout.title, title)
     for s in scouts[1:]:
-        _ratio = fuzzy_korean_ratio(s.title, scout_title)
+        _ratio = fuzzy_korean_ratio(s.title, title)
         if ratio < _ratio:
             ratio = _ratio
             scout = s
+    return scout
 
+
+def get_or_create_player_scout(
+    sess,
+    player: Player,
+    scout: Scout
+) -> PlayerScout:
     try:
         player_scout = sess.query(PlayerScout).filter(
             PlayerScout.player == player,
@@ -200,44 +197,67 @@ async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
         with sess.begin():
             sess.add(player_scout)
 
-    step: Step = player_scout.next_step
+    return player_scout
 
-    chars: List[Tuple[int, str]] = []
 
+def choice_units(
+    scout: Scout,
+    step: Step,
+    s3_units: List[str],
+    s2_units: List[str],
+    seed: int=None,
+) -> List[Tuple[int, str]]:
+    result = []
+    result_length = step.count
     five = step.s5_chance
     four = five + step.s4_chance
     three = four + 0.25
-
-    result_length = step.count
+    random.seed(seed)
     for x in range(step.s5_fixed):
-        chars.append((5, random.choice(scout.s5_units)))
+        result.append((5, random.choice(scout.s5_units)))
         result_length -= 1
     for x in range(step.s4_fixed):
-        chars.append((4, random.choice(scout.s4_units)))
+        result.append((4, random.choice(scout.s4_units)))
         result_length -= 1
     for x in range(result_length):
         r = random.random()
         if r <= five:
-            chars.append((5, random.choice(scout.s5_units)))
+            result.append((5, random.choice(scout.s5_units)))
         elif r <= four:
-            chars.append((4, random.choice(scout.s4_units)))
+            result.append((4, random.choice(scout.s4_units)))
         elif r <= three:
-            chars.append((3, random.choice(THREE_STAR_CHARACTERS)))
+            result.append((3, random.choice(s3_units)))
         else:
-            chars.append((2, random.choice(TWO_STAR_CHARACTERS)))
+            result.append((2, random.choice(s2_units)))
 
-    chars.sort(key=lambda x: -x[0])
+    if scout.type == ScoutType.character:
+        result.sort(key=lambda x: -x[0])
 
+    random.seed(None)
+
+    return result
+
+
+def get_record_crystal(scout: Scout, seed: int=None) -> int:
     record_crystal = 0
 
     if scout.record_crystal:
         cases: List[int] = []
         chances: List[float] = []
+        random.seed(seed)
         for case, chance in scout.record_crystal:
             cases.append(case)
             chances.append(chance)
         record_crystal = random.choices(cases, chances)[0]
+        random.seed(None)
 
+    return record_crystal
+
+
+def process_release_crystal_and_deck(
+    player: Player,
+    chars: List[Tuple[int, str]]
+) -> Tuple[List[str], int]:
     results: List[str] = []
     release_crystal = 0
     characters = copy.deepcopy(player.characters)
@@ -273,6 +293,42 @@ async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
     player.characters = characters
     player.release_crystal += release_crystal
 
+    return results, release_crystal
+
+
+def process_weapon_inventory(
+    player: Player,
+    weapons: List[Tuple[int, str]]
+) -> List[str]:
+    results: List[str] = []
+    player_weapons = copy.deepcopy(player.weapons)
+    for w in weapons:
+        w0 = str(w[0])
+        if w0 not in player_weapons:
+            player_weapons[w0] = {}
+        if w[1] in player_weapons[w0]:
+            player_weapons[w0][w[1]]['count'] += 1
+        else:
+            player_weapons[w0][w[1]] = {
+                'count': 1,
+            }
+
+        if w[0] in [4, 5]:
+            results.append(f'★{w[0]} {bold(w[1])}')
+        else:
+            results.append(f'★{w[0]} {w[1]}')
+
+    player.weapons = player_weapons
+
+    return results
+
+
+def process_step_cost(
+    player: Player,
+    scout: Scout,
+    step: Step,
+    record_crystal: int
+):
     record_crystal_name = (
         f'{scout.title} {COST_TYPE_LABEL[CostType.record_crystal]}'
     )
@@ -296,6 +352,35 @@ async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
             )
 
     player.record_crystals = record_crystals
+
+
+@box.command('캐릭뽑기', ['캐뽑'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
+@argument('title', nargs=-1, concat=True,
+          count_error='스카우트 타이틀을 입력해주세요')
+async def saomd_character_scout(bot, event: Message, sess, title: str):
+    """
+    소드 아트 온라인 메모리 디프래그의 캐릭터 뽑기를 시뮬레이팅합니다.
+
+    `{PREFIX}캐뽑 두근두근` (두근두근 수증기와 미인의 온천 스카우트 11연차를 시뮬레이션)
+
+    지원되는 스카우트 타이틀은 `{PREFIX}캐뽑종류` 로 확인하세요.
+
+    """
+
+    player = get_or_create_player(sess, event.user)
+    scout = get_similar_scout_by_title(sess, ScoutType.character, title)
+    player_scout = get_or_create_player_scout(sess, player, scout)
+
+    step: Step = player_scout.next_step
+
+    chars = choice_units(
+        scout, step, THREE_STAR_CHARACTERS, TWO_STAR_CHARACTERS)
+    record_crystal = get_record_crystal(scout)
+    results, release_crystal = process_release_crystal_and_deck(player, chars)
+
+    process_step_cost(player, scout, step, record_crystal)
     player_scout.next_step = step.next_step or step
 
     with sess.begin():
@@ -326,9 +411,9 @@ async def saomd_character_scout(bot, event: Message, sess, scout_title: str):
 @box.command('무기뽑기', ['무뽑'], channels=only(
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
-@argument('scout_title', nargs=-1, concat=True,
+@argument('title', nargs=-1, concat=True,
           count_error='스카우트 타이틀을 입력해주세요')
-async def saomd_weapon_scout(bot, event: Message, sess, scout_title: str):
+async def saomd_weapon_scout(bot, event: Message, sess, title: str):
     """
     소드 아트 온라인 메모리 디프래그의 무기 뽑기를 시뮬레이팅합니다.
 
@@ -338,120 +423,17 @@ async def saomd_weapon_scout(bot, event: Message, sess, scout_title: str):
 
     """
 
-    try:
-        player = sess.query(Player).filter_by(user=event.user).one()
-    except NoResultFound:
-        player = Player()
-        player.user = event.user
-        with sess.begin():
-            sess.add(player)
-
-    scouts = sess.query(Scout).filter_by(type=ScoutType.weapon).all()
-
-    scout = scouts[0]
-    ratio = fuzzy_korean_ratio(scout.title, scout_title)
-    for s in scouts[1:]:
-        _ratio = fuzzy_korean_ratio(s.title, scout_title)
-        if ratio < _ratio:
-            ratio = _ratio
-            scout = s
-
-    try:
-        player_scout = sess.query(PlayerScout).filter(
-            PlayerScout.player == player,
-            PlayerScout.scout == scout,
-            ).one()
-    except NoResultFound:
-        first = sess.query(Step).filter(
-            Step.scout == scout,
-            Step.is_first == True,  # noqa
-        ).one()
-        player_scout = PlayerScout()
-        player_scout.player = player
-        player_scout.scout = scout
-        player_scout.next_step = first
-
-        with sess.begin():
-            sess.add(player_scout)
+    player = get_or_create_player(sess, event.user)
+    scout = get_similar_scout_by_title(sess, ScoutType.weapon, title)
+    player_scout = get_or_create_player_scout(sess, player, scout)
 
     step: Step = player_scout.next_step
 
-    weapons: List[Tuple[int, str]] = []
+    weapons = choice_units(scout, step, THREE_STAR_WEAPONS, TWO_STAR_WEAPONS)
+    record_crystal = get_record_crystal(scout)
+    results = process_weapon_inventory(player, weapons)
 
-    five = step.s5_chance
-    four = five + step.s4_chance
-    three = four + 0.25
-
-    result_length = step.count
-    for x in range(step.s5_fixed):
-        weapons.append((5, random.choice(scout.s5_units)))
-        result_length -= 1
-    for x in range(step.s4_fixed):
-        weapons.append((4, random.choice(scout.s4_units)))
-        result_length -= 1
-    for x in range(result_length):
-        r = random.random()
-        if r <= five:
-            weapons.append((5, random.choice(scout.s5_units)))
-        elif r <= four:
-            weapons.append((4, random.choice(scout.s4_units)))
-        elif r <= three:
-            weapons.append((3, random.choice(THREE_STAR_WEAPONS)))
-        else:
-            weapons.append((2, random.choice(TWO_STAR_WEAPONS)))
-
-    record_crystal = 0
-
-    if scout.record_crystal:
-        cases: List[int] = []
-        chances: List[float] = []
-        for case, chance in scout.record_crystal:
-            cases.append(case)
-            chances.append(chance)
-        record_crystal = random.choices(cases, chances)[0]
-
-    results: List[str] = []
-    player_weapons = copy.deepcopy(player.weapons)
-    for w in weapons:
-        weapon = player_weapons.get(w[1])
-        if weapon:
-            player_weapons[w[1]]['count'] += 1
-        else:
-            player_weapons[w[1]] = {
-                'rarity': w[0],
-                'count': 1,
-            }
-
-        if w[0] in [4, 5]:
-            results.append(f'★{w[0]} {bold(w[1])}')
-        else:
-            results.append(f'★{w[0]} {w[1]}')
-
-    player.weapons = player_weapons
-
-    record_crystal_name = (
-        f'{scout.title} {COST_TYPE_LABEL[CostType.record_crystal]}'
-    )
-    record_crystals = copy.deepcopy(player.record_crystals)
-    if step.cost_type == CostType.diamond:
-        player.used_diamond += step.cost
-
-        if record_crystal:
-            if record_crystal_name in player.record_crystals:
-                record_crystals[record_crystal_name] += record_crystal
-            else:
-                record_crystals[record_crystal_name] = record_crystal
-    elif step.cost_type == CostType.record_crystal:
-        if record_crystal_name in player.record_crystals:
-            record_crystals[record_crystal_name] += (
-                record_crystal - step.cost
-            )
-        else:
-            record_crystals[record_crystal_name] = (
-                record_crystal - step.cost
-            )
-
-    player.record_crystals = record_crystals
+    process_step_cost(player, scout, step, record_crystal)
     player_scout.next_step = step.next_step or step
 
     with sess.begin():
@@ -547,13 +529,14 @@ async def saomd_sim_result(bot, event: Message, sess):
                 )
             ),
             weapons='\n'.join(
-                f"- ★{data['rarity']} {bold(name)}: {data['count']:,}개"
-                if data['rarity'] >= 4 else
-                f"- ★{data['rarity']} {name}: {data['count']:,}개"
-                for name, data in sorted(
+                f"- ★{rarity} {bold(name)}: {data['count']:,}개"
+                if int(rarity) >= 4 else
+                f"- ★{rarity} {name}: {data['count']:,}개"
+                for rarity, items in sorted(
                     player.weapons.items(),
-                    key=lambda x: -x[1]['rarity'],
+                    key=lambda x: -int(x[0]),
                 )
+                for name, data in items.items()
             ),
             record_crystals='\n'.join(
                 f"- {name}: {count:,}"
