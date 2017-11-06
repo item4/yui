@@ -426,7 +426,6 @@ GLOBAL_CONTEXT = {
     'set': set,
     'str': str,
     'tuple': tuple,
-    'type': type,
     # builtin func
     'abs': abs,
     'all': all,
@@ -985,9 +984,6 @@ class Validator(ast.NodeVisitor):
 
     def visit_While(self, node):  # noqa
         raise SyntaxError('while stmt is not permitted.')
-
-    def visit_If(self, node):  # noqa
-        raise SyntaxError('if stmt is not permitted.')
 
     def visit_With(self, node):  # noqa
         raise SyntaxError('with stmt is not permitted.')
