@@ -75,6 +75,13 @@ from yui.handlers.calc import Decimal as D, calculate
             {'f': lambda x: x*D(2)},
             {'f': lambda x: x*2}
         ),
+        (
+            'a = 11;\nif a > 10:\n    a += 100\na',
+            D('111'),
+            111,
+            {'a': D(111)},
+            {'a': 111}
+        ),
     ]
 )
 def test_calculate_fine(
@@ -167,9 +174,6 @@ def test_calculate_magic():
         ('return', SyntaxError, 'return is not permitted.'),
         ('for x in arr: pass', SyntaxError, 'for stmt is not permitted.'),
         ('while True: pass', SyntaxError, 'while stmt is not permitted.'),
-        ('if True: pass', SyntaxError, 'if stmt is not permitted.'),
-        ('if True:\n  pass\nelse:\n  pass\n', SyntaxError,
-         'if stmt is not permitted.'),
         ('with a: pass', SyntaxError, 'with stmt is not permitted.'),
         ('raise SystemExit()', SyntaxError, 'raise stmt is not permitted.'),
         ('try:\n  pass\nexcept:\n  pass\n', SyntaxError,
