@@ -1102,6 +1102,66 @@ def 일주년_카운트다운_앙케이트_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 폭풍에_휘날리는_해적기_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '폭풍에 휘날리는 해적기 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[긍지 높은 선장] 키리토',
+        '[갑판을 채색하는 부선장] 아스나',
+        '[감시대의 명저격수] 시논',
+        '[쾌활한 항해사] 리파',
+        '[직감의 조타수] 유우키',
+    ]
+    scout.record_crystal = [
+        (1, 3.0),
+        (2, 37.0),
+        (3, 40.0),
+        (4, 10.0),
+        (5, 3.5),
+        (6, 3.5),
+        (7, 1.0),
+        (8, 1.0),
+        (9, 0.5),
+        (10, 0.5),
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 폭풍에_휘날리는_해적기_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '폭풍에 휘날리는 해적기 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '오션 에스파다',
+        '파이어릿 대거',
+        '하버 라이플',
+        '졸리 로저 사벨',
+        '인쇼어 소드 x 오프쇼어 소드',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1217,5 +1277,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '1주년 카운트다운! 앙케이트 스카우트',
         ScoutType.weapon,
         일주년_카운트다운_앙케이트_스카우트_무기,
+    ),
+    (
+        '폭풍에 휘날리는 해적기 스카우트',
+        ScoutType.character,
+        폭풍에_휘날리는_해적기_스카우트_캐릭터,
+    ),
+    (
+        '폭풍에 휘날리는 해적기 스카우트',
+        ScoutType.weapon,
+        폭풍에_휘날리는_해적기_스카우트_무기,
     ),
 ]
