@@ -459,7 +459,9 @@ async def saomd_weapon_scout(bot, event: Message, sess, title: str):
     )
 
 
-@box.command('캐릭뽑기종류', ['캐뽑종류'])
+@box.command('캐릭뽑기종류', ['캐뽑종류'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 async def saomd_character_scouts_list(bot, event: Message, sess):
     """
     SAOMD 캐릭뽑기 스카우트 타이틀 목록
@@ -476,7 +478,9 @@ async def saomd_character_scouts_list(bot, event: Message, sess):
     )
 
 
-@box.command('무기뽑기종류', ['무뽑종류'])
+@box.command('무기뽑기종류', ['무뽑종류'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 async def saomd_weapon_scouts_list(bot, event: Message, sess):
     """
     SAOMD 무기뽑기 스카우트 타이틀 목록
@@ -493,7 +497,9 @@ async def saomd_weapon_scouts_list(bot, event: Message, sess):
     )
 
 
-@box.command('시뮬결과')
+@box.command('시뮬결과', channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 async def saomd_sim_result(bot, event: Message, sess):
     """
     SAOMD 시뮬레이션 결과
@@ -547,7 +553,9 @@ async def saomd_sim_result(bot, event: Message, sess):
     )
 
 
-@box.command('시뮬결과리셋')
+@box.command('시뮬결과리셋', channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 async def saomd_sim_result_reset(bot, event: Message, sess):
     """
     SAOMD 시뮬 결과 리셋
@@ -582,7 +590,9 @@ async def saomd_sim_result_reset(bot, event: Message, sess):
     )
 
 
-@box.command('캐릭정보', ['캐정'])
+@box.command('캐릭정보', ['캐정'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 @argument('keyword', nargs=-1, concat=True)
 async def character_info(bot, event: Message, keyword: str):
     """
@@ -672,7 +682,9 @@ async def character_info(bot, event: Message, keyword: str):
         )
 
 
-@box.command('무기정보', ['무정'])
+@box.command('무기정보', ['무정'], channels=only(
+    'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
+))
 @argument('keyword', nargs=-1, concat=True)
 async def weapon_info(bot, event: Message, keyword: str):
     """
