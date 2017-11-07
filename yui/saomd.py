@@ -458,6 +458,76 @@ def 환영의_탄환이_쌓는_두사람의_인연_스카우트_무기(sess):
         sess.add(step3)
 
 
+def 장난스런_할로윈_나이트_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '장난스런 할로윈 나이트 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = FOUR_STAR_CHARACTERS
+    scout.s5_units = [
+        '[사랑에 빠진 뱀파이어] 유우키',
+        '[상냥한 몬스터] 리파',
+        '[스파이더 위치] 시논',
+        '[새끼고양이 마녀] 시리카',
+    ]
+    scout.record_crystal = [
+        (1, 3.0),
+        (2, 37.0),
+        (3, 40.0),
+        (4, 10.0),
+        (5, 3.5),
+        (6, 3.5),
+        (7, 1.0),
+        (8, 1.0),
+        (9, 0.5),
+        (10, 0.5),
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 125
+    step1.cost_type = CostType.diamond
+    step1.s5_chance = 0.02
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2+'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+    step2.s5_chance = 0.02
+
+    step1.next_step = step2
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+
+
+def 장난스런_할로윈_나이트_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '장난스런 할로윈 나이트 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '트릭 오어 바렛',
+        '샤노와르',
+        '데빌 스태프',
+        '머시너리 소드',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -503,5 +573,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '환영의 탄환이 쌓는 두사람의 인연 스카우트',
         ScoutType.weapon,
         환영의_탄환이_쌓는_두사람의_인연_스카우트_무기,
+    ),
+    (
+        '장난스런 할로윈 나이트 스카우트',
+        ScoutType.character,
+        장난스런_할로윈_나이트_스카우트_캐릭터,
+    ),
+    (
+        '장난스런 할로윈 나이트 스카우트',
+        ScoutType.weapon,
+        장난스런_할로윈_나이트_스카우트_무기,
     ),
 ]
