@@ -1,5 +1,4 @@
 import json
-
 from typing import Dict, List, Optional
 
 from attrdict import AttrDict

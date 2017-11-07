@@ -2,13 +2,13 @@ from setuptools import find_packages, setup
 
 install_requires = {
     # Async request
-    'aiohttp >= 2.3.1',
+    'aiohttp >= 2.3.2',
     'cchardet >= 2.1.1',
     'aiodns >= 1.1.1',
     # Async util
     'async-timeout >= 2.0.0',
     # Database
-    'SQLAlchemy >= 1.1.14',
+    'SQLAlchemy >= 1.1.15',
     'sqlalchemy-utils >= 0.32.19',
     'alembic >= 0.9.6',
     # CLI
@@ -20,7 +20,7 @@ install_requires = {
     # Fuzzy Search
     'fuzzywuzzy[speedup] >= 0.15.1',
     # HTML
-    'lxml >= 4.1.0',
+    'lxml >= 4.1.1',
     'cssselect >= 1.0.1',
     # i18n
     'babel >= 2.5.1',
@@ -43,7 +43,7 @@ extras_require = {
     'tests': tests_require,
     'lint': {
         'flake8 >= 3.5.0',
-        'flake8-import-order >= 0.13',
+        'flake8-import-order >= 0.15',
     },
     'ci': {
         'codecov >= 2.0.9',

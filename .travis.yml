@@ -14,7 +14,7 @@ before_install:
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 script:
 - pytest --cov yui tests
-- flake8 yui tests
+- flake8
 - mypy yui
 - docker pull item4/yui:latest
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .

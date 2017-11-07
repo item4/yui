@@ -1,5 +1,4 @@
 import re
-
 from decimal import Decimal
 from typing import Dict
 from urllib.parse import urlencode

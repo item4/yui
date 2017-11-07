@@ -10,6 +10,7 @@ import enum
 from alembic import op
 
 import sqlalchemy as sa
+
 import sqlalchemy_utils
 
 

@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 if git diff --cached --name-only | grep "\.py$" > /dev/null; then
-    flake8 ./yui ./tests
+    flake8
 fi

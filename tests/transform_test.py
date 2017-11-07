@@ -1,6 +1,5 @@
 import datetime
 import enum
-
 from decimal import Decimal
 
 import pytest

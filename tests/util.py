@@ -1,5 +1,4 @@
 import json
-
 from typing import Any, Callable, Dict, List, NamedTuple, Tuple
 
 from yui.api import SlackAPI

@@ -1,7 +1,6 @@
 import functools
 import os.path
 import pathlib
-
 from typing import Optional
 
 from alembic import command

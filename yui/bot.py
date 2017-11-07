@@ -7,7 +7,6 @@ import logging.config
 import re
 import shlex
 import traceback
-
 from typing import Any, Dict
 
 import aiocron

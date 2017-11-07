@@ -1,6 +1,5 @@
 import copy
 import random
-
 from typing import List, NamedTuple, Optional, Tuple
 
 import aiohttp
