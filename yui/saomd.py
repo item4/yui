@@ -1018,6 +1018,90 @@ def 신뢰의_증거_운명의_인연_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 일주년_카운트다운_앙케이트_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '1주년 카운트다운! 앙케이트 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[일어서는 영웅] 키리토',
+        '[맞서는 결의] 아스나',
+        '[황금의 기사] 엘리스',
+        '[숙련된 손님 맞이 메이드] 레인',
+        '[고고히 포효하는 레오] 시논',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 200
+    step1.cost_type = CostType.diamond
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 200
+    step3.cost_type = CostType.diamond
+    step3.s4_chance = 0.04 * 1.5
+
+    step4 = Step()
+    step4.scout = scout
+    step4.name = 'Step 4'
+    step4.cost = 250
+    step4.cost_type = CostType.diamond
+
+    step5 = Step()
+    step5.scout = scout
+    step5.name = 'Step 5'
+    step5.cost = 250
+    step5.cost_type = CostType.diamond
+    step5.s4_chance = 0.08
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step4
+    step4.next_step = step5
+    step5.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+        sess.add(step4)
+        sess.add(step5)
+
+
+def 일주년_카운트다운_앙케이트_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '1주년 카운트다운! 앙케이트 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '히로익 프로미스+1',
+        '컬리지+1',
+        '금목서의 검+1',
+        '티타임 세이버+1',
+        '레오의 창+1',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1123,5 +1207,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '신뢰의 증거 운명의 인연 스카우트',
         ScoutType.weapon,
         신뢰의_증거_운명의_인연_스카우트_무기,
+    ),
+    (
+        '1주년 카운트다운! 앙케이트 스카우트',
+        ScoutType.character,
+        일주년_카운트다운_앙케이트_스카우트_캐릭터,
+    ),
+    (
+        '1주년 카운트다운! 앙케이트 스카우트',
+        ScoutType.weapon,
+        일주년_카운트다운_앙케이트_스카우트_무기,
     ),
 ]
