@@ -701,6 +701,113 @@ def 남자들의_광연_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 지나가는_시간과_우정의_기억_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '지나가는 시간과 우정의 기억 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = list(set(FOUR_STAR_CHARACTERS) - {
+        '[치유의 여름 미인] 아스나',
+        '[두근거리는 여름 처녀] 스구하',
+        '[장난스런 여름 소녀] 시논',
+        '[해바라기 여름소녀] 시리카',
+        '[장사수완 좋은 노점상] 리즈벳',
+        '[여름밤에 울리는 소리] 리파',
+        '[신락의 춤] 프리미어',
+        '[긍지 높은 선장] 키리토',
+        '[갑판을 채색하는 부선장] 아스나',
+        '[감시대의 명저격수] 시논',
+        '[직감의 조타수] 유우키',
+    })
+    scout.s5_units = [
+        '[마음을 잇는 물요정] 아스나',
+        '[희망을 이루는 검호] 유우키',
+        '[순수한 미소의 수호자] 시리카',
+        '[조화를 지키는 자] 리즈벳',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 200
+    step1.cost_type = CostType.diamond
+    step1.s5_chance = 0.02
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+    step2.s5_chance = 0.02
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 200
+    step3.cost_type = CostType.diamond
+    step3.s5_chance = 0.02 * 1.5
+
+    step4 = Step()
+    step4.scout = scout
+    step4.name = 'Step 4'
+    step4.cost = 250
+    step4.cost_type = CostType.diamond
+    step4.s5_chance = 0.02
+
+    step5 = Step()
+    step5.scout = scout
+    step5.name = 'Step 5'
+    step5.cost = 250
+    step5.cost_type = CostType.diamond
+    step5.s5_chance = 0.02
+    step5.s5_fixed = 1
+
+    step6 = Step()
+    step6.scout = scout
+    step6.name = 'Step 6'
+    step6.cost = 250
+    step6.cost_type = CostType.diamond
+    step6.s5_chance = 0.04
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step4
+    step4.next_step = step5
+    step5.next_step = step6
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+        sess.add(step4)
+        sess.add(step5)
+        sess.add(step6)
+
+
+def 지나가는_시간과_우정의_기억_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '지나가는 시간과 우정의 기억 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '아틀탄티스 소드',
+        '철운석의 검',
+        '카른웨난',
+        '플라네타리 메이스',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -776,5 +883,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '남자들의 광연 스카우트',
         ScoutType.weapon,
         남자들의_광연_스카우트_무기,
+    ),
+    (
+        '지나가는 시간과 우정의 기억 스카우트',
+        ScoutType.character,
+        지나가는_시간과_우정의_기억_스카우트_캐릭터,
+    ),
+    (
+        '지나가는 시간과 우정의 기억 스카우트',
+        ScoutType.weapon,
+        지나가는_시간과_우정의_기억_스카우트_무기,
     ),
 ]
