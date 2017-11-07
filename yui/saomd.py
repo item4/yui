@@ -375,6 +375,89 @@ def 키리토_아스나_결혼기념일_스카우트_캐릭터(sess):
         sess.add(step3)
 
 
+def 환영의_탄환이_쌓는_두사람의_인연_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '환영의 탄환이 쌓는 두사람의 인연 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = FOUR_STAR_CHARACTERS
+    scout.s5_units = [
+        '[황야에 내려선 검사] 키리토',
+        '[그리움에 기대는 저격수] 시논',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 125
+    step1.cost_type = CostType.diamond
+    step1.s5_chance = 0.02
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+    step2.s5_chance = 0.02
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 250
+    step3.cost_type = CostType.diamond
+    step3.s5_chance = 0.04
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
+def 환영의_탄환이_쌓는_두사람의_인연_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '환영의 탄환이 쌓는 두사람의 인연 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '츠키카게',
+        '헤카테 겐나이온',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 100
+    step1.cost_type = CostType.diamond
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 150
+    step2.cost_type = CostType.diamond
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 150
+    step3.cost_type = CostType.diamond
+    step3.s4_chance = 0.08
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -410,5 +493,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '키리토 & 아스나 결혼기념일 스카우트',
         ScoutType.character,
         키리토_아스나_결혼기념일_스카우트_캐릭터,
+    ),
+    (
+        '환영의 탄환이 쌓는 두사람의 인연 스카우트',
+        ScoutType.character,
+        환영의_탄환이_쌓는_두사람의_인연_스카우트_캐릭터,
+    ),
+    (
+        '환영의 탄환이 쌓는 두사람의 인연 스카우트',
+        ScoutType.weapon,
+        환영의_탄환이_쌓는_두사람의_인연_스카우트_무기,
     ),
 ]
