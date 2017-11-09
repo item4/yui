@@ -1206,6 +1206,54 @@ def 여름밤의_축제_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 매력분출_여름빛_소녀_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '매력분출 여름빛 소녀 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[해바라기 여름 소녀] 시리카',
+        '[태양의 여름 소녀] 리즈벳',
+        '[장난스런 여름 소녀] 시논',
+        '[두근거리는 여름 처녀] 스구하',
+        '[치유의 여름 미인] 아스나',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 매력분출_여름빛_소녀_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '매력분출 여름빛 소녀 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '비치 버스터',
+        '선플라워 엣지',
+        '마린 샷',
+        '아일랜드 스피어',
+        '릴리 망고슈',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1341,5 +1389,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '여름밤의 축제 스카우트',
         ScoutType.weapon,
         여름밤의_축제_스카우트_무기,
+    ),
+    (
+        '매력분출 여름빛 소녀 스카우트',
+        ScoutType.character,
+        매력분출_여름빛_소녀_스카우트_캐릭터,
+    ),
+    (
+        '매력분출 여름빛 소녀 스카우트',
+        ScoutType.weapon,
+        매력분출_여름빛_소녀_스카우트_무기,
     ),
 ]
