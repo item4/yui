@@ -1254,6 +1254,54 @@ def 매력분출_여름빛_소녀_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 유카타_NIGHT_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '유카타 NIGHT 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[여름 밤을 비추는 수양버들] 아스나',
+        '[탄도에 피는 나팔꽃] 시논',
+        '[시원한 저녁놀의 싸리꽃] 스구하',
+        '[노래하는 백일홍] 세븐',
+        '[춤추듯 지는 벚꽃] 레인',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 유카타_NIGHT_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '유카타 NIGHT 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '麗刀・流れ柳 (세검)',
+        '妖刀・雅文の調べ × 雅文の奏で (쌍검)',
+        '祝槍・八重の繚乱 (창)',
+        '宝銃・咲くや朝霧 (총)',
+        '霊刀・萩の露 (단검)',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1399,5 +1447,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '매력분출 여름빛 소녀 스카우트',
         ScoutType.weapon,
         매력분출_여름빛_소녀_스카우트_무기,
+    ),
+    (
+        '유카타 NIGHT 스카우트',
+        ScoutType.character,
+        유카타_NIGHT_스카우트_캐릭터,
+    ),
+    (
+        '유카타 NIGHT 스카우트',
+        ScoutType.weapon,
+        유카타_NIGHT_스카우트_무기,
     ),
 ]
