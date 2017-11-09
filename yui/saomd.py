@@ -1302,6 +1302,54 @@ def 유카타_NIGHT_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 인기_캐릭터_강화_앙케이트_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '인기 캐릭터! 강화 앙케이트 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[참영비검] 아스나',
+        '[인연의 제미니] 유우키',
+        '[섬광의 무도] 아스나',
+        '[천사의 성원] 유이',
+        '[초여름을 장식하는 처녀] 스구하',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 인기_캐릭터_강화_앙케이트_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '인기 캐릭터! 강화 앙케이트 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '인과의 법칙검+1',
+        '엔젤 클레이모어+1',
+        '제미니 그라디우스+1',
+        '피셔즈 소드+1',
+        '원스 어픈 어 타임+1',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1457,5 +1505,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '유카타 NIGHT 스카우트',
         ScoutType.weapon,
         유카타_NIGHT_스카우트_무기,
+    ),
+    (
+        '인기 캐릭터! 강화 앙케이트 스카우트',
+        ScoutType.character,
+        인기_캐릭터_강화_앙케이트_스카우트_캐릭터,
+    ),
+    (
+        '인기 캐릭터! 강화 앙케이트 스카우트',
+        ScoutType.weapon,
+        인기_캐릭터_강화_앙케이트_스카우트_무기,
     ),
 ]
