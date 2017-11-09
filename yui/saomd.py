@@ -1162,6 +1162,50 @@ def 폭풍에_휘날리는_해적기_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 여름밤의_축제_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '여름밤의 축제 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[신락의 춤] 프리미어',
+        '[여름밤에 울리는 소리] 리파',
+        '[장사수완 좋은 노점상 리즈벳',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 여름밤의_축제_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '여름밤의 축제 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '천신의 폭풍검',
+        '풍차의 신검',
+        '보구의 신창',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1287,5 +1331,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '폭풍에 휘날리는 해적기 스카우트',
         ScoutType.weapon,
         폭풍에_휘날리는_해적기_스카우트_무기,
+    ),
+    (
+        '여름밤의 축제 스카우트',
+        ScoutType.character,
+        여름밤의_축제_스카우트_캐릭터,
+    ),
+    (
+        '여름밤의 축제 스카우트',
+        ScoutType.weapon,
+        여름밤의_축제_스카우트_무기,
     ),
 ]
