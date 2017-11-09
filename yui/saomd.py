@@ -1398,6 +1398,54 @@ def 한여름의_트로피컬_드림_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 가속하는_리얼_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '가속하는 리얼 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = [
+        '[일어서는 영웅] 키리토',
+        '[맞서는 결의] 아스나',
+        '[어그멘트 테이머] 시리카',
+        '[이피션트 스미스] 리즈벳',
+        '[프로그레시브 거너] 시논',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 250
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 가속하는_리얼_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '가속하는 리얼 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '히로익 프로미스',
+        '컬리지',
+        '에레타',
+        '엣지 오브 리펜트',
+        '어드밴서',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '일반'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1573,5 +1621,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '한여름의 트로피컬★드림 스카우트',
         ScoutType.weapon,
         한여름의_트로피컬_드림_스카우트_무기,
+    ),
+    (
+        '가속하는 리얼 스카우트',
+        ScoutType.character,
+        가속하는_리얼_스카우트_캐릭터,
+    ),
+    (
+        '가속하는 리얼 스카우트',
+        ScoutType.weapon,
+        가속하는_리얼_스카우트_무기,
     ),
 ]
