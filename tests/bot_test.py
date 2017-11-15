@@ -3,6 +3,9 @@ import copy
 
 from attrdict import AttrDict
 
+from mocket.mocket import Mocketizer
+from mocket.mockhttp import Entry
+
 import pytest
 
 import ujson
@@ -12,7 +15,7 @@ from yui.bot import APICallError, Bot
 from yui.box import box
 from yui.config import DEFAULT
 
-from .util import FakeClientSession, FakeImportLib
+from .util import FakeImportLib
 
 
 def test_bot_init(monkeypatch):
@@ -45,43 +48,71 @@ def test_bot_init(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_call(monkeypatch):
-    client_session = FakeClientSession()
+async def test_call():
+    with Mocketizer(None):
+        token = 'asdf1234'
 
-    @client_session.post('https://slack.com/api/test1')
-    def test1(**kwargs):
-        kwargs['data'] = {x[0]['name']: x[2] for x in kwargs['data']._fields}
-        kwargs.update({
-            'res': 'hello world!',
-        })
-        return ujson.dumps(kwargs)
+        Entry.single_register(
+            Entry.POST,
+            'https://slack.com/api/test11',
+            body=ujson.dumps({
+                'res': 'hello world!',
+                'data': {
+                    'token': token,
+                },
+            }),
+            headers={'content-type': 'application/json'},
+            status=200,
+        )
+        Entry.single_register(
+            Entry.POST,
+            'https://slack.com/api/test12',
+            body=ujson.dumps({
+                'res': 'hello world!',
+                'data': {
+                    'token': token,
+                    'extra': 'wow',
+                },
+            }),
+            headers={'content-type': 'application/json'},
+            status=200,
+        )
 
-    @client_session.post('https://slack.com/api/test2')
-    def test2(**kwargs):
-        return 404, ujson.dumps(kwargs)
+        Entry.single_register(
+            Entry.POST,
+            'https://slack.com/api/test21',
+            body='',
+            headers={'content-type': 'application/json'},
+            status=404,
+        )
+        Entry.single_register(
+            Entry.POST,
+            'https://slack.com/api/test22',
+            body='',
+            headers={'content-type': 'application/json'},
+            status=404,
+        )
 
-    monkeypatch.setattr('aiohttp.ClientSession', client_session)
+        config = AttrDict(copy.deepcopy(DEFAULT))
+        config.DATABASE_URL = 'sqlite:///'
+        config.TOKEN = 'asdf1234'
+        config['LOGGING']['loggers']['yui']['handlers'] = ['console']
+        del config['LOGGING']['handlers']['file']
+        bot = Bot(config)
 
-    config = AttrDict(copy.deepcopy(DEFAULT))
-    config.DATABASE_URL = 'sqlite:///'
-    config.TOKEN = 'asdf1234'
-    config['LOGGING']['loggers']['yui']['handlers'] = ['console']
-    del config['LOGGING']['handlers']['file']
-    bot = Bot(config)
+        res = await bot.call('test11')
+        assert res['res'] == 'hello world!'
+        assert res['data']['token'] == 'asdf1234'
 
-    res = await bot.call('test1')
-    assert res['res'] == 'hello world!'
-    assert res['data']['token'] == 'asdf1234'
+        res = await bot.call('test12', data={'extra': 'wow'})
+        assert res['res'] == 'hello world!'
+        assert res['data']['extra'] == 'wow'
+        assert res['data']['token'] == 'asdf1234'
 
-    res = await bot.call('test1', data={'extra': 'wow'})
-    assert res['res'] == 'hello world!'
-    assert res['data']['extra'] == 'wow'
-    assert res['data']['token'] == 'asdf1234'
+        with pytest.raises(APICallError) as e:
+            await bot.call('test21')
+        assert str(e.value) == 'fail to call test21 with None'
 
-    with pytest.raises(APICallError) as e:
-        await bot.call('test2')
-    assert str(e.value) == 'fail to call test2 with None'
-
-    with pytest.raises(APICallError) as e:
-        await bot.call('test2', data={'extra': 'wow'})
-    assert str(e.value) == "fail to call test2 with {'extra': 'wow'}"
+        with pytest.raises(APICallError) as e:
+            await bot.call('test22', data={'extra': 'wow'})
+        assert str(e.value) == "fail to call test22 with {'extra': 'wow'}"

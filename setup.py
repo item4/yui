@@ -37,6 +37,7 @@ tests_require = {
     'pytest == 3.2.4',
     'pytest-asyncio == 0.8.0',
     'pytest-cov == 2.5.1',
+    'mocket == 2.1.1',
 }
 
 extras_require = {
