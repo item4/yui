@@ -2,51 +2,51 @@ from setuptools import find_packages, setup
 
 install_requires = {
     # Async request
-    'aiohttp >= 2.3.2',
-    'cchardet >= 2.1.1',
-    'aiodns >= 1.1.1',
+    'aiohttp == 2.3.2',
+    'cchardet == 2.1.1',
+    'aiodns == 1.1.1',
     # Async util
-    'async-timeout >= 2.0.0',
+    'async-timeout == 2.0.0',
     # Database
-    'SQLAlchemy >= 1.1.15',
-    'sqlalchemy-utils >= 0.32.19',
-    'alembic >= 0.9.6',
+    'SQLAlchemy == 1.1.15',
+    'sqlalchemy-utils == 0.32.21',
+    'alembic == 0.9.6',
     # CLI
-    'Click >= 6.7',
+    'Click == 6.7',
     # Configuration
-    'toml >= 0.9.3',
+    'toml == 0.9.3.1',
     # Crontab
-    'aiocron >= 0.7',
+    'aiocron == 1.1',
     # Fuzzy Search
-    'fuzzywuzzy[speedup] >= 0.15.1',
+    'fuzzywuzzy[speedup] == 0.15.1',
     # HTML
-    'lxml >= 4.1.1',
-    'cssselect >= 1.0.1',
+    'lxml == 4.1.1',
+    'cssselect == 1.0.1',
     # i18n
-    'babel >= 2.5.1',
+    'babel == 2.5.1',
     # JSON
-    'ujson >= 1.35',
+    'ujson == 1.35',
     # RSS
-    'libearth >= 0.3.3',
+    'libearth == 0.3.3',
     # util
-    'attrdict >= 2.0.0',
+    'attrdict == 2.0.0',
 }
 
 tests_require = {
-    'mypy >= 0.521',
-    'pytest >= 3.2.3',
-    'pytest-asyncio >= 0.8.0',
-    'pytest-cov >= 2.5.1',
+    'mypy == 0.550',
+    'pytest == 3.2.4',
+    'pytest-asyncio == 0.8.0',
+    'pytest-cov == 2.5.1',
 }
 
 extras_require = {
     'tests': tests_require,
     'lint': {
-        'flake8 >= 3.5.0',
-        'flake8-import-order >= 0.15',
+        'flake8 == 3.5.0',
+        'flake8-import-order == 0.15',
     },
     'ci': {
-        'codecov >= 2.0.9',
+        'codecov == 2.0.9',
     }
 }
 

@@ -3,9 +3,15 @@ YUI
 
 .. image:: https://travis-ci.org/item4/yui.svg?branch=master
    :target: https://travis-ci.org/item4/yui
+   :alt: CI Test Status
 
 .. image:: https://codecov.io/gh/item4/yui/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/item4/yui
+   :target: https://codecov.io/gh/item4/yui
+   :alt: Code Coverage Status
+
+.. image:: https://requires.io/github/item4/yui/requirements.svg?branch=master
+   :target: https://requires.io/github/item4/yui/requirements/?branch=master
+   :alt: Requirements Status
 
 YUI is Slack Bot for `item4.slack.com`_\.
 
