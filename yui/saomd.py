@@ -1446,6 +1446,96 @@ def 가속하는_리얼_스카우트_무기(sess):
         sess.add(step1)
 
 
+def 홍련의_트럼프_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = '홍련의 트럼프 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = FOUR_STAR_CHARACTERS
+    scout.s5_units = [
+        '[포커 킹] 키리토',
+        '[레드하트 퀸] 아스나',
+        '[버니 에이스] 유우키',
+        '[와일드 조커] 시논',
+    ]
+    scout.record_crystal = [
+        (1, 3.0),
+        (2, 37.0),
+        (3, 40.0),
+        (4, 10.0),
+        (5, 3.5),
+        (6, 3.5),
+        (7, 1.0),
+        (8, 1.0),
+        (9, 0.5),
+        (10, 0.5),
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 125
+    step1.cost_type = CostType.diamond
+    step1.s5_chance = 0.02
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2+'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+    step2.s5_chance = 0.02
+
+    step1.next_step = step2
+    step2.next_step = None
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+
+
+def 홍련의_트럼프_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '홍련의 트럼프 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '버닝 하트',
+        '러시안루트 x 저지먼트 느와르',
+        '잭팟 스파다',
+        '데스티니 롯소',
+    ]
+
+    step1 = Step()
+    step1.is_first = True
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.cost = 100
+    step1.cost_type = CostType.diamond
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 150
+    step2.cost_type = CostType.diamond
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 150
+    step3.cost_type = CostType.diamond
+    step3.s4_chance = 0.04 * 2
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1631,5 +1721,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '가속하는 리얼 스카우트',
         ScoutType.weapon,
         가속하는_리얼_스카우트_무기,
+    ),
+    (
+        '홍련의 트럼프 스카우트',
+        ScoutType.character,
+        홍련의_트럼프_스카우트_캐릭터,
+    ),
+    (
+        '홍련의 트럼프 스카우트',
+        ScoutType.weapon,
+        홍련의_트럼프_스카우트_무기,
     ),
 ]
