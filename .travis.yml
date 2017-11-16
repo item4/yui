@@ -8,7 +8,7 @@ cache:
   - .mypy_cache
   - $HOME/.cache/pip
 before_install:
-- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- '[ "${TRAVIS_BRANCH}" = "master" ] && docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"'
 - docker pull item4/yui:latest
 install:
 - pip install --upgrade pip setuptools wheel
