@@ -96,9 +96,6 @@ NAVER_CLIENT_SECRET
   string. SECRET Key for using Naver API.
   Do not upload this value on VCS.
 
-GIPHY_API_KEY
-  string. API key for giphy.
-
 LOGGING
   complex dict. Python logging config.
   You can use default setting.
