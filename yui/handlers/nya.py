@@ -4,18 +4,10 @@ import json
 
 from ..box import box
 from ..event import Message
+from ..util import static_vars
 
 
-def static_vars(**kwargs):
-    def decorator(func):
-        for key, val in kwargs.items():
-            setattr(func, key, val)
-
-        return func
-    return decorator
-
-
-@box.command('nya')
+@box.command('cat')
 @static_vars({'last_call': None})
 async def nya(bot, event: Message, sess):
     cool_time = datetime.timedelta(minutes=10)

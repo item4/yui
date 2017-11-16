@@ -168,3 +168,14 @@ def get_count(q) -> int:
     count_q = q.statement.with_only_columns([func.count()]).order_by(None)
     count = q.session.execute(count_q).scalar()
     return count
+
+
+def static_vars(**kwargs):
+    """Add static variable to a function"""
+
+    def decorator(func):
+        for key, val in kwargs.items():
+            setattr(func, key, val)
+
+        return func
+    return decorator
