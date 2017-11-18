@@ -96,6 +96,16 @@ NAVER_CLIENT_SECRET
   string. SECRET Key for using Naver API.
   Do not upload this value on VCS.
 
+GOOGLE_API_TOKEN
+  string. API Token for using Google map API.
+  You can generate this value on `Google API Console`_ and `this activation page`_
+  Do not upload this value on VCS.
+
+AQI_API_TOKEN
+  string. API Token for using AQI API.
+  You can get this value on `this request form`_
+  Do not upload this value on VCS.
+
 LOGGING
   complex dict. Python logging config.
   You can use default setting.
@@ -135,6 +145,9 @@ LOGGING
 
 .. _`this test page`: https://api.slack.com/methods/users.info/test
 .. _`Naver developer page`: https://developers.naver.com
+.. _`Google API Console`: https://console.developers.google.com/apis/dashboard
+.. _`this activation page`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
+.. _`this request form`: http://aqicn.org/data-platform/token/#/
 
 
 Run
