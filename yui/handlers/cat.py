@@ -22,7 +22,7 @@ async def cat(bot, event: Message, sess):
     cool_time = datetime.timedelta(minutes=10)
     now = datetime.datetime.utcnow()
     if cat.last_call is not None and now - cat.last_call < cool_time:
-        bot.say(
+        await bot.say(
             event.channel,
             '아직 쿨타임이다냥'
         )
