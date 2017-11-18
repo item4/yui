@@ -98,7 +98,7 @@ NAVER_CLIENT_SECRET
 
 GOOGLE_API_TOKEN
   string. API Token for using Google map API.
-  You can generate this value on `Google Developer Console`_
+  You can generate this value on `Google API Console`_ and `this activation page`_
   Do not upload this value on VCS.
 
 AQI_API_TOKEN
@@ -145,7 +145,8 @@ LOGGING
 
 .. _`this test page`: https://api.slack.com/methods/users.info/test
 .. _`Naver developer page`: https://developers.naver.com
-.. _`Google Developer Console`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
+.. _`Google API Console`: https://console.developers.google.com/apis/dashboard
+.. _`this activation page`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
 .. _`this request form`: http://aqicn.org/data-platform/token/#/
 
 
