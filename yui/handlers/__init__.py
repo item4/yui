@@ -1,4 +1,5 @@
 from .age import *  # type: ignore
+from .aqi import *  # type: ignore
 from .aws import *  # type: ignore
 from .book import *  # type: ignore
 from .calc import *  # type: ignore
