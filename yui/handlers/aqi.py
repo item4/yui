@@ -1,5 +1,5 @@
 import datetime
-from typing import NamedTuple, Tuple
+from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -14,12 +14,12 @@ from ..event import Message
 class AQIRecord(NamedTuple):
 
     aqi: int
-    pm25: int  # PM2.5
-    pm10: int  # PM10
-    o3: float  # 오존(Ozone)
-    no2: float  # 이산화 질소 (Nitrogen Dioxide)
-    so2: float  # 이산화 황 (Sulphur Dioxide)
-    co: float  # 일산화 탄소 (Carbon Monoxide)
+    pm25: Optional[int]  # PM2.5
+    pm10: Optional[int]  # PM10
+    o3: Optional[float]  # 오존(Ozone)
+    no2: Optional[float]  # 이산화 질소 (Nitrogen Dioxide)
+    so2: Optional[float]  # 이산화 황 (Sulphur Dioxide)
+    co: Optional[float]  # 일산화 탄소 (Carbon Monoxide)
     time: int
 
 
@@ -55,12 +55,12 @@ async def get_aqi(lat: float, lng: float, token: str) -> AQIRecord:
 
     return AQIRecord(
         aqi=data['data']['aqi'],
-        pm10=data['data']['iaqi']['pm10']['v'],
-        pm25=data['data']['iaqi']['pm25']['v'],
-        o3=data['data']['iaqi']['o3']['v'],
-        no2=data['data']['iaqi']['no2']['v'],
-        so2=data['data']['iaqi']['so2']['v'],
-        co=data['data']['iaqi']['co']['v'],
+        pm10=data['data']['iaqi'].get('pm10', {'v': None})['v'],
+        pm25=data['data']['iaqi'].get('pm25', {'v': None})['v'],
+        o3=data['data']['iaqi'].get('o3', {'v': None})['v'],
+        no2=data['data']['iaqi'].get('no2', {'v': None})['v'],
+        so2=data['data']['iaqi'].get('so2', {'v': None})['v'],
+        co=data['data']['iaqi'].get('co', {'v': None})['v'],
         time=data['data']['time']['v'],
     )
 
@@ -118,14 +118,24 @@ async def aqi(bot, event: Message, address: str):
     time = datetime.datetime.fromtimestamp(result.time).strftime(
         '%Y년 %m월 %d일 %H시'
     )
-    await bot.say(
-        event.channel,
+    text = (
         f'{time} 계측 자료에요. {full_address}를 기준으로 AQI에 정보를 요청했어요!\n\n'
         f'* 종합 AQI: {result.aqi} - {get_aqi_description(result.aqi)}\n'
-        f'* PM2.5: {result.pm25}\n'
-        f'* PM10: {result.pm10}\n'
-        f'* 오존: {result.o3}\n'
-        f'* 이산화 질소: {result.no2}\n'
-        f'* 이산화 황: {result.so2}\n'
-        f'* 일산화 탄소: {result.co}'
+    )
+    if result.pm25:
+        text += f'* PM2.5: {result.pm25}\n'
+    if result.pm10:
+        text += f'* PM10: {result.pm10}\n'
+    if result.o3:
+        text += f'* 오존: {result.o3}\n'
+    if result.no2:
+        text += f'* 이산화 질소: {result.no2}\n'
+    if result.so2:
+        text += f'* 이산화 황: {result.so2}\n'
+    if result.co:
+        text += f'* 일산화 탄소: {result.co}\n'
+    text = text.strip()
+    await bot.say(
+        event.channel,
+        text
     )
