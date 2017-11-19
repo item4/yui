@@ -33,6 +33,7 @@ async def cat(bot, event: Message, sess):
     async with aiohttp.ClientSession() as session:
         async with session.get('http://thecatapi.com/api/images/get', params={
             'format': 'xml',
+            'type': 'jpg,png',
         }) as resp:
             xml_result = await resp.read()
             tree = etree.fromstring(xml_result)
