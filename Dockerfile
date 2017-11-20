@@ -2,7 +2,9 @@ FROM python:3-alpine
 
 MAINTAINER item4
 
-RUN apk update && apk add build-base libffi-dev libxml2-dev libxslt-dev
+RUN apk update && apk add build-base libffi-dev libxml2-dev libxslt-dev tzdata
+RUN cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+RUN echo "Asia/Seoul" >  /etc/timezone
 RUN pip install --upgrade pip setuptools wheel
 
 COPY ./setup.py /yui/setup.py
