@@ -1536,6 +1536,98 @@ def 홍련의_트럼프_스카우트_무기(sess):
         sess.add(step3)
 
 
+def SAO_게임_클리어_기념_5성진화_앙케이트_스카우트_캐릭터(sess):
+    scout = Scout()
+    scout.title = 'SAO 게임 클리어 기념 5성진화 앙케이트 스카우트'
+    scout.type = ScoutType.character
+    scout.s4_units = list(set(FOUR_STAR_CHARACTERS) - {
+        '[천승의 무희] 유우키',
+        '[춤추듯 지는 벚꽃] 레인',
+        '[유월의 금목서] 앨리스',
+        '[마음의 섬광] 아스나',
+    })
+    scout.s5_units = [
+        '[천승의 무희] 유우키',
+        '[춤추듯 지는 벚꽃] 레인',
+        '[유월의 금목서] 앨리스',
+        '[마음의 섬광] 아스나',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 125
+    step1.cost_type = CostType.diamond
+    step1.s5_chance = 0.02
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 250
+    step2.cost_type = CostType.diamond
+    step2.s5_chance = 0.02
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 250
+    step3.cost_type = CostType.diamond
+    step3.s5_chance = 0.04
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
+def SAO_게임_클리어_기념_5성진화_앙케이트_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = 'SAO 게임 클리어 기념 5성진화 앙케이트 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '텐구의 쌍검+1x2',
+        '우아한 문장의 조율x우아한 문장의 연주+1',
+        '준 블레이드+1',
+        '컬리지+1',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 100
+    step1.cost_type = CostType.diamond
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 150
+    step2.cost_type = CostType.diamond
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 150
+    step3.cost_type = CostType.diamond
+    step3.s4_chance = 0.08
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1731,5 +1823,15 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '홍련의 트럼프 스카우트',
         ScoutType.weapon,
         홍련의_트럼프_스카우트_무기,
+    ),
+    (
+        'SAO 게임 클리어 기념 5성진화 앙케이트 스카우트',
+        ScoutType.character,
+        SAO_게임_클리어_기념_5성진화_앙케이트_스카우트_캐릭터,
+    ),
+    (
+        'SAO 게임 클리어 기념 5성진화 앙케이트 스카우트',
+        ScoutType.weapon,
+        SAO_게임_클리어_기념_5성진화_앙케이트_스카우트_무기,
     ),
 ]
