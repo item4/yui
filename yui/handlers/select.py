@@ -7,8 +7,9 @@ from ..event import Message
 
 @box.command('select', ['선택', '골라'])
 @option('--sep', '-s', default=' ')
+@option('--seed')
 @argument('items', nargs=-1, concat=True)
-async def select(bot, event: Message, sep: str, items: str):
+async def select(bot, event: Message, sep: str, items: str, seed: int):
     """
     주어진 항목중에 랜덤으로 선택해서 알려줍니다.
 
@@ -19,7 +20,11 @@ async def select(bot, event: Message, sep: str, items: str):
 
     """
 
+    random.seed(seed)
+
     chunks = [x.strip() for x in items.split(sep)]
+
+    random.seed(None)
 
     await bot.say(
         event.channel,
