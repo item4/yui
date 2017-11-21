@@ -43,7 +43,7 @@ async def get_dog_image_url() -> str:
 
 @box.command('cat')
 @static_vars(last_call=None)
-async def cat(bot, event: Message, sess):
+async def cat(bot, event: Message):
     """
     냥냥이 짤을 수급합니다.
     쿨타임은 15분입니다.
@@ -71,7 +71,7 @@ async def cat(bot, event: Message, sess):
 
 @box.command('dog')
 @static_vars(last_call=None)
-async def dog(bot, event: Message, sess):
+async def dog(bot, event: Message):
     """
     멍멍이 짤을 수급합니다.
     쿨타임은 15분입니다.
