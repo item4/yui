@@ -20,13 +20,13 @@ async def select(bot, event: Message, sep: str, items: str, seed: int):
 
     """
 
-    random.seed(seed)
-
     chunks = [x.strip() for x in items.split(sep)]
 
-    random.seed(None)
+    random.seed(seed)
 
     await bot.say(
         event.channel,
         random.choice(chunks)
     )
+
+    random.seed(None)
