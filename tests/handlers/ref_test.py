@@ -1,20 +1,30 @@
 import pytest
 
 from yui.event import create_event
-from yui.handlers.ref import css, html, php, py
+from yui.handlers.ref import css, fetch_ref, html, python
 
 from ..util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_css_command():
+async def test_css_command(fx_sess):
     bot = FakeBot()
     event = create_event({
         'type': 'message',
         'channel': 'C1',
     })
 
-    await css(bot, event, 'font-family')
+    await css(bot, event, fx_sess, 'font-family')
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+    )
+
+    await fetch_ref('css', fx_sess)
+
+    await css(bot, event, fx_sess, 'font-family')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -23,7 +33,7 @@ async def test_css_command():
         'https://developer.mozilla.org/en-US/docs/Web/CSS/font-family'
     )
 
-    await css(bot, event, '쀍뗗')
+    await css(bot, event, fx_sess, '쀍뗗')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -31,14 +41,24 @@ async def test_css_command():
 
 
 @pytest.mark.asyncio
-async def test_html_command():
+async def test_html_command(fx_sess):
     bot = FakeBot()
     event = create_event({
         'type': 'message',
         'channel': 'C1',
     })
 
-    await html(bot, event, 'section')
+    await html(bot, event, fx_sess, 'section')
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+    )
+
+    await fetch_ref('html', fx_sess)
+
+    await html(bot, event, fx_sess, 'section')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -47,7 +67,7 @@ async def test_html_command():
         'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section'
     )
 
-    await html(bot, event, '쀍뗗')
+    await html(bot, event, fx_sess, '쀍뗗')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -55,59 +75,24 @@ async def test_html_command():
 
 
 @pytest.mark.asyncio
-async def test_php_command():
+async def test_python_command(fx_sess):
     bot = FakeBot()
     event = create_event({
         'type': 'message',
         'channel': 'C1',
     })
 
-    await php(bot, event, 'time')
+    await python(bot, event, fx_sess, 'builtin function')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(':php: `time` - ')
+    assert said.data['text'] == (
+         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+    )
 
-    await php(bot, event, 'mysql_connect')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(':php: `mysql_connect` - ')
+    await fetch_ref('python', fx_sess)
 
-    await php(bot, event, 'PDO::exec')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(':php: `PDO::exec` - ')
-
-    await php(bot, event, 'mysqli_stmt_fetch')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(':php: `mysqli_stmt_fetch` - ')
-
-    await php(bot, event, 'mysqli_commit')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(':php: `mysqli_commit` - ')
-
-    await php(bot, event, '쀍뗗')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '비슷한 PHP 관련 요소를 찾지 못하겠어요!'
-
-
-@pytest.mark.asyncio
-async def test_py_command():
-    bot = FakeBot()
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
-
-    await py(bot, event, 'builtin function')
+    await python(bot, event, fx_sess, 'builtin function')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -116,7 +101,7 @@ async def test_py_command():
         'https://docs.python.org/3/library/functions.html'
     )
 
-    await py(bot, event, 're')
+    await python(bot, event, fx_sess, 're')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -125,7 +110,7 @@ async def test_py_command():
         'https://docs.python.org/3/library/re.html'
     )
 
-    await py(bot, event, '쀍뗗')
+    await python(bot, event, fx_sess, '쀍뗗')
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'

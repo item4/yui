@@ -1,4 +1,5 @@
 import re
+from typing import Dict
 
 import aiohttp
 
@@ -6,17 +7,55 @@ from fuzzywuzzy import fuzz
 
 from lxml.html import fromstring
 
+from sqlalchemy.orm.exc import NoResultFound
+
 from ..box import box
 from ..command import argument
-from ..event import Message
+from ..event import Hello, Message
+from ..models.ref import Ref
 
 
 INDEX_NUM_RE = re.compile('^(\d+\.)*.')
 
 
+REF_URLS: Dict[str, str] = {
+    'html': 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element',
+    'css': 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference',
+    'python': 'https://docs.python.org/3/library/',
+}
+
+
+async def fetch_ref(name: str, sess):
+    url = REF_URLS[name]
+    try:
+        ref = sess.query(Ref).filter_by(name=name).one()
+    except NoResultFound:
+        ref = Ref()
+        ref.name = name
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            ref.body = await res.text()
+
+    with sess.begin():
+        sess.add(ref)
+
+
+@box.on(Hello)
+async def on_start(sess):
+    for name in REF_URLS.keys():
+        await fetch_ref(name, sess)
+
+
+@box.crontab('0 0 * * *')
+async def on_change_day(sess):
+    for name in REF_URLS.keys():
+        await fetch_ref(name, sess)
+
+
 @box.command('html', ['htm'])
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def html(bot, event: Message, keyword: str):
+async def html(bot, event: Message, sess, keyword: str):
     """
     HTML 레퍼런스 링크
 
@@ -24,13 +63,16 @@ async def html(bot, event: Message, keyword: str):
 
     """
 
-    html = ''
-    url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        ref = sess.query(Ref).filter_by(name='html').one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
 
-    h = fromstring(html)
+    h = fromstring(ref.body)
     a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]')
 
     name = None
@@ -59,7 +101,7 @@ async def html(bot, event: Message, keyword: str):
 
 @box.command('css')
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def css(bot, event: Message, keyword: str):
+async def css(bot, event: Message, sess, keyword: str):
     """
     CSS 레퍼런스 링크
 
@@ -67,13 +109,16 @@ async def css(bot, event: Message, keyword: str):
 
     """
 
-    html = ''
-    url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        ref = sess.query(Ref).filter_by(name='css').one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
 
-    h = fromstring(html)
+    h = fromstring(ref.body)
     a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]')
 
     name = None
@@ -136,8 +181,8 @@ async def php(bot, event: Message, keyword: str):
         f'http://php.net/{raw_path}',
     ]
 
-    for url in urls:
-        async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession() as session:
+        for url in urls:
             async with session.get(url) as res:
                 async with res:
                     res_url = str(res.url)
@@ -149,16 +194,16 @@ async def php(bot, event: Message, keyword: str):
                             f':php: `{keyword}` - {res_url}'
                         )
                         break
-    else:
-        await bot.say(
-            event.channel,
-            '비슷한 PHP 관련 요소를 찾지 못하겠어요!'
-        )
+        else:
+            await bot.say(
+                event.channel,
+                '비슷한 PHP 관련 요소를 찾지 못하겠어요!'
+            )
 
 
-@box.command('py', ['python'])
+@box.command('python', ['py'])
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def py(bot, event: Message, keyword: str):
+async def python(bot, event: Message, sess, keyword: str):
     """
     Python library 레퍼런스 링크
 
@@ -166,13 +211,16 @@ async def py(bot, event: Message, keyword: str):
 
     """
 
-    html = ''
-    url = 'https://docs.python.org/3/library/'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        ref = sess.query(Ref).filter_by(name='python').one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
 
-    h = fromstring(html)
+    h = fromstring(ref.body)
     a_tags = h.cssselect('a.reference.internal')
 
     name = None
