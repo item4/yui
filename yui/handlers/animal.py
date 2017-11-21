@@ -43,7 +43,7 @@ async def get_dog_image_url() -> str:
                         return url
 
 
-@box.command('cat')
+@box.command('cat', ['냥', '야옹', '냐옹'])
 @static_vars(last_call=None)
 async def cat(bot, event: Message):
     """
@@ -71,7 +71,7 @@ async def cat(bot, event: Message):
     )
 
 
-@box.command('dog')
+@box.command('dog', ['멍'])
 @static_vars(last_call=None)
 async def dog(bot, event: Message):
     """
