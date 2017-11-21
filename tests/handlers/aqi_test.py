@@ -48,7 +48,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
-            'ㅁㄴㅇㄹ1234' * 10,
+            '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒',
             fx_google_api_key,
         )
 
