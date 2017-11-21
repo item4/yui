@@ -139,12 +139,21 @@ async def php(bot, event: Message, keyword: str):
     for url in urls:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as res:
-                if res.status == 200:
-                    await bot.say(
-                        event.channel,
-                        f':php: {keyword} - {res.url}'
-                    )
-                    return
+                async with res:
+                    res_url = str(res.url)
+                    if 'manual-lookup.php' in res_url:
+                        continue
+                    if res.status == 200:
+                        await bot.say(
+                            event.channel,
+                            f':php: `{keyword}` - {res_url}'
+                        )
+                        break
+    else:
+        await bot.say(
+            event.channel,
+            '비슷한 PHP 관련 요소를 찾지 못하겠어요!'
+        )
 
 
 @box.command('py', ['python'])
@@ -190,5 +199,5 @@ async def py(bot, event: Message, keyword: str):
     else:
         await bot.say(
             event.channel,
-            '비슷한 Python library 문를 찾지 못하겠어요!'
+            '비슷한 Python library를 찾지 못하겠어요!'
         )
