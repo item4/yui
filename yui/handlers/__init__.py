@@ -1,9 +1,9 @@
 from .age import *  # type: ignore
+from .animal import *  # type: ignore
 from .aqi import *  # type: ignore
 from .aws import *  # type: ignore
 from .book import *  # type: ignore
 from .calc import *  # type: ignore
-from .cat import *  # type: ignore
 from .core import *  # type: ignore
 from .dday import *  # type: ignore
 from .dic import *  # type: ignore
