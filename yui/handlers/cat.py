@@ -9,6 +9,22 @@ from ..event import Message
 from ..util import static_vars
 
 
+async def get_cat_image_url() -> str:
+    api_url = 'http://thecatapi.com/api/images/get'
+    async with aiohttp.ClientSession() as session:
+        while True:
+            async with session.get(api_url, params={
+                'format': 'xml',
+                'type': 'jpg,png',
+            }) as res:
+                xml_result = await res.read()
+                tree = etree.fromstring(xml_result)
+                url = tree.find('data/images/image/url').text
+            async with session.get(url) as res:
+                if res.status == 200:
+                    return url
+
+
 @box.command('cat')
 @static_vars(last_call=None)
 async def cat(bot, event: Message, sess):
@@ -30,16 +46,8 @@ async def cat(bot, event: Message, sess):
 
     cat.last_call = now
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get('http://thecatapi.com/api/images/get', params={
-            'format': 'xml',
-            'type': 'jpg,png',
-        }) as resp:
-            xml_result = await resp.read()
-            tree = etree.fromstring(xml_result)
-            url = tree.find('data/images/image/url').text
-
-            await bot.say(
-                event.channel,
-                url
-            )
+    url = await get_cat_image_url()
+    await bot.say(
+        event.channel,
+        url
+    )
