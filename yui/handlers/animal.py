@@ -25,8 +25,9 @@ async def get_cat_image_url() -> str:
                 tree = etree.fromstring(xml_result)
                 url = tree.find('data/images/image/url').text
             async with session.get(url) as res:
-                if res.status == 200:
-                    return url
+                async with res:
+                    if res.status == 200:
+                        return url
 
 
 async def get_dog_image_url() -> str:
@@ -37,8 +38,9 @@ async def get_dog_image_url() -> str:
                 data = await res.json(loads=ujson.loads)
                 url = data['message']
             async with session.get(url) as res:
-                if res.status == 200:
-                    return url
+                async with res:
+                    if res.status == 200:
+                        return url
 
 
 @box.command('cat')
