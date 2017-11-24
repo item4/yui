@@ -1,3 +1,4 @@
+import re
 from difflib import Differ
 
 import aiohttp
@@ -12,12 +13,14 @@ from ..models.subscribe import RssFeedSub, SiteSub
 from ..transform import extract_url
 from ..util import get_count
 
+SPACE_RE = re.compile('\s{2,}')
+
 
 @box.crontab('*/1 * * * *')
 async def crawl(bot, sess):
     feeds = sess.query(RssFeedSub).all()
 
-    for feed in feeds:
+    for feed in feeds:  # type: RssFeedSub
         data = ''
         async with aiohttp.ClientSession() as session:
             try:
@@ -90,13 +93,26 @@ async def rss_add(bot, event: Message, sess, url: str):
     """
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            data = await res.read()
+        try:
+            async with session.get(url) as res:
+                data: bytes = await res.read()
+        except aiohttp.client_exceptions.InvalidURL:
+            await bot.say(
+                event.channel,
+                f'`{url}`은 올바른 URL이 아니에요!'
+            )
+            return
+        except aiohttp.client_exceptions.ClientConnectorError:
+            await bot.say(
+                event.channel,
+                f'`{url}`에 접속할 수 없어요!'
+            )
+            return
 
     if not data:
         await bot.say(
             event.channel,
-            f'`{url}`에 접속할 수 없어요!'
+            f'`{url}`은 빈 웹페이지에요!'
         )
         return
 
@@ -121,7 +137,7 @@ async def rss_add(bot, event: Message, sess, url: str):
 
     await bot.say(
         event.channel,
-        f'이 채널에서 `{url}` 을 구독하기 시작했어요!'
+        f'<#{event.channel}> 채널에서 `{url}` 을 구독하기 시작했어요!'
     )
 
 
@@ -143,12 +159,13 @@ async def rss_list(bot, event: Message, sess):
 
         await bot.say(
             event.channel,
-            f'이 채널에서 구독중인 RSS 목록은 다음과 같아요!\n```\n{feed_list}\n```'
+            f'<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
+            f'\n```\n{feed_list}\n```'
         )
     else:
         await bot.say(
             event.channel,
-            '이 채널에서 구독중인 RSS가 없어요!'
+            '<#{event.channel}> 채널에서 구독중인 RSS가 없어요!'
         )
 
 
@@ -189,13 +206,13 @@ async def run(bot, sess):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(sub.url) as res:
-                    new_body = await res.text()
+                    new_body: str = await res.text()
                     if sub.body != new_body:
                         old_body_lines = sub.body.splitlines(keepends=True)
                         new_body_lines = new_body.splitlines(keepends=True)
                         d = Differ()
                         diff = [
-                            x for x in d.compare(
+                            SPACE_RE.sub(' ', x).rstrip() for x in d.compare(
                                 old_body_lines,
                                 new_body_lines
                             )
@@ -242,7 +259,7 @@ async def watch(bot, event: Message, sess, url: str):
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(url) as res:
-                data = await res.text()
+                data: str = await res.text()
         except aiohttp.client_exceptions.InvalidURL:
             await bot.say(
                 event.channel,
@@ -265,7 +282,7 @@ async def watch(bot, event: Message, sess, url: str):
 
     await bot.say(
         event.channel,
-        '해당 주소에 접속해서 바뀌는게 있으면 바로 DM으로 알려드릴게요!'
+        f'<@{event.user}>, 해당 주소에 접속해서 바뀌는게 있으면 바로 DM으로 알려드릴게요!'
     )
 
 
@@ -289,7 +306,8 @@ async def watch_list(bot, event: Message, sess):
             '\n'.join(
                 f'{s.id} - {s.url}' for s in subs
             )
-        )
+        ),
+        thread_ts=event.ts,
     )
 
 
@@ -311,7 +329,7 @@ async def watch_del(bot, event: Message, sess, id: int):
     if sub and sub.user == event.user:
         await bot.say(
             event.channel,
-            f'{id}번 구독을 취소했어요!'
+            f'{id}번 구독을 취소했어요! 더 이상 `{sub.url}` 에 대한 알림이 가지 않을거에요!'
         )
         with sess.begin():
             sess.delete(sub)
