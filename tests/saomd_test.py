@@ -1,20 +1,40 @@
+from typing import List, Type
+
 from yui.models.saomd import Scout
-from yui.saomd import SCOUT
+from yui.saomd import MigrationStatus, ScoutMigration
 from yui.util import get_count
 
 
 def test_scout_list(fx_sess):
     scouts = set()
-    functions = set()
-    for title, type_, func in SCOUT:
-        assert (title, type_) not in scouts
-        assert func not in functions
-        scouts.add((title, type_))
-        functions.add(func)
-    assert len(SCOUT) == len(scouts) == len(functions)
+    subclasses: List[Type[ScoutMigration]] = list(
+        ScoutMigration.__subclasses__()
+    )
+    for cls in subclasses:
+        scout = cls()
+        assert get_count(
+            fx_sess.query(Scout).filter_by(title=scout.title, type=scout.type)
+        ) == 0
 
-    for title, type_, func in SCOUT:
-        func(fx_sess)
-        fx_sess.query(Scout).filter_by(title=title, type=type_).one()
+        result = scout.patch(fx_sess)
+        assert result == MigrationStatus.create
+        assert get_count(
+            fx_sess.query(Scout).filter_by(title=scout.title, type=scout.type)
+        ) == 1
 
-    assert get_count(fx_sess.query(Scout)) == len(SCOUT)
+        result = scout.patch(fx_sess)
+        assert result == MigrationStatus.passed
+        assert get_count(
+            fx_sess.query(Scout).filter_by(title=scout.title, type=scout.type)
+        ) == 1
+
+        scout.delete(fx_sess)
+        assert get_count(
+            fx_sess.query(Scout).filter_by(title=scout.title, type=scout.type)
+        ) == 0
+
+        scout.create(fx_sess)
+
+        scouts.add((scout.title, scout.type))
+
+    assert len(scouts) == len(subclasses) == get_count(fx_sess.query(Scout))

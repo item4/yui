@@ -66,6 +66,8 @@ class Scout(Base):
 
     type = Column(ChoiceType(ScoutType, impl=Integer()), nullable=False)
 
+    version = Column(Integer, server_default='1', default=1, nullable=False)
+
     s4_units = Column(JSONType, default=[], nullable=False)
 
     s5_units = Column(JSONType, default=[], nullable=False)

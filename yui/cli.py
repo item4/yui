@@ -1,19 +1,16 @@
 import functools
 import os.path
 import pathlib
-from typing import Optional
+from typing import List, Optional, Type
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
 
 import click
 
-from sqlalchemy.orm.exc import NoResultFound
-
 from .bot import Bot, Session
 from .config import load
-from .models.saomd import SCOUT_TYPE_LABEL, Scout
-from .saomd import SCOUT
+from .saomd import MigrationStatus, ScoutMigration
 
 
 __all__ = 'error', 'load_config', 'main', 'yui'
@@ -376,24 +373,16 @@ def create_saomd_scout_data(config):
     bot = Bot(config)
 
     sess = Session(bind=bot.config.DATABASE_ENGINE)
-
-    for title, type_, callback in SCOUT:
-        try:
-            sess.query(Scout).filter_by(
-                title=title,
-                type=type_,
-            ).one()
-        except NoResultFound:
-            click.echo('{} ({}) 가 없으므로 생성합니다.'.format(
-                title,
-                SCOUT_TYPE_LABEL[type_]
-            ))
-            callback(sess)
-        else:
-            click.echo('{} ({}) 는 있으므로 건너뜁니다.'.format(
-                title,
-                SCOUT_TYPE_LABEL[type_]
-            ))
+    subclasses: List[Type[ScoutMigration]] = ScoutMigration.__subclasses__()
+    for cls in subclasses:
+        scout = cls()
+        result = scout.patch(sess)
+        if result == MigrationStatus.passed:
+            click.echo(f'{cls.title}는 이미 최신({cls.version})입니다.')
+        elif result == MigrationStatus.create:
+            click.echo(f'{cls.title}는 v{cls.version}으로 새로 만듭니다.')
+        elif result == MigrationStatus.update:
+            click.echo(f'{cls.title}는 구버전이라 v{cls.version}으로 올립니다.')
 
     click.echo('처리 완료')
 
