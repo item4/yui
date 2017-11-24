@@ -10,7 +10,7 @@ from ..box import box
 from ..event import Message
 from ..util import static_vars
 
-COOLTIME = datetime.timedelta(minutes=15)
+COOLTIME = datetime.timedelta(minutes=25)
 
 
 async def get_cat_image_url() -> str:
