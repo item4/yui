@@ -23,3 +23,4 @@ from .select import *  # type: ignore
 from .sub import *  # type: ignore
 from .subway import *  # type: ignore
 from .test import *  # type: ignore
+from .watch import *  # type: ignore
