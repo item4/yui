@@ -1678,6 +1678,328 @@ def 한손_몽둥이_강화_기념_5성_진화_스카우트_캐릭터(sess):
         sess.add(step3)
 
 
+def 한손_몽둥이_강화_기념_5성_진화_스카우트_무기(sess):
+    scout = Scout()
+    scout.title = '한손 몽둥이 강화 기념 5성 진화 스카우트'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '어리니 벚꽃의 헤비 스태프+1',
+        '에레터+1',
+        '퍼펙트 러버+1',
+        '프로미스 하트+1',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = 'Step 1'
+    step1.is_first = True
+    step1.cost = 100
+    step1.cost_type = CostType.diamond
+
+    step2 = Step()
+    step2.scout = scout
+    step2.name = 'Step 2'
+    step2.cost = 150
+    step2.cost_type = CostType.diamond
+
+    step3 = Step()
+    step3.scout = scout
+    step3.name = 'Step 3'
+    step3.cost = 150
+    step3.cost_type = CostType.diamond
+    step3.s4_chance = 0.08
+
+    step1.next_step = step2
+    step2.next_step = step3
+    step3.next_step = step1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+        sess.add(step2)
+        sess.add(step3)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_한손검(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 한손검'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '히로익 프로미스',
+        '엔젤 클레이모어',
+        '종언의 용인',
+        '청장미의 검',
+        '금목서의 검',
+        '원스 어픈 어 타임',
+        '벚꽃 태고',
+        '티타임 세이버',
+        '알아리에스 그라디우스',
+        '준 블레이드',
+        '레일웨이 소드',
+        '피셔즈 소드',
+        '풍차의 신검',
+        '시호스 세이버',
+        '졸리 로저 사벨',
+        '영겁불후의 검',
+        '영구빙괴의 검',
+        '철운석의 검',
+        '명도 아카츠키',
+        '이레이디케이트 세이버',
+        '파라과스 블레이드',
+        '샤이닝 글라디우스',
+        '글로리어스 블레이드',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_세검(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 세검'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '컬리지',
+        '옐로우 망고슈',
+        '인과의 법칙검',
+        '펄 버터플라이',
+        '크레스티드 에스파다',
+        '제미니 그라디우스',
+        '이터널 심포니',
+        '인젝션 레이피어',
+        '비치 스팅거',
+        '선녀의 성검',
+        '흐르는 버들',
+        '천시니의 폭풍검',
+        '릴리 망고슈',
+        '오션 에스파다',
+        '아틀란티스 소드',
+        '다즐링 블릭크',
+        '소드 댄스 에스파다',
+        '빅토리 플뢰레',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_쌍검(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 쌍검'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '다크 팜 소드 x 덴파레 슬라이서',
+        '텐구의 쌍검x2',
+        '우아한 문장의 조율 x 우아한 문장의 연주',
+        '인쇼어소드 x 오프쇼어소드',
+        '인라이트먼트 x 섀도우 엘리미네이터',
+        '하이드런지아 소드x2',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_단검(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 단검'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '엣지 오프 리펜트',
+        '릴팅 호른',
+        '찰나의 요도',
+        '머메이드 송',
+        '슈가 쿠크리',
+        '위싱 부케',
+        '에어플레인 대거',
+        '스플래쉬 대거',
+        '하이비스커스 커터',
+        '맹세의 검',
+        '싸리 안개',
+        '선플라워 엣지',
+        '파이어릿 대거',
+        '카른웨난',
+        '챔피언 대거',
+        '퍼플 스타 바셀라드',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_한손몽둥이(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 한손몽둥이(둔기)'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '에레터',
+        '트월링 메이스',
+        '농락하는 연꽃',
+        '퍼펙트 러버',
+        '어린 벚꽃의 헤비 스태프',
+        '스매시 브러쉬',
+        '프로미스 하트',
+        '듀 클럽 파페',
+        '콕스 해머',
+        '비치 버스터',
+        '플라네타리 메이스',
+        '그레이트 넘버',
+        '글로리어스 마이크',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_총(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 총'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '어드밴서',
+        '애플 오브 페이트',
+        '폴리스 샷',
+        '피어나는 아침 안개',
+        '마린 샷',
+        '하버 라이플',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_활(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 활'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '러블리 파리티안',
+        '흩날리는 벚꽃의 장궁',
+        '스위티 슈터',
+        '키스 오브 큐피드',
+        '구시스나우탈',
+        '기우사의 장궁',
+        '코발트 트리스탄',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_지팡이(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 지팡이'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '윤회의 여섯 꽃잎',
+        '레드 울프 버스터',
+        '캔들 스틱',
+        '비너스 하트',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
+def 블랙_프라이데이_4성무기_확정_스카우트_창(sess):
+    scout = Scout()
+    scout.title = '블랙 프라이데이 4성무기 확정 스카우트 - 창'
+    scout.type = ScoutType.weapon
+    scout.s4_units = [
+        '리브라의 창',
+        '레오의 창',
+        '위즈덤 스피어',
+        '팔중요란',
+        '보구의 신창',
+        '아일랜드 스피어',
+        '위너즈 스피어',
+    ]
+
+    step1 = Step()
+    step1.scout = scout
+    step1.name = '1회 한정'
+    step1.is_first = True
+    step1.cost = 150
+    step1.cost_type = CostType.diamond
+    step1.s4_fixed = 1
+
+    with sess.begin():
+        sess.add(scout)
+        sess.add(step1)
+
+
 SCOUT: List[Tuple[str, ScoutType, Callable]] = [
     (
         '두근두근 수증기와 미인의 온천 스카우트',
@@ -1888,5 +2210,55 @@ SCOUT: List[Tuple[str, ScoutType, Callable]] = [
         '한손 몽둥이 강화 기념 5성 진화 스카우트',
         ScoutType.character,
         한손_몽둥이_강화_기념_5성_진화_스카우트_캐릭터,
+    ),
+    (
+        '한손 몽둥이 강화 기념 5성 진화 스카우트',
+        ScoutType.weapon,
+        한손_몽둥이_강화_기념_5성_진화_스카우트_무기,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 한손검',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_한손검,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 세검',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_세검,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 쌍검',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_쌍검,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 단검',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_단검,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 한손몽둥이(둔기)',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_한손몽둥이,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 총',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_총,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 활',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_활,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 지팡이',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_지팡이,
+    ),
+    (
+        '블랙 프라이데이 4성무기 확정 스카우트 - 창',
+        ScoutType.weapon,
+        블랙_프라이데이_4성무기_확정_스카우트_창,
     ),
 ]
