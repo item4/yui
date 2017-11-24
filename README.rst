@@ -115,6 +115,7 @@ LOGGING
 
       [LOGGING]
       version = 1
+      disable_existing_loggers = false
 
       [LOGGING.formatters.brief]
       format = '%(message)s'

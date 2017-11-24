@@ -18,6 +18,7 @@ DEFAULT = {
     'MODELS': (),
     'LOGGING': {
         'version': 1,
+        'disable_existing_loggers': False,
         'formatters': {
             'brief': {
                 'format': '%(message)s',
