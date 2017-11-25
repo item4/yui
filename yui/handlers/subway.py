@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import logging
 import math
@@ -35,6 +36,7 @@ REGION_TABLE: Dict[str, Tuple[str, str]] = {
 
 async def fetch_station_db(sess, service_region: str, api_version: str):
     name = f'subway-{service_region}-{api_version}'
+    logger.info(f'fetch {name} start')
     try:
         db = sess.query(WebPageCache).filter_by(name=name).one()
     except NoResultFound:
@@ -59,20 +61,26 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
     with sess.begin():
         sess.add(db)
 
+    logger.info(f'fetch {name} end')
+
 
 @box.on(Hello)
 async def on_start(sess):
-    logger.info('on_start fetch subway')
+    logger.info('on_start subway')
+    tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        logger.info(f'on_start fetch subway - {service_region}')
-        await fetch_station_db(sess, service_region, api_version)
+        tasks.append(fetch_station_db(sess, service_region, api_version))
+    await asyncio.wait(tasks)
     return True
 
 
 @box.crontab('0 0 * * *')
 async def refresh_db(sess):
+    logger.info('refresh subway')
+    tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        await fetch_station_db(sess, service_region, api_version)
+        tasks.append(fetch_station_db(sess, service_region, api_version))
+    await asyncio.wait(tasks)
 
 
 @box.command('지하철', ['전철', 'subway'])

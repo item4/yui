@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import logging
 import re
@@ -29,6 +30,8 @@ REF_URLS: Dict[str, str] = {
 
 
 async def fetch_ref(name: str, sess):
+    logger.info(f'fetch ref - {name} start')
+
     url = REF_URLS[name]
     try:
         ref = sess.query(WebPageCache).filter_by(name=name).one()
@@ -45,20 +48,26 @@ async def fetch_ref(name: str, sess):
     with sess.begin():
         sess.add(ref)
 
+    logger.info(f'fetch ref - {name} end')
+
 
 @box.on(Hello)
 async def on_start(sess):
-    logger.info('on_start fetch ref')
+    logger.info('on_start ref')
+    tasks = []
     for name in REF_URLS.keys():
-        logger.info(f'on_start fetch ref - {name}')
-        await fetch_ref(name, sess)
+        tasks.append(fetch_ref(name, sess))
+    await asyncio.wait(tasks)
     return True
 
 
 @box.crontab('0 0 * * *')
-async def on_change_day(sess):
+async def refresh(sess):
+    logger.info('refresh ref')
+    tasks = []
     for name in REF_URLS.keys():
-        await fetch_ref(name, sess)
+        tasks.append(fetch_ref(name, sess))
+    await asyncio.wait(tasks)
 
 
 @box.command('html', ['htm'])

@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import datetime
 import logging
@@ -155,6 +156,8 @@ class Weapon(NamedTuple):
 
 
 async def fetch_character_list(sess):
+    logger.info('fetch saomd character start')
+
     try:
         db = sess.query(WebPageCache).filter_by(name='saomd-character').one()
     except NoResultFound:
@@ -171,8 +174,12 @@ async def fetch_character_list(sess):
     with sess.begin():
         sess.add(db)
 
+    logger.info('fetch saomd character end')
+
 
 async def fetch_weapon_list(sess):
+    logger.info('fetch saomd weapon start')
+
     try:
         db = sess.query(WebPageCache).filter_by(name='saomd-weapon').one()
     except NoResultFound:
@@ -188,6 +195,8 @@ async def fetch_weapon_list(sess):
 
     with sess.begin():
         sess.add(db)
+
+    logger.info('fetch saomd weapon end')
 
 
 def get_or_create_player(sess, user: UserID) -> Player:
@@ -632,16 +641,21 @@ async def saomd_sim_result_reset(bot, event: Message, sess):
 
 @box.on(Hello)
 async def on_start(sess):
-    logger.info('on_start fetch saomd')
-    await fetch_character_list(sess)
-    await fetch_weapon_list(sess)
+    logger.info('on_start saomd')
+    await asyncio.wait([
+        fetch_character_list(sess),
+        fetch_weapon_list(sess),
+    ])
     return True
 
 
 @box.crontab('0 */3 * * *')
-async def crawl(sess):
-    await fetch_character_list(sess)
-    await fetch_weapon_list(sess)
+async def refresh_db(sess):
+    logger.info('refresh saomd')
+    await asyncio.wait([
+        fetch_character_list(sess),
+        fetch_weapon_list(sess),
+    ])
 
 
 @box.command('캐릭정보', ['캐정'], channels=only(
