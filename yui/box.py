@@ -338,13 +338,15 @@ class Box:
             if not hasattr(func, '__options__'):
                 func.__options__ = []
 
+            name = f'{func.__module__}.{func.__name__}'
+
             @functools.wraps(func)
-            def internal(func):
-                self.handlers[type_][subtype][func.__name__] = Handler(
+            def internal(func_):
+                self.handlers[type_][subtype][name] = Handler(
                     func,
                     channel_validator=channels,
                 )
-                return func
+                return func_
 
             return internal(func)
 
