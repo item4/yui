@@ -65,16 +65,17 @@ def test_box_class():
     assert box.aliases[None]['t2'] == 'test2'
     assert type(box.handlers['message'][None]['test1']) == Handler
     assert type(box.handlers['message'][None]['test2']) == Handler
-    assert type(box.handlers['hello'][None]['test3']) == Handler
+    assert type(box.handlers['hello'][None]['tests.box_test.test3']) == Handler
     assert box.handlers['message'][None]['test1'].is_command
     assert box.handlers['message'][None]['test2'].is_command
-    assert not box.handlers['hello'][None]['test3'].is_command
+    assert not box.handlers['hello'][None]['tests.box_test.test3'].is_command
     assert box.handlers['message'][None]['test1'].is_command
     assert not box.handlers['message'][None]['test2'].use_shlex
-    assert not box.handlers['hello'][None]['test3'].use_shlex
+    assert not box.handlers['hello'][None]['tests.box_test.test3'].use_shlex
     assert box.handlers['message'][None]['test1'].callback == test1
     assert box.handlers['message'][None]['test2'].callback == test2
-    assert box.handlers['hello'][None]['test3'].callback == test3
+    assert box.handlers['hello'][None]['tests.box_test.test3'].callback == \
+        test3
     assert not box.crontabs
 
     @box.crontab('*/3 * * * *')
@@ -84,16 +85,17 @@ def test_box_class():
     assert box.aliases[None]['t2'] == 'test2'
     assert type(box.handlers['message'][None]['test1']) == Handler
     assert type(box.handlers['message'][None]['test2']) == Handler
-    assert type(box.handlers['hello'][None]['test3']) == Handler
+    assert type(box.handlers['hello'][None]['tests.box_test.test3']) == Handler
     assert box.handlers['message'][None]['test1'].is_command
     assert box.handlers['message'][None]['test2'].is_command
-    assert not box.handlers['hello'][None]['test3'].is_command
+    assert not box.handlers['hello'][None]['tests.box_test.test3'].is_command
     assert box.handlers['message'][None]['test1'].is_command
     assert not box.handlers['message'][None]['test2'].use_shlex
-    assert not box.handlers['hello'][None]['test3'].use_shlex
+    assert not box.handlers['hello'][None]['tests.box_test.test3'].use_shlex
     assert box.handlers['message'][None]['test1'].callback == test1
     assert box.handlers['message'][None]['test2'].callback == test2
-    assert box.handlers['hello'][None]['test3'].callback == test3
+    assert box.handlers['hello'][None]['tests.box_test.test3'].callback == \
+        test3
     assert box.crontabs[0].spec == '*/3 * * * *'
     assert box.crontabs[0].func == test4
 
