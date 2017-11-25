@@ -1,3 +1,4 @@
+import datetime
 import re
 from typing import Dict
 
@@ -12,7 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..box import box
 from ..command import argument
 from ..event import Hello, Message
-from ..models.ref import Ref
+from ..models.cache import WebPageCache
 
 
 INDEX_NUM_RE = re.compile('^(\d+\.)*.')
@@ -28,14 +29,16 @@ REF_URLS: Dict[str, str] = {
 async def fetch_ref(name: str, sess):
     url = REF_URLS[name]
     try:
-        ref = sess.query(Ref).filter_by(name=name).one()
+        ref = sess.query(WebPageCache).filter_by(name=name).one()
     except NoResultFound:
-        ref = Ref()
+        ref = WebPageCache()
         ref.name = name
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             ref.body = await res.text()
+
+    ref.created_at = datetime.datetime.utcnow()
 
     with sess.begin():
         sess.add(ref)
@@ -64,7 +67,7 @@ async def html(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(Ref).filter_by(name='html').one()
+        ref = sess.query(WebPageCache).filter_by(name='html').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -110,7 +113,7 @@ async def css(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(Ref).filter_by(name='css').one()
+        ref = sess.query(WebPageCache).filter_by(name='css').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -212,7 +215,7 @@ async def python(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(Ref).filter_by(name='python').one()
+        ref = sess.query(WebPageCache).filter_by(name='python').one()
     except NoResultFound:
         await bot.say(
             event.channel,
