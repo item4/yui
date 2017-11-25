@@ -1,4 +1,6 @@
 import copy
+import datetime
+import logging
 import random
 from typing import List, NamedTuple, Optional, Tuple
 
@@ -11,7 +13,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
-from ..event import Message
+from ..event import Hello, Message
+from ..models.cache import WebPageCache
 from ..models.saomd import (
     COST_TYPE_LABEL,
     CostType,
@@ -23,6 +26,8 @@ from ..models.saomd import (
 )
 from ..type import UserID
 from ..util import bold, fuzzy_korean_ratio, strike
+
+logger = logging.getLogger(__name__)
 
 THREE_STAR_CHARACTERS: List[str] = [
     '[검은 스프리건] 키리토',
@@ -147,6 +152,42 @@ class Weapon(NamedTuple):
     attack: int
     critical: int
     battle_skills: Optional[List[str]]
+
+
+async def fetch_character_list(sess):
+    try:
+        db = sess.query(WebPageCache).filter_by(name='saomd-character').one()
+    except NoResultFound:
+        db = WebPageCache()
+        db.name = 'saomd-character'
+
+    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_char.php'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            db.body = await res.text()
+
+    db.created_at = datetime.datetime.utcnow()
+
+    with sess.begin():
+        sess.add(db)
+
+
+async def fetch_weapon_list(sess):
+    try:
+        db = sess.query(WebPageCache).filter_by(name='saomd-weapon').one()
+    except NoResultFound:
+        db = WebPageCache()
+        db.name = 'saomd-weapon'
+
+    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_weap.php'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            db.body = await res.text()
+
+    db.created_at = datetime.datetime.utcnow()
+
+    with sess.begin():
+        sess.add(db)
 
 
 def get_or_create_player(sess, user: UserID) -> Player:
@@ -589,11 +630,25 @@ async def saomd_sim_result_reset(bot, event: Message, sess):
     )
 
 
+@box.on(Hello)
+async def on_start(sess):
+    logger.info('on_start fetch saomd')
+    await fetch_character_list(sess)
+    await fetch_weapon_list(sess)
+    return True
+
+
+@box.crontab('0 */3 * * *')
+async def crawl(sess):
+    await fetch_character_list(sess)
+    await fetch_weapon_list(sess)
+
+
 @box.command('캐릭정보', ['캐정'], channels=only(
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
 @argument('keyword', nargs=-1, concat=True)
-async def character_info(bot, event: Message, keyword: str):
+async def character_info(bot, event: Message, sess, keyword: str):
     """
     소드 아트 온라인 메모리 디프래그 DB에서 캐릭터 정보를 조회합니다.
 
@@ -605,13 +660,16 @@ async def character_info(bot, event: Message, keyword: str):
 
     """
 
-    html = ''
-    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_char.php'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        db = sess.query(WebPageCache).filter_by(name='saomd-character').one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 SAO MD 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
 
-    h = fromstring(html)
+    h = fromstring(db.body)
     tr_list = h.cssselect('div table tr')[1:]
 
     matching: List[Tuple[float, str, str]] = []
@@ -685,7 +743,7 @@ async def character_info(bot, event: Message, keyword: str):
     'game', 'test', DM, error='게임/테스트 채널에서만 해주세요'
 ))
 @argument('keyword', nargs=-1, concat=True)
-async def weapon_info(bot, event: Message, keyword: str):
+async def weapon_info(bot, event: Message, sess, keyword: str):
     """
     소드 아트 온라인 메모리 디프래그 DB에서 무기 정보를 조회합니다.
 
@@ -697,13 +755,16 @@ async def weapon_info(bot, event: Message, keyword: str):
 
     """
 
-    html = ''
-    url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_weap.php'
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    try:
+        db = sess.query(WebPageCache).filter_by(name='saomd-weapon').one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 SAO MD 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
 
-    h = fromstring(html)
+    h = fromstring(db.body)
     tr_list = h.cssselect('div table tr')[1:]
 
     weapons: List[Weapon] = []
