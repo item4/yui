@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from typing import Dict
 
@@ -15,6 +16,7 @@ from ..command import argument
 from ..event import Hello, Message
 from ..models.cache import WebPageCache
 
+logger = logging.getLogger(__name__)
 
 INDEX_NUM_RE = re.compile('^(\d+\.)*.')
 
@@ -46,8 +48,11 @@ async def fetch_ref(name: str, sess):
 
 @box.on(Hello)
 async def on_start(sess):
+    logger.info('on_start fetch ref')
     for name in REF_URLS.keys():
+        logger.info(f'on_start fetch ref - {name}')
         await fetch_ref(name, sess)
+    return True
 
 
 @box.crontab('0 0 * * *')
