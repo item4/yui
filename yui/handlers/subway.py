@@ -1,18 +1,23 @@
 import datetime
+import logging
 import math
 from typing import Dict, Tuple
 from urllib.parse import urlencode
 
 import aiohttp
 
+from sqlalchemy.orm.exc import NoResultFound
+
 import ujson
 
 from ..box import box
 from ..command import argument, option
-from ..event import Message
+from ..event import Hello, Message
+from ..models.cache import WebPageCache
 from ..transform import choice
 from ..util import fuzzy_korean_ratio
 
+logger = logging.getLogger(__name__)
 
 headers: Dict[str, str] = {
     'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'
@@ -28,13 +33,55 @@ REGION_TABLE: Dict[str, Tuple[str, str]] = {
 }
 
 
+async def fetch_station_db(sess, service_region: str, api_version: str):
+    name = f'subway-{service_region}-{api_version}'
+    try:
+        db = sess.query(WebPageCache).filter_by(name=name).one()
+    except NoResultFound:
+        db = WebPageCache()
+        db.name = name
+
+    metadata_url = 'http://map.naver.com/external/SubwayProvide.xml?{}'.format(
+        urlencode({
+            'requestFile': 'metaData.json',
+            'readPath': service_region,
+            'version': api_version,
+
+        })
+    )
+
+    async with aiohttp.ClientSession(headers=headers) as session:
+        async with session.get(metadata_url) as res:
+            db.body = await res.text()
+
+    db.created_at = datetime.datetime.utcnow()
+
+    with sess.begin():
+        sess.add(db)
+
+
+@box.on(Hello)
+async def on_start(sess):
+    logger.info('on_start fetch subway')
+    for service_region, api_version in REGION_TABLE.values():
+        logger.info(f'on_start fetch subway - {service_region}')
+        await fetch_station_db(sess, service_region, api_version)
+    return True
+
+
+@box.crontab('0 0 * * *')
+async def refresh_db(sess):
+    for service_region, api_version in REGION_TABLE.values():
+        await fetch_station_db(sess, service_region, api_version)
+
+
 @box.command('지하철', ['전철', 'subway'])
 @option('--region', '-r', default='수도권',
         transform_func=choice(list(REGION_TABLE.keys())),
         transform_error='지원되는 지역이 아니에요')
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def subway(bot, event: Message, region: str, start: str, end: str):
+async def subway(bot, event: Message, sess, region: str, start: str, end: str):
     """
     전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -44,20 +91,22 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
     """
 
     service_region, api_version = REGION_TABLE[region]
-    metadata_url = 'http://map.naver.com/external/SubwayProvide.xml?{}'.format(
-        urlencode({
-            'requestFile': 'metaData.json',
-            'readPath': service_region,
-            'version': api_version,
 
-        })
-    )
+    try:
+        db = sess.query(WebPageCache).filter_by(
+            name=f'subway-{service_region}-{api_version}'
+        ).one()
+    except NoResultFound:
+        await bot.say(
+            event.channel,
+            '아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
+        return
+
+    data = ujson.loads(db.body)
+
     timestamp_url = 'http://map.naver.com/pubtrans/getSubwayTimestamp.nhn'
-
     async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.get(metadata_url) as res:
-            data = await res.json(loads=ujson.loads)
-
         async with session.get(timestamp_url) as res:
             timestamp = ujson.loads(await res.text())
 
