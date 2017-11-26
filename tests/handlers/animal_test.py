@@ -50,7 +50,7 @@ async def test_get_cat_image_url():
             'http://cat.com/200.jpg',
         )
 
-        url = await get_cat_image_url()
+        url = await get_cat_image_url(0.001)
         assert url == 'http://cat.com/200.jpg'
 
 
@@ -92,5 +92,5 @@ async def test_get_dog_image_url():
             'http://dog.com/200.jpg',
         )
 
-        url = await get_dog_image_url()
+        url = await get_dog_image_url(0.001)
         assert url == 'http://dog.com/200.jpg'
