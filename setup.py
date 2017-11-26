@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-install_requires = {
+install_requires = [
     # Async request
     'aiohttp ~= 2.3.2',
     'cchardet ~= 2.1.1',
@@ -30,25 +30,25 @@ install_requires = {
     'libearth ~= 0.3.3',
     # util
     'attrdict ~= 2.0.0',
-}
+]
 
-tests_require = {
+tests_require = [
     'mypy ~= 0.550',
     'pytest ~= 3.2.5',
     'pytest-asyncio ~= 0.8.0',
     'pytest-cov ~= 2.5.1',
     'mocket ~= 2.1.1',
-}
+]
 
 extras_require = {
     'tests': tests_require,
-    'lint': {
+    'lint': [
         'flake8 ~= 3.5.0',
         'flake8-import-order ~= 0.15',
-    },
-    'ci': {
+    ],
+    'ci': [
         'codecov ~= 2.0.9',
-    }
+    ]
 }
 
 setup(
