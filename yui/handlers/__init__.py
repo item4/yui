@@ -1,5 +1,6 @@
 from .age import *  # type: ignore
 from .animal import *  # type: ignore
+from .answer import *  # type: ignore
 from .aqi import *  # type: ignore
 from .aws import *  # type: ignore
 from .book import *  # type: ignore
