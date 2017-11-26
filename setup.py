@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 install_requires = [
     # Async request
-    'aiohttp ~= 2.3.2',
+    'aiohttp ~= 2.3.3',
     'cchardet ~= 2.1.1',
     'aiodns ~= 1.1.1',
     # Async util
