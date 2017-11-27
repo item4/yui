@@ -5,8 +5,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.types import Boolean, Float, Integer, String
 
-from sqlalchemy_utils.types import ChoiceType, JSONType
+from sqlalchemy_utils.types import ChoiceType
 
+from .type import JSONType
 from ..orm import Base
 
 
