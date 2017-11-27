@@ -16,6 +16,7 @@ from ..util import FakeBot
 @pytest.mark.asyncio
 async def test_css_command(fx_sess):
     bot = FakeBot()
+    bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
@@ -50,6 +51,7 @@ async def test_css_command(fx_sess):
 @pytest.mark.asyncio
 async def test_html_command(fx_sess):
     bot = FakeBot()
+    bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
@@ -84,6 +86,7 @@ async def test_html_command(fx_sess):
 @pytest.mark.asyncio
 async def test_python_command(fx_sess):
     bot = FakeBot()
+    bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
         'channel': 'C1',

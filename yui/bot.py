@@ -7,7 +7,7 @@ import logging.config
 import re
 import shlex
 import traceback
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import aiocron
 
@@ -23,6 +23,12 @@ from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
 from .event import Event, Message, create_event
 from .orm import Base, get_database_engine
+from .type import (
+    BotLinkedNamespace,
+    DirectMessageChannel,
+    PrivateChannel,
+    PublicChannel,
+)
 
 
 __all__ = 'APICallError', 'Bot', 'BotReconnect', 'Session'
@@ -58,6 +64,8 @@ class Bot:
 
         logger.info('start')
 
+        BotLinkedNamespace._bot = self
+
         self.loop = None
 
         logger.info('connect to DB')
@@ -79,7 +87,9 @@ class Bot:
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
         self.api = SlackAPI(self)
-        self.channels: Dict[str, Dict[str, Any]] = {}
+        self.channels: List[PublicChannel] = []
+        self.ims: List[DirectMessageChannel] = []
+        self.groups: List[PrivateChannel] = []
         self.restart = False
 
         logger.info('register crontab')
@@ -419,8 +429,6 @@ class Bot:
                     raise BotReconnect()
                 else:
                     sleep = 0
-
-                self.channels = {c['id']: c for c in rtm['channels']}
 
                 with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm['url']) as ws:

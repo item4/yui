@@ -9,14 +9,19 @@ from typing import (
     NewType,
     Optional,
     Sequence,
+    TYPE_CHECKING,
     Union,
 )
 
+if TYPE_CHECKING:
+    from .bot import Bot as _Bot  # noqa
+
 __all__ = (
     'AppID',
+    'Bot',
     'BotID',
+    'BotLinkedNamespace',
     'Channel',
-    'ChannelBase',
     'ChannelID',
     'ChannelPurpose',
     'ChannelTopic',
@@ -27,12 +32,14 @@ __all__ = (
     'DnDStatus',
     'File',
     'FileID',
+    'FromChannelID',
+    'FromID',
     'MessageMessage',
+    'MessageMessageEdited',
     'MessagePreviousMessage',
     'Namespace',
-    'NoneType',
-    'PrivateGroupChannel',
-    'PrivateGroupChannelID',
+    'PrivateChannel',
+    'PrivateChannelID',
     'PublicChannel',
     'PublicChannelID',
     'Subteam',
@@ -40,9 +47,10 @@ __all__ = (
     'SubteamPrefs',
     'TeamID',
     'Ts',
-    'UnionType',
     'UnixTimestamp',
+    'User',
     'UserID',
+    'UserProfile',
     'cast',
     'is_container',
 )
@@ -59,12 +67,12 @@ DirectMessageChannelID = NewType('DirectMessageChannelID', str)
 
 #: :type:`type` Group(as known as Private Channel) ID type.
 #: It must start with 'G'.
-PrivateGroupChannelID = NewType('PrivateGroupChannelID', str)
+PrivateChannelID = NewType('PrivateChannelID', str)
 
 ChannelID = Union[
     PublicChannelID,
     DirectMessageChannelID,
-    PrivateGroupChannelID,
+    PrivateChannelID,
 ]
 
 #: :type:`type` File ID type. It must start with 'F'.
@@ -98,8 +106,11 @@ class Namespace(SimpleNamespace):
     """Typed Namespace."""
 
     def __init__(self, **kwargs) -> None:
-        for k, t in self.__annotations__.items():
-            kwargs[k] = cast(t, kwargs.get(k))
+        annotations = getattr(self, '__annotations__', {})
+        for k, v in kwargs.items():
+            t = annotations.get(k)
+            if t:
+                kwargs[k] = cast(t, v)
 
         super(Namespace, self).__init__(**kwargs)
 
@@ -120,65 +131,106 @@ class ChannelPurpose(Namespace):
     last_set: UnixTimestamp
 
 
-class ChannelBase(Namespace):
-    """Channel type base."""
+class BotLinkedNamespace(Namespace):
+    """Bot-linked namespace."""
+
+    _bot: '_Bot' = None
+
+
+class FromID(BotLinkedNamespace):
+    """.from_id"""
+
+    @classmethod
+    def from_id(cls, value: Union[str, Dict]):
+        raise NotImplementedError()
+
+
+class FromChannelID(FromID):
+    """.from_id"""
+
+    @classmethod
+    def from_id(cls, value: Union[str, Dict]):
+        if isinstance(value, str):
+            if value.startswith('C'):
+                for c in cls._bot.channels:
+                    if c.id == value:
+                        return c
+            elif value.startswith('D'):
+                for d in cls._bot.ims:
+                    if d.id == value:
+                        return d
+            elif value.startswith('G'):
+                for g in cls._bot.groups:
+                    if g.id == value:
+                        return g
+            raise KeyError('Given ID was not found.')
+        return cls(**value)
+
+    @classmethod
+    def from_name(cls, name: str):
+        for c in cls._bot.channels:
+            if c.name == name:
+                return c
+        for g in cls._bot.groups:
+            if g.name == name:
+                return g
+        raise KeyError('Channel was not found')
+
+
+class Channel(FromChannelID):
+
+    id: str
+    created: UnixTimestamp
+    is_org_shared: bool
+    has_pins: bool
+    last_read: Ts
+
+
+class PublicChannel(Channel):
 
     name: str
     is_channel: bool
-    created: UnixTimestamp
-    creator: UserID
     is_archived: bool
     is_general: bool
+    unlinked: int
+    creator: UserID
+    name_normalized: str
+    is_shared: bool
+    is_member: bool
+    is_private: bool
+    is_mpim: bool
     members: List[UserID]
     topic: ChannelTopic
     purpose: ChannelPurpose
-    is_member: bool
-    last_read: Ts
-    latest: Mapping
-    unread_count: int
-    unread_count_display: int
+    previous_names: List[str]
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(id={self.id!r}, name={self.name!r})'
 
 
-class PublicChannel(ChannelBase):
-    """
-    Public Channel.
+class DirectMessageChannel(Channel):
 
-    https://api.slack.com/types/channel
-
-    """
-
-    id: PublicChannelID
-
-
-class DirectMessageChannel(Namespace):
-    """
-    IM(Direct Message) Channel.
-
-    https://api.slack.com/types/im
-
-    """
-
-    id: DirectMessageChannelID
     is_im: bool
     user: UserID
-    created: UnixTimestamp
-    is_user_deleted: bool
+    last_read: Ts
+    is_open: bool
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(id={self.id!r}, user={self.user!r})'
 
 
-class PrivateGroupChannel(ChannelBase):
-    """
-    Private Group Channel.
+class PrivateChannel(Channel):
 
-    https://api.slack.com/types/channel
+    name: str
+    is_group: bool
+    creator: UserID
+    is_archived: bool
+    members: List[UserID]
+    topic: ChannelTopic
+    purpose: ChannelPurpose
 
-    """
-
-    id: PrivateGroupChannelID
-    is_group: str
-    is_mpim: bool
-
-
-Channel = Union[PublicChannel, DirectMessageChannel, PrivateGroupChannel]
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(id={self.id!r}, name={self.name!r})'
 
 
 class Bot(Namespace):
@@ -316,6 +368,9 @@ def cast(t, value):
         return t(value)
 
     if inspect.isclass(t):
+        if issubclass(t, FromID):
+            return t.from_id(value)
+
         if issubclass(t, Namespace):
             return t(**value)
 

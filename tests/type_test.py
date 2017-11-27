@@ -15,10 +15,16 @@ from typing import (
 import pytest
 
 from yui.type import (
+    DirectMessageChannel,
+    FromChannelID,
     Namespace,
+    PrivateChannel,
+    PublicChannel,
     cast,
     is_container,
 )
+
+from .util import FakeBot
 
 
 class User(Namespace):
@@ -29,6 +35,12 @@ class User(Namespace):
 
 
 def test_cast():
+    bot = FakeBot()
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
 
     ID = NewType('ID', str)
 
@@ -65,7 +77,7 @@ def test_cast():
     user = cast(User, {'id': 'item4', 'pw': 'supersecret'})
     assert user.id == 'item4'
     assert user.pw == 'supersecret'
-    assert user.addresses is None
+    assert not hasattr(user, 'addresses')
     users = cast(
         List[User],
         [
@@ -75,13 +87,76 @@ def test_cast():
     )
     assert users[0].id == 'item4'
     assert users[0].pw == 'supersecret'
-    assert users[0].addresses is None
+    assert not hasattr(users[0], 'addresses')
     assert users[1].id == 'item2'
     assert users[1].pw == 'weak'
     assert users[1].addresses == ['1', '2']
 
     with pytest.raises(ValueError):
         cast(Union[int, float], 'asdf')
+
+    channel = cast(FromChannelID, 'C1')
+    assert isinstance(channel, PublicChannel)
+    assert channel.id == 'C1'
+    assert channel.name == 'general'
+
+    dm = cast(FromChannelID, 'D1')
+    assert isinstance(dm, DirectMessageChannel)
+    assert dm.id == 'D1'
+    assert dm.user == 'U1'
+
+    group = cast(FromChannelID, 'G1')
+    assert isinstance(group, PrivateChannel)
+    assert group.id == 'G1'
+    assert group.name == 'secret'
+
+    with pytest.raises(KeyError):
+        cast(FromChannelID, 'G2')
+
+    unexpected = cast(FromChannelID, {'id': 'C5', 'name': 'firefox'})
+    assert isinstance(unexpected, FromChannelID)
+    assert unexpected.id == 'C5'
+    assert unexpected.name == 'firefox'
+
+
+def test_from_channel_id():
+    bot = FakeBot()
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
+
+    channel = FromChannelID.from_id('C1')
+    assert isinstance(channel, PublicChannel)
+    assert channel.id == 'C1'
+    assert channel.name == 'general'
+
+    dm = FromChannelID.from_id('D1')
+    assert isinstance(dm, DirectMessageChannel)
+    assert dm.id == 'D1'
+    assert dm.user == 'U1'
+
+    group = FromChannelID.from_id('G1')
+    assert isinstance(group, PrivateChannel)
+    assert group.id == 'G1'
+    assert group.name == 'secret'
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_id('G2')
+
+    channel = FromChannelID.from_name('general')
+    assert isinstance(channel, PublicChannel)
+    assert channel.id == 'C1'
+    assert channel.name == 'general'
+
+    group = FromChannelID.from_name('secret')
+    assert isinstance(group, PrivateChannel)
+    assert group.id == 'G1'
+    assert group.name == 'secret'
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_name('doge')
 
 
 def test_is_container():

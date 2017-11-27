@@ -3,76 +3,77 @@ import json
 import pytest
 
 from yui.api import Attachment, Field, SlackEncoder
+from yui.type import PrivateChannel, PublicChannel
 
 from .util import FakeBot
 
 
 def test_field_class():
-    TITLE = 'Test title for pytest'
-    VALUE = '123'
-    field = Field(title=TITLE, value=VALUE, short=True)
+    title = 'Test title for pytest'
+    value = '123'
+    field = Field(title=title, value=value, short=True)
 
-    assert field.title == TITLE
-    assert field.value == VALUE
+    assert field.title == title
+    assert field.value == value
     assert field.short
-    assert str(field) == f"Field('{TITLE}', '{VALUE}', True)"
+    assert str(field) == f"Field('{title}', '{value}', True)"
 
 
 def test_attachment_class():
-    FALLBACK = 'fallback'
-    COLOR = 'black'
-    PRETEXT = 'pretext'
-    AUTHOR_NAME = 'item4'
-    AUTHOR_LINK = 'https://item4.github.io/'
-    AUTHOR_ICON = 'https://item4.github.io/static/images/item4.png'
-    TITLE = 'title'
-    TEXT = 'text'
-    FIELDS = [Field('field1', '1', False), Field('field2', '2', True)]
-    IMAGE_URL = (
+    fallback = 'fallback'
+    color = 'black'
+    pretext = 'pretext'
+    author_name = 'item4'
+    author_link = 'https://item4.github.io/'
+    author_icon = 'https://item4.github.io/static/images/item4.png'
+    title = 'title'
+    text = 'text'
+    fields = [Field('field1', '1', False), Field('field2', '2', True)]
+    image_url = (
         'https://item4.github.io/static/images/favicon/apple-icon-60x60.png'
     )
-    THUMB_URL = (
+    thumb_url = (
         'https://item4.github.io/static/images/favicon/apple-icon-57x57.png'
     )
-    FOOTER = 'footer'
-    FOOTER_ICON = (
+    footer = 'footer'
+    footer_icon = (
         'https://item4.github.io/static/images/favicon/apple-icon-72x72.png'
     )
-    TS = 123456
+    ts = 123456
     attach = Attachment(
-        fallback=FALLBACK,
-        color=COLOR,
-        pretext=PRETEXT,
-        author_name=AUTHOR_NAME,
-        author_link=AUTHOR_LINK,
-        author_icon=AUTHOR_ICON,
-        title=TITLE,
-        text=TEXT,
-        fields=FIELDS,
-        image_url=IMAGE_URL,
-        thumb_url=THUMB_URL,
-        footer=FOOTER,
-        footer_icon=FOOTER_ICON,
-        ts=TS
+        fallback=fallback,
+        color=color,
+        pretext=pretext,
+        author_name=author_name,
+        author_link=author_link,
+        author_icon=author_icon,
+        title=title,
+        text=text,
+        fields=fields,
+        image_url=image_url,
+        thumb_url=thumb_url,
+        footer=footer,
+        footer_icon=footer_icon,
+        ts=ts
     )
 
-    assert attach.fallback == FALLBACK
-    assert attach.color == COLOR
-    assert attach.pretext == PRETEXT
-    assert attach.author_name == AUTHOR_NAME
-    assert attach.author_link == AUTHOR_LINK
-    assert attach.author_icon == AUTHOR_ICON
-    assert attach.title == TITLE
-    assert attach.text == TEXT
+    assert attach.fallback == fallback
+    assert attach.color == color
+    assert attach.pretext == pretext
+    assert attach.author_name == author_name
+    assert attach.author_link == author_link
+    assert attach.author_icon == author_icon
+    assert attach.title == title
+    assert attach.text == text
     assert len(attach.fields) == 2
     assert attach.fields[0].title == 'field1'
     assert attach.fields[1].title == 'field2'
-    assert attach.image_url == IMAGE_URL
-    assert attach.thumb_url == THUMB_URL
-    assert attach.footer == FOOTER
-    assert attach.footer_icon == FOOTER_ICON
-    assert attach.ts == TS
-    assert str(attach) == f"Attachment(title='{TITLE}')"
+    assert attach.image_url == image_url
+    assert attach.thumb_url == thumb_url
+    assert attach.footer == footer
+    assert attach.footer_icon == footer_icon
+    assert attach.ts == ts
+    assert str(attach) == f"Attachment(title='{title}')"
 
     attach.add_field('field3', '3')
 
@@ -107,15 +108,51 @@ def test_slack_encoder_class():
 
 @pytest.mark.asyncio
 async def test_slack_api_channels_info():
-    channel = 'C1234'
+    channel_id = 'C1234'
+    channel = PublicChannel(id='C4567')
 
     bot = FakeBot()
 
-    await bot.api.channels.info(channel)
-
+    await bot.api.channels.info(channel_id)
     call = bot.call_queue.pop()
     assert call.method == 'channels.info'
-    assert call.data == {'channel': channel}
+    assert call.data == {
+        'channel': channel_id,
+        'include_locale': 'false',
+    }
+
+    await bot.api.channels.info(channel)
+    call = bot.call_queue.pop()
+    assert call.method == 'channels.info'
+    assert call.data == {
+        'channel': channel.id,
+        'include_locale': 'false',
+    }
+
+
+@pytest.mark.asyncio
+async def test_slack_api_channels_list():
+    cursor = '1234asdf'
+    exclude_archived = False
+    exclude_members = False
+    limit = 12
+
+    bot = FakeBot()
+
+    await bot.api.channels.list(
+        cursor,
+        exclude_archived,
+        exclude_members,
+        limit
+    )
+    call = bot.call_queue.pop()
+    assert call.method == 'channels.list'
+    assert call.data == {
+        'cursor': cursor,
+        'exclude_archived': 'false',
+        'exclude_members': 'false',
+        'limit': '12',
+    }
 
 
 @pytest.mark.asyncio
@@ -191,6 +228,56 @@ async def test_slack_api_chat_post_message():
         'icon_emoji': icon_emoji,
         'thread_ts': thread_ts,
         'reply_broadcast': 'true',
+    }
+
+
+@pytest.mark.asyncio
+async def test_slack_api_groups_info():
+    group_id = 'G1'
+    group = PrivateChannel(id='G2', name='secret')
+
+    bot = FakeBot()
+
+    await bot.api.groups.info(group_id)
+    call = bot.call_queue.pop()
+    assert call.method == 'groups.info'
+    assert call.data == {
+        'channel': 'G1',
+        'include_locale': 'false',
+    }
+
+    await bot.api.groups.info(group)
+    call = bot.call_queue.pop()
+    assert call.method == 'groups.info'
+    assert call.data == {
+        'channel': 'G2',
+        'include_locale': 'false',
+    }
+
+
+@pytest.mark.asyncio
+async def test_slack_api_groups_list():
+    bot = FakeBot()
+
+    await bot.api.groups.list()
+    call = bot.call_queue.pop()
+    assert call.method == 'groups.list'
+    assert call.data == {
+        'exclude_archived': 'true',
+        'exclude_members': 'true',
+    }
+
+
+@pytest.mark.asyncio
+async def test_slack_api_im_list():
+    bot = FakeBot()
+
+    await bot.api.im.list(cursor='asdf', limit=10)
+    call = bot.call_queue.pop()
+    assert call.method == 'im.list'
+    assert call.data == {
+        'cursor': 'asdf',
+        'limit': '10',
     }
 
 

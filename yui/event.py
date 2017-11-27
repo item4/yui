@@ -2,21 +2,19 @@ from typing import Any, Dict, List, Mapping, Optional, Union
 
 from .type import (
     Bot,
+    Channel,
     ChannelID,
     Comment,
     CommentID,
     DirectMessageChannel,
-    DirectMessageChannelID,
     DnDStatus,
     File,
     FileID,
     MessageMessage,
     MessagePreviousMessage,
     Namespace,
-    PrivateGroupChannel,
-    PrivateGroupChannelID,
+    PrivateChannel,
     PublicChannel,
-    PublicChannelID,
     Subteam,
     SubteamID,
     TeamID,
@@ -132,7 +130,7 @@ class ChannelArchive(Event):
     """A channel was archived."""
 
     type: str = 'channel_archive'
-    channel: PublicChannelID
+    channel: PublicChannel
     user: UserID
 
 
@@ -147,7 +145,7 @@ class ChannelDeleted(Event):
     """A channel was deleted."""
 
     type: str = 'channel_deleted'
-    channel: PublicChannelID
+    channel: PublicChannel
 
 
 class ChannelHistoryChanged(Event):
@@ -170,14 +168,14 @@ class ChannelLeft(Event):
     """You left a channel."""
 
     type: str = 'channel_left'
-    channel: PublicChannelID
+    channel: PublicChannel
 
 
 class ChannelMarked(Event):
     """Your channel read marker was updated."""
 
     type: str = 'channel_marked'
-    channel: PublicChannelID
+    channel: PublicChannel
     ts: Ts
 
 
@@ -192,7 +190,7 @@ class ChannelUnarchive(Event):
     """A channel was unarchived."""
 
     type: str = 'channel_unarchive'
-    channel: PublicChannelID
+    channel: PublicChannel
     user: UserID
 
 
@@ -316,7 +314,7 @@ class GroupArchive(Event):
     """A private channel was archived."""
 
     type: str = 'group_archive'
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class GroupClose(Event):
@@ -324,7 +322,7 @@ class GroupClose(Event):
 
     type: str = 'group_close'
     user: UserID
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class GroupHistoryChanged(Event):
@@ -340,21 +338,21 @@ class GroupJoined(Event):
     """You joined a private channel."""
 
     type: str = 'group_joined'
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class GroupLeft(Event):
     """You left a private channel."""
 
     type: str = 'group_left'
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class GroupMarked(Event):
     """A private channel read marker was updated."""
 
     type: str = 'group_marked'
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
     ts: Ts
 
 
@@ -363,21 +361,21 @@ class GroupOpen(Event):
 
     type: str = 'group_open'
     user: UserID
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class GroupRename(Event):
     """A private channel was renamed"""
 
     type: str = 'group_rename'
-    channel: PrivateGroupChannel
+    channel: PrivateChannel
 
 
 class GroupUnarchive(Event):
     """A private channel was unarchived."""
 
     type: str = 'group_unarchive'
-    channel: PrivateGroupChannelID
+    channel: PrivateChannel
 
 
 class Hello(Event):
@@ -391,7 +389,7 @@ class IMClose(Event):
 
     type: str = 'im_close'
     user: UserID
-    channel: DirectMessageChannelID
+    channel: DirectMessageChannel
 
 
 class IMCreated(Event):
@@ -415,7 +413,7 @@ class IMMarked(Event):
     """A direct message read marker was updated."""
 
     type: str = 'im_marked'
-    channel: DirectMessageChannelID
+    channel: DirectMessageChannel
     ts: Ts
 
 
@@ -424,7 +422,7 @@ class IMOpen(Event):
 
     type: str = 'im_open'
     user: UserID
-    channel: DirectMessageChannelID
+    channel: DirectMessageChannel
 
 
 class ManualPresenceChange(Event):
@@ -439,7 +437,7 @@ class MemberJoinedChannel(Event):
 
     type: str = 'member_joined_channel'
     user: UserID
-    channel: Union[PublicChannelID, PrivateGroupChannelID]
+    channel: Union[PublicChannel, PrivateChannel]
     channel_type: str
     inviter: UserID
 
@@ -449,7 +447,7 @@ class MemberLeftChannel(Event):
 
     type: str = 'member_left_channel'
     user: UserID
-    channel: Union[PublicChannelID, PrivateGroupChannelID]
+    channel: Union[PublicChannel, PrivateChannel]
     channel_type: str
 
 
@@ -457,7 +455,7 @@ class Message(Event):
     """A message was sent to a channel."""
 
     type: str = 'message'
-    channel: ChannelID
+    channel: Channel
     user: UserID
     text: str
     ts: Ts
@@ -670,7 +668,7 @@ class UserTyping(Event):
     """A channel member is typing a message."""
 
     type: str = 'user_typing'
-    channel: ChannelID
+    channel: Channel
     user: UserID
 
 

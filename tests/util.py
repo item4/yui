@@ -1,7 +1,13 @@
-from typing import Any, Callable, Dict, List, NamedTuple
+from typing import Callable, Dict, List, NamedTuple
 
 from yui.api import SlackAPI
 from yui.bot import Bot
+from yui.type import (
+    BotLinkedNamespace,
+    DirectMessageChannel,
+    PrivateChannel,
+    PublicChannel,
+)
 
 
 class Call(NamedTuple):
@@ -15,9 +21,12 @@ class FakeBot(Bot):
     """Fake bot for test"""
 
     def __init__(self) -> None:
+        BotLinkedNamespace._bot = self
         self.call_queue: List[Call] = []
         self.api = SlackAPI(self)
-        self.channels: Dict[str, Dict[str, Any]] = {}
+        self.channels: List[PublicChannel] = []
+        self.ims: List[DirectMessageChannel] = []
+        self.groups: List[PrivateChannel] = []
         self.responses: Dict[str, Callable] = {}
 
     async def call(self, method: str, data: Dict[str, str]=None):
@@ -31,6 +40,15 @@ class FakeBot(Bot):
             self.responses[method] = func
             return func
         return decorator
+
+    def add_channel(self, id: str, name: str):
+        self.channels.append(PublicChannel(id=id, name=name))
+
+    def add_private_channel(self, id: str, name: str):
+        self.groups.append(PrivateChannel(id=id, name=name))
+
+    def add_dm(self, id: str, user: str):
+        self.ims.append(DirectMessageChannel(id=id, user=user))
 
 
 class FakeImportLib:

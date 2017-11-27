@@ -45,7 +45,7 @@ def test_box_class():
 
     @box.command('test2', ['t2'], use_shlex=False)
     async def test2():
-        pass
+        """Short only"""
 
     assert box.aliases[None]['t2'] == 'test2'
     assert type(box.handlers['message'][None]['test1']) == Handler
@@ -56,6 +56,10 @@ def test_box_class():
     assert not box.handlers['message'][None]['test2'].use_shlex
     assert box.handlers['message'][None]['test1'].callback == test1
     assert box.handlers['message'][None]['test2'].callback == test2
+    assert box.handlers['message'][None]['test2'].short_help == (
+        'Short only'
+    )
+    assert box.handlers['message'][None]['test2'].help is None
     assert not box.crontabs
 
     @box.on(Hello)

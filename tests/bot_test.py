@@ -33,7 +33,9 @@ def test_bot_init(monkeypatch):
     bot = Bot(config)
 
     assert bot.config == config
-    assert bot.channels == {}
+    assert bot.channels == []
+    assert bot.ims == []
+    assert bot.groups == []
     assert bot.loop is None
     assert bot.restart is False
     assert isinstance(bot.api, SlackAPI)

@@ -11,6 +11,7 @@ from ..util import FakeBot
 @pytest.mark.asyncio
 async def test_age_command():
     bot = FakeBot()
+    bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
         'channel': 'C1',

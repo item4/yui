@@ -1,9 +1,18 @@
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from attrdict import AttrDict
 
-from .type import ChannelID, Ts, UserID
+from .type import (
+    Channel,
+    ChannelID,
+    PrivateChannel,
+    PrivateChannelID,
+    PublicChannel,
+    PublicChannelID,
+    Ts,
+    UserID,
+)
 from .util import bool2str
 
 
@@ -81,26 +90,63 @@ class SlackAPI:
 
         self.channels = AttrDict()
         self.channels.info = self.channels_info
+        self.channels.list = self.channels_list
 
         self.chat = AttrDict()
         self.chat.postMessage = self.chat_post_message
 
+        self.groups = AttrDict()
+        self.groups.info = self.groups_info
+        self.groups.list = self.groups_list
+
+        self.im = AttrDict()
+        self.im.list = self.im_list
+
         self.users = AttrDict()
         self.users.info = self.users_info
 
-    async def channels_info(self, channel: ChannelID):
+    async def channels_info(
+        self,
+        channel: Union[PublicChannel, PublicChannelID],
+        include_locale: bool=False,
+    ):
         """https://api.slack.com/methods/channels.info"""
+
+        if isinstance(channel, PublicChannel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
 
         return await self.bot.call(
             'channels.info',
             {
-                'channel': channel,
+                'channel': channel_id,
+                'include_locale': bool2str(include_locale),
             }
         )
 
+    async def channels_list(
+        self,
+        cursor: Optional[str]=None,
+        exclude_archived: bool=True,
+        exclude_members: bool=True,
+        limit: int=0,
+    ):
+        """https://api.slack.com/methods/channels.list"""
+
+        param = {
+            'exclude_archived': bool2str(exclude_archived),
+            'exclude_members': bool2str(exclude_members),
+            'limit': str(limit),
+        }
+        if cursor:
+            param['cursor'] = cursor
+
+        return await self.bot.call('channels.list', param)
+
     async def chat_post_message(
         self,
-        channel: ChannelID,
+        channel: Union[Channel, ChannelID],
         text: Optional[str]=None,
         parse=None,
         link_names: Optional[bool]=None,
@@ -116,8 +162,13 @@ class SlackAPI:
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 
+        if isinstance(channel, Channel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
+
         param: Dict[str, str] = {
-            'channel': channel,
+            'channel': channel_id,
         }
 
         if text is None and attachments is None:
@@ -164,6 +215,56 @@ class SlackAPI:
             param['reply_broadcast'] = bool2str(reply_broadcast)
 
         return await self.bot.call('chat.postMessage', param)
+
+    async def groups_info(
+        self,
+        channel: Union[PrivateChannel, PrivateChannelID],
+        include_locale: bool=False,
+    ):
+        """https://api.slack.com/methods/groups.info"""
+
+        if isinstance(channel, PrivateChannel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
+
+        return await self.bot.call(
+            'groups.info',
+            {
+                'channel': channel_id,
+                'include_locale': bool2str(include_locale),
+            }
+        )
+
+    async def groups_list(
+        self,
+        exclude_archived: bool=True,
+        exclude_members: bool=True,
+    ):
+        """https://api.slack.com/methods/groups.list"""
+
+        return await self.bot.call(
+            'groups.list',
+            {
+                'exclude_archived': bool2str(exclude_archived),
+                'exclude_members': bool2str(exclude_members),
+            }
+        )
+
+    async def im_list(
+        self,
+        cursor: Optional[str]=None,
+        limit: Optional[int]=None,
+    ):
+        """https://api.slack.com/methods/im.list"""
+
+        param = {}
+        if cursor:
+            param['cursor'] = cursor
+        if limit:
+            param['limit'] = str(limit)
+
+        return await self.bot.call('im.list', param)
 
     async def users_info(self, user: UserID):
         """https://api.slack.com/methods/users.info"""

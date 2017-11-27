@@ -143,7 +143,7 @@ class ScoutMigration:
         return MigrationStatus.passed
 
     def create(self, sess):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def create_base_scout(self) -> Scout:
         scout = Scout()

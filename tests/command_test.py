@@ -11,9 +11,11 @@ from .util import FakeBot
 @pytest.mark.asyncio
 async def test_only():
     bot = FakeBot()
-    bot.channels['C1'] = {'name': 'general'}
-    bot.channels['C2'] = {'name': 'random'}
-    bot.channels['C3'] = {'name': 'food'}
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
 
     callback = only('general', 'random')
 
@@ -117,9 +119,11 @@ async def test_only():
 @pytest.mark.asyncio
 async def test_not_():
     bot = FakeBot()
-    bot.channels['C1'] = {'name': 'general'}
-    bot.channels['C2'] = {'name': 'random'}
-    bot.channels['C3'] = {'name': 'food'}
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
 
     callback = not_('general', 'random')
 
@@ -140,7 +144,7 @@ async def test_not_():
     assert not bot.call_queue
 
     event = create_event(dict(type='message', channel='G1'))
-    assert not await callback(bot, event)
+    assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_('general', 'random', error='error!')
@@ -166,10 +170,8 @@ async def test_not_():
     assert not bot.call_queue
 
     event = create_event(dict(type='message', channel='G1'))
-    assert not await callback(bot, event)
-    say = bot.call_queue.pop()
-    assert say.method == 'chat.postMessage'
-    assert say.data['text'] == 'error!'
+    assert await callback(bot, event)
+    assert not bot.call_queue
 
     callback = not_('general', 'random', DM)
 
@@ -190,7 +192,7 @@ async def test_not_():
     assert not bot.call_queue
 
     event = create_event(dict(type='message', channel='G1'))
-    assert not await callback(bot, event)
+    assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_('general', 'random', DM, error='error!')
@@ -218,10 +220,8 @@ async def test_not_():
     assert say.data['text'] == 'error!'
 
     event = create_event(dict(type='message', channel='G1'))
-    assert not await callback(bot, event)
-    say = bot.call_queue.pop()
-    assert say.method == 'chat.postMessage'
-    assert say.data['text'] == 'error!'
+    assert await callback(bot, event)
+    assert not bot.call_queue
 
 
 def test_argument_decorator():
