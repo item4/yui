@@ -15,6 +15,7 @@ def test_field_class():
     assert field.title == TITLE
     assert field.value == VALUE
     assert field.short
+    assert str(field) == f"Field('{TITLE}', '{VALUE}', True)"
 
 
 def test_attachment_class():
@@ -71,6 +72,7 @@ def test_attachment_class():
     assert attach.footer == FOOTER
     assert attach.footer_icon == FOOTER_ICON
     assert attach.ts == TS
+    assert str(attach) == f"Attachment(title='{TITLE}')"
 
     attach.add_field('field3', '3')
 

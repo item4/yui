@@ -12,6 +12,7 @@ def test_scout_list(fx_sess):
     )
     for cls in subclasses:
         scout = cls()
+        assert str(scout).startswith('ScoutMigration(')
         assert get_count(
             fx_sess.query(Scout).filter_by(title=scout.title, type=scout.type)
         ) == 0

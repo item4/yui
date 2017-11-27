@@ -163,6 +163,9 @@ class ScoutMigration:
         with sess.begin():
             sess.delete(scout)
 
+    def __str__(self) -> str:
+        return f'ScoutMigration({self.title!r}, {self.type!r})'
+
 
 class 두근두근_수증기와_미인의_온천_캐릭터(ScoutMigration):
 

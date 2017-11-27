@@ -20,6 +20,9 @@ class Field:
         self.value = value
         self.short = short
 
+    def __str__(self) -> str:
+        return f'Field({self.title!r}, {self.value!r}, {self.short!r})'
+
 
 class Attachment:
     """Slack Attachment"""
@@ -63,6 +66,9 @@ class Attachment:
 
     def add_field(self, title: str, value: str, short: Optional[bool]=False):
         self.fields.append(Field(title, value, short))
+
+    def __str__(self) -> str:
+        return f'Attachment(title={self.title!r})'
 
 
 class SlackAPI:
