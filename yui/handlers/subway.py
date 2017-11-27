@@ -14,7 +14,7 @@ import ujson
 from ..box import box
 from ..command import argument, option
 from ..event import Hello, Message
-from ..models.cache import WebPageCache
+from ..models.cache import JSONCache
 from ..transform import choice
 from ..util import fuzzy_korean_ratio
 
@@ -38,9 +38,9 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
     name = f'subway-{service_region}-{api_version}'
     logger.info(f'fetch {name} start')
     try:
-        db = sess.query(WebPageCache).filter_by(name=name).one()
+        db = sess.query(JSONCache).filter_by(name=name).one()
     except NoResultFound:
-        db = WebPageCache()
+        db = JSONCache()
         db.name = name
 
     metadata_url = 'http://map.naver.com/external/SubwayProvide.xml?{}'.format(
@@ -54,7 +54,7 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
 
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(metadata_url) as res:
-            db.body = await res.text()
+            db.body = await res.json(loads=ujson.loads)
 
     db.created_at = datetime.datetime.utcnow()
 
@@ -101,7 +101,7 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
     service_region, api_version = REGION_TABLE[region]
 
     try:
-        db = sess.query(WebPageCache).filter_by(
+        db = sess.query(JSONCache).filter_by(
             name=f'subway-{service_region}-{api_version}'
         ).one()
     except NoResultFound:
@@ -111,7 +111,7 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
         )
         return
 
-    data = ujson.loads(db.body)
+    data = db.body
 
     timestamp_url = 'http://map.naver.com/pubtrans/getSubwayTimestamp.nhn'
     async with aiohttp.ClientSession(headers=headers) as session:

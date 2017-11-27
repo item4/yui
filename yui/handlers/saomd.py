@@ -15,7 +15,7 @@ from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
 from ..event import Hello, Message
-from ..models.cache import WebPageCache
+from ..models.cache import JSONCache
 from ..models.saomd import (
     COST_TYPE_LABEL,
     CostType,
@@ -159,15 +159,28 @@ async def fetch_character_list(sess):
     logger.info('fetch saomd character start')
 
     try:
-        db = sess.query(WebPageCache).filter_by(name='saomd-character').one()
+        db = sess.query(JSONCache).filter_by(name='saomd-character').one()
     except NoResultFound:
-        db = WebPageCache()
+        db = JSONCache()
         db.name = 'saomd-character'
 
     url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_char.php'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            db.body = await res.text()
+            html = await res.text()
+
+    h = fromstring(html)
+    tr_list = h.cssselect('div table tr')[1:]
+    result: List[Tuple[str, str]] = []
+    for tr in tr_list:
+        name = tr[1].text_content().replace('★', '').strip()
+        detail_url = f'http://www.hungryapp.co.kr{tr[1][0].get("href")}'
+        result.append((
+            name,
+            detail_url,
+        ))
+
+    db.body = result
 
     db.created_at = datetime.datetime.utcnow()
 
@@ -181,15 +194,40 @@ async def fetch_weapon_list(sess):
     logger.info('fetch saomd weapon start')
 
     try:
-        db = sess.query(WebPageCache).filter_by(name='saomd-weapon').one()
+        db = sess.query(JSONCache).filter_by(name='saomd-weapon').one()
     except NoResultFound:
-        db = WebPageCache()
+        db = JSONCache()
         db.name = 'saomd-weapon'
 
     url = 'http://www.hungryapp.co.kr/bbs/game/_game_saomd_weap.php'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            db.body = await res.text()
+            html = await res.text()
+
+    h = fromstring(html)
+    tr_list = h.cssselect('div table tr')[1:]
+
+    result: List[Tuple[str, str, str, str, int, int, List[str]]] = []
+
+    for tr in tr_list:
+        name = str(tr[0][0].text_content())
+        grade = str(tr[0].text_content().replace(name, '').strip())
+        category = str(tr[1].text_content())
+        attribute = str(tr[2].text_content())
+        attack = int(tr[3].text_content())
+        critical = int(tr[4].text_content())
+        battle_skills = [x.strip() for x in tr[5].text_content().split('/')]
+        result.append((
+            name,
+            grade,
+            category,
+            attribute,
+            attack,
+            critical,
+            battle_skills,
+        ))
+
+    db.body = result
 
     db.created_at = datetime.datetime.utcnow()
 
@@ -675,7 +713,7 @@ async def character_info(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        db = sess.query(WebPageCache).filter_by(name='saomd-character').one()
+        db = sess.query(JSONCache).filter_by(name='saomd-character').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -683,23 +721,19 @@ async def character_info(bot, event: Message, sess, keyword: str):
         )
         return
 
-    h = fromstring(db.body)
-    tr_list = h.cssselect('div table tr')[1:]
-
     matching: List[Tuple[float, str, str]] = []
-    for tr in tr_list:
-        name = tr[1].text_content().replace('★', '').strip()
+    for name, url in db.body:
         matching.append((
             fuzzy_korean_ratio(keyword, name),
             name,
-            tr[1][0].get('href'),
+            url,
         ))
 
     matching.sort(key=lambda x: -x[0])
 
     if matching[0][0] >= 40:
         html = ''
-        url = f'http://www.hungryapp.co.kr{matching[0][2]}'
+        url = matching[0][2]
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as res:
                 html = await res.text()
@@ -770,7 +804,7 @@ async def weapon_info(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        db = sess.query(WebPageCache).filter_by(name='saomd-weapon').one()
+        db = sess.query(JSONCache).filter_by(name='saomd-weapon').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -778,21 +812,10 @@ async def weapon_info(bot, event: Message, sess, keyword: str):
         )
         return
 
-    h = fromstring(db.body)
-    tr_list = h.cssselect('div table tr')[1:]
-
     weapons: List[Weapon] = []
 
-    for tr in tr_list:
-        name = tr[0][0].text_content()
-        grade = tr[0].text_content().replace(name, '').strip()
+    for name, grade, category, attribute, attack, critical, bs in db.body:
         ratio = fuzzy_korean_ratio(name, keyword)
-        category = tr[1].text_content()
-        attribute = tr[2].text_content()
-        attack = int(tr[3].text_content())
-        critical = int(tr[4].text_content())
-        battle_skills = [x.strip() for x in tr[5].text_content().split('/')]
-
         weapons.append(Weapon(
             name=name,
             grade=grade,
@@ -801,7 +824,7 @@ async def weapon_info(bot, event: Message, sess, keyword: str):
             attribute=attribute,
             attack=attack,
             critical=critical,
-            battle_skills=battle_skills,
+            battle_skills=bs,
         ))
 
     weapons.sort(key=lambda x: -x.ratio)

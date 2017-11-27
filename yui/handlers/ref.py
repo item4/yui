@@ -15,7 +15,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..box import box
 from ..command import argument
 from ..event import Hello, Message
-from ..models.cache import WebPageCache
+from ..models.cache import JSONCache
 
 logger = logging.getLogger(__name__)
 
@@ -29,34 +29,123 @@ REF_URLS: Dict[str, str] = {
 }
 
 
-async def fetch_ref(name: str, sess):
-    logger.info(f'fetch ref - {name} start')
+async def fetch_css_ref(sess):
+    logger.info(f'fetch css ref start')
 
-    url = REF_URLS[name]
+    name = 'css'
+    url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
     try:
-        ref = sess.query(WebPageCache).filter_by(name=name).one()
+        ref = sess.query(JSONCache).filter_by(name=name).one()
     except NoResultFound:
-        ref = WebPageCache()
+        ref = JSONCache()
         ref.name = name
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            ref.body = await res.text()
+            html = await res.text()
 
+    h = fromstring(html)
+    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]')
+
+    result = []
+    for a in a_tags:
+        name = a.text_content()
+        link = f"https://developer.mozilla.org{a.get('href')}"
+        result.append((
+            name,
+            link,
+        ))
+
+    ref.body = result
     ref.created_at = datetime.datetime.utcnow()
 
     with sess.begin():
         sess.add(ref)
 
-    logger.info(f'fetch ref - {name} end')
+    logger.info(f'fetch css ref end')
+
+
+async def fetch_html_ref(sess):
+    logger.info(f'fetch html ref start')
+
+    name = 'html'
+    url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
+    try:
+        ref = sess.query(JSONCache).filter_by(name=name).one()
+    except NoResultFound:
+        ref = JSONCache()
+        ref.name = name
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    h = fromstring(html)
+    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]')
+
+    result = []
+    for a in a_tags:
+        name = a.text_content()
+        link = f"https://developer.mozilla.org{a.get('href')}"
+        result.append((
+            name,
+            link,
+        ))
+
+    ref.body = result
+    ref.created_at = datetime.datetime.utcnow()
+
+    with sess.begin():
+        sess.add(ref)
+
+    logger.info(f'fetch html ref end')
+
+
+async def fetch_python_ref(sess):
+    logger.info(f'fetch python ref start')
+
+    name = 'python'
+    url = 'https://docs.python.org/3/library/'
+    try:
+        ref = sess.query(JSONCache).filter_by(name=name).one()
+    except NoResultFound:
+        ref = JSONCache()
+        ref.name = name
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    h = fromstring(html)
+    a_tags = h.cssselect('a.reference.internal')
+
+    result = []
+    for a in a_tags:
+        code = None
+        code_el = a.cssselect('code.docutils.literal')
+        name = INDEX_NUM_RE.sub('', a.text_content())
+        link = f'https://docs.python.org/3/library/{a.get("href")}'
+        if code_el:
+            code = code_el[0].text_content()
+        result.append((
+            code,
+            name,
+            link,
+        ))
+
+    ref.body = result
+    ref.created_at = datetime.datetime.utcnow()
+
+    with sess.begin():
+        sess.add(ref)
+
+    logger.info(f'fetch python ref end')
 
 
 @box.on(Hello)
 async def on_start(sess):
     logger.info('on_start ref')
-    tasks = []
-    for name in REF_URLS.keys():
-        tasks.append(fetch_ref(name, sess))
+    tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]
     await asyncio.wait(tasks)
     return True
 
@@ -64,9 +153,7 @@ async def on_start(sess):
 @box.crontab('0 0 * * *')
 async def refresh(sess):
     logger.info('refresh ref')
-    tasks = []
-    for name in REF_URLS.keys():
-        tasks.append(fetch_ref(name, sess))
+    tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]
     await asyncio.wait(tasks)
 
 
@@ -81,7 +168,7 @@ async def html(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(WebPageCache).filter_by(name='html').one()
+        ref = sess.query(JSONCache).filter_by(name='html').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -89,15 +176,10 @@ async def html(bot, event: Message, sess, keyword: str):
         )
         return
 
-    h = fromstring(ref.body)
-    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]')
-
     name = None
     link = None
     ratio = -1
-    for a in a_tags:
-        _name = a.text_content()
-        _link = a.get('href')
+    for _name, _link in ref.body:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
             name = _name
@@ -107,7 +189,7 @@ async def html(bot, event: Message, sess, keyword: str):
     if ratio > 40:
         await bot.say(
             event.channel,
-            f':html: `{name}` - https://developer.mozilla.org{link}'
+            f':html: `{name}` - {link}'
         )
     else:
         await bot.say(
@@ -127,7 +209,7 @@ async def css(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(WebPageCache).filter_by(name='css').one()
+        ref = sess.query(JSONCache).filter_by(name='css').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -135,15 +217,10 @@ async def css(bot, event: Message, sess, keyword: str):
         )
         return
 
-    h = fromstring(ref.body)
-    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]')
-
     name = None
     link = None
     ratio = -1
-    for a in a_tags:
-        _name = a.text_content()
-        _link = a.get('href')
+    for _name, _link in ref.body:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
             name = _name
@@ -153,7 +230,7 @@ async def css(bot, event: Message, sess, keyword: str):
     if ratio > 40:
         await bot.say(
             event.channel,
-            f':css: `{name}` - https://developer.mozilla.org{link}'
+            f':css: `{name}` - {link}'
         )
     else:
         await bot.say(
@@ -229,7 +306,7 @@ async def python(bot, event: Message, sess, keyword: str):
     """
 
     try:
-        ref = sess.query(WebPageCache).filter_by(name='python').one()
+        ref = sess.query(JSONCache).filter_by(name='python').one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -237,18 +314,12 @@ async def python(bot, event: Message, sess, keyword: str):
         )
         return
 
-    h = fromstring(ref.body)
-    a_tags = h.cssselect('a.reference.internal')
-
     name = None
     link = None
     ratio = -1
-    for a in a_tags:
-        code = a.cssselect('code.docutils.literal')
-        _name = INDEX_NUM_RE.sub('', a.text_content())
-        _link = a.get('href')
+    for code, _name, _link in ref.body:
         if code:
-            _ratio = fuzz.ratio(keyword, code[0].text_content())
+            _ratio = fuzz.ratio(keyword, code)
         else:
             _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
@@ -259,7 +330,7 @@ async def python(bot, event: Message, sess, keyword: str):
     if ratio > 40:
         await bot.say(
             event.channel,
-            f':python: {name} - https://docs.python.org/3/library/{link}'
+            f':python: {name} - {link}'
         )
     else:
         await bot.say(

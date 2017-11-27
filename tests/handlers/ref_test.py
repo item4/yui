@@ -1,7 +1,14 @@
 import pytest
 
 from yui.event import create_event
-from yui.handlers.ref import css, fetch_ref, html, python
+from yui.handlers.ref import (
+    css,
+    fetch_css_ref,
+    fetch_html_ref,
+    fetch_python_ref,
+    html,
+    python,
+)
 
 from ..util import FakeBot
 
@@ -22,7 +29,7 @@ async def test_css_command(fx_sess):
         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_ref('css', fx_sess)
+    await fetch_css_ref(fx_sess)
 
     await css(bot, event, fx_sess, 'font-family')
     said = bot.call_queue.pop()
@@ -56,7 +63,7 @@ async def test_html_command(fx_sess):
         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_ref('html', fx_sess)
+    await fetch_html_ref(fx_sess)
 
     await html(bot, event, fx_sess, 'section')
     said = bot.call_queue.pop()
@@ -90,7 +97,7 @@ async def test_python_command(fx_sess):
          '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_ref('python', fx_sess)
+    await fetch_python_ref(fx_sess)
 
     await python(bot, event, fx_sess, 'builtin function')
     said = bot.call_queue.pop()
