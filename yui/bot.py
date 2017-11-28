@@ -373,7 +373,11 @@ class Bot:
                 if 'raw' in func_params:
                     kwargs['raw'] = raw
                 if 'remain_chunks' in func_params:
-                    kwargs['remain_chunks'] = remain_chunks
+                    annotation = func_params['remain_chunks'].annotation
+                    if annotation in [str, inspect._empty]:  # type: ignore
+                        kwargs['remain_chunks'] = ' '.join(remain_chunks)
+                    else:
+                        kwargs['remain_chunks'] = remain_chunks
                 if 'user' in func_params:
                     kwargs['user'] = await self.api.users.info(event.user)
 
