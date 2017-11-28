@@ -672,6 +672,12 @@ class UserTyping(Event):
     user: UserID
 
 
+class ChatterboxSystemStart(Event):
+    """System event for start system."""
+
+    type: str = 'chatterbox_system_start'
+
+
 def create_event(d: Dict) -> Event:
     """Create Event"""
 

@@ -14,7 +14,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..api import Attachment
 from ..box import box
 from ..command import DM, argument, only
-from ..event import Hello, Message
+from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
 from ..models.saomd import (
     COST_TYPE_LABEL,
@@ -677,7 +677,7 @@ async def saomd_sim_result_reset(bot, event: Message, sess):
     )
 
 
-@box.on(Hello)
+@box.on(ChatterboxSystemStart)
 async def on_start(sess):
     logger.info('on_start saomd')
     await asyncio.wait([

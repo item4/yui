@@ -334,7 +334,7 @@ class Bot:
                 call, args = SPACE_RE.split(event.text, 1)
             except ValueError:
                 call = event.text
-        elif hasattr(event, 'message') and 'text' in event.message:
+        elif hasattr(event, 'message') and hasattr(event.message, 'text'):
             try:
                 call, args = SPACE_RE.split(event.message.text, 1)
             except ValueError:
@@ -429,6 +429,10 @@ class Bot:
                     raise BotReconnect()
                 else:
                     sleep = 0
+
+                await self.queue.put(create_event({
+                    'type': 'chatterbox_system_start',
+                }))
 
                 with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm['url']) as ws:

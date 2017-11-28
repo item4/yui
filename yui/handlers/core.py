@@ -1,3 +1,5 @@
+import logging
+
 from ..bot import BotReconnect
 from ..box import box
 from ..event import (
@@ -10,6 +12,7 @@ from ..event import (
     ChannelMarked,
     ChannelRename,
     ChannelUnarchive,
+    ChatterboxSystemStart,
     GroupArchive,
     GroupClose,
     GroupHistoryChanged,
@@ -19,13 +22,19 @@ from ..event import (
     GroupOpen,
     GroupRename,
     GroupUnarchive,
-    Hello,
+    IMClose,
+    IMCreated,
+    IMHistoryChanged,
+    IMMarked,
+    IMOpen,
     TeamMigrationStarted,
 )
 from ..type import DirectMessageChannel, PrivateChannel, PublicChannel
 
+logger = logging.getLogger(__name__)
 
-@box.on(Hello)
+
+@box.on(ChatterboxSystemStart)
 async def on_start(bot):
     cursor = None
     while True:
@@ -60,6 +69,7 @@ async def on_start(bot):
 @box.on(ChannelUnarchive)
 @box.on(ChannelRename)
 async def public_channel_mutation_detected(bot):
+    logger.info('public_channel_mutation_detected start')
     cursor = None
     new_channels = []
     while True:
@@ -72,6 +82,8 @@ async def public_channel_mutation_detected(bot):
             break
 
     bot.channels[:] = new_channels
+    logger.info('public_channel_mutation_detected end')
+    return True
 
 
 @box.on(GroupArchive)
@@ -84,6 +96,7 @@ async def public_channel_mutation_detected(bot):
 @box.on(GroupRename)
 @box.on(GroupUnarchive)
 async def private_channel_mutation_detected(bot):
+    logger.info('private_channel_mutation_detected start')
     new_groups = []
     result = await bot.api.groups.list()
     for g in result['groups']:
@@ -91,6 +104,25 @@ async def private_channel_mutation_detected(bot):
         new_groups.append(PrivateChannel(**res['group']))
 
     bot.groups[:] = new_groups
+    logger.info('private_channel_mutation_detected start')
+    return True
+
+
+@box.on(IMClose)
+@box.on(IMCreated)
+@box.on(IMHistoryChanged)
+@box.on(IMMarked)
+@box.on(IMOpen)
+async def direct_message_channel_mutation_detected(bot):
+    logger.info('direct_message_channel_mutation_detected start')
+    new_ims = []
+    result = await bot.api.im.list()
+    for d in result['ims']:
+        new_ims.append(DirectMessageChannel(**d))
+
+    bot.ims[:] = new_ims
+    logger.info('direct_message_channel_mutation_detected end')
+    return True
 
 
 @box.on(TeamMigrationStarted)

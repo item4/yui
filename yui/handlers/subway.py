@@ -13,7 +13,7 @@ import ujson
 
 from ..box import box
 from ..command import argument, option
-from ..event import Hello, Message
+from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
 from ..transform import choice
 from ..util import fuzzy_korean_ratio
@@ -64,7 +64,7 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
     logger.info(f'fetch {name} end')
 
 
-@box.on(Hello)
+@box.on(ChatterboxSystemStart)
 async def on_start(sess):
     logger.info('on_start subway')
     tasks = []

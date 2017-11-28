@@ -14,7 +14,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..box import box
 from ..command import argument
-from ..event import Hello, Message
+from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
 
 logger = logging.getLogger(__name__)
@@ -142,7 +142,7 @@ async def fetch_python_ref(sess):
     logger.info(f'fetch python ref end')
 
 
-@box.on(Hello)
+@box.on(ChatterboxSystemStart)
 async def on_start(sess):
     logger.info('on_start ref')
     tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]
