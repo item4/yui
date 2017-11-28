@@ -159,7 +159,7 @@ class FromChannelID(FromID):
                 for d in cls._bot.ims:
                     if d.id == value:
                         return d
-                return cls(id=value)
+                return DirectMessageChannel(id=value)
             elif value.startswith('G'):
                 for g in cls._bot.groups:
                     if g.id == value:
