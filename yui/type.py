@@ -212,7 +212,7 @@ class PublicChannel(Channel):
 class DirectMessageChannel(Channel):
 
     is_im: bool
-    user: UserID
+    user: UserID = None
     last_read: Ts
     is_open: bool
 

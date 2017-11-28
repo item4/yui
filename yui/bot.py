@@ -194,6 +194,33 @@ class Bot:
 
         logger = logging.getLogger(f'{__name__}.Bot.process')
 
+        async def handle(func, args, event):
+            try:
+                return await func(
+                    *args,
+                    event=event,
+                )
+            except SystemExit:
+                logger.info('SystemExit')
+                raise
+            except BotReconnect:
+                self.restart = True
+                return False
+            except:  # noqa: E722
+                logger.error(
+                    f'Event: {event} / '
+                    f'Traceback: {traceback.format_exc()}'
+                )
+                await self.say(
+                    self.config.OWNER,
+                    ('*Event*\n```\n{}\n```\n'
+                     '*Traceback*\n```\n{}\n```\n').format(
+                        event,
+                        traceback.format_exc(),
+                    )
+                )
+                return False
+
         while True:
             event = await self.queue.get()
 
@@ -201,99 +228,42 @@ class Bot:
 
             type = event.type
             subtype = event.subtype
-
-            handlers = self.box.handlers.get(type)
-            if handlers:
-                for name, handler in handlers[subtype].items():
-                    if type == 'message':
-                        try:
-                            res = await self.process_message_handler(
-                                name,
-                                handler,
-                                event
-                            )
-                            if not res:
-                                break
-                        except SystemExit as e:
-                            logger.info('SystemExit')
-                            raise e
-                        except BotReconnect:
-                            self.restart = True
-                        except:  # noqa: E722
-                            logger.error(
-                                f'Event: {event} / '
-                                f'Traceback: {traceback.format_exc()}'
-                            )
-                            await self.say(
-                                self.config.OWNER,
-                                ('*Event*\n```\n{}\n```\n'
-                                 '*Traceback*\n```\n{}\n```\n').format(
-                                    event,
-                                    traceback.format_exc(),
-                                )
-                            )
-                    else:
-                        try:
-                            res = await self.process_handler(
-                                name,
-                                handler,
-                                event
-                            )
-                            if not res:
-                                break
-                        except SystemExit as e:
-                            logger.info('SystemExit')
-                            raise e
-                        except BotReconnect:
-                            self.restart = True
-                        except:  # noqa: E722
-                            logger.error(
-                                f'Event: {event} / '
-                                f'Traceback: {traceback.format_exc()}'
-                            )
-                            await self.say(
-                                self.config.OWNER,
-                                ('*Event*\n```\n{}\n```\n'
-                                 '*Traceback*\n```\n{}\n```\n').format(
-                                    event,
-                                    traceback.format_exc(),
-                                )
-                            )
+            handlers = self.box.handlers[type]
 
             if type == 'message':
-                for name, alias_to in self.box.aliases[subtype].items():
-                    handler = self.box.handlers[type][subtype][alias_to]
-                    if handler:
-                        try:
-                            res = await self.process_message_handler(
-                                name,
-                                handler,
-                                event
+                running = True
+                for name, handler in handlers[subtype].items():
+                    result = await handle(
+                        self.process_message_handler,
+                        (name, handler),
+                        event,
+                    )
+                    if not result:
+                        running = False
+                        break
+                if running:
+                    for name, alias_to in self.box.aliases[subtype].items():
+                        handler = self.box.handlers[type][subtype][alias_to]
+                        if handler:
+                            result = await handle(
+                                self.process_message_handler,
+                                (name, handler),
+                                event,
                             )
-                            if not res:
-                                break
-                        except SystemExit as e:
-                            logger.info('SystemExit')
-                            raise e
-                        except BotReconnect:
-                            self.restart = True
-                        except:  # noqa: E722
-                            logger.error(
-                                f'Event: {event} / '
-                                f'Traceback: {traceback.format_exc()}'
-                            )
-                            await self.say(
-                                self.config.OWNER,
-                                ('*Event*\n```\n{}\n```\n'
-                                 '*Traceback*\n```\n{}\n```\n').format(
-                                    event,
-                                    traceback.format_exc(),
-                                )
-                            )
+                    if not result:
+                        break
+            else:
+                for name, handler in handlers[subtype].items():
+                    result = await handle(
+                        self.process_handler,
+                        (handler,),
+                        event,
+                    )
+                    if not result:
+                        break
 
     async def process_handler(
         self,
-        name: str,
         handler: Handler,
         event: Event
     ):
