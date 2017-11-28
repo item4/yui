@@ -7,7 +7,7 @@ import logging.config
 import re
 import shlex
 import traceback
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 import aiocron
 
@@ -25,6 +25,8 @@ from .event import Event, Message, create_event
 from .orm import Base, get_database_engine
 from .type import (
     BotLinkedNamespace,
+    Channel,
+    ChannelID,
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
@@ -149,10 +151,14 @@ class Bot:
         )
         loop.close()
 
-    async def call(self, method: str, data: Dict[str, str]=None):
+    async def call(
+        self,
+        method: str,
+        data: Dict[str, str]=None
+    ) -> Dict[str, Any]:
         """Call API methods."""
 
-        with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
 
             form = aiohttp.FormData(data or {})
             form.add_field('token', self.config.TOKEN)
@@ -167,7 +173,12 @@ class Bot:
                         method, data
                     ))
 
-    async def say(self, channel: str, text: str, **kwargs) -> dict:
+    async def say(
+        self,
+        channel: Union[Channel, ChannelID],
+        text: str,
+        **kwargs
+    ) -> Dict[str, Any]:
         """Shortcut for bot saying."""
 
         return await self.api.chat.postMessage(
