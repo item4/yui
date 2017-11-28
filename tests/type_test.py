@@ -105,6 +105,10 @@ def test_cast():
     assert dm.id == 'D1'
     assert dm.user == 'U1'
 
+    dm = cast(FromChannelID, 'D2')
+    assert isinstance(dm, DirectMessageChannel)
+    assert dm.id == 'D2'
+
     group = cast(FromChannelID, 'G1')
     assert isinstance(group, PrivateChannel)
     assert group.id == 'G1'
