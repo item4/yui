@@ -250,8 +250,8 @@ class Bot:
                                 (name, handler),
                                 event,
                             )
-                    if not result:
-                        break
+                            if not result:
+                                break
             else:
                 for name, handler in handlers[subtype].items():
                     result = await handle(
