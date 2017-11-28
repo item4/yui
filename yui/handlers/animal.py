@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import functools
 
 import aiohttp
 
@@ -10,9 +11,11 @@ import ujson
 from ..box import box
 from ..command import option
 from ..event import Message
-from ..util import static_vars
+from ..type import DirectMessageChannel
+from ..util import static_vars, tz_none_to_kst
 
-COOLTIME = datetime.timedelta(minutes=25)
+DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
+DM_COOLTIME = datetime.timedelta(minutes=10)
 
 
 async def get_cat_image_url(timeout: float) -> str:
@@ -53,57 +56,85 @@ async def get_dog_image_url(timeout: float) -> str:
 
 @box.command('cat', ['냥', '야옹', '냐옹'])
 @option('--timeout', default=0.5)
-@static_vars(last_call=None)
+@static_vars(last_call={})
 async def cat(bot, event: Message, timeout: float):
     """
     냥냥이 짤을 수급합니다.
-    쿨타임은 15분입니다.
+    쿨타임은 일반 채널 30분, DM 10분입니다.
 
     `{PREFIX}cat`: 냐짤 수급
 
     """
+    cat_say = functools.partial(
+        bot.api.chat.postMessage,
+        channel=event.channel,
+        as_user=False,
+        username='냥짤의 요정',
+        icon_url='https://i.imgur.com/hIBJUMI.jpg',
+    )
 
     now = datetime.datetime.utcnow()
-    if cat.last_call is not None and now - cat.last_call < COOLTIME:
-        await bot.say(
-            event.channel,
-            '아직 쿨타임이다냥'
-        )
-        return
+    if event.channel.id in cat.last_call:
+        last_call = cat.last_call[event.channel.id]
+        if isinstance(event.channel, DirectMessageChannel):
+            if now - last_call < DM_COOLTIME:
+                fine = tz_none_to_kst(last_call + DM_COOLTIME)
+                await cat_say(
+                    text=(
+                        f"아직 쿨타임이다냥! "
+                        f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
+                    )
+                )
+                return
+        else:
+            if now - last_call < DEFAULT_COOLTIME:
+                return
 
-    cat.last_call = now
+    cat.last_call[event.channel.id] = now
 
     url = await get_cat_image_url(timeout)
-    await bot.say(
-        event.channel,
-        url
-    )
+    await cat_say(text=url)
 
 
 @box.command('dog', ['멍'])
 @option('--timeout', default=0.5)
-@static_vars(last_call=None)
+@static_vars(last_call={})
 async def dog(bot, event: Message, timeout: float):
     """
     멍멍이 짤을 수급합니다.
-    쿨타임은 15분입니다.
+
+    쿨타임은 일반 채널 30분, DM 10분입니다.
 
     `{PREFIX}dog`: 멍짤 수급
 
     """
 
-    now = datetime.datetime.utcnow()
-    if dog.last_call is not None and now - dog.last_call < COOLTIME:
-        await bot.say(
-            event.channel,
-            '아직 쿨타임이다멍'
-        )
-        return
+    dog_say = functools.partial(
+        bot.api.chat.postMessage,
+        channel=event.channel,
+        as_user=False,
+        username='멍짤의 요정',
+        icon_url='https://i.imgur.com/3NAGImb.jpg',
+    )
 
-    dog.last_call = now
+    now = datetime.datetime.utcnow()
+    if event.channel.id in dog.last_call:
+        last_call = dog.last_call[event.channel.id]
+        if isinstance(event.channel, DirectMessageChannel):
+            if now - last_call < DM_COOLTIME:
+                fine = tz_none_to_kst(last_call + DM_COOLTIME)
+                await dog_say(
+                    text=(
+                        f"아직 쿨타임이다멍! "
+                        f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
+                    )
+                )
+                return
+        else:
+            if now - last_call < DEFAULT_COOLTIME:
+                return
+
+    dog.last_call[event.channel.id] = now
 
     url = await get_dog_image_url(timeout)
-    await bot.say(
-        event.channel,
-        url
-    )
+    await dog_say(text=url)
