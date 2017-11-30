@@ -242,7 +242,7 @@ async def watch(bot, event: Message, sess, url: str):
     Website diff 구독
 
     RSS등의 수단으로 구독할 수 없는 사이트를 접속하여 변경점이 발생하면 DM으로 알려줍니다.
-    15분 간격으로 모니터링하며, 한사람당 최대 5개의 사이트를 등록할 수 있습니다.
+    1분 간격으로 모니터링하며, 한사람당 최대 5개의 사이트를 등록할 수 있습니다.
 
     `{PREFIX}watch http://item4.net` (`http://item4.net` 을 모니터링)
 
