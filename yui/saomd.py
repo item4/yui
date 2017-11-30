@@ -1853,14 +1853,14 @@ class 한손_몽둥이_강화_기념_5성_진화_스카우트_캐릭터(ScoutMig
 
 class 한손_몽둥이_강화_기념_5성_진화_스카우트_무기(ScoutMigration):
 
-    version = 1
+    version = 2
     title = '한손 몽둥이 강화 기념 5성 진화 스카우트'
     type = ScoutType.weapon
 
     def create(self, sess):
         scout = self.create_base_scout()
         scout.s4_units = [
-            '어리니 벚꽃의 헤비 스태프+1',
+            '어린 벚꽃의 헤비 스태프+1',
             '에레터+1',
             '퍼펙트 러버+1',
             '프로미스 하트+1',
