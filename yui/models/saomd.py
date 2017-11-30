@@ -11,6 +11,13 @@ from .type import JSONType
 from ..orm import Base
 
 
+class Server(enum.Enum):
+    """Server."""
+
+    japan = 1
+    worldwide = 2
+
+
 class ScoutType(enum.Enum):
     """Scout Type."""
 
@@ -23,6 +30,12 @@ class CostType(enum.Enum):
 
     diamond = 1
     record_crystal = 2
+
+
+SERVER_LABEL: Dict[Server, str] = {
+    Server.japan: '일본',
+    Server.worldwide: '글로벌',
+}
 
 
 SCOUT_TYPE_LABEL: Dict[ScoutType, str] = {
@@ -126,3 +139,21 @@ class PlayerScout(Base):
     scout = relationship(Scout)
 
     next_step = relationship(Step)
+
+
+class Notice(Base):
+    """Notice."""
+
+    __tablename__ = 'saomd_notice'
+
+    id = Column(Integer, primary_key=True)
+
+    notice_id = Column(Integer, nullable=False)
+
+    server = Column(ChoiceType(Server, impl=Integer()), nullable=False)
+
+    title = Column(String, nullable=False)
+
+    duration = Column(String)
+
+    short_description = Column(String)
