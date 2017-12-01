@@ -74,7 +74,7 @@ async def public_channel_mutation_detected(bot):
     new_channels = []
     while True:
         result = await bot.api.channels.list(cursor)
-        cursor = result['response_metadata'].get('next_cursor')
+        cursor = result.get('response_metadata', {}).get('next_cursor')
         for c in result['channels']:
             res = await bot.api.channels.info(c['id'])
             new_channels.append(PublicChannel(**res['channel']))
