@@ -427,8 +427,13 @@ class Bot:
                                 raise BotReconnect()
 
                             if msg.tp == aiohttp.WSMsgType.TEXT:
-                                event = create_event(ujson.loads(msg.data))
-                                await self.queue.put(event)
+                                try:
+                                    event = create_event(ujson.loads(msg.data))
+                                except:  # noqa: F722
+                                    logger.exception(msg.data)
+                                    pass
+                                else:
+                                    await self.queue.put(event)
                             elif msg.tp in (aiohttp.WSMsgType.ERROR,
                                             aiohttp.WSMsgType.CLOSED):
                                 logger.error(
