@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 install_requires = [
     # Async request
-    'aiohttp ~= 2.3.3',
+    'aiohttp ~= 2.3.5',
     'cchardet ~= 2.1.1',
     'aiodns ~= 1.1.1',
     # Async util
@@ -34,7 +34,7 @@ install_requires = [
 
 tests_require = [
     'mypy ~= 0.550',
-    'pytest ~= 3.2.5',
+    'pytest ~= 3.3.0',
     'pytest-asyncio ~= 0.8.0',
     'pytest-cov ~= 2.5.1',
     'mocket ~= 2.1.1',
