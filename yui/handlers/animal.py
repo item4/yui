@@ -114,7 +114,7 @@ async def dog(bot, event: Message, timeout: float):
         channel=event.channel,
         as_user=False,
         username='멍짤의 요정',
-        icon_url='https://i.imgur.com/3NAGImb.jpg',
+        icon_url='https://i.imgur.com/Q9FKplO.png',
     )
 
     now = datetime.datetime.utcnow()
