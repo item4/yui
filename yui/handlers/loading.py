@@ -1,4 +1,6 @@
 import datetime
+import functools
+import random
 
 from ..box import box
 from ..event import Message
@@ -38,10 +40,25 @@ async def auto_weekend_start(bot):
 
 @box.crontab('0 0 * * 1')
 async def auto_weekend_end(bot):
-    await bot.say(
-        '_general',
-        f'월월월월! 월요일이에요!'
+    monday_dog_say = functools.partial(
+        bot.api.chat.postMessage,
+        channel='_general',
+        as_user=False,
+        username='월요일을 알리는 개새끼',
+        icon_url='https://i.imgur.com/UtBQSLl.jpg',
     )
+    says = [
+        '월' * random.randint(30, 120),
+        ''.join(
+            '월' * random.randint(1, 6) + '!' * random.randint(1, 3)
+            for x in range(40)
+        ),
+        '월요일' * random.randint(10, 40),
+    ]
+    random.shuffle(says)
+
+    for say in says:
+        await monday_dog_say(text=say)
 
 
 @box.command('주말로딩')
