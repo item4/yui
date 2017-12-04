@@ -149,7 +149,7 @@ class FromChannelID(FromID):
     """.from_id"""
 
     @classmethod
-    def from_id(cls, value: Union[str, Dict]):
+    def from_id(cls, value: Union[str, Dict], raise_error: bool=False):
         if isinstance(value, str):
             if value.startswith('C'):
                 for c in cls._bot.channels:
@@ -159,11 +159,12 @@ class FromChannelID(FromID):
                 for d in cls._bot.ims:
                     if d.id == value:
                         return d
-                return DirectMessageChannel(id=value)
             elif value.startswith('G'):
                 for g in cls._bot.groups:
                     if g.id == value:
                         return g
+            if not raise_error:
+                return UnknownChannel(id=value)
             raise KeyError('Given ID was not found.')
         return cls(**value)
 
@@ -232,6 +233,10 @@ class PrivateChannel(Channel):
 
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(id={self.id!r}, name={self.name!r})'
+
+
+class UnknownChannel(Channel):
+    pass
 
 
 class Bot(Namespace):
