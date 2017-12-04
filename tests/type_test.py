@@ -20,6 +20,7 @@ from yui.type import (
     Namespace,
     PrivateChannel,
     PublicChannel,
+    UnknownChannel,
     cast,
     is_container,
 )
@@ -106,7 +107,7 @@ def test_cast():
     assert dm.user == 'U1'
 
     dm = cast(FromChannelID, 'D2')
-    assert isinstance(dm, DirectMessageChannel)
+    assert isinstance(dm, UnknownChannel)
     assert dm.id == 'D2'
 
     group = cast(FromChannelID, 'G1')
@@ -114,8 +115,9 @@ def test_cast():
     assert group.id == 'G1'
     assert group.name == 'secret'
 
-    with pytest.raises(KeyError):
-        cast(FromChannelID, 'G2')
+    unknown = cast(FromChannelID, 'G2')
+    assert isinstance(unknown, UnknownChannel)
+    assert unknown.id == 'G2'
 
     unexpected = cast(FromChannelID, {'id': 'C5', 'name': 'firefox'})
     assert isinstance(unexpected, FromChannelID)
@@ -146,8 +148,12 @@ def test_from_channel_id():
     assert group.id == 'G1'
     assert group.name == 'secret'
 
+    unknown = FromChannelID.from_id('G2')
+    assert isinstance(unknown, UnknownChannel)
+    assert unknown.id == 'G2'
+
     with pytest.raises(KeyError):
-        FromChannelID.from_id('G2')
+        FromChannelID.from_id('G2', raise_error=True)
 
     channel = FromChannelID.from_name('general')
     assert isinstance(channel, PublicChannel)
