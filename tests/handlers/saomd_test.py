@@ -18,6 +18,7 @@ from yui.models.saomd import (
     ScoutType,
     Step,
 )
+from yui.type import User
 from yui.util import get_count
 
 
@@ -91,13 +92,15 @@ def asuna_weapon_scout():
 
 
 def test_get_or_create_player(fx_sess):
+    user = User(id='U1234', name='item4')
+
     assert get_count(fx_sess.query(Player)) == 0
 
-    player1 = get_or_create_player(fx_sess, 'uitem4')
+    player1 = get_or_create_player(fx_sess, user)
 
     assert get_count(fx_sess.query(Player)) == 1
 
-    player2 = get_or_create_player(fx_sess, 'uitem4')
+    player2 = get_or_create_player(fx_sess, user)
 
     assert get_count(fx_sess.query(Player)) == 1
     assert player1 == player2
@@ -130,7 +133,8 @@ def test_get_similar_scout_by_title(
 
 
 def test_get_or_create_player_scout(fx_sess, kirito_char_scout):
-    player = get_or_create_player(fx_sess, 'uitem4')
+    user = User(id='U1234', name='item4')
+    player = get_or_create_player(fx_sess, user)
 
     step = Step()
     step.scout = kirito_char_scout
@@ -159,7 +163,8 @@ def test_get_or_create_player_scout(fx_sess, kirito_char_scout):
 
 
 def test_choice_units(fx_sess, kirito_char_scout, kirito_weapon_scout):
-    player = get_or_create_player(fx_sess, 'uitem4')
+    user = User(id='U1234', name='item4')
+    player = get_or_create_player(fx_sess, user)
 
     cstep = Step()
     cstep.scout = kirito_char_scout
@@ -262,7 +267,8 @@ def test_get_record_crystal(fx_sess, kirito_char_scout, kirito_weapon_scout):
 
 
 def test_process_release_crystal_and_deck(fx_sess):
-    player = get_or_create_player(fx_sess, 'uitem4')
+    user = User(id='U1234', name='item4')
+    player = get_or_create_player(fx_sess, user)
 
     chars = [
         (5, '[검은 검사] 키리토'),
@@ -340,7 +346,8 @@ def test_process_release_crystal_and_deck(fx_sess):
 
 
 def test_process_weapon_inventory(fx_sess):
-    player = get_or_create_player(fx_sess, 'uitem4')
+    user = User(id='U1234', name='item4')
+    player = get_or_create_player(fx_sess, user)
 
     weapons = [
         (5, '일루시데이터'),
@@ -408,7 +415,8 @@ def test_process_step_cost(
     asuna_char_scout,
     asuna_weapon_scout,
 ):
-    player = get_or_create_player(fx_sess, 'uitem4')
+    user = User(id='U1234', name='item4')
+    player = get_or_create_player(fx_sess, user)
 
     cstep = Step()
     cstep.scout = kirito_char_scout

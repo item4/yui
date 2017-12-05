@@ -20,7 +20,6 @@ from .type import (
     TeamID,
     Ts,
     User,
-    UserID,
 )
 
 __all__ = (
@@ -131,7 +130,7 @@ class ChannelArchive(Event):
 
     type: str = 'channel_archive'
     channel: PublicChannel
-    user: UserID
+    user: User
 
 
 class ChannelCreated(Event):
@@ -191,14 +190,14 @@ class ChannelUnarchive(Event):
 
     type: str = 'channel_unarchive'
     channel: PublicChannel
-    user: UserID
+    user: User
 
 
 class DnDUpdated(Event):
     """Do not Disturb settings changed for the current user."""
 
     type: str = 'dnd_updated'
-    user: UserID
+    user: User
     dnd_status: DnDStatus
 
 
@@ -206,7 +205,7 @@ class DnDUpdatedUser(Event):
     """Do not Disturb settings changed for a team member."""
 
     type: str = 'dnd_updated_user'
-    user: UserID
+    user: User
     dnd_status: DnDStatus
 
 
@@ -321,7 +320,7 @@ class GroupClose(Event):
     """You closed a private channel."""
 
     type: str = 'group_close'
-    user: UserID
+    user: User
     channel: PrivateChannel
 
 
@@ -360,7 +359,7 @@ class GroupOpen(Event):
     """You opened a private channel."""
 
     type: str = 'group_open'
-    user: UserID
+    user: User
     channel: PrivateChannel
 
 
@@ -388,7 +387,7 @@ class IMClose(Event):
     """You closed a DM."""
 
     type: str = 'im_close'
-    user: UserID
+    user: User
     channel: DirectMessageChannel
 
 
@@ -396,7 +395,7 @@ class IMCreated(Event):
     """A DM was created."""
 
     type: str = 'im_created'
-    user: UserID
+    user: User
     channel: DirectMessageChannel
 
 
@@ -421,7 +420,7 @@ class IMOpen(Event):
     """You opened a DM."""
 
     type: str = 'im_open'
-    user: UserID
+    user: User
     channel: DirectMessageChannel
 
 
@@ -436,17 +435,17 @@ class MemberJoinedChannel(Event):
     """A user joined a public or private channel."""
 
     type: str = 'member_joined_channel'
-    user: UserID
+    user: User
     channel: Union[PublicChannel, PrivateChannel]
     channel_type: str
-    inviter: UserID
+    inviter: User
 
 
 class MemberLeftChannel(Event):
     """A user left a public or private channel."""
 
     type: str = 'member_left_channel'
-    user: UserID
+    user: User
     channel: Union[PublicChannel, PrivateChannel]
     channel_type: str
 
@@ -456,7 +455,7 @@ class Message(Event):
 
     type: str = 'message'
     channel: Channel
-    user: UserID
+    user: User
     text: str
     ts: Ts
     event_ts: Optional[Ts]
@@ -470,7 +469,7 @@ class PinAdded(Event):
     """A pin was added to a channel."""
 
     type: str = 'pin_added'
-    user: UserID
+    user: User
     channel_id: ChannelID
     item: Mapping
     event_ts: Ts
@@ -480,7 +479,7 @@ class PinRemoved(Event):
     """A pin was removed from a channel."""
 
     type: str = 'pin_added'
-    user: UserID
+    user: User
     channel_id: ChannelID
     item: Mapping
     has_pins: bool
@@ -499,8 +498,8 @@ class PresenceChange(Event):
     """A team member's presence changed."""
 
     type: str = 'presence_change'
-    user: Optional[UserID]
-    users: Optional[List[UserID]]
+    user: User
+    users: List[User]
     presence: str
 
 
@@ -508,9 +507,9 @@ class ReactionAdded(Event):
     """A team member has added an emoji reaction to an item."""
 
     type: str = 'reaction_added'
-    user: UserID
+    user: User
     reaction: str
-    item_user: UserID
+    item_user: User
     item: Mapping[str, Any]
     event_ts: Ts
 
@@ -519,9 +518,9 @@ class ReactionRemoved(Event):
     """A team member removed an emoji reaction."""
 
     type: str = 'reaction_removed'
-    user: UserID
+    user: User
     reaction: str
-    item_user: UserID
+    item_user: User
     item: Mapping[str, Any]
     event_ts: Ts
 
@@ -537,7 +536,7 @@ class StarAdded(Event):
     """A team member has starred an item."""
 
     type: str = 'star_added'
-    user: UserID
+    user: User
     item: Mapping
     event_ts: Ts
 
@@ -546,7 +545,7 @@ class StarRemoved(Event):
     """A team member removed a star."""
 
     type: str = 'star_removed'
-    user: UserID
+    user: User
     item: Mapping
     event_ts: Ts
 
@@ -566,9 +565,9 @@ class SubteamMembersChanged(Event):
     team_id: TeamID
     date_previous_update: int
     date_update: int
-    added_users: List[UserID]
+    added_users: List[User]
     added_users_count: str
-    removed_users: List[UserID]
+    removed_users: List[User]
     removed_users_count: str
 
 
@@ -669,7 +668,7 @@ class UserTyping(Event):
 
     type: str = 'user_typing'
     channel: Channel
-    user: UserID
+    user: User
 
 
 class ChatterboxSystemStart(Event):

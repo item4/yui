@@ -248,7 +248,7 @@ async def watch(bot, event: Message, sess, url: str):
 
     """
 
-    count = get_count(sess.query(SiteSub).filter_by(user=event.user))
+    count = get_count(sess.query(SiteSub).filter_by(user=event.user.id))
     if count >= 5:
         await bot.say(
             event.channel,
@@ -275,14 +275,15 @@ async def watch(bot, event: Message, sess, url: str):
 
     sub = SiteSub()
     sub.url = url
-    sub.user = event.user
+    sub.user = event.user.id
     sub.body = data
     with sess.begin():
         sess.add(sub)
 
     await bot.say(
         event.channel,
-        f'<@{event.user}>, 해당 주소에 접속해서 바뀌는게 있으면 바로 DM으로 알려드릴게요!'
+        f'<@{event.user.name}>, '
+        f'해당 주소에 접속해서 바뀌는게 있으면 바로 DM으로 알려드릴게요!'
     )
 
 
@@ -297,12 +298,12 @@ async def watch_list(bot, event: Message, sess):
 
     """
 
-    subs = sess.query(SiteSub).filter_by(user=event.user).all()
+    subs = sess.query(SiteSub).filter_by(user=event.user.id).all()
 
     await bot.say(
         event.channel,
         '<@{}> 사용자가 구독중인 사이트는 다음과 같아요!\n```\n{}\n```'.format(
-            event.user,
+            event.user.name,
             '\n'.join(
                 f'{s.id} - {s.url}' for s in subs
             )
@@ -326,7 +327,7 @@ async def watch_del(bot, event: Message, sess, id: int):
 
     sub = sess.query(SiteSub).get(id)
 
-    if sub and sub.user == event.user:
+    if sub and sub.user == event.user.id:
         await bot.say(
             event.channel,
             f'{id}번 구독을 취소했어요! 더 이상 `{sub.url}` 에 대한 알림이 가지 않을거에요!'

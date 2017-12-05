@@ -11,6 +11,7 @@ from typing import (
     Sequence,
     TYPE_CHECKING,
     Union,
+    cast as typing_cast,
 )
 
 if TYPE_CHECKING:
@@ -239,6 +240,84 @@ class UnknownChannel(Channel):
     pass
 
 
+class FromUserID(FromID):
+
+    @classmethod
+    def from_id(cls, value: Union[str, Dict], raise_error: bool=False):
+        if isinstance(value, str):
+            value = typing_cast(UserID, value)
+            if value.startswith('U') and value in cls._bot.users:
+                return cls._bot.users[value]
+            if not raise_error:
+                return UnknownUser(id=value)
+            raise KeyError('Given ID was not found.')
+        return cls(**value)
+
+    @classmethod
+    def from_name(cls, name: str):
+        for c in cls._bot.users.values():
+            if c.name == name:
+                return c
+        raise KeyError('Channel was not found')
+
+
+class UserProfile(Namespace):
+    """Profile of User."""
+
+    first_name: str
+    last_name: str
+    avatar_hash: str
+    title: str
+    real_name: str
+    display_name: str
+    real_name_normalized: str
+    display_name_normalized: str
+    email: str
+    image_24: str
+    image_32: str
+    image_48: str
+    image_72: str
+    image_192: str
+    image_512: str
+    team: TeamID
+
+
+class User(FromUserID):
+
+    id: str
+    team_id: TeamID
+    name: str
+    deleted: bool
+    color: str
+    real_name: str
+    tz: str
+    tz_label: str
+    tz_offset: int
+    profile: UserProfile
+    is_admin: bool
+    is_owner: bool
+    is_primary_owner: bool
+    is_restricted: bool
+    is_ultra_restricted: bool
+    is_bot: bool
+    updated: UnixTimestamp
+    is_app_user: bool
+    has_2fa: bool
+    locale: str
+    presence: str
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(id={self.id!r}, name={self.name!r})'
+
+
+class UnknownUser(FromUserID):
+
+    id: str
+
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(id={self.id!r})'
+
+
 class Bot(Namespace):
     """Bot."""
 
@@ -262,44 +341,6 @@ class File(Namespace):
     """https://api.slack.com/types/file"""
 
     id: FileID
-
-
-class UserProfile(Namespace):
-    """Profile of User."""
-
-    avatar_hash: str
-    status_emoji: Optional[str]
-    status_text: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    real_name: Optional[str]
-    email: str
-    skype: Optional[str]
-    phone: Optional[str]
-    image_24: Optional[str]
-    image_32: Optional[str]
-    image_48: Optional[str]
-    image_72: Optional[str]
-    image_192: Optional[str]
-    image_512: Optional[str]
-
-
-class User(Namespace):
-    """https://api.slack.com/types/user"""
-
-    id: UserID
-    name: str
-    deleted: bool
-    color: str
-    profile: UserProfile
-    is_admin: bool
-    is_owner: bool
-    is_primary_owner: bool
-    is_restricted: bool
-    is_ultra_restricted: bool
-    updated: UnixTimestamp
-    has_2fa: bool
-    two_factor_type: str
 
 
 class SubteamPrefs(Namespace):

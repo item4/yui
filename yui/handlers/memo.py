@@ -20,7 +20,7 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
 
     memo = Memo()
     memo.keyword = keyword
-    memo.author = event.user
+    memo.author = event.user.id
     memo.text = text
     memo.created_at = datetime.datetime.utcnow()
 

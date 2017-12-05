@@ -27,9 +27,16 @@ from ..event import (
     IMHistoryChanged,
     IMMarked,
     IMOpen,
+    TeamJoin,
     TeamMigrationStarted,
+    UserChange,
 )
-from ..type import DirectMessageChannel, PrivateChannel, PublicChannel
+from ..type import (
+    DirectMessageChannel,
+    PrivateChannel,
+    PublicChannel,
+    User,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +63,31 @@ async def on_start(bot):
     for g in result['groups']:
         res = await bot.api.groups.info(g['id'])
         bot.groups.append(PrivateChannel(**res['group']))
+
+    result = await bot.api.users.list(presence=False)
+    for u in result['members']:
+        bot.users[u['id']] = User(**u)
+
+    return True
+
+
+@box.on(TeamJoin)
+async def on_team_join(bot, event: TeamJoin):
+    logger.info('on team join start')
+    res = await bot.api.users.info(event.user)
+    bot.users[res['user']['id']] = User(**res['user'])
+    logger.info('on team join end')
+
+    return True
+
+
+@box.on(UserChange)
+async def on_user_change(bot, event: UserChange):
+    logger.info('on user change start')
+    res = await bot.api.users.info(event.user)
+    bot.users[res['user']['id']] = User(**res['user'])
+    logger.info('on user change end')
+
     return True
 
 

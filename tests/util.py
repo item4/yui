@@ -7,6 +7,8 @@ from yui.type import (
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
+    User,
+    UserID,
 )
 
 
@@ -27,6 +29,7 @@ class FakeBot(Bot):
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
+        self.users: Dict[UserID, User] = {}
         self.responses: Dict[str, Callable] = {}
 
     async def call(self, method: str, data: Dict[str, str]=None):
@@ -49,6 +52,10 @@ class FakeBot(Bot):
 
     def add_dm(self, id: str, user: str):
         self.ims.append(DirectMessageChannel(id=id, user=user))
+
+    def add_user(self, id: UserID, name: str):
+        self.users[id] = User(id=id, name=name)
+        return self.users[id]
 
 
 class FakeImportLib:

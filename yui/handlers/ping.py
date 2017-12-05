@@ -5,7 +5,7 @@ __all__ = 'ping',
 
 
 @box.command('ping', ['핑'])
-async def ping(bot, event: Message, user):
+async def ping(bot, event: Message):
     """
     간단한 핑퐁
 
@@ -15,5 +15,5 @@ async def ping(bot, event: Message, user):
 
     await bot.say(
         event.channel,
-        '@{}, pong!'.format(user['user']['name'])
+        '@{}, pong!'.format(event.user.name)
     )

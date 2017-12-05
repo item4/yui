@@ -29,6 +29,8 @@ from .type import (
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
+    User,
+    UserID,
 )
 
 
@@ -91,6 +93,7 @@ class Bot:
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
+        self.users: Dict[UserID, User] = {}
         self.restart = False
 
         logger.info('register crontab')
@@ -279,8 +282,6 @@ class Bot:
             kwargs['event'] = event
         if 'sess' in func_params:
             kwargs['sess'] = sess
-        if 'user' in func_params:
-            kwargs['user'] = await self.api.users.info(event.user)
 
         validation = True
         if handler.channel_validator:
@@ -377,8 +378,6 @@ class Bot:
                         kwargs['remain_chunks'] = ' '.join(remain_chunks)
                     else:
                         kwargs['remain_chunks'] = remain_chunks
-                if 'user' in func_params:
-                    kwargs['user'] = await self.api.users.info(event.user)
 
                 validation = True
                 if handler.channel_validator:

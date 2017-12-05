@@ -17,10 +17,13 @@ import pytest
 from yui.type import (
     DirectMessageChannel,
     FromChannelID,
+    FromUserID,
     Namespace,
     PrivateChannel,
     PublicChannel,
     UnknownChannel,
+    UnknownUser,
+    User,
     cast,
     is_container,
 )
@@ -28,7 +31,7 @@ from yui.type import (
 from .util import FakeBot
 
 
-class User(Namespace):
+class UserRecord(Namespace):
 
     id: str
     pw: str
@@ -75,12 +78,12 @@ def test_cast():
         2: 'asuna',
         3: 16.5,
     }
-    user = cast(User, {'id': 'item4', 'pw': 'supersecret'})
+    user = cast(UserRecord, {'id': 'item4', 'pw': 'supersecret'})
     assert user.id == 'item4'
     assert user.pw == 'supersecret'
     assert not hasattr(user, 'addresses')
     users = cast(
-        List[User],
+        List[UserRecord],
         [
             {'id': 'item4', 'pw': 'supersecret'},
             {'id': 'item2', 'pw': 'weak', 'addresses': [1, 2]},
@@ -167,6 +170,42 @@ def test_from_channel_id():
 
     with pytest.raises(KeyError):
         FromChannelID.from_name('doge')
+
+
+def test_from_user_id():
+    bot = FakeBot()
+    bot.add_user('U1', 'kirito')
+    bot.add_user('U2', 'asuna')
+
+    kirito = FromUserID.from_id('U1')
+    assert isinstance(kirito, User)
+    assert kirito.id == 'U1'
+    assert kirito.name == 'kirito'
+
+    asuna = FromUserID.from_id('U2')
+    assert isinstance(asuna, User)
+    assert asuna.id == 'U2'
+    assert asuna.name == 'asuna'
+
+    unknown = FromUserID.from_id('U3')
+    assert isinstance(unknown, UnknownUser)
+    assert unknown.id == 'U3'
+
+    with pytest.raises(KeyError):
+        FromUserID.from_id('U3', raise_error=True)
+
+    kirito = FromUserID.from_name('kirito')
+    assert isinstance(kirito, User)
+    assert kirito.id == 'U1'
+    assert kirito.name == 'kirito'
+
+    asuna = FromUserID.from_name('asuna')
+    assert isinstance(asuna, User)
+    assert asuna.id == 'U2'
+    assert asuna.name == 'asuna'
+
+    with pytest.raises(KeyError):
+        FromUserID.from_name('yuuna')
 
 
 def test_is_container():

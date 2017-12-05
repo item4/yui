@@ -10,17 +10,14 @@ from ..util import FakeBot
 async def test_ping_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
+        'user': 'U1',
     })
-    user = {
-        'user': {
-            'name': 'item4',
-        },
-    }
 
-    await ping(bot, event, user)
+    await ping(bot, event)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'

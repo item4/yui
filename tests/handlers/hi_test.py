@@ -10,6 +10,7 @@ from ..util import FakeBot
 async def test_hi_handler():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'kirito')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
@@ -17,19 +18,8 @@ async def test_hi_handler():
         'text': '안녕 유이',
     })
 
-    @bot.response('users.info')
-    def users_info(data):
-        return {
-            'user': {
-                'name': 'kirito',
-            },
-        }
-
     await hi(bot, event)
 
-    user_query = bot.call_queue.pop(0)
-    assert user_query.method == 'users.info'
-    assert user_query.data['user'] == 'U1'
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -44,9 +34,6 @@ async def test_hi_handler():
 
     await hi(bot, event)
 
-    user_query = bot.call_queue.pop(0)
-    assert user_query.method == 'users.info'
-    assert user_query.data['user'] == 'U1'
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -61,9 +48,6 @@ async def test_hi_handler():
 
     await hi(bot, event)
 
-    user_query = bot.call_queue.pop(0)
-    assert user_query.method == 'users.info'
-    assert user_query.data['user'] == 'U1'
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'

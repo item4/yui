@@ -29,7 +29,7 @@ from ..models.saomd import (
     Server,
     Step,
 )
-from ..type import UserID
+from ..type import User
 from ..util import bold, fuzzy_korean_ratio, strike
 
 logger = logging.getLogger(__name__)
@@ -396,12 +396,12 @@ async def fetch_weapon_list(sess):
     logger.info('fetch saomd weapon end')
 
 
-def get_or_create_player(sess, user: UserID) -> Player:
+def get_or_create_player(sess, user: User) -> Player:
     try:
-        player = sess.query(Player).filter_by(user=user).one()
+        player = sess.query(Player).filter_by(user=user.id).one()
     except NoResultFound:
         player = Player()
-        player.user = user
+        player.user = user.id
         with sess.begin():
             sess.add(player)
     return player
@@ -755,7 +755,7 @@ async def saomd_sim_result(bot, event: Message, sess):
     """
 
     try:
-        player = sess.query(Player).filter_by(user=event.user).one()
+        player = sess.query(Player).filter_by(user=event.user.id).one()
     except NoResultFound:
         await bot.say(
             event.channel,
@@ -811,7 +811,7 @@ async def saomd_sim_result_reset(bot, event: Message, sess):
     """
 
     try:
-        player = sess.query(Player).filter_by(user=event.user).one()
+        player = sess.query(Player).filter_by(user=event.user.id).one()
     except NoResultFound:
         await bot.say(
             event.channel,
