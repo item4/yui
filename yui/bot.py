@@ -13,14 +13,13 @@ import aiocron
 
 import aiohttp
 
-from attrdict import AttrDict
-
 from sqlalchemy.orm import sessionmaker
 
 import ujson
 
 from .api import SlackAPI
 from .box import Box, Crontab, Handler, box
+from .config import Config
 from .event import Event, Message, create_event
 from .orm import Base, get_database_engine
 from .type import (
@@ -53,7 +52,7 @@ class Bot:
 
     def __init__(
         self,
-        config: AttrDict,
+        config: Config,
         *,
         orm_base=None,
         using_box: Box=None

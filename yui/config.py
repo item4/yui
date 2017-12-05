@@ -1,6 +1,7 @@
 import copy
 import pathlib
 import sys
+from typing import Any, Dict, Sequence
 
 from attrdict import AttrDict
 
@@ -56,13 +57,25 @@ DEFAULT = {
 }
 
 
+class Config(AttrDict):
+
+    TOKEN: str
+    DEBUG: bool
+    PREFIX: str
+    HANDLERS: Sequence[str]
+    DATABASE_URL: str
+    DATABASE_ECHO: bool
+    MODELS: Sequence[str]
+    LOGGING: Dict[str, Any]
+
+
 def error(message: str, *args):
     msg = message.format(*args)
     print(msg, file=sys.stderr)
     raise SystemExit(1)
 
 
-def load(path: pathlib.Path) -> AttrDict:
+def load(path: pathlib.Path) -> Config:
     """Load configuration from given path."""
 
     if not path.exists():
@@ -74,7 +87,7 @@ def load(path: pathlib.Path) -> AttrDict:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = AttrDict(copy.deepcopy(DEFAULT))
+    config = Config(copy.deepcopy(DEFAULT))
     config.update(toml.load(path.open()))
 
     return config
