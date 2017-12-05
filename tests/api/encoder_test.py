@@ -2,8 +2,13 @@ import json
 
 import pytest
 
-from yui.api.encoder import SlackEncoder
+from yui.api.encoder import SlackEncoder, bool2str
 from yui.api.type import Attachment, Field
+
+
+def test_bool2str():
+    assert bool2str(True) == '1'
+    assert bool2str(False) == '0'
 
 
 def test_slack_encoder_class():
@@ -11,7 +16,7 @@ def test_slack_encoder_class():
         return json.dumps(o, cls=SlackEncoder, separators=(',', ':'))
 
     assert dumps(Field('title val', 'value val', True)) == (
-        '{"title":"title val","value":"value val","short":true}'
+        '{"title":"title val","value":"value val","short":"1"}'
     )
     assert dumps(Attachment(
         fallback='fallback val',
@@ -19,7 +24,7 @@ def test_slack_encoder_class():
         fields=[Field('field title1', 'field value1', False)],
     )) == (
        '{"fallback":"fallback val","title":"title val","fields":'
-       '[{"title":"field title1","value":"field value1","short":false}]}'
+       '[{"title":"field title1","value":"field value1","short":"0"}]}'
     )
 
     class Dummy:

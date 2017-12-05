@@ -1,5 +1,6 @@
 import pytest
 
+from yui.api.encoder import bool2str
 from yui.type import PublicChannel
 
 from ..util import FakeBot
@@ -17,7 +18,7 @@ async def test_slack_api_channels_info():
     assert call.method == 'channels.info'
     assert call.data == {
         'channel': channel_id,
-        'include_locale': 'false',
+        'include_locale': bool2str(False),
     }
 
     await bot.api.channels.info(channel)
@@ -25,7 +26,7 @@ async def test_slack_api_channels_info():
     assert call.method == 'channels.info'
     assert call.data == {
         'channel': channel.id,
-        'include_locale': 'false',
+        'include_locale': bool2str(False),
     }
 
 
@@ -48,7 +49,7 @@ async def test_slack_api_channels_list():
     assert call.method == 'channels.list'
     assert call.data == {
         'cursor': cursor,
-        'exclude_archived': 'false',
-        'exclude_members': 'false',
+        'exclude_archived': bool2str(exclude_archived),
+        'exclude_members': bool2str(exclude_members),
         'limit': '12',
     }

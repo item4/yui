@@ -5,6 +5,14 @@ from .type import Attachment, Field
 __all__ = 'SlackEncoder',
 
 
+def bool2str(value: bool) -> str:
+    """Return bool as str."""
+
+    if value:
+        return '1'
+    return '0'
+
+
 class SlackEncoder(json.JSONEncoder):
     """JSON Encoder for slack"""
 
@@ -13,7 +21,7 @@ class SlackEncoder(json.JSONEncoder):
             return {
                 'title': o.title,
                 'value': o.value,
-                'short': o.short,
+                'short': bool2str(o.short),
             }
         elif isinstance(o, Attachment):
             return {k: v for k, v in {

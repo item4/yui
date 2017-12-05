@@ -1,5 +1,6 @@
 import pytest
 
+from yui.api.encoder import bool2str
 from yui.api.type import Attachment, Field
 
 from ..util import FakeBot
@@ -31,7 +32,11 @@ async def test_slack_api_chat_post_message():
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
-    assert call.data == {'channel': channel, 'text': text, 'as_user': 'true'}
+    assert call.data == {
+        'channel': channel,
+        'text': text,
+        'as_user': bool2str(True),
+    }
 
     await bot.api.chat.postMessage(channel=channel, attachments=attachments)
 
@@ -41,7 +46,7 @@ async def test_slack_api_chat_post_message():
         'channel': channel,
         'attachments': ('[{"fallback":"fallback val","title":"title val",'
                         '"fields":[{"title":"field title1",'
-                        '"value":"field value1","short":false}]}]'),
+                        '"value":"field value1","short":"0"}]}]'),
     }
 
     await bot.api.chat.postMessage(
@@ -66,16 +71,16 @@ async def test_slack_api_chat_post_message():
         'channel': channel,
         'text': text,
         'parse': parse,
-        'link_names': 'true',
+        'link_names': bool2str(True),
         'attachments': ('[{"fallback":"fallback val","title":"title val",'
                         '"fields":[{"title":"field title1",'
-                        '"value":"field value1","short":false}]}]'),
-        'unfurl_links': 'false',
-        'unfurl_media': 'true',
+                        '"value":"field value1","short":"0"}]}]'),
+        'unfurl_links': bool2str(False),
+        'unfurl_media': bool2str(True),
         'username': username,
-        'as_user': 'false',
+        'as_user': bool2str(False),
         'icon_url': icon_url,
         'icon_emoji': icon_emoji,
         'thread_ts': thread_ts,
-        'reply_broadcast': 'true',
+        'reply_broadcast': bool2str(True),
     }

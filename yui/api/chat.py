@@ -1,11 +1,10 @@
 import json
 from typing import Dict, List, Optional, Union
 
-from .encoder import SlackEncoder
+from .encoder import SlackEncoder, bool2str
 from .endpoint import Endpoint
 from .type import Attachment
 from ..type import Channel, ChannelID, Ts
-from ..util import bool2str
 
 __all__ = 'Chat',
 

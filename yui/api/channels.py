@@ -1,8 +1,8 @@
 from typing import Optional, Union
 
+from .encoder import bool2str
 from .endpoint import Endpoint
 from ..type import PublicChannel, PublicChannelID
-from ..util import bool2str
 
 __all__ = 'Channels',
 

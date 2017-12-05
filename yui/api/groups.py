@@ -1,8 +1,8 @@
 from typing import Union
 
+from .encoder import bool2str
 from .endpoint import Endpoint
 from ..type import PrivateChannel, PrivateChannelID
-from ..util import bool2str
 
 __all__ = 'Groups',
 
