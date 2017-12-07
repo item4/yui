@@ -2334,3 +2334,121 @@ class 화이트_크리스마스가_연주하는_음색_스카우트_무기(Scout
             sess.add(step1)
             sess.add(step2)
             sess.add(step3)
+
+
+class 마음에_내리는_약속의_가루눈_스카우트_캐릭터(ScoutMigration):
+
+    version = 1
+    title = '마음에 내리는 약속의 가루눈 스카우트'
+    type = ScoutType.character
+
+    def create(self, sess):
+        scout = self.create_base_scout()
+        scout.s4_units = FOUR_STAR_CHARACTERS
+        scout.s5_units = [
+            '[눈길의 안내인] 키리토',
+            '[눈꽃의 축복] 사치',
+        ]
+
+        step1 = Step()
+        step1.scout = scout
+        step1.name = 'Step 1'
+        step1.is_first = True
+        step1.cost = 200
+        step1.cost_type = CostType.diamond
+        step1.s5_chance = 0.02
+
+        step2 = Step()
+        step2.scout = scout
+        step2.name = 'Step 2'
+        step2.cost = 250
+        step2.cost_type = CostType.diamond
+        step2.s5_chance = 0.02
+
+        step3 = Step()
+        step3.scout = scout
+        step3.name = 'Step 3'
+        step3.cost = 200
+        step3.cost_type = CostType.diamond
+        step3.s5_chance = 0.02 * 1.5
+
+        step4 = Step()
+        step4.scout = scout
+        step4.name = 'Step 4'
+        step4.cost = 250
+        step4.cost_type = CostType.diamond
+        step4.s5_chance = 0.02
+
+        step5 = Step()
+        step5.scout = scout
+        step5.name = 'Step 5'
+        step5.cost = 250
+        step5.cost_type = CostType.diamond
+        step5.s5_chance = 0.02
+        step5.s5_fixed = 1
+
+        step6 = Step()
+        step6.scout = scout
+        step6.name = 'Step 6'
+        step6.cost = 250
+        step6.cost_type = CostType.diamond
+        step6.s5_chance = 0.04
+
+        step1.next_step = step2
+        step2.next_step = step3
+        step3.next_step = step4
+        step4.next_step = step5
+        step5.next_step = step6
+
+        with sess.begin():
+            sess.add(scout)
+            sess.add(step1)
+            sess.add(step2)
+            sess.add(step3)
+            sess.add(step4)
+            sess.add(step5)
+            sess.add(step6)
+
+
+class 마음에_내리는_약속의_가루눈_스카우트_무기(ScoutMigration):
+
+    version = 1
+    title = '마음에 내리는 약속의 가루눈 스카우트'
+    type = ScoutType.weapon
+
+    def create(self, sess):
+        scout = self.create_base_scout()
+        scout.s4_units = [
+            '슈니슈트룸x2',
+            '아이스짜펜',
+        ]
+
+        step1 = Step()
+        step1.scout = scout
+        step1.name = 'Step 1'
+        step1.is_first = True
+        step1.cost = 100
+        step1.cost_type = CostType.diamond
+
+        step2 = Step()
+        step2.scout = scout
+        step2.name = 'Step 2'
+        step2.cost = 150
+        step2.cost_type = CostType.diamond
+
+        step3 = Step()
+        step3.scout = scout
+        step3.name = 'Step 3'
+        step3.cost = 150
+        step3.cost_type = CostType.diamond
+        step3.s4_chance = 0.08
+
+        step1.next_step = step2
+        step2.next_step = step3
+        step3.next_step = step1
+
+        with sess.begin():
+            sess.add(scout)
+            sess.add(step1)
+            sess.add(step2)
+            sess.add(step3)
