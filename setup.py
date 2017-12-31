@@ -30,6 +30,7 @@ install_requires = [
     'libearth ~= 0.3.3',
     # util
     'attrdict ~= 2.0.0',
+    'pytz ~= 2017.3',
 ]
 
 tests_require = [
