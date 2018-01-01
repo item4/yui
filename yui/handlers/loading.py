@@ -1,6 +1,6 @@
 import datetime
 import functools
-import json
+import ujson
 import random
 
 import aiohttp
@@ -52,7 +52,7 @@ async def auto_weekend_end(bot):
         icon_url='https://i.imgur.com/UtBQSLl.jpg',
     )
     kst = pytz.timezone('Asia/Seoul')
-    today = datetime.now(kst)
+    today = datetime.datetime.now(kst)
     holiday = await get_holiday_name(today)
 
     if holiday:
@@ -103,14 +103,14 @@ async def weekend_loading(bot, event: Message):
         )
 
 
-async def get_holiday_name(dt: datetime):
+async def get_holiday_name(dt: datetime.datetime):
     url = 'http://api.manana.kr/calendar/{date}/holiday/kr.json'.format(
         date=dt.strftime('%Y/%m/%d')
     )
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
-            holidays = json.loads(await resp.text())
+            holidays = ujson.loads(await resp.text())
 
-    if (holidays):
+    if holidays:
         return holidays[0]['name']
