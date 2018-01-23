@@ -20,8 +20,8 @@ from ..models.saomd import (
 logger = logging.getLogger(__name__)
 
 NOTICE_URLS: Dict[Server, str] = {
-    Server.japan: ('https://api-defrag-ap.wrightflyer.net/webview/'
-                   'announcement?phone_type=2&lang=jp&user_id='),
+    Server.japan: ('https://api-defrag.wrightflyer.net/webview/announcement'
+                   '?phone_type=2'),
     Server.worldwide: ('https://api-defrag-ap.wrightflyer.net/webview/'
                        'announcement?phone_type=2&lang=kr&user_id='),
 }
