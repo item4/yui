@@ -1,16 +1,15 @@
 import functools
 import os.path
 import pathlib
-from typing import List, Optional, Type
+from typing import Optional
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
 
 import click
 
-from .bot import Bot, Session
+from .bot import Bot
 from .config import load
-from .saomd import MigrationStatus, ScoutMigration
 
 
 __all__ = 'error', 'load_config', 'main', 'yui'
@@ -363,28 +362,6 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
     c.attributes['Base'] = bot.orm_base
 
     command.stamp(c, revision, sql=sql, tag=tag)
-
-
-@yui.command('create-saomd-scout-data')
-@load_config
-def create_saomd_scout_data(config):
-    """Create SAOMD scout data."""
-
-    bot = Bot(config)
-
-    sess = Session(bind=bot.config.DATABASE_ENGINE)
-    subclasses: List[Type[ScoutMigration]] = ScoutMigration.__subclasses__()
-    for cls in subclasses:
-        scout = cls()
-        result = scout.patch(sess)
-        if result == MigrationStatus.passed:
-            click.echo(f'{cls.title}는 이미 최신({cls.version})입니다.')
-        elif result == MigrationStatus.create:
-            click.echo(f'{cls.title}는 v{cls.version}으로 새로 만듭니다.')
-        elif result == MigrationStatus.update:
-            click.echo(f'{cls.title}는 구버전이라 v{cls.version}으로 올립니다.')
-
-    click.echo('처리 완료')
 
 
 main = yui
