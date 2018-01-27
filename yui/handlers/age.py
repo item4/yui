@@ -38,13 +38,14 @@ async def age(
         )
         return
 
-    korean_age = today.year - birthday.year + 1
+    year_age = today.year - birthday.year
+    korean_age = year_age + 1
 
-    western_age = today.year - birthday.year
+    global_age = today.year - birthday.year
     cond1 = today.month < birthday.month
     cond2 = today.month == birthday.month and today.day < birthday.day
     if cond1 or cond2:
-        western_age -= 1
+        global_age -= 1
 
     this_year_birthday = birthday.replace(today.year)
     remain = this_year_birthday.toordinal() - today.toordinal()
@@ -54,13 +55,17 @@ async def age(
 
     await bot.say(
         event.channel,
-        ('{} 출생자는 {} 기준으로 {}세 (만 {}세)에요!'
-         ' 출생일로부터 {:,}일 지났어요.'
+        ('{} 출생자는 {} 기준으로 다음과 같아요!\n\n'
+         '* 세는 나이(한국식 나이) {}세\n'
+         '* 연 나이(한국 일부 법령상 나이) {}세\n'
+         '* 만 나이(전세계 표준) {}세\n\n'
+         '출생일로부터 {:,}일 지났어요.'
          ' 다음 생일까지 {}일 남았어요.').format(
             birthday.strftime('%Y년 %m월 %d일'),
             today.strftime('%Y년 %m월 %d일'),
             korean_age,
-            western_age,
+            year_age,
+            global_age,
             today.toordinal() - birthday.toordinal(),
             remain,
         )
