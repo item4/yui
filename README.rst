@@ -198,7 +198,6 @@ You can launch yui on docker.
    $ vi my.config.toml
    $ docker pull item4/yui
    $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui upgrade head -c data/my.config.toml
-   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui create-saomd-scout-data -c data/my.config.toml
    $ docker run -d --rm -v /home/item4/yui:/yui/data item4/yui yui run -c data/my.config.toml
 
 
