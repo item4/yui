@@ -2,28 +2,28 @@ from setuptools import find_packages, setup
 
 install_requires = [
     # Async request
-    'aiohttp ~= 2.3.5',
+    'aiohttp ~= 2.3.9',
     'cchardet ~= 2.1.1',
     'aiodns ~= 1.1.1',
     # Async util
     'async-timeout ~= 2.0.0',
     # Database
-    'SQLAlchemy ~= 1.1.15',
+    'SQLAlchemy ~= 1.2.2',
     'sqlalchemy-utils ~= 0.32.21',
-    'alembic ~= 0.9.6',
+    'alembic ~= 0.9.7',
     # CLI
     'Click ~= 6.7',
     # Configuration
-    'toml ~= 0.9.3',
+    'toml ~= 0.9.4',
     # Crontab
-    'aiocron ~= 1.1',
+    'aiocron ~= 1.2',
     # Fuzzy Search
-    'fuzzywuzzy[speedup] ~= 0.15.1',
+    'fuzzywuzzy[speedup] ~= 0.16.0',
     # HTML
     'lxml ~= 4.1.1',
-    'cssselect ~= 1.0.1',
+    'cssselect ~= 1.0.3',
     # i18n
-    'babel ~= 2.5.1',
+    'babel ~= 2.5.3',
     # JSON
     'ujson ~= 1.35',
     # RSS
@@ -34,18 +34,18 @@ install_requires = [
 ]
 
 tests_require = [
-    'mypy ~= 0.550',
-    'pytest ~= 3.3.0',
+    'mypy ~= 0.560',
+    'pytest ~= 3.3.2',
     'pytest-asyncio ~= 0.8.0',
     'pytest-cov ~= 2.5.1',
-    'mocket ~= 2.1.1',
+    'mocket ~= 2.1.2',
 ]
 
 extras_require = {
     'tests': tests_require,
     'lint': [
         'flake8 ~= 3.5.0',
-        'flake8-import-order ~= 0.15',
+        'flake8-import-order ~= 0.16',
     ],
     'ci': [
         'codecov ~= 2.0.9',
