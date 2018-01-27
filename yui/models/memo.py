@@ -26,7 +26,7 @@ class Memo(Base):
 
         return tz_none_to_kst(self.created_datetime)
 
-    @created_at.setter
-    def created_at_setter(self, value):
+    @created_at.setter  # type: ignore
+    def created_at(self, value):
 
         self.created_datetime = tz_none_to_utc(value)
