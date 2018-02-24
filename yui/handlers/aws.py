@@ -47,7 +47,10 @@ async def crawl(bot, sess):
         record = AWS()
         record.id = int(tr[0].text_content())
         record.name = tr[1].text_content().replace('*', '').strip()
-        record.height = int(tr[2].text_content()[:-1])
+        try:
+            record.height = int(tr[2].text_content()[:-1])
+        except ValueError:
+            record.height = -1
 
         record.is_raining = {'○': False, '●': True}.get(tr[3].text_content())
         try:
