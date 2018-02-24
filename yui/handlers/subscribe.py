@@ -128,7 +128,7 @@ async def rss_add(bot, event: Message, sess, url: str):
     f, _ = parser(data, url)
 
     feed = RssFeedSub()
-    feed.channel = event.channel
+    feed.channel = event.channel.id
     feed.url = url
     feed.updated_at = f.updated_at
 
@@ -150,7 +150,7 @@ async def rss_list(bot, event: Message, sess):
 
     """
 
-    feeds = sess.query(RssFeedSub).filter_by(channel=event.channel).all()
+    feeds = sess.query(RssFeedSub).filter_by(channel=event.channel.id).all()
 
     if feeds:
         feed_list = '\n'.join(
