@@ -29,6 +29,8 @@ async def crawl(bot, sess):
                 html = await res.text()
     except aiohttp.client_exceptions.ClientConnectorError:
         return
+    except aiohttp.client_exceptions.ServerDisconnectedError:
+        return
 
     h = lxml.html.fromstring(html)
     try:
