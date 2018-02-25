@@ -22,8 +22,8 @@ def fx_engine():
     config = AttrDict(copy.deepcopy(DEFAULT))
     config.DEBUG = True
     config.DATABASE_URL = 'sqlite:///'
-    config.MODELS = ['yui.models']
-    config.HANDLERS = ['yui.handlers']
+    config.MODELS = []
+    config.HANDLERS = []
     config['LOGGING']['loggers']['yui']['handlers'] = ['console']
     config.REGISTER_CRONTAB = False
     del config['LOGGING']['handlers']['file']
