@@ -2,15 +2,15 @@ from setuptools import find_packages, setup
 
 install_requires = [
     # Async request
-    'aiohttp ~= 2.3.9',
+    'aiohttp ~= 3.0.2',
     'cchardet ~= 2.1.1',
     'aiodns ~= 1.1.1',
     # Async util
     'async-timeout ~= 2.0.0',
     # Database
-    'SQLAlchemy ~= 1.2.2',
-    'sqlalchemy-utils ~= 0.32.21',
-    'alembic ~= 0.9.7',
+    'SQLAlchemy ~= 1.2.4',
+    'sqlalchemy-utils ~= 0.33.0',
+    'alembic ~= 0.9.8',
     # CLI
     'Click ~= 6.7',
     # Configuration
@@ -30,12 +30,12 @@ install_requires = [
     'libearth ~= 0.3.3',
     # util
     'attrdict ~= 2.0.0',
-    'pytz ~= 2017.3',
+    'pytz ~= 2018.3',
 ]
 
 tests_require = [
     'mypy ~= 0.560',
-    'pytest ~= 3.3.2',
+    'pytest ~= 3.4.1',
     'pytest-asyncio ~= 0.8.0',
     'pytest-cov ~= 2.5.1',
     'aioresponses ~= 0.4.0',
@@ -45,10 +45,10 @@ extras_require = {
     'tests': tests_require,
     'lint': [
         'flake8 ~= 3.5.0',
-        'flake8-import-order ~= 0.16',
+        'flake8-import-order ~= 0.17',
     ],
     'ci': [
-        'codecov ~= 2.0.9',
+        'codecov ~= 2.0.15',
     ]
 }
 
