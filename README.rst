@@ -24,6 +24,7 @@ Requirements
 - Git
 - Slack bot permission for bot account
 - Python 3.6 or higher
+- Pipenv
 
 
 Installation
@@ -34,7 +35,7 @@ Installation
    $ git clone https://github.com/item4/yui.git
    $ cd yui
    $ mkdir log
-   $ pip install -e .
+   $ pipenv install
 
 
 Configuration
@@ -156,14 +157,14 @@ Run
 
 .. code-block:: bash
 
-   $ yui run -c yui.config.toml
+   $ pipenv run yui run -c yui.config.toml
 
 
 CLI for Database
 ----------------
 
 Yui CLI support most of command of Alembic_\.
-You can use command with ``yui`` such as ``yui revision --autogenerate -m "Test"``.
+You can use command with ``yui`` such as ``pipenv run yui revision --autogenerate -m "Test"``.
 
 List of commands are below.
 
@@ -197,15 +198,15 @@ You can launch yui on docker.
    $ cd yui
    $ vi my.config.toml
    $ docker pull item4/yui
-   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui yui upgrade head -c data/my.config.toml
-   $ docker run -d --rm -v /home/item4/yui:/yui/data item4/yui yui run -c data/my.config.toml
+   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui pipenv run yui upgrade head -c data/my.config.toml
+   $ docker run -d --rm -v /home/item4/yui:/yui/data item4/yui pipenv run yui run -c data/my.config.toml
 
 
 Contribute to YUI
 -----------------
 
 YUI must keep PEP-8 and some rules.
-So you must install lint deps by ``pip install -e .[lint]`` and install pre-commit hook by below commands.
+So you must install lint deps by ``pipenv install --dev`` and install pre-commit hook by below commands.
 
 .. code-block:: bash
 

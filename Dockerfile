@@ -6,13 +6,14 @@ RUN apk update && apk add build-base libffi-dev libxml2-dev libxslt-dev tzdata
 RUN cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 RUN echo "Asia/Seoul" >  /etc/timezone
 RUN pip install --upgrade pip setuptools wheel
+RUN pip install pipenv
 
-COPY ./setup.py /yui/setup.py
+COPY ./Pipfile ./Pipfile.lock ./setup.py /yui/
 
 WORKDIR /yui
 
 RUN mkdir /yui/data
-RUN pip install -e .
+RUN pipenv install
 
 COPY . /yui
 

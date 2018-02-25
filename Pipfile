@@ -1,0 +1,40 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+aiohttp = "*"
+cchardet = "*"
+aiodns = "*"
+async-timeout = "*"
+sqlalchemy = "*"
+sqlalchemy-utils = "*"
+alembic = "*"
+click = "*"
+toml = "*"
+aiocron = "*"
+fuzzywuzzy = {extras = ["speedup"]}
+lxml = "*"
+cssselect = "*"
+babel = "*"
+ujson = "*"
+libearth = "*"
+attrdict = "*"
+pytz = "*"
+"e1839a8" = {path = ".", editable = true}
+
+
+[dev-packages]
+
+mypy = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+aioresponses = "*"
+"flake8" = "*"
+"flake8-import-order" = "*"
+codecov = "*"

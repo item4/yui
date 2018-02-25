@@ -11,15 +11,15 @@ before_install:
 - source ./ci/docker_login.sh
 - docker pull item4/yui:latest
 install:
-- pip install --upgrade pip setuptools wheel
-- pip install --upgrade -e .[tests,lint,ci]
+- pip install --upgrade pip setuptools wheel pipenv
+- pipenv install --dev
 script:
-- pytest --cov yui tests
-- flake8
-- mypy yui
+- pipenv run pytest --cov yui tests
+- pipenv run flake8
+- pipenv run mypy yui
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .
 after_success:
-- codecov
+- pipenv run codecov
 - source ./ci/docker_push.sh
 notifications:
   slack:
