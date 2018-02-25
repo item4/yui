@@ -96,8 +96,9 @@ class Bot:
         self.users: Dict[UserID, User] = {}
         self.restart = False
 
-        logger.info('register crontab')
-        self.register_crontab()
+        if self.config.get('REGISTER_CRONTAB', True):
+            logger.info('register crontab')
+            self.register_crontab()
 
     def register_crontab(self):
         """Register cronjob to bot from box."""

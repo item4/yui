@@ -25,6 +25,7 @@ def fx_engine():
     config.MODELS = ['yui.models']
     config.HANDLERS = ['yui.handlers']
     config['LOGGING']['loggers']['yui']['handlers'] = ['console']
+    config.REGISTER_CRONTAB = False
     del config['LOGGING']['handlers']['file']
     bot = Bot(config)
     engine = bot.config.DATABASE_ENGINE

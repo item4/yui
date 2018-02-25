@@ -29,6 +29,7 @@ def test_bot_init(monkeypatch):
     config.MODELS = ['yui.model1', 'yui.model2']
     config.HANDLERS = ['yui.handler1', 'yui.handler2']
     config['LOGGING']['loggers']['yui']['handlers'] = ['console']
+    config.REGISTER_CRONTAB = False
     del config['LOGGING']['handlers']['file']
     bot = Bot(config)
 
@@ -100,6 +101,7 @@ async def test_call():
         config.TOKEN = 'asdf1234'
         config['LOGGING']['loggers']['yui']['handlers'] = ['console']
         del config['LOGGING']['handlers']['file']
+        config.REGISTER_CRONTAB = False
         bot = Bot(config)
 
         res = await bot.call('test11')
