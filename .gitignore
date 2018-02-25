@@ -170,3 +170,6 @@ ENV/
 *.db
 
 log
+
+# pytest
+.pytest_cache
