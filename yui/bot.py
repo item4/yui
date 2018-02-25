@@ -418,14 +418,14 @@ class Bot:
                     'type': 'chatterbox_system_start',
                 }))
 
-                with aiohttp.ClientSession() as session:
+                async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
                             if self.restart:
                                 self.restart = False
                                 raise BotReconnect()
 
-                            if msg.tp == aiohttp.WSMsgType.TEXT:
+                            if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
                                     event = create_event(ujson.loads(msg.data))
                                 except:  # noqa: F722
@@ -433,13 +433,17 @@ class Bot:
                                     pass
                                 else:
                                     await self.queue.put(event)
-                            elif msg.tp in (aiohttp.WSMsgType.ERROR,
-                                            aiohttp.WSMsgType.CLOSED):
+                            elif msg.type in (aiohttp.WSMsgType.ERROR,
+                                              aiohttp.WSMsgType.CLOSED):
                                 logger.error(
                                     f'Error: {traceback.format_exc()}'
                                 )
                                 raise BotReconnect()
                             else:
-                                logger.error('Type: %s / MSG: %s', msg.tp, msg)
+                                logger.error(
+                                    'Type: %s / MSG: %s',
+                                    msg.type,
+                                    msg,
+                                )
             except BotReconnect:
                 continue
