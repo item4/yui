@@ -165,16 +165,21 @@ class Bot:
 
             form = aiohttp.FormData(data or {})
             form.add_field('token', self.config.TOKEN)
-            async with session.post(
-                'https://slack.com/api/{}'.format(method),
-                data=form
-            ) as response:
-                if response.status == 200:
-                    return await response.json(loads=ujson.loads)
-                else:
-                    raise APICallError('fail to call {} with {}'.format(
-                        method, data
-                    ))
+            try:
+                async with session.post(
+                    'https://slack.com/api/{}'.format(method),
+                    data=form
+                ) as response:
+                    if response.status == 200:
+                        return await response.json(loads=ujson.loads)
+                    else:
+                        raise APICallError('fail to call {} with {}'.format(
+                            method, data
+                        ))
+            except aiohttp.client_exceptions.ClientConnectorError:
+                raise APICallError('fail to call {} with {}'.format(
+                    method, data
+                ))
 
     async def say(
         self,
