@@ -173,3 +173,6 @@ log
 
 # pytest
 .pytest_cache
+
+# pyenv-virtualenvwrapper
+yui/.project
