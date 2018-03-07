@@ -23,6 +23,8 @@ __all__ = (
     'BotID',
     'BotLinkedNamespace',
     'Channel',
+    'ChannelFromConfig',
+    'ChannelsFromConfig',
     'ChannelID',
     'ChannelPurpose',
     'ChannelTopic',
@@ -182,6 +184,16 @@ class FromChannelID(FromID):
                 return g
         raise KeyError('Channel was not found')
 
+    @classmethod
+    def from_config(cls, key: str)\
+            -> Union['PrivateChannel', 'PublicChannel']:
+        return cls.from_name(cls._bot.config.CHANNELS[key])
+
+    @classmethod
+    def from_config_list(cls, key: str)\
+            -> List[Union['PrivateChannel', 'PublicChannel']]:
+        return [cls.from_name(x) for x in cls._bot.config.CHANNELS[key]]
+
 
 class Channel(FromChannelID):
 
@@ -241,6 +253,26 @@ class PrivateChannel(Channel):
 
 class UnknownChannel(Channel):
     pass
+
+
+class ChannelFromConfig:
+    """Lazy loading helper to get channel from config"""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def get(self) -> Union[PrivateChannel, PublicChannel]:
+        return Channel.from_config(self.key)
+
+
+class ChannelsFromConfig:
+    """Lazy loading helper to get list of channels from config"""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def get(self) -> List[Union[PrivateChannel, PublicChannel]]:
+        return Channel.from_config_list(self.key)
 
 
 class FromUserID(FromID):

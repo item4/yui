@@ -1,5 +1,7 @@
 from typing import Callable, Dict, List, NamedTuple
 
+from attrdict import AttrDict
+
 from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.type import (
@@ -22,7 +24,7 @@ class Call(NamedTuple):
 class FakeBot(Bot):
     """Fake bot for test"""
 
-    def __init__(self) -> None:
+    def __init__(self, config: AttrDict=None) -> None:
         BotLinkedNamespace._bot = self
         self.call_queue: List[Call] = []
         self.api = SlackAPI(self)
@@ -31,6 +33,7 @@ class FakeBot(Bot):
         self.groups: List[PrivateChannel] = []
         self.users: Dict[UserID, User] = {}
         self.responses: Dict[str, Callable] = {}
+        self.config = config
 
     async def call(self, method: str, data: Dict[str, str]=None):
         self.call_queue.append(Call(method, data))

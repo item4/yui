@@ -12,9 +12,13 @@ from typing import (
     Union,
 )
 
+from attrdict import AttrDict
+
 import pytest
 
 from yui.type import (
+    ChannelFromConfig,
+    ChannelsFromConfig,
     DirectMessageChannel,
     FromChannelID,
     FromUserID,
@@ -129,7 +133,15 @@ def test_cast():
 
 
 def test_from_channel_id():
-    bot = FakeBot()
+    config = AttrDict({
+        'CHANNELS': {
+            'main': 'general',
+            'commons': ['general', 'random'],
+            'no': 'no',
+            'nos': ['no'],
+        },
+    })
+    bot = FakeBot(config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -170,6 +182,38 @@ def test_from_channel_id():
 
     with pytest.raises(KeyError):
         FromChannelID.from_name('doge')
+
+    main = FromChannelID.from_config('main')
+    assert isinstance(main, PublicChannel)
+    assert main.id == 'C1'
+    assert main.name == 'general'
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config('commons')
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config('doge')
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config('no')
+
+    commons = FromChannelID.from_config_list('commons')
+    assert len(commons) == 2
+    assert isinstance(commons[0], PublicChannel)
+    assert commons[0].id == 'C1'
+    assert commons[0].name == 'general'
+    assert isinstance(commons[1], PublicChannel)
+    assert commons[1].id == 'C2'
+    assert commons[1].name == 'random'
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config_list('main')
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config_list('doge')
+
+    with pytest.raises(KeyError):
+        FromChannelID.from_config_list('nos')
 
 
 def test_from_user_id():
@@ -218,3 +262,55 @@ def test_is_container():
     assert not is_container(int)
     assert not is_container(float)
     assert not is_container(bool)
+
+
+def test_channel_from_config():
+    config = AttrDict({
+        'CHANNELS': {
+            'main': 'general',
+            'commons': ['general', 'random'],
+        },
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
+
+    c = ChannelFromConfig('main')
+    assert c.key == 'main'
+
+    c_get = c.get()
+    assert c_get.name == 'general'
+    assert c_get.id == 'C1'
+
+    with pytest.raises(KeyError):
+        ChannelFromConfig('no').get()
+
+
+def test_channels_from_config():
+    config = AttrDict({
+        'CHANNELS': {
+            'main': 'general',
+            'commons': ['general', 'random'],
+        },
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
+
+    c = ChannelsFromConfig('commons')
+    assert c.key == 'commons'
+
+    c_get = c.get()
+    assert c_get[0].name == 'general'
+    assert c_get[0].id == 'C1'
+    assert c_get[1].name == 'random'
+    assert c_get[1].id == 'C2'
+
+    with pytest.raises(KeyError):
+        ChannelsFromConfig('no').get()
