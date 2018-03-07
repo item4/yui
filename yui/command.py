@@ -6,30 +6,109 @@ Decorators and classes for making command.
 """
 
 import functools
-from typing import Any, Awaitable, Callable, List, Optional, Type, Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    List,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Type,
+    Union,
+)
 
 from .event import Event
-from .type import PrivateChannel, PublicChannel
+from .type import (
+    ChannelFromConfig,
+    ChannelsFromConfig,
+    PrivateChannel,
+    PublicChannel,
+)
 
-__all__ = 'Argument', 'DM', 'Option', 'argument', 'not_', 'only', 'option'
+__all__ = (
+    'ACCEPTABLE_CHANNEL_TYPES',
+    'Argument',
+    'C',
+    'Cs',
+    'DM',
+    'Option',
+    'argument',
+    'get_channel_names',
+    'not_',
+    'only',
+    'option',
+)
 
 
 class DM:
     """Direct Message"""
 
 
-def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
+class _C:
+    """Magic class for create channel from config"""
+
+    def __getattr__(self, key: str) -> ChannelFromConfig:
+        return ChannelFromConfig(key)
+
+    def __getitem__(self, key: str) -> ChannelFromConfig:
+        return ChannelFromConfig(key)
+
+
+class _Cs:
+    """Magic class for create channels from config"""
+
+    def __getattr__(self, key: str) -> ChannelsFromConfig:
+        return ChannelsFromConfig(key)
+
+    def __getitem__(self, key: str) -> ChannelsFromConfig:
+        return ChannelsFromConfig(key)
+
+
+# Magic instance for create channel from config
+C = _C()
+
+# Magic instance for create channels from config
+Cs = _Cs()
+
+ACCEPTABLE_CHANNEL_TYPES = Union[
+    Type[DM],
+    PrivateChannel,
+    PublicChannel,
+    ChannelFromConfig,
+    ChannelsFromConfig,
+    str,
+]
+
+
+def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
+        -> Tuple[Set[str], bool]:
+    dm = False
+    channel_names = set()
+    for channel in channels:
+        if isinstance(channel, (PrivateChannel, PublicChannel)):
+            channel_names.add(channel.name)
+        elif isinstance(channel, ChannelFromConfig):
+            channel_names.add(channel.get().name)
+        elif isinstance(channel, ChannelsFromConfig):
+            channel_names = channel_names.union(c.name for c in channel.get())
+        elif channel == DM:
+            dm = True
+        elif isinstance(channel, str):
+            channel_names.add(channel)
+    return channel_names, dm
+
+
+def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
         -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to allow to use handler."""
 
-    allow_dm = False
-    if DM in channels:
-        channels = tuple(x for x in channels if x is not DM)
-        allow_dm = True
-
     async def callback(bot, event: Event) -> bool:
+        channel_names, allow_dm = get_channel_names(channels)
+
         if isinstance(event.channel, (PrivateChannel, PublicChannel)):
-            if event.channel.name in channels:
+            if event.channel.name in channel_names:
                 return True
             else:
                 if error:
@@ -52,18 +131,15 @@ def only(*channels: Union[Type[DM], str], error: Optional[str]=None)\
     return callback
 
 
-def not_(*channels: Union[Type[DM], str], error: Optional[str]=None) \
+def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None) \
         -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to deny to use handler."""
 
-    deny_dm = False
-    if DM in channels:
-        channels = tuple(x for x in channels if x is not DM)
-        deny_dm = True
-
     async def callback(bot, event: Event) -> bool:
+        channel_names, deny_dm = get_channel_names(channels)
+
         if isinstance(event.channel, (PrivateChannel, PublicChannel)):
-            if event.channel.name in channels:
+            if event.channel.name in channel_names:
                 if error:
                     await bot.say(
                         event.channel,

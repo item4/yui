@@ -1,11 +1,72 @@
 from typing import List
 
+from attrdict import AttrDict
+
 import pytest
 
-from yui.command import Argument, DM, Option, argument, not_, only, option
+from yui.command import (
+    Argument,
+    C,
+    Cs,
+    DM,
+    Option,
+    argument,
+    get_channel_names,
+    not_,
+    only,
+    option,
+)
 from yui.event import create_event
+from yui.type import Channel, ChannelFromConfig, ChannelsFromConfig
 
 from .util import FakeBot
+
+
+def test_c():
+    ch = C.general
+    assert isinstance(ch, ChannelFromConfig)
+    assert ch.key == 'general'
+
+    ch = C['food']
+    assert isinstance(ch, ChannelFromConfig)
+    assert ch.key == 'food'
+
+
+def test_cs():
+    ch = Cs.tests
+    assert isinstance(ch, ChannelsFromConfig)
+    assert ch.key == 'tests'
+
+    ch = Cs['commons']
+    assert isinstance(ch, ChannelsFromConfig)
+    assert ch.key == 'commons'
+
+
+def test_get_channel_names():
+    config = AttrDict({
+        'CHANNELS': {
+            'general': 'general',
+            'commons': ['general', 'random'],
+        }
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+    bot.add_channel('C2', 'random')
+    bot.add_channel('C3', 'food')
+    bot.add_channel('C4', 'work')
+    bot.add_dm('D1', 'U1')
+    bot.add_private_channel('G1', 'secret')
+
+    names, dm = get_channel_names([
+        C.general,
+        Cs.commons,
+        Channel.from_name('food'),
+        DM,
+        'work',
+    ])
+
+    assert names == {'general', 'random', 'food', 'work'}
+    assert dm
 
 
 @pytest.mark.asyncio
