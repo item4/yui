@@ -11,6 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ..api import Attachment
 from ..box import box
+from ..command import C
 from ..models.saomd import (
     Notice,
     SERVER_LABEL,
@@ -177,7 +178,7 @@ async def watch_notice(bot, sess):
 
         if attachments:
             await bot.api.chat.postMessage(
-                channel='game',
+                channel=C.game.get(),
                 attachments=attachments,
                 as_user=True,
             )

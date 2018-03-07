@@ -1,7 +1,7 @@
 import decimal
 
 from ..box import box
-from ..command import argument
+from ..command import Cs, argument, only
 from ..event import Message
 
 
@@ -27,7 +27,7 @@ UNIT = decimal.Decimal(10_000_000)
 MAX = decimal.Decimal(10)
 
 
-@box.command('블마수수료')
+@box.command('블마수수료', channels=only(Cs.game_and_test))
 @argument('price', type_=decimal.Decimal)
 async def black_market_charge(bot, event: Message, price: decimal.Decimal):
     charge_percent = min(

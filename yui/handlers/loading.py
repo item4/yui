@@ -9,6 +9,7 @@ import pytz
 import ujson
 
 from ..box import box
+from ..command import C
 from ..event import Message
 
 
@@ -31,7 +32,7 @@ async def auto_weekend_loading(bot):
     now = datetime.datetime.now()
     percent = weekend_loading_percent(now)
     await bot.say(
-        '_general',
+        C.general,
         f'주말로딩… {percent:.2f}%'
     )
 
@@ -39,7 +40,7 @@ async def auto_weekend_loading(bot):
 @box.crontab('0 0 * * 6')
 async def auto_weekend_start(bot):
     await bot.say(
-        '_general',
+        C.general,
         f'주말이에요! 즐거운 주말 되세요!'
     )
 
@@ -48,7 +49,7 @@ async def auto_weekend_start(bot):
 async def auto_weekend_end(bot):
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,
-        channel='_general',
+        channel=C.general,
         as_user=False,
         username='월요일을 알리는 개새끼',
         icon_url='https://i.imgur.com/UtBQSLl.jpg',
