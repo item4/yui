@@ -30,6 +30,13 @@ MAX = decimal.Decimal(10)
 @box.command('블마수수료', channels=only(Cs.game_and_test))
 @argument('price', type_=decimal.Decimal)
 async def black_market_charge(bot, event: Message, price: decimal.Decimal):
+    """
+    클로저스 온라인 블랙마켓 수수료 계산
+
+    `{PREFIX}블마수수료 100000` (100,000 크레딧 상품의 수수료 계산)
+
+    """
+
     charge_percent = min(
         BASE + INCREASE * decimal.Decimal(int(price / UNIT)),
         MAX
