@@ -176,3 +176,6 @@ log
 
 # pyenv-virtualenvwrapper
 yui/.project
+
+# test dir in local
+docker
