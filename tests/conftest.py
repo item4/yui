@@ -1,4 +1,5 @@
 import copy
+import os
 import pathlib
 
 import aioresponses
@@ -14,16 +15,32 @@ from yui.config import DEFAULT
 from yui.orm import Base
 
 
+DEFAULT_DATABASE_URL = 'sqlite://'
+
+
+def pytest_addoption(parser):
+    parser.addoption('--database-url', type='string',
+                     default=os.getenv('YUI_TEST_DATABASE_URL',
+                                       DEFAULT_DATABASE_URL),
+                     help='Database URL for testing.'
+                          '[default: %default]')
+
+
 @pytest.fixture()
 def fx_tmpdir(tmpdir):
     return pathlib.Path(tmpdir)
 
 
 @pytest.yield_fixture(scope='session')
-def fx_engine():
+def fx_engine(request):
+    try:
+        database_url = request.config.getoption('--database-url')
+    except ValueError:
+        database_url = None
+
     config = AttrDict(copy.deepcopy(DEFAULT))
     config.DEBUG = True
-    config.DATABASE_URL = 'sqlite:///'
+    config.DATABASE_URL = database_url
     config.MODELS = []
     config.HANDLERS = []
     config['LOGGING']['loggers']['yui']['handlers'] = ['console']

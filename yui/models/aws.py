@@ -1,9 +1,7 @@
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Boolean, DateTime, Float, Integer, String
 
 from ..orm import Base
-from ..util import tz_none_to_kst, tz_none_to_utc
 
 
 class AWS(Base):
@@ -14,7 +12,7 @@ class AWS(Base):
     id = Column(Integer, nullable=False, primary_key=True)
 
     # 지역명
-    name = Column(String(15), nullable=False)
+    name = Column(String, nullable=False)
 
     # 고도
     height = Column(Integer, nullable=False)
@@ -41,13 +39,13 @@ class AWS(Base):
     temperature = Column(Float)
 
     # 풍향1
-    wind_direction1 = Column(String(3))
+    wind_direction1 = Column(String)
 
     # 풍속1
     wind_speed1 = Column(Float)
 
     # 풍향10
-    wind_direction10 = Column(String(3))
+    wind_direction10 = Column(String)
 
     # 풍속10
     wind_speed10 = Column(Float)
@@ -59,19 +57,7 @@ class AWS(Base):
     pressure = Column(Float)
 
     # 위치
-    location = Column(String(50))
+    location = Column(String)
 
     # 관측 시간
-    observed_datetime = Column(DateTime(timezone=True), nullable=False)
-
-    @hybrid_property
-    def observed_at(self):
-        """관측 시간."""
-
-        return tz_none_to_kst(self.observed_datetime)
-
-    @observed_at.setter  # type: ignore
-    def observed_at(self, value):
-        """관측 시간."""
-
-        self.observed_datetime = tz_none_to_utc(value)
+    observed_at = Column(DateTime(timezone=True), nullable=False)

@@ -27,6 +27,6 @@ class SiteSub(Base):
 
     url = Column(String, nullable=False)
 
-    user = Column(String(10), nullable=False)
+    user = Column(String, nullable=False)
 
     body = Column(Text)

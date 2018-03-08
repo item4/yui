@@ -1,9 +1,8 @@
-import datetime
-
 from ..box import box
 from ..command import argument
 from ..event import Message
 from ..models.memo import Memo
+from ..util import now
 
 
 @box.command('기억')
@@ -22,7 +21,7 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
     memo.keyword = keyword
     memo.author = event.user.id
     memo.text = text
-    memo.created_at = datetime.datetime.utcnow()
+    memo.created_at = now()
 
     with sess.begin():
         sess.add(memo)
@@ -44,7 +43,7 @@ async def memo_show(bot, event: Message, sess, keyword: str):
     """
 
     memos = sess.query(Memo).filter_by(keyword=keyword)\
-        .order_by(Memo.created_datetime).all()
+        .order_by(Memo.created_at).all()
 
     if memos:
         await bot.say(

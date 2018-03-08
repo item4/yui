@@ -11,9 +11,7 @@ from sqlalchemy.sql.expression import func
 __all__ = (
     'KOREAN_END',
     'KOREAN_START',
-    'KST',
     'TRUNCATE_QUERY',
-    'UTC',
     'bold',
     'bool2str',
     'code',
@@ -25,12 +23,7 @@ __all__ = (
     'quote',
     'strike',
     'truncate_table',
-    'tz_none_to_kst',
-    'tz_none_to_utc',
 )
-
-KST = get_timezone('Asia/Seoul')
-UTC = get_timezone('UTC')
 
 TRUNCATE_QUERY = {
     'mysql': 'TRUNCATE TABLE {};',
@@ -67,6 +60,12 @@ KOREAN_ALPHABETS_MIDDLE_MAP: Dict[str, str] = {
 }
 
 
+def now(tzname: str='Asia/Seoul') -> datetime.datetime:
+    """Helper to make current datetime."""
+
+    return datetime.datetime.utcnow().astimezone(get_timezone(tzname))
+
+
 def normalize_korean_nfc_to_nfd(value: str) -> str:
     """Normalize Korean string to NFD."""
 
@@ -89,18 +88,6 @@ def fuzzy_korean_ratio(str1: str, str2: str) -> int:
         normalize_korean_nfc_to_nfd(str1),
         normalize_korean_nfc_to_nfd(str2),
     )
-
-
-def tz_none_to_kst(dt: datetime.datetime) -> datetime.datetime:
-    """Convert non tz datetime to KST."""
-
-    return UTC.localize(dt).astimezone(KST)
-
-
-def tz_none_to_utc(dt: datetime.datetime) -> datetime.datetime:
-    """Convert non tz datetime to UTC."""
-
-    return dt.astimezone(UTC)
 
 
 def bold(text: str) -> str:

@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import logging
 import re
 from typing import Dict
@@ -16,6 +15,7 @@ from ..box import box
 from ..command import argument
 from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
+from ..util import now
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ async def fetch_css_ref(sess):
         ))
 
     ref.body = result
-    ref.created_at = datetime.datetime.utcnow()
+    ref.created_at = now()
 
     with sess.begin():
         sess.add(ref)
@@ -93,7 +93,7 @@ async def fetch_html_ref(sess):
         ))
 
     ref.body = result
-    ref.created_at = datetime.datetime.utcnow()
+    ref.created_at = now()
 
     with sess.begin():
         sess.add(ref)
@@ -134,7 +134,7 @@ async def fetch_python_ref(sess):
         ))
 
     ref.body = result
-    ref.created_at = datetime.datetime.utcnow()
+    ref.created_at = now()
 
     with sess.begin():
         sess.add(ref)

@@ -9,7 +9,8 @@ from sqlalchemy_utils.types import ChoiceType
 from ..orm import Base
 
 
-class Server(enum.Enum):
+@enum.unique
+class Server(enum.IntEnum):
     """Server."""
 
     japan = 1

@@ -3,6 +3,9 @@ python: 3.6
 sudo: false
 services:
 - docker
+- postgresql
+addons:
+  postgresql: "9.6"
 cache:
   directories:
   - .mypy_cache
@@ -13,8 +16,10 @@ before_install:
 install:
 - pip install --upgrade pip setuptools wheel pipenv
 - pipenv install --dev
+before_script:
+- psql -c 'create database yui_test;' -U postgres
 script:
-- pipenv run pytest --cov yui tests
+- pipenv run pytest --database-url=postgresql://localhost/yui_test --cov yui tests
 - pipenv run flake8
 - pipenv run mypy yui
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .

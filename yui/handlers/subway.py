@@ -16,7 +16,7 @@ from ..command import argument, option
 from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
 from ..transform import choice
-from ..util import fuzzy_korean_ratio
+from ..util import fuzzy_korean_ratio, now
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
         async with session.get(metadata_url) as res:
             db.body = await res.json(loads=ujson.loads)
 
-    db.created_at = datetime.datetime.utcnow()
+    db.created_at = now()
 
     with sess.begin():
         sess.add(db)

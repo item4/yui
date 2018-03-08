@@ -12,7 +12,7 @@ from ..box import box
 from ..command import option
 from ..event import Message
 from ..type import DirectMessageChannel
-from ..util import static_vars, tz_none_to_kst
+from ..util import now, static_vars
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
 DM_COOLTIME = datetime.timedelta(minutes=10)
@@ -73,12 +73,12 @@ async def cat(bot, event: Message, timeout: float):
         icon_url='https://i.imgur.com/hIBJUMI.jpg',
     )
 
-    now = datetime.datetime.utcnow()
+    now_dt = now()
     if event.channel.id in cat.last_call:
         last_call = cat.last_call[event.channel.id]
         if isinstance(event.channel, DirectMessageChannel):
-            if now - last_call < DM_COOLTIME:
-                fine = tz_none_to_kst(last_call + DM_COOLTIME)
+            if now_dt - last_call < DM_COOLTIME:
+                fine = last_call + DM_COOLTIME
                 await cat_say(
                     text=(
                         f"아직 쿨타임이다냥! "
@@ -87,7 +87,7 @@ async def cat(bot, event: Message, timeout: float):
                 )
                 return
         else:
-            if now - last_call < DEFAULT_COOLTIME:
+            if now_dt - last_call < DEFAULT_COOLTIME:
                 return
 
     cat.last_call[event.channel.id] = now
@@ -117,12 +117,12 @@ async def dog(bot, event: Message, timeout: float):
         icon_url='https://i.imgur.com/Q9FKplO.png',
     )
 
-    now = datetime.datetime.utcnow()
+    now_dt = now()
     if event.channel.id in dog.last_call:
         last_call = dog.last_call[event.channel.id]
         if isinstance(event.channel, DirectMessageChannel):
-            if now - last_call < DM_COOLTIME:
-                fine = tz_none_to_kst(last_call + DM_COOLTIME)
+            if now_dt - last_call < DM_COOLTIME:
+                fine = last_call + DM_COOLTIME
                 await dog_say(
                     text=(
                         f"아직 쿨타임이다멍! "
@@ -131,7 +131,7 @@ async def dog(bot, event: Message, timeout: float):
                 )
                 return
         else:
-            if now - last_call < DEFAULT_COOLTIME:
+            if now_dt - last_call < DEFAULT_COOLTIME:
                 return
 
     dog.last_call[event.channel.id] = now

@@ -4,13 +4,12 @@ import random
 
 import aiohttp
 
-import pytz
-
 import ujson
 
 from ..box import box
 from ..command import C
 from ..event import Message
+from ..util import now
 
 
 def weekend_loading_percent(now: datetime.datetime) -> float:
@@ -29,8 +28,8 @@ def weekend_loading_percent(now: datetime.datetime) -> float:
 
 @box.crontab('0 8,18 * * 1-5')
 async def auto_weekend_loading(bot):
-    now = datetime.datetime.now()
-    percent = weekend_loading_percent(now)
+    now_dt = now()
+    percent = weekend_loading_percent(now_dt)
     await bot.say(
         C.general,
         f'주말로딩… {percent:.2f}%'
@@ -54,8 +53,7 @@ async def auto_weekend_end(bot):
         username='월요일을 알리는 개새끼',
         icon_url='https://i.imgur.com/UtBQSLl.jpg',
     )
-    kst = pytz.timezone('Asia/Seoul')
-    today = datetime.datetime.now(kst)
+    today = now()
     holiday = await get_holiday_name(today)
 
     if holiday:
@@ -93,8 +91,8 @@ async def weekend_loading(bot, event: Message):
 
     """
 
-    now = datetime.datetime.now()
-    percent = weekend_loading_percent(now)
+    now_dt = now()
+    percent = weekend_loading_percent(now_dt)
     if percent == 100.0:
         await bot.say(
             event.channel,
