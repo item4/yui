@@ -15,7 +15,7 @@ from ..type import DirectMessageChannel
 from ..util import now, static_vars
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
-DM_COOLTIME = datetime.timedelta(minutes=10)
+DM_COOLTIME = datetime.timedelta(minutes=3)
 
 
 async def get_cat_image_url(timeout: float) -> str:
@@ -60,7 +60,7 @@ async def get_dog_image_url(timeout: float) -> str:
 async def cat(bot, event: Message, timeout: float):
     """
     냥냥이 짤을 수급합니다.
-    쿨타임은 일반 채널 30분, DM 10분입니다.
+    쿨타임은 일반 채널 30분, DM 3분입니다.
 
     `{PREFIX}cat`: 냐짤 수급
 
@@ -103,7 +103,7 @@ async def dog(bot, event: Message, timeout: float):
     """
     멍멍이 짤을 수급합니다.
 
-    쿨타임은 일반 채널 30분, DM 10분입니다.
+    쿨타임은 일반 채널 30분, DM 3분입니다.
 
     `{PREFIX}dog`: 멍짤 수급
 
