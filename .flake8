@@ -1,3 +1,4 @@
 [flake8]
 exclude =
     yui/handlers/__init__.py
+    yui/handlers/closers/__init__.py

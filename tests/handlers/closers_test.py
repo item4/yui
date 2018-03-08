@@ -3,7 +3,7 @@ import decimal
 import pytest
 
 from yui.event import create_event
-from yui.handlers.closers import black_market_charge
+from yui.handlers.closers.command import black_market_charge
 
 from ..util import FakeBot
 
