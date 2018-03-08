@@ -6,6 +6,8 @@ from babel.dates import get_timezone
 
 from fuzzywuzzy import fuzz
 
+from lxml.html import fromstring
+
 from sqlalchemy.sql.expression import func
 
 __all__ = (
@@ -22,6 +24,7 @@ __all__ = (
     'preformatted',
     'quote',
     'strike',
+    'strip_tags',
     'truncate_table',
 )
 
@@ -58,6 +61,12 @@ KOREAN_ALPHABETS_FIRST_MAP: Dict[str, str] = {
 KOREAN_ALPHABETS_MIDDLE_MAP: Dict[str, str] = {
     chr(x+12623): chr(x+4449) for x in range(21+1)
 }
+
+
+def strip_tags(text: str) -> str:
+    """Remove HTML Tags from input test"""
+
+    return fromstring(text).text_content()
 
 
 def now(tzname: str='Asia/Seoul') -> datetime.datetime:

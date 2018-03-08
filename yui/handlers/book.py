@@ -1,4 +1,3 @@
-import re
 from decimal import Decimal
 from typing import List
 from urllib.parse import urlencode
@@ -11,8 +10,7 @@ from ..api import Attachment
 from ..box import box
 from ..command import argument
 from ..event import Message
-
-BOLD_RE = re.compile('</?b>')
+from ..util import strip_tags
 
 
 @box.command('책', ['book'])
@@ -49,15 +47,15 @@ async def book(bot, event: Message, keyword: str):
 
     for i in range(count):
         book = data['items'][i]
-        title = BOLD_RE.sub('', book['title'])
+        title = strip_tags(book['title'])
         attachments.append(Attachment(
             fallback='{} - {}'.format(title, book['link']),
             title=title,
             title_link=book['link'],
             thumb_url=book['image'],
             text='저자: {} / 출판사: {} / 정가: ￦{:,}'.format(
-                book['author'],
-                book['publisher'],
+                strip_tags(book['author']),
+                strip_tags(book['publisher']),
                 Decimal(book['price']),
             )
         ))

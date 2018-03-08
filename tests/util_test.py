@@ -11,7 +11,15 @@ from yui.util import (
     preformatted,
     quote,
     strike,
+    strip_tags,
 )
+
+
+def test_strip_tags():
+
+    assert strip_tags('aaa<b>bbb<span>ccc</span>ddd</b>eee<img>fff') == (
+        'aaabbbcccdddeeefff'
+    )
 
 
 def test_bool2str():
