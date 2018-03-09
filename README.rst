@@ -57,12 +57,12 @@ PREFIX
 HANDLERS
   list of str. Python module path of handlers.
   Yui import given paths automatically.
-  You can use default command settings.
+  You must use core handlers.
 
   .. code-block:: toml
 
      HANDLERS = [
-         'yui.handlers'
+         'yui.handlers.core'
      ]
 
 MODELS
