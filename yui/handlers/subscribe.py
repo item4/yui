@@ -137,7 +137,7 @@ async def rss_add(bot, event: Message, sess, url: str):
 
     await bot.say(
         event.channel,
-        f'<#{event.channel}> 채널에서 `{url}` 을 구독하기 시작했어요!'
+        f'<#{event.channel.id}> 채널에서 `{url}` 을 구독하기 시작했어요!'
     )
 
 
@@ -159,7 +159,7 @@ async def rss_list(bot, event: Message, sess):
 
         await bot.say(
             event.channel,
-            f'<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
+            f'<#{event.channel.id}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
             f'\n```\n{feed_list}\n```'
         )
     else:
