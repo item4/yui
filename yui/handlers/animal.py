@@ -90,7 +90,7 @@ async def cat(bot, event: Message, timeout: float):
             if now_dt - last_call < DEFAULT_COOLTIME:
                 return
 
-    cat.last_call[event.channel.id] = now
+    cat.last_call[event.channel.id] = now_dt
 
     url = await get_cat_image_url(timeout)
     await cat_say(text=url)
@@ -134,7 +134,7 @@ async def dog(bot, event: Message, timeout: float):
             if now_dt - last_call < DEFAULT_COOLTIME:
                 return
 
-    dog.last_call[event.channel.id] = now
+    dog.last_call[event.channel.id] = now_dt
 
     url = await get_dog_image_url(timeout)
     await dog_say(text=url)
