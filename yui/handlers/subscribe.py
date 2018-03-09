@@ -300,16 +300,23 @@ async def watch_list(bot, event: Message, sess):
 
     subs = sess.query(SiteSub).filter_by(user=event.user.id).all()
 
-    await bot.say(
-        event.channel,
-        '<@{}> 사용자가 구독중인 사이트는 다음과 같아요!\n```\n{}\n```'.format(
-            event.user.name,
-            '\n'.join(
-                f'{s.id} - {s.url}' for s in subs
-            )
-        ),
-        thread_ts=event.ts,
-    )
+    if subs:
+        await bot.say(
+            event.channel,
+            '<@{}> 사용자가 구독중인 사이트는 다음과 같아요!\n```\n{}\n```'.format(
+                event.user.name,
+                '\n'.join(
+                    f'{s.id} - {s.url}' for s in subs
+                )
+            ),
+            thread_ts=event.ts,
+        )
+    else:
+        await bot.say(
+            event.channel,
+            '<@{}> 사용자는 현재 구독중인 사이트가 없어요!',
+            thread_ts=event.ts,
+        )
 
 
 @box.command('watch-del')
