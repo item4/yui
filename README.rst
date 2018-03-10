@@ -13,9 +13,13 @@ YUI
    :target: https://requires.io/github/item4/yui/requirements/?branch=master
    :alt: Requirements Status
 
-YUI is Slack Bot for `item4's private slack`_\.
+YUI is Multi-purpose Slack Bot.
 
-.. _`item4's private slack`: https://item4.slack.com
+Who do use YUI?
+---------------
+
+* item4(owner)'s private slack
+* 9xd
 
 
 Requirements
@@ -218,21 +222,66 @@ List of commands are below.
 .. _Alembic: http://alembic.zzzcomputing.com/en/latest/
 
 
-Yui on Docker
--------------
+Yui with Docker-compose
+------------------------
 
-You can launch yui on docker.
+You can launch yui on docker-compose easily.
 
-.. code-block:: bash
+1. Install Docker-compose.
 
-   $ pwd
-   /home/item4/
-   $ mkdir yui
-   $ cd yui
-   $ vi my.config.toml
-   $ docker pull item4/yui
-   $ docker run --rm -v /home/item4/yui:/yui/data item4/yui pipenv run yui upgrade head -c data/my.config.toml
-   $ docker run -d --rm -v /home/item4/yui:/yui/data item4/yui pipenv run yui run -c data/my.config.toml
+2. Craete ``docker-compose.yml`` file.
+
+   .. code-block:: yml
+
+      version: '3'
+      services:
+        bot_item4:
+          image: item4/yui:latest
+          volumes:
+            - ./item4:/yui/data
+          environment:
+            - YUI_CONFIG_FILE_PATH=data/yui.config.toml
+          depends_on:
+            - db
+          links:
+            - db
+          command: ./run.sh
+        db:
+          image: postgres:alpine
+          volumes:
+            - ./postgres/data:/var/lib/postgresql/data
+          environment:
+            - POSTGRES_PASSWORD=MYSECRET
+          healthcheck:
+            test: "pg_isready -h localhost -p 5432 -q -U postgres"
+            interval: 3s
+            timeout: 1s
+            retries: 10
+
+3. Pull images
+
+   .. code-block:: bash
+
+      $ docker pull item4/yui
+      $ docker pull postgres:alpine
+
+4. Launch db container and create database
+
+   .. code-block:: bash
+
+      $ docker-compose up -d db
+      $ docker ps  # and see container name
+      $ docker exec -it <CONTAINER_NAME_HERE> psql -U postgres  # and typing create database dbname; for create db
+
+5. Create config file with db info
+
+6. Launch Yui
+
+   .. code-block:: bash
+
+      $ docker-compose up -d
+
+You can see example files on ``example`` directory at this repo.
 
 
 Contribute to YUI
