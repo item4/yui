@@ -3,14 +3,14 @@ version: '3'
     bot_item4:
       image: item4/yui:latest
       volumes:
-        - ./item4:/yui/data
+        - .:/yui/data
       environment:
         - YUI_CONFIG_FILE_PATH=data/yui.config.toml
       depends_on:
         - db
       links:
         - db
-      command: ./run.sh
+      command: ./data/run.sh
     db:
       image: postgres:alpine
       volumes:
