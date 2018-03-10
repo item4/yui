@@ -53,6 +53,7 @@ AQI_API_TOKEN = 'AQI_API_TOKEN'
 general = '_general'
 game = 'game'
 game_and_test = ['game', 'test']
+welcome = '_general'
 
 [LOGGING]
 version = 1

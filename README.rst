@@ -114,6 +114,7 @@ CHANNELS
      general = '_general'
      game = 'game'
      game_and_test = ['game', 'test']
+     welcome = '_general'
 
 DATABASE_URL
   string. URL to connect Database via SQLAlchemy.
