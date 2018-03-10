@@ -165,7 +165,7 @@ async def rss_list(bot, event: Message, sess):
     else:
         await bot.say(
             event.channel,
-            '<#{event.channel}> 채널에서 구독중인 RSS가 없어요!'
+            f'<#{event.channel.id}> 채널에서 구독중인 RSS가 없어요!'
         )
 
 
