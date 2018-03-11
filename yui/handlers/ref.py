@@ -150,7 +150,7 @@ async def on_start(sess):
     return True
 
 
-@box.crontab('0 0 * * *')
+@box.crontab('0 3 * * *')
 async def refresh(sess):
     logger.info('refresh ref')
     tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]

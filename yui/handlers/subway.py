@@ -74,7 +74,7 @@ async def on_start(sess):
     return True
 
 
-@box.crontab('0 0 * * *')
+@box.crontab('0 3 * * *')
 async def refresh_db(sess):
     logger.info('refresh subway')
     tasks = []
