@@ -72,7 +72,7 @@ def strip_tags(text: str) -> str:
 def now(tzname: str='Asia/Seoul') -> datetime.datetime:
     """Helper to make current datetime."""
 
-    return datetime.datetime.utcnow().astimezone(get_timezone(tzname))
+    return datetime.datetime.now(tz=get_timezone(tzname))
 
 
 def normalize_korean_nfc_to_nfd(value: str) -> str:
