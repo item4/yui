@@ -1,5 +1,7 @@
 import datetime
-from typing import List
+import functools
+from concurrent.futures import ProcessPoolExecutor
+from typing import List, Optional
 
 import aiohttp
 
@@ -15,23 +17,7 @@ from ..transform import choice
 from ..util import truncate_table
 
 
-@box.crontab('*/3 * * * *')
-async def crawl(bot, sess):
-    """Crawl from Korea Meteorological Administration AWS."""
-
-    engine = bot.config.DATABASE_ENGINE
-
-    html = ''
-    url = 'http://www.kma.go.kr/cgi-bin/aws/nph-aws_txt_min'
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as res:
-                html = await res.text()
-    except aiohttp.client_exceptions.ClientConnectorError:
-        return
-    except aiohttp.client_exceptions.ServerDisconnectedError:
-        return
-
+def parse(html: str) -> Optional[List[AWS]]:
     h = lxml.html.fromstring(html)
     try:
         observed_at = datetime.datetime.strptime(
@@ -54,7 +40,9 @@ async def crawl(bot, sess):
         except ValueError:
             record.height = -1
 
-        record.is_raining = {'○': False, '●': True}.get(tr[3].text_content())
+        record.is_raining = {'○': False, '●': True}.get(
+            tr[3].text_content()
+        )
         try:
             record.rain15 = float(tr[4].text_content())
         except ValueError:
@@ -109,6 +97,34 @@ async def crawl(bot, sess):
         record.observed_at = observed_at
 
         records.append(record)
+    return records
+
+
+@box.crontab('*/3 * * * *')
+async def crawl(bot, loop, sess):
+    """Crawl from Korea Meteorological Administration AWS."""
+
+    engine = bot.config.DATABASE_ENGINE
+
+    html = ''
+    url = 'http://www.kma.go.kr/cgi-bin/aws/nph-aws_txt_min'
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as res:
+                html = await res.text()
+    except aiohttp.client_exceptions.ClientConnectorError:
+        return
+    except aiohttp.client_exceptions.ServerDisconnectedError:
+        return
+
+    ex = ProcessPoolExecutor()
+    records = await loop.run_in_executor(ex, functools.partial(
+        parse,
+        html
+    ))
+
+    if records is None:
+        return
 
     truncate_table(engine, AWS)
 

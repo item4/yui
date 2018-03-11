@@ -14,7 +14,7 @@ from ..util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_css_command(fx_sess):
+async def test_css_command(event_loop, fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     event = create_event({
@@ -30,7 +30,7 @@ async def test_css_command(fx_sess):
         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_css_ref(fx_sess)
+    await fetch_css_ref(event_loop, fx_sess)
 
     await css(bot, event, fx_sess, 'font-family')
     said = bot.call_queue.pop()
@@ -49,7 +49,7 @@ async def test_css_command(fx_sess):
 
 
 @pytest.mark.asyncio
-async def test_html_command(fx_sess):
+async def test_html_command(event_loop, fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     event = create_event({
@@ -65,7 +65,7 @@ async def test_html_command(fx_sess):
         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_html_ref(fx_sess)
+    await fetch_html_ref(event_loop, fx_sess)
 
     await html(bot, event, fx_sess, 'section')
     said = bot.call_queue.pop()
@@ -84,7 +84,7 @@ async def test_html_command(fx_sess):
 
 
 @pytest.mark.asyncio
-async def test_python_command(fx_sess):
+async def test_python_command(event_loop, fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     event = create_event({
@@ -100,7 +100,7 @@ async def test_python_command(fx_sess):
          '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
     )
 
-    await fetch_python_ref(fx_sess)
+    await fetch_python_ref(event_loop, fx_sess)
 
     await python(bot, event, fx_sess, 'builtin function')
     said = bot.call_queue.pop()

@@ -1,7 +1,9 @@
 import asyncio
+import functools
 import logging
 import re
-from typing import Dict
+from concurrent.futures import ProcessPoolExecutor
+from typing import Dict, List, Tuple
 
 import aiohttp
 
@@ -29,34 +31,49 @@ REF_URLS: Dict[str, str] = {
 }
 
 
-async def fetch_css_ref(sess):
-    logger.info(f'fetch css ref start')
-
-    name = 'css'
-    url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
+def fetch_or_create_cache(name: str, sess) -> JSONCache:
     try:
         ref = sess.query(JSONCache).filter_by(name=name).one()
     except NoResultFound:
         ref = JSONCache()
         ref.name = name
+    return ref
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
 
+def parse(html: str, selector: str, url_prefix: str) -> List[Tuple[str, str]]:
     h = fromstring(html)
-    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]')
+    a_tags = h.cssselect(selector)
 
     result = []
     for a in a_tags:
         name = a.text_content()
-        link = f"https://developer.mozilla.org{a.get('href')}"
+        link = f"{url_prefix}{a.get('href')}"
         result.append((
             name,
             link,
         ))
+    return result
 
-    ref.body = result
+
+async def fetch_css_ref(loop, sess):
+    logger.info(f'fetch css ref start')
+
+    ref = fetch_or_create_cache('css', sess)
+
+    url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    ex = ProcessPoolExecutor()
+    body = await loop.run_in_executor(ex, functools.partial(
+        parse,
+        html,
+        'a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]',
+        'https://developer.mozilla.org',
+    ))
+
+    ref.body = body
     ref.created_at = now()
 
     with sess.begin():
@@ -65,34 +82,25 @@ async def fetch_css_ref(sess):
     logger.info(f'fetch css ref end')
 
 
-async def fetch_html_ref(sess):
+async def fetch_html_ref(loop, sess):
     logger.info(f'fetch html ref start')
 
-    name = 'html'
-    url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
-    try:
-        ref = sess.query(JSONCache).filter_by(name=name).one()
-    except NoResultFound:
-        ref = JSONCache()
-        ref.name = name
+    ref = fetch_or_create_cache('html', sess)
 
+    url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             html = await res.text()
 
-    h = fromstring(html)
-    a_tags = h.cssselect('a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]')
+    ex = ProcessPoolExecutor()
+    body = await loop.run_in_executor(ex, functools.partial(
+        parse,
+        html,
+        'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
+        'https://developer.mozilla.org'
+    ))
 
-    result = []
-    for a in a_tags:
-        name = a.text_content()
-        link = f"https://developer.mozilla.org{a.get('href')}"
-        result.append((
-            name,
-            link,
-        ))
-
-    ref.body = result
+    ref.body = body
     ref.created_at = now()
 
     with sess.begin():
@@ -101,21 +109,7 @@ async def fetch_html_ref(sess):
     logger.info(f'fetch html ref end')
 
 
-async def fetch_python_ref(sess):
-    logger.info(f'fetch python ref start')
-
-    name = 'python'
-    url = 'https://docs.python.org/3/library/'
-    try:
-        ref = sess.query(JSONCache).filter_by(name=name).one()
-    except NoResultFound:
-        ref = JSONCache()
-        ref.name = name
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
-
+def parse_python(html: str) -> List[Tuple[str, str, str]]:
     h = fromstring(html)
     a_tags = h.cssselect('a.reference.internal')
 
@@ -132,8 +126,26 @@ async def fetch_python_ref(sess):
             name,
             link,
         ))
+    return result
 
-    ref.body = result
+
+async def fetch_python_ref(loop, sess):
+    logger.info(f'fetch python ref start')
+
+    ref = fetch_or_create_cache('python', sess)
+
+    url = 'https://docs.python.org/3/library/'
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            html = await res.text()
+
+    ex = ProcessPoolExecutor()
+    body = await loop.run_in_executor(ex, functools.partial(
+        parse_python,
+        html,
+    ))
+
+    ref.body = body
     ref.created_at = now()
 
     with sess.begin():
@@ -143,17 +155,25 @@ async def fetch_python_ref(sess):
 
 
 @box.on(ChatterboxSystemStart)
-async def on_start(sess):
+async def on_start(loop, sess):
     logger.info('on_start ref')
-    tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]
+    tasks = [
+        fetch_css_ref(loop, sess),
+        fetch_html_ref(loop, sess),
+        fetch_python_ref(loop, sess),
+    ]
     await asyncio.wait(tasks)
     return True
 
 
 @box.crontab('0 3 * * *')
-async def refresh(sess):
+async def refresh(loop, sess):
     logger.info('refresh ref')
-    tasks = [fetch_css_ref(sess), fetch_html_ref(sess), fetch_python_ref(sess)]
+    tasks = [
+        fetch_css_ref(loop, sess),
+        fetch_html_ref(loop, sess),
+        fetch_python_ref(loop, sess),
+    ]
     await asyncio.wait(tasks)
 
 
