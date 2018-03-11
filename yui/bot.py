@@ -115,9 +115,13 @@ class Bot:
 
             @aiocron.crontab(c.spec, *c.args, **c.kwargs)
             async def task():
+                if 'loop' in func_params:
+                    kw['loop'] = self.loop
+
                 sess = Session(bind=self.config.DATABASE_ENGINE)
                 if 'sess' in func_params:
                     kw['sess'] = sess
+
                 try:
                     await c.func(**kw)
                 except:  # noqa: E722
