@@ -28,7 +28,7 @@ def parse(html: str) -> Optional[List[AWS]]:
             '%Y.%m.%d.%H:%M'
         )
     except IndexError:
-        return
+        return None
 
     records: List[AWS] = []
     for tr in h.cssselect('table table tr')[1:]:
