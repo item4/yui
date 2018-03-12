@@ -1,3 +1,5 @@
+import functools
+from concurrent.futures import ProcessPoolExecutor
 from typing import List
 
 import aiohttp
@@ -28,6 +30,38 @@ CATEGORIES = {
 }
 
 
+def parse(html: str) -> List[Attachment]:
+    h = fromstring(html)
+
+    tr_list = h.cssselect('table.torrent-list > tbody > tr')
+
+    attachments: List[Attachment] = []
+
+    if tr_list:
+        for i in range(min(5, len(tr_list))):
+            tr = tr_list[i]
+
+            title = tr[1][-1].text_content().strip()
+            download_link = 'https://nyaa.si{}'.format(tr[2][0].get('href'))
+
+            attachments.append(Attachment(
+                fallback='{} - {}'.format(title, download_link),
+                title=title,
+                title_link='https://nyaa.si{}'.format(tr[1][0].get('href')),
+                text=('{} / {} / {}\n'
+                      'Seeders: {} / Leechers: {} / Downloads: {}').format(
+                    download_link,
+                    tr[3].text_content().strip(),
+                    tr[4].text_content().strip(),
+                    tr[5].text_content().strip(),
+                    tr[6].text_content().strip(),
+                    tr[7].text_content().strip(),
+                )
+            ))
+
+    return attachments
+
+
 @box.command('nyaa', ['냐'])
 @option('--category', '-c', dest='category_name',
         default='anime-raw', transform_error='지원되지 않는 카테고리에요!',
@@ -39,6 +73,7 @@ CATEGORIES = {
 async def nyaa(
     bot,
     event: Message,
+    loop,
     category_name: str,
     keyword: str
 ):
@@ -69,34 +104,12 @@ async def nyaa(
         async with session.get(url) as res:
             html = await res.text()
 
-    h = fromstring(html)
-
-    tr_list = h.cssselect('table.torrent-list > tbody > tr')
-
-    attachments: List[Attachment] = []
-
-    if tr_list:
-        for i in range(min(5, len(tr_list))):
-            tr = tr_list[i]
-
-            title = tr[1][-1].text_content().strip()
-            download_link = 'https://nyaa.si{}'.format(tr[2][0].get('href'))
-
-            attachments.append(Attachment(
-                fallback='{} - {}'.format(title, download_link),
-                title=title,
-                title_link='https://nyaa.si{}'.format(tr[1][0].get('href')),
-                text=('{} / {} / {}\n'
-                      'Seeders: {} / Leechers: {} / Downloads: {}').format(
-                    download_link,
-                    tr[3].text_content().strip(),
-                    tr[4].text_content().strip(),
-                    tr[5].text_content().strip(),
-                    tr[6].text_content().strip(),
-                    tr[7].text_content().strip(),
-                )
-            ))
-
+    ex = ProcessPoolExecutor()
+    attachments = await loop.run_in_executor(ex, functools.partial(
+        parse,
+        html,
+    ))
+    if attachments:
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
