@@ -1,6 +1,8 @@
 import asyncio
+import functools
 import logging
-from typing import Dict, List
+from concurrent.futures import ProcessPoolExecutor
+from typing import Dict, List, NamedTuple, Optional
 from urllib.parse import parse_qs, urlparse
 
 import aiohttp
@@ -28,89 +30,123 @@ NOTICE_URLS: Dict[Server, str] = {
 }
 
 
-@box.crontab('*/1 * * * *')
-async def watch_notice(bot, sess):
+class NoticeItem(NamedTuple):
+    """Notice item from notice page"""
+
+    detail_url: str
+    id: int
+    title: str
+    duration: Optional[str]
+    short_description: Optional[str]
+    image_url: Optional[str]
+
+
+def parse(html: str) -> List[NoticeItem]:
     base = 'https://api-defrag-ap.wrightflyer.net'
 
+    h = fromstring(html)
+    dls = h.cssselect('dl')
+
+    result: List[NoticeItem] = []
+
+    for dl in dls:
+        onclick: str = dl.get('onclick')
+        detail_url = base + onclick \
+            .replace("javascript:location.href='", '') \
+            .replace("'", '')
+        id = int(parse_qs(urlparse(detail_url).query)['id'][0])
+        title = dl.cssselect('h2')[0].text_content().strip()
+
+        duration_els = dl.cssselect('h3')
+        if duration_els:
+            duration = duration_els[0].text_content().strip()
+        else:
+            duration = None
+
+        p_els = dl.cssselect('p')
+        if p_els:
+            short_description = p_els[0].text_content().strip()
+        else:
+            short_description = None
+
+        image_els = dl.cssselect('img')
+        if image_els:
+            image_url = image_els[0].get('src')
+        else:
+            image_url = None
+
+        result.append(NoticeItem(
+            detail_url=detail_url,
+            id=id,
+            title=title,
+            duration=duration,
+            short_description=short_description,
+            image_url=image_url,
+        ))
+
+    return result
+
+
+@box.crontab('*/1 * * * *')
+async def watch_notice(bot, loop, sess):
     async def watch(server: Server):
         html = ''
         async with aiohttp.ClientSession() as session:
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 
-        h = fromstring(html)
-        dls = h.cssselect('dl')
+        ex = ProcessPoolExecutor()
+        notice_items = await loop.run_in_executor(ex, functools.partial(
+            parse,
+            html,
+        ))
+
         attachments: List[Attachment] = []
 
         notice_ids: List[int] = []
 
-        for dl in dls:
+        for item in notice_items:
             changes = []
-            onclick: str = dl.get('onclick')
-            detail_url = base + onclick\
-                .replace("javascript:location.href='", '')\
-                .replace("'", '')
-            notice_id = int(parse_qs(urlparse(detail_url).query)['id'][0])
-            title = dl.cssselect('h2')[0].text_content().strip()
-
-            duration_els = dl.cssselect('h3')
-            if duration_els:
-                duration = duration_els[0].text_content().strip()
-            else:
-                duration = None
-
-            p_els = dl.cssselect('p')
-            if p_els:
-                short_description = p_els[0].text_content().strip()
-            else:
-                short_description = None
-
-            image_els = dl.cssselect('img')
-            if image_els:
-                image_url = image_els[0].get('src')
-            else:
-                image_url = None
-
-            notice_ids.append(notice_id)
+            notice_ids.append(item.id)
 
             status = 'pass'
             try:
                 notice: Notice = sess.query(Notice).filter_by(
-                    notice_id=notice_id,
+                    notice_id=item.id,
                     server=server,
                 ).one()
             except NoResultFound:
                 status = 'new'
                 notice = Notice()
-                notice.notice_id = notice_id
+                notice.notice_id = item.id
                 notice.server = server
-                notice.title = title
-                notice.duration = duration
-                notice.short_description = short_description
+                notice.title = item.title
+                notice.duration = item.duration
+                notice.short_description = item.short_description
 
-            if title != notice.title:
+            if item.title != notice.title:
                 status = 'change'
                 changes.append('title')
-            if duration != notice.duration:
+            if item.duration != notice.duration:
                 status = 'change'
                 changes.append('duration')
-            if short_description != notice.short_description:
+            if item.short_description != notice.short_description:
                 status = 'change'
                 changes.append('short_description')
 
             if status == 'new':
                 text = ''
-                if duration:
-                    text += f'기간: {duration}\n'
-                if short_description:
-                    text += f'{short_description}\n'
+                if item.duration:
+                    text += f'기간: {item.duration}\n'
+                if item.short_description:
+                    text += f'{item.short_description}\n'
                 attachments.append(Attachment(
                     fallback=f'{SERVER_LABEL[server]} 서버 새 공지 - '
-                             f'{title} - {detail_url}',
+                             f'{item.title} - {item.detail_url}',
                     pretext=f'{SERVER_LABEL[server]} 서버에 새 공지가 있어요!',
-                    title=title,
-                    title_link=detail_url,
-                    image_url=image_url,
+                    title=item.title,
+                    title_link=item.detail_url,
+                    image_url=item.image_url,
                     text=text,
                 ))
                 with sess.begin():
@@ -118,33 +154,35 @@ async def watch_notice(bot, sess):
             elif status == 'change':
                 text = ''
                 if 'title' in changes:
-                    new_title = f'{notice.title} → {title}'
-                    notice.title = title
+                    new_title = f'{notice.title} → {item.title}'
+                    notice.title = item.title
                 else:
-                    new_title = title
+                    new_title = notice.title
 
                 if 'duration' in changes:
-                    text += f'기간: {notice.duration} → {duration}\n'
-                    notice.duration = duration
+                    text += (
+                        f'기간: {notice.duration} → {item.duration}\n'
+                    )
+                    notice.duration = item.duration
                 else:
                     if notice.duration:
                         text += f'기간: {notice.duration}\n'
 
                 if 'short_description' in changes:
                     text += f'{notice.short_description} → ' \
-                            f'{short_description}\n'
-                    notice.short_description = short_description
+                            f'{item.short_description}\n'
+                    notice.short_description = item.short_description
                 else:
                     if notice.short_description:
                         text += f'{notice.short_description}\n'
 
                 attachments.append(Attachment(
                     fallback=f'{SERVER_LABEL[server]} 서버 변경된 공지 - '
-                             f'{new_title} - {detail_url}',
+                             f'{new_title} - {item.detail_url}',
                     pretext=f'{SERVER_LABEL[server]} 서버에 변경된 공지가 있어요!',
                     title=new_title,
-                    title_link=detail_url,
-                    image_url=image_url,
+                    title_link=item.detail_url,
+                    image_url=item.image_url,
                     text=text.strip(),
                 ))
                 with sess.begin():
