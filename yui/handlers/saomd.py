@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List
 from urllib.parse import parse_qs, urlparse
 
 import aiohttp
@@ -26,19 +26,6 @@ NOTICE_URLS: Dict[Server, str] = {
     Server.worldwide: ('https://api-defrag-ap.wrightflyer.net/webview/'
                        'announcement?phone_type=2&lang=kr&user_id='),
 }
-
-
-class Weapon(NamedTuple):
-    """NamedTuple to store saomd weapon"""
-
-    name: str
-    grade: str
-    ratio: int
-    category: str
-    attribute: str
-    attack: int
-    critical: int
-    battle_skills: Optional[List[str]]
 
 
 @box.crontab('*/1 * * * *')
