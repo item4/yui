@@ -4,7 +4,7 @@ from ...event import TeamJoin
 
 
 @box.on(TeamJoin)
-async def welcome(bot, event: TeamJoin):
+async def welcome_9xd(bot, event: TeamJoin):
     channel = C.welcome.get()
     chat = await bot.say(
         channel,

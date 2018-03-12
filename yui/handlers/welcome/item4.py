@@ -4,7 +4,7 @@ from ...event import TeamJoin
 
 
 @box.on(TeamJoin)
-async def welcome(bot, event: TeamJoin):
+async def welcome_item4(bot, event: TeamJoin):
     await bot.say(
         C.welcome.get(),
         f'<@{event.user.id}>님 item4 개인 Slack에 오신걸 환영합니다! :tada:\n'
