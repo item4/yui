@@ -4,7 +4,7 @@ from typing import List
 from ..box import box
 from ..event import Message
 
-responses: List[str] = [
+RESPONSES: List[str] = [
     '그래',
     '돼',
     '안돼',
@@ -57,7 +57,7 @@ async def magic_conch(bot, event: Message):
     if event.text.startswith('마법의 소라고둥님'):
         await bot.api.chat.postMessage(
             channel=event.channel,
-            text=random.choice(responses),
+            text=random.choice(RESPONSES),
             as_user=False,
             icon_url=icon_url,
             username='마법의 소라고둥',
