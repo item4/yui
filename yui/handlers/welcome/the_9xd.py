@@ -22,11 +22,17 @@ async def welcome(bot, event: TeamJoin):
             f'- #_general - 일상적인 대화는 여기서 하면 돼요.\n'
             f'- #_notice - 공지사항이 올라오는 곳이에요. 여기는 대화 말고 읽기만 해주세요.\n'
             f'- #blogs - 9XD 회원분들의 블로그 글이 자동으로 공유되는 채널이에요.\n'
-            f'- #game - 게임 이야기는 여기서! 배그 <#pubg>, 시공 <#heroes>, '
-            f'고급시계 <#overwatch>\n'
-            f'- #job - 일자리 이야기를 하는 곳이에요.\n'
-            f'- #otaku - 서브컬쳐 덕질은 여기서 하면 됩니다.\n'
-            f'- #laboratory  - 제게 이것저것 시켜보고 싶으실 땐 이곳에서 해주세요!\n\n'
-            f'이외에도 각종 개발 환경 및 도구, 프로그래밍 언어별 채널이 있어요!',
+            f'- #game - 게임 이야기는 여기서! #pubg, #heroes, #overwatch\n'
+            f'- #job - 일자리 이야기를 하는 곳이에요. 스타트업은 #startup\n'
+            f'- #drinking - 술 마시는 곳이에요.\n'
+            f'- #animal - 귀여운 동물 보면서 힐링하는 곳이에요.\n'
+            f'- #otaku - 서브컬쳐 덕질은 여기서 하면 돼요.\n'
+            f'- #laboratory - 제게 이것저것 시켜보고 싶으실 땐 이곳에서 해주세요!\n'
+            f'- 개발 분야별 채널 - #ai, #backend, #bigdata, #circus, #embeded, '
+            f'#frontend, #ios\n'
+            f'- 개발 도구 채널 - #dev-tool, #emacs, #git\n'
+            f'- 언어별 채널 - #cplusplus, #dotnet, #fp, #go, #java, #js, '
+            f'#kotlin, #php, #python, #ruby, #rust\n\n'
+            f'이외에도 더 많은 채널들이 있어요. 채널 목록을 참조해주세요!',
             thread_ts=chat['ts'],
         )
