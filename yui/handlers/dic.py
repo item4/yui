@@ -1,5 +1,7 @@
+import functools
 import re
-from typing import Dict, List
+from concurrent.futures import ProcessPoolExecutor
+from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -53,11 +55,34 @@ def fix_blank(text: str) -> str:
     return BLANK_RE.sub('', text)
 
 
+def parse(html: str) -> Tuple[Optional[str], List[Attachment]]:
+    h = fromstring(html)
+    meta = h.cssselect('meta[http-equiv=Refresh]')
+    if meta:
+        return fix_url(meta[0].get('content')[7:]), []
+    else:
+        words = h.cssselect('div.search_type')
+
+        attachments: List[Attachment] = []
+
+        for word in words:
+            w = word.cssselect('.txt_searchword')[0]
+            attachments.append(Attachment(
+                title=w.text_content(),
+                title_link=fix_url(w.get('href')),
+                text=fix_blank(
+                    word.cssselect('.list_search')[0].text_content()
+                ),
+            ))
+
+        return None, attachments
+
+
 @box.command('dic', ['사전'])
 @option('--category', '-c', transform_func=choice(list(DICS.keys())),
         default='영어')
 @argument('keyword', nargs=-1, concat=True)
-async def dic(bot, event: Message, category: str, keyword: str):
+async def dic(bot, event: Message, loop, category: str, keyword: str):
     """
     다음 사전 검색
 
@@ -85,31 +110,21 @@ async def dic(bot, event: Message, category: str, keyword: str):
         async with session.get(url) as res:
             html = await res.text()
 
-    h = fromstring(html)
-    meta = h.cssselect('meta[http-equiv=Refresh]')
-    if meta:
+    ex = ProcessPoolExecutor()
+    redirect, attachments = await loop.run_in_executor(ex, functools.partial(
+        parse,
+        html,
+    ))
+
+    if redirect:
         await bot.say(
             event.channel,
-            fix_url(meta[0].get('content')[7:])
+            redirect
         )
     else:
-        words = h.cssselect('div.search_type')
-
-        attachments: List[Attachment] = []
-
-        for word in words:
-            w = word.cssselect('.txt_searchword')[0]
-            attachments.append(Attachment(
-                title=w.text_content(),
-                title_link=fix_url(w.get('href')),
-                text=fix_blank(
-                    word.cssselect('.list_search')[0].text_content()
-                ),
-            ))
-
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
-            text='검색결과 {}개의 링크를 찾았어요!'.format(len(words)),
+            text='검색결과 {}개의 링크를 찾았어요!'.format(len(attachments)),
             as_user=True,
         )
