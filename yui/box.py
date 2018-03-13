@@ -366,6 +366,9 @@ class Crontab:
     def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict) -> None:
         """Initialize."""
 
+        if 'start' not in kwargs:
+            kwargs['start'] = True
+
         self.box = box
         self.spec = spec
         self.args = args
