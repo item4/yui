@@ -26,7 +26,7 @@ def weekend_loading_percent(now: datetime.datetime) -> float:
     return delta.total_seconds() / (5*24*60*60) * 100
 
 
-@box.crontab('0 8,18 * * 1-5')
+@box.crontab('0 0,8,12,18,22 * * 1-5')
 async def auto_weekend_loading(bot):
     now_dt = now()
     percent = weekend_loading_percent(now_dt)
