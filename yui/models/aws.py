@@ -1,6 +1,15 @@
+import calendar
+import datetime
+
+import pytz
+
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Boolean, DateTime, Float, Integer, String
 
+import tzlocal
+
+from .type import TimezoneType
 from ..orm import Base
 
 
@@ -60,4 +69,24 @@ class AWS(Base):
     location = Column(String)
 
     # 관측 시간
-    observed_at = Column(DateTime(timezone=True), nullable=False)
+    observed_datetime = Column(DateTime(timezone=False), nullable=False)
+    observed_timezone = Column(TimezoneType())
+
+    @hybrid_property
+    def observed_at(self):
+        if self.observed_timezone:
+            return self.observed_timezone.localize(self.observed_datetime)
+        else:
+            return self.observed_datetime
+
+    @observed_at.setter  # type: ignore
+    def observed_at(self, dt: datetime.datetime):
+        if dt.tzinfo is pytz.UTC:
+            d = datetime.datetime.fromtimestamp(
+                calendar.timegm(dt.timetuple())
+            )
+            self.observed_datetime = d - tzlocal.get_localzone().utcoffset(d)
+            self.observed_timezone = pytz.UTC
+        else:
+            self.observed_timezone = dt.tzinfo
+            self.observed_datetime = dt.replace(tzinfo=None)

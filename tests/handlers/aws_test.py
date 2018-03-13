@@ -1,17 +1,16 @@
-import datetime
-
 import pytest
 
 from yui.event import create_event
 from yui.handlers.aws import aws, search_aws_zone
 from yui.models.aws import AWS
+from yui.util import now
 
 from ..util import FakeBot
 
 
 @pytest.mark.asyncio
 async def test_aws(fx_sess):
-    dt = datetime.datetime(2018, 1, 2, 3, 4, 5)
+    dt = now()
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')
@@ -56,15 +55,17 @@ async def test_aws(fx_sess):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '[2018년 01월 02일 03시 04분@인천/인천광역시 중구 전동]'
+        '[{}@인천/인천광역시 중구 전동]'
         ' 강수: 예(15min: 111.111/일일: 555.555)'
         ' / 12.34℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
+    ).format(
+        dt.strftime('%Y년 %m월 %d일 %H시 %M분')
     )
 
 
 @pytest.mark.asyncio
 async def test_search_aws_zone(fx_sess):
-    dt = datetime.datetime(2018, 1, 2, 3, 4, 5)
+    dt = now()
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')

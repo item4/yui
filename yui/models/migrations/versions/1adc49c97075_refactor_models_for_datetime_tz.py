@@ -1,8 +1,8 @@
-"""Change database to PostgreSQL
+"""Refactor models for datetime+tz
 
-Revision ID: fe60fc270488
+Revision ID: 1adc49c97075
 Revises:
-Create Date: 2018-03-08 18:26:01.698287
+Create Date: 2018-03-14 05:02:51.506053
 
 """
 import enum
@@ -13,11 +13,11 @@ import sqlalchemy as sa
 
 import sqlalchemy_utils as sau
 
-from yui.models.type import JSONType
+from yui.models.type import JSONType, TimezoneType
 
 
 # revision identifiers, used by Alembic.
-revision = 'fe60fc270488'
+revision = '1adc49c97075'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -51,7 +51,8 @@ def upgrade():
         sa.Column('humidity', sa.Integer(), nullable=True),
         sa.Column('pressure', sa.Float(), nullable=True),
         sa.Column('location', sa.String(), nullable=True),
-        sa.Column('observed_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('observed_datetime', sa.DateTime(), nullable=False),
+        sa.Column('observed_timezone', TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
@@ -59,7 +60,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('url', sa.String(), nullable=False),
         sa.Column('channel', sa.String(), nullable=False),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_datetime', sa.DateTime(), nullable=False),
+        sa.Column('updated_timezone', TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
@@ -67,7 +69,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('body', JSONType(), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('created_datetime', sa.DateTime(), nullable=False),
+        sa.Column('created_timezone', TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name'),
     )
@@ -77,21 +80,20 @@ def upgrade():
         sa.Column('keyword', sa.String(), nullable=False),
         sa.Column('text', sa.Text(), nullable=False),
         sa.Column('author', sa.String(), nullable=False),
-        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('created_datetime', sa.DateTime(), nullable=False),
+        sa.Column('created_timezone', TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
         'saomd_notice',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('notice_id', sa.Integer(), nullable=False),
-        sa.Column('server', sau.types.choice.ChoiceType(
-            Server,
-            impl=sa.Integer(),
-        ), nullable=False),
+        sa.Column('server', sau.types.ChoiceType(Server, impl=sa.Integer()),
+                  nullable=False),
         sa.Column('title', sa.String(), nullable=False),
         sa.Column('duration', sa.String(), nullable=True),
         sa.Column('short_description', sa.String(), nullable=True),
-        sa.PrimaryKeyConstraint('id'),
+        sa.PrimaryKeyConstraint('id')
     )
     op.create_table(
         'site_sub',
@@ -106,7 +108,8 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(), nullable=False),
         sa.Column('body', sa.Text(), nullable=True),
-        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('created_datetime', sa.DateTime(), nullable=False),
+        sa.Column('created_timezone', TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name'),
     )
