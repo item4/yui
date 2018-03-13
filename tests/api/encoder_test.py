@@ -4,6 +4,7 @@ import pytest
 
 from yui.api.encoder import SlackEncoder, bool2str
 from yui.api.type import Attachment, Field
+from yui.type import ChannelFromConfig, ChannelsFromConfig
 
 
 def test_bool2str():
@@ -32,3 +33,9 @@ def test_slack_encoder_class():
 
     with pytest.raises(TypeError):
         dumps(Dummy())
+
+    with pytest.raises(TypeError):
+        dumps(ChannelFromConfig('general'))
+
+    with pytest.raises(TypeError):
+        dumps(ChannelsFromConfig('commons'))

@@ -1,6 +1,7 @@
 import json
 
 from .type import Attachment, Field
+from ..type import ChannelFromConfig, ChannelsFromConfig
 
 __all__ = 'SlackEncoder',
 
@@ -41,4 +42,6 @@ class SlackEncoder(json.JSONEncoder):
                 'footer_icon': o.footer_icon,
                 'ts': o.ts,
             }.items() if v is not None}
+        elif isinstance(o, (ChannelFromConfig, ChannelsFromConfig)):
+            raise TypeError('can not encode this type')
         return json.JSONEncoder.default(self, o)
