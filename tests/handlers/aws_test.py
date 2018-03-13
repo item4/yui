@@ -62,6 +62,37 @@ async def test_aws(fx_sess):
         dt.strftime('%Y년 %m월 %d일 %H시 %M분')
     )
 
+    record2 = AWS()
+    record2.name = '인천'
+    record2.height = 1234
+    record2.is_raining = True
+    record2.rain15 = 111.111
+    record2.rain60 = 222.222
+    record2.rain6h = 333.333
+    record2.rain12h = 444.444
+    record2.rainday = 555.555
+    record2.temperature = 12.34
+    record2.wind_direction1 = 'SSW'
+    record2.wind_speed1 = 11.11
+    record2.wind_direction10 = 'NNE'
+    record2.wind_speed10 = 22.22
+    record2.humidity = 55
+    record2.pressure = 1234.56
+    record2.location = '인천광역시 중구 전동'
+    record2.observed_at = dt
+
+    with fx_sess.begin():
+        fx_sess.add(record2)
+
+    await aws(bot, event, fx_sess, '인천')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '검색 결과가 여러가지 있어요! 시스템 관리자에게 문의해주세요!'
+    )
+
 
 @pytest.mark.asyncio
 async def test_search_aws_zone(fx_sess):
