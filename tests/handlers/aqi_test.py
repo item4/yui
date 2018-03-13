@@ -102,8 +102,6 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     })
     bot = FakeBot(config)
     bot.add_channel('C1', 'general')
-    user = bot.add_user('U1', 'kirito')
-    bot.add_dm('D1', user)
 
     event = create_event({
         'type': 'message',

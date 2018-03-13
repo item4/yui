@@ -15,7 +15,6 @@ async def test_about_command():
     })
     bot = FakeBot(config)
     bot.add_channel('C1', 'general')
-    bot.add_user('U1', 'kirito')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
