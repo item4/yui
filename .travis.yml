@@ -18,6 +18,9 @@ install:
 - pipenv install --dev
 before_script:
 - psql -c 'create database yui_test;' -U postgres
+- psql -c 'show timezone;' -U postgres
+- date
+- "python -c 'from yui.util import now; print(now(), now().tzinfo);'"
 script:
 - pipenv run pytest --database-url=postgresql://localhost/yui_test --cov yui tests
 - pipenv run flake8
