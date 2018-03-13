@@ -58,7 +58,7 @@ def fx_engine(request):
         engine.dispose()
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.yield_fixture()
 def fx_sess(fx_engine):
     metadata = Base.metadata
     foreign_key_turn_off = {
