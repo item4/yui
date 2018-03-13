@@ -1,12 +1,31 @@
 import os
+import re
+
+from attrdict import AttrDict
 
 import pytest
 
+from yui.event import create_event
 from yui.handlers.aqi import (
     AQIRecord,
+    aqi,
     get_aqi,
     get_aqi_description,
     get_geometric_info_by_address,
+)
+
+from ..util import FakeBot
+
+result_pattern_re = re.compile(
+    r'\d{4}년 \d{2}월 \d{2}일 \d{2}시 계측 자료에요. '
+    r'.+?를 기준으로 AQI에 정보를 요청했어요!\n\n'
+    r'\* 종합 AQI: \d+(?:\.\d+)? - (?:좋음|보통|민감군 영향|나쁨|매우 나쁨|위험)\(.+?\)\n'
+    r'\* PM2\.5: \d+(?:\.\d+)?\n'
+    r'\* PM10: \d+(?:\.\d+)?\n'
+    r'\* 오존: \d+(?:\.\d+)?\n'
+    r'\* 이산화 질소: \d+(?:\.\d+)?\n'
+    r'\* 이산화 황: \d+(?:\.\d+)?\n'
+    r'\* 일산화 탄소: \d+(?:\.\d+)?'
 )
 
 
@@ -73,3 +92,27 @@ def test_get_aqi_description():
     assert get_aqi_description(300).startswith('매우 나쁨')
     assert get_aqi_description(301).startswith('위험')
     assert get_aqi_description(400).startswith('위험')
+
+
+@pytest.mark.asyncio
+async def test_aqi(fx_aqi_api_token, fx_google_api_key):
+    config = AttrDict({
+        'AQI_API_TOKEN': fx_aqi_api_token,
+        'GOOGLE_API_KEY': fx_google_api_key,
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+    user = bot.add_user('U1', 'kirito')
+    bot.add_dm('D1', user)
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+    })
+
+    await aqi(bot, event, '부천')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert result_pattern_re.match(said.data['text'])
