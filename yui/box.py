@@ -373,7 +373,7 @@ class Crontab:
         self.spec = spec
         self.args = args
         self.kwargs = kwargs
-        self.func = None
+        self.func: Callable = None
         self.start = None
         self.stop = None
 
@@ -383,6 +383,10 @@ class Crontab:
         self.func = func
 
         return func
+
+    def __str__(self) -> str:
+        return f'Crontab(spec={self.spec!r}, ' \
+               f'func={self.func.__module__}.{self.func.__name__})'
 
 
 # (:class:`Box`) Default Box

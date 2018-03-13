@@ -108,6 +108,7 @@ class Bot:
         )
 
         def register(c: Crontab):
+            logger.info(f'register {c}')
             func_params = inspect.signature(c.func).parameters
             kw = {}
             if 'bot' in func_params:
@@ -122,6 +123,7 @@ class Bot:
                 if 'sess' in func_params:
                     kw['sess'] = sess
 
+                logger.info(f'hit and start to run {c}')
                 try:
                     await c.func(**kw)
                 except:  # noqa: E722
@@ -134,6 +136,7 @@ class Bot:
                     )
                 finally:
                     sess.close()
+                logger.info(f'end {c}')
 
             c.start = task.start
             c.stop = task.stop
