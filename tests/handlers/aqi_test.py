@@ -116,3 +116,14 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert result_pattern_re.match(said.data['text'])
+
+    await aqi(
+        bot,
+        event,
+        '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒',
+    )
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
