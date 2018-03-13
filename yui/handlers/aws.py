@@ -254,6 +254,6 @@ async def search_aws_zone(bot, event: Message, sess, by: str, keyword: str):
     else:
         await bot.say(
             event.channel,
-            '검색결과가 없어요!',
+            '검색 결과가 없어요!',
             thread_ts=event.ts,
         )
