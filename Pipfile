@@ -26,8 +26,8 @@ libearth = "*"
 attrdict = "*"
 pytz = "*"
 "e1839a8" = {path = ".", editable = true}
-"psycopg2" = "*"
 tzlocal = "*"
+"psycopg2-binary" = "*"
 
 
 [dev-packages]
