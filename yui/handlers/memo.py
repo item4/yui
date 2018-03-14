@@ -43,7 +43,7 @@ async def memo_show(bot, event: Message, sess, keyword: str):
     """
 
     memos = sess.query(Memo).filter_by(keyword=keyword)\
-        .order_by(Memo.created_at).all()
+        .order_by(Memo.created_datetime).all()
 
     if memos:
         await bot.say(
