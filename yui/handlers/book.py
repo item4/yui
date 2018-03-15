@@ -1,6 +1,5 @@
 from decimal import Decimal
 from typing import List
-from urllib.parse import urlencode
 
 import aiohttp
 
@@ -25,25 +24,22 @@ async def book(bot, event: Message, keyword: str):
 
     """
 
-    url = 'https://openapi.naver.com/v1/search/book.json?{}'.format(
-        urlencode({
-            'query': keyword,
-        })
-    )
+    url = 'https://openapi.naver.com/v1/search/book.json'
+    params = {
+        'query': keyword,
+    }
     headers = {
         'X-Naver-Client-Id': bot.config.NAVER_CLIENT_ID,
         'X-Naver-Client-Secret': bot.config.NAVER_CLIENT_SECRET,
     }
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as res:
-            data = await res.json(loads=ujson.loads)
+        async with session.get(url, params=params, headers=headers) as resp:
+            data = await resp.json(loads=ujson.loads)
 
     attachments: List[Attachment] = []
 
-    count = 3
-    if len(data['items']) < count:
-        count = len(data['items'])
+    count = min(3, len(data['items']))
 
     for i in range(count):
         book = data['items'][i]
