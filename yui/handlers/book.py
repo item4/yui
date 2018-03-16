@@ -56,14 +56,20 @@ async def book(bot, event: Message, keyword: str):
             )
         ))
 
-    await bot.api.chat.postMessage(
-        channel=event.channel,
-        text=('키워드 *{}* (으)로 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
-              ' 그 중 상위 {}개를 보여드릴게요!').format(
-            keyword,
-            data['total'],
-            count,
-        ),
-        attachments=attachments,
-        as_user=True,
-    )
+    if attachments:
+        await bot.api.chat.postMessage(
+            channel=event.channel,
+            text=('키워드 *{}* (으)로 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
+                  ' 그 중 상위 {}개를 보여드릴게요!').format(
+                keyword,
+                data['total'],
+                count,
+            ),
+            attachments=attachments,
+            as_user=True,
+        )
+    else:
+        await bot.say(
+            event.channel,
+            '검색 결과가 없어요!'
+        )

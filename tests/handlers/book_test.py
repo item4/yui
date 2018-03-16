@@ -66,3 +66,4 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '검색 결과가 없어요!'
