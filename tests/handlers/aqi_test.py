@@ -106,6 +106,7 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     event = create_event({
         'type': 'message',
         'channel': 'C1',
+        'ts': '1234.5678',
     })
 
     await aqi(bot, event, '부천')
@@ -114,6 +115,7 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert result_pattern_re.match(said.data['text'])
+    assert said.data['thread_ts'] == '1234.5678'
 
     await aqi(
         bot,

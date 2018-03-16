@@ -136,5 +136,6 @@ async def aqi(bot, event: Message, address: str):
     text = text.strip()
     await bot.say(
         event.channel,
-        text
+        text,
+        thread_ts=event.ts,
     )
