@@ -47,6 +47,7 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     event = create_event({
         'type': 'message',
         'channel': 'C1',
+        'ts': '1234.5678',
     })
 
     await book(bot, event, '소드 아트 온라인')
@@ -58,6 +59,7 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     assert match
     assert match.group(1) == '소드 아트 온라인'
     assert len(ujson.loads(said.data['attachments'])) == int(match.group(2))
+    assert said.data['thread_ts'] == '1234.5678'
 
     await book(
         bot,
