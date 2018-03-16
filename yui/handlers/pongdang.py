@@ -1,11 +1,10 @@
 import datetime
 
-import aiohttp
-
 import ujson
 
 from ..box import box
 from ..event import Message
+from ..session import client_session
 
 
 @box.command('퐁당')
@@ -21,7 +20,7 @@ async def pongdang(bot, event: Message):
 
     url = 'http://hangang.dkserver.wo.tc/'
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as resp:
             data = ujson.loads(await resp.text())
 

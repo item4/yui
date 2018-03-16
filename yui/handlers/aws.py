@@ -13,6 +13,7 @@ from ..box import box
 from ..command import argument, option
 from ..event import Message
 from ..models.aws import AWS
+from ..session import client_session
 from ..transform import choice
 from ..util import truncate_table
 
@@ -109,7 +110,7 @@ async def crawl(bot, loop, sess):
     html = ''
     url = 'http://www.kma.go.kr/cgi-bin/aws/nph-aws_txt_min'
     try:
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             async with session.get(url) as res:
                 html = await res.text()
     except aiohttp.client_exceptions.ClientConnectorError:

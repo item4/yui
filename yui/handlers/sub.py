@@ -14,6 +14,7 @@ from ..api import Attachment
 from ..box import box
 from ..command import argument, option
 from ..event import Message
+from ..session import client_session
 from ..util import fuzzy_korean_ratio
 
 
@@ -85,7 +86,7 @@ def make_sub_list(data: List[Sub]) -> List[Attachment]:
 async def get_json(*args, **kwargs):
     weight = 1
     while True:
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             try:
                 async with session.get(*args, **kwargs) as res:
                     if res.status != 200:

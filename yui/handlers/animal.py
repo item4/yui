@@ -11,6 +11,7 @@ import ujson
 from ..box import box
 from ..command import option
 from ..event import Message
+from ..session import client_session
 from ..type import DirectMessageChannel
 from ..util import now, static_vars
 
@@ -20,7 +21,7 @@ DM_COOLTIME = datetime.timedelta(minutes=3)
 
 async def get_cat_image_url(timeout: float) -> str:
     api_url = 'http://thecatapi.com/api/images/get'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         while True:
             async with session.get(api_url, params={
                 'format': 'xml',
@@ -40,7 +41,7 @@ async def get_cat_image_url(timeout: float) -> str:
 
 async def get_dog_image_url(timeout: float) -> str:
     api_url = 'https://dog.ceo/api/breeds/image/random'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         while True:
             async with session.get(api_url) as res:
                 data = await res.json(loads=ujson.loads)

@@ -2,14 +2,13 @@ import functools
 from concurrent.futures import ProcessPoolExecutor
 from typing import List
 
-import aiohttp
-
 from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
 from ..event import Message
+from ..session import client_session
 from ..transform import choice
 
 
@@ -100,7 +99,7 @@ async def nyaa(
 
     url = 'https://nyaa.si/?f=0&c={}&q={}'.format(category, keyword)
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             html = await res.text()
 

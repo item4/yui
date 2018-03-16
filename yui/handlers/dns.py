@@ -9,6 +9,7 @@ import ujson
 from ..box import box
 from ..command import argument, option
 from ..event import Message
+from ..session import client_session
 from ..transform import extract_url
 
 
@@ -60,7 +61,7 @@ async def query(domain: str, server: DNSServer) -> Dict[str, str]:
             'ip': server.ip,
         })
     )
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             result = await res.json(loads=ujson.loads)
             result['server_name'] = server.name

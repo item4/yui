@@ -5,8 +5,6 @@ import re
 from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, List, Tuple
 
-import aiohttp
-
 from fuzzywuzzy import fuzz
 
 from lxml.html import fromstring
@@ -17,6 +15,7 @@ from ..box import box
 from ..command import argument
 from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
+from ..session import client_session
 from ..util import now
 
 logger = logging.getLogger(__name__)
@@ -61,7 +60,7 @@ async def fetch_css_ref(loop, sess):
     ref = fetch_or_create_cache('css', sess)
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             html = await res.text()
 
@@ -88,7 +87,7 @@ async def fetch_html_ref(loop, sess):
     ref = fetch_or_create_cache('html', sess)
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             html = await res.text()
 
@@ -135,7 +134,7 @@ async def fetch_python_ref(loop, sess):
     ref = fetch_or_create_cache('python', sess)
 
     url = 'https://docs.python.org/3/library/'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             html = await res.text()
 
@@ -295,7 +294,7 @@ async def php(bot, event: Message, keyword: str):
         f'http://php.net/{raw_path}',
     ]
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         for url in urls:
             async with session.get(url) as res:
                 async with res:

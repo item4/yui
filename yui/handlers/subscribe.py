@@ -10,6 +10,7 @@ from ..box import box
 from ..command import argument
 from ..event import Message
 from ..models.subscribe import RssFeedSub, SiteSub
+from ..session import client_session
 from ..transform import extract_url
 from ..util import get_count
 
@@ -22,7 +23,7 @@ async def crawl(bot, sess):
 
     for feed in feeds:  # type: RssFeedSub
         data = ''
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             try:
                 async with session.get(feed.url) as res:
                     data = await res.read()
@@ -92,7 +93,7 @@ async def rss_add(bot, event: Message, sess, url: str):
 
     """
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         try:
             async with session.get(url) as res:
                 data: bytes = await res.read()
@@ -203,7 +204,7 @@ async def rss_del(bot, event: Message, sess, id: int):
 async def run(bot, sess):
     subs = sess.query(SiteSub).all()
     for sub in subs:  # type: SiteSub
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             try:
                 async with session.get(sub.url) as res:
                     new_body: str = await res.text()
@@ -256,7 +257,7 @@ async def watch(bot, event: Message, sess, url: str):
         )
         return
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         try:
             async with session.get(url) as res:
                 data: str = await res.text()

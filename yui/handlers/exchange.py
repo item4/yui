@@ -10,6 +10,7 @@ import ujson
 from ..box import box
 from ..command import argument
 from ..event import Message
+from ..session import client_session
 
 QUERY_RE = re.compile(
     '^(\d+(?:\.\d+)?)\s*(\S+)(?:\s+(?:to|->|=)\s+(\S+))?$',
@@ -52,7 +53,7 @@ async def get_exchange_rate(base: str, to: str) -> Dict:
     )
 
     try:
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             async with session.get(url) as res:
                 data = await res.json(loads=ujson.loads)
                 if to in data['rates']:

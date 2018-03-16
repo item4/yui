@@ -5,8 +5,6 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, List, NamedTuple, Optional
 from urllib.parse import parse_qs, urlparse
 
-import aiohttp
-
 from lxml.html import fromstring
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -19,6 +17,7 @@ from ..models.saomd import (
     SERVER_LABEL,
     Server,
 )
+from ..session import client_session
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +90,7 @@ def parse(html: str) -> List[NoticeItem]:
 async def watch_notice(bot, loop, sess):
     async def watch(server: Server):
         html = ''
-        async with aiohttp.ClientSession() as session:
+        async with client_session() as session:
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 

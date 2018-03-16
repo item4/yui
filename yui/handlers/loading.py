@@ -2,13 +2,12 @@ import datetime
 import functools
 import random
 
-import aiohttp
-
 import ujson
 
 from ..box import box
 from ..command import C
 from ..event import Message
+from ..session import client_session
 from ..util import now
 
 
@@ -110,7 +109,7 @@ async def get_holiday_name(dt: datetime.datetime):
         date=dt.strftime('%Y/%m/%d')
     )
 
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as resp:
             holidays = ujson.loads(await resp.text())
 

@@ -2,13 +2,12 @@ import datetime
 from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
-import aiohttp
-
 import ujson
 
 from ..box import box
 from ..command import argument
 from ..event import Message
+from ..session import client_session
 
 
 class AQIRecord(NamedTuple):
@@ -31,7 +30,7 @@ async def get_geometric_info_by_address(
         'address': address,
         'key': api_key,
     })
-    async with aiohttp.ClientSession(headers={
+    async with client_session(headers={
         'Accept-Language': 'ko-KR',
     }) as session:
         async with session.get(url) as res:
@@ -49,7 +48,7 @@ async def get_geometric_info_by_address(
 
 async def get_aqi(lat: float, lng: float, token: str) -> AQIRecord:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             data = await res.json(loads=ujson.loads)
 

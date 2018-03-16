@@ -5,8 +5,6 @@ import math
 from typing import Dict, Tuple
 from urllib.parse import urlencode
 
-import aiohttp
-
 from sqlalchemy.orm.exc import NoResultFound
 
 import ujson
@@ -15,6 +13,7 @@ from ..box import box
 from ..command import argument, option
 from ..event import ChatterboxSystemStart, Message
 from ..models.cache import JSONCache
+from ..session import client_session
 from ..transform import choice
 from ..util import fuzzy_korean_ratio, now
 
@@ -52,7 +51,7 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
         })
     )
 
-    async with aiohttp.ClientSession(headers=headers) as session:
+    async with client_session(headers=headers) as session:
         async with session.get(metadata_url) as res:
             db.body = await res.json(loads=ujson.loads)
 
@@ -114,7 +113,7 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
     data = db.body
 
     timestamp_url = 'http://map.naver.com/pubtrans/getSubwayTimestamp.nhn'
-    async with aiohttp.ClientSession(headers=headers) as session:
+    async with client_session(headers=headers) as session:
         async with session.get(timestamp_url) as res:
             timestamp = ujson.loads(await res.text())
 
@@ -166,7 +165,7 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
         })
     )
 
-    async with aiohttp.ClientSession(headers=headers) as session:
+    async with client_session(headers=headers) as session:
         async with session.get(url) as res:
             result = ujson.loads(await res.text())
 

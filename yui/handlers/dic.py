@@ -4,14 +4,13 @@ from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlencode
 
-import aiohttp
-
 from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
 from ..command import argument, option
 from ..event import Message
+from ..session import client_session
 from ..transform import choice
 
 headers: Dict[str, str] = {
@@ -106,7 +105,7 @@ async def dic(bot, event: Message, loop, category: str, keyword: str):
         })
     )
     html = ''
-    async with aiohttp.ClientSession() as session:
+    async with client_session() as session:
         async with session.get(url) as res:
             html = await res.text()
 
