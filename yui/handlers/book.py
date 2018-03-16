@@ -39,7 +39,7 @@ async def book(bot, event: Message, keyword: str):
 
     attachments: List[Attachment] = []
 
-    count = min(3, len(data['items']))
+    count = min(5, len(data['items']))
 
     for i in range(count):
         book = data['items'][i]

@@ -5,6 +5,8 @@ from attrdict import AttrDict
 
 import pytest
 
+import ujson
+
 from yui.event import create_event
 from yui.handlers.book import book
 
@@ -55,7 +57,7 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     match = result_pattern_re.match(said.data['text'])
     assert match
     assert match.group(1) == '소드 아트 온라인'
-    assert match.group(2) == '3'
+    assert len(ujson.loads(said.data['attachments'])) == int(match.group(2))
 
     await book(
         bot,
