@@ -22,6 +22,7 @@ from .box import Box, Crontab, Handler, box
 from .config import Config
 from .event import Event, Message, create_event
 from .orm import Base, get_database_engine
+from .session import client_session
 from .type import (
     BotLinkedNamespace,
     Channel,
@@ -168,8 +169,7 @@ class Bot:
     ) -> Dict[str, Any]:
         """Call API methods."""
 
-        async with aiohttp.ClientSession() as session:
-
+        async with client_session() as session:
             form = aiohttp.FormData(data or {})
             form.add_field('token', self.config.TOKEN)
             try:
@@ -430,7 +430,7 @@ class Bot:
                     'type': 'chatterbox_system_start',
                 }))
 
-                async with aiohttp.ClientSession() as session:
+                async with client_session() as session:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
                             if self.restart:
