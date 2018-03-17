@@ -48,10 +48,11 @@ async def book(bot, event: Message, keyword: str):
             title=title,
             title_link=book['link'],
             thumb_url=book['image'],
-            text='저자: {} / 출판사: {} / 정가: ￦{:,}'.format(
+            text='저자: {} / 출판사: {}{}'.format(
                 strip_tags(book['author']),
                 strip_tags(book['publisher']),
-                Decimal(book['price']),
+                ' / 정가: ￦{:,}'.format(Decimal(book['price']))
+                if book['price'] else '',
             )
         ))
 
