@@ -1,4 +1,4 @@
-import decimal
+from decimal import Decimal
 
 import pytest
 
@@ -9,82 +9,77 @@ from ..util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_age_command():
+async def test_black_market_charge_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
         'channel': 'C1',
+        'ts': '1234.5678',
     })
 
-    await black_market_charge(bot, event, decimal.Decimal(0))
+    await black_market_charge(bot, event, [])
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 0 크레딧 상품의 수수료는 3.00%인 0 크레딧 입니다.'
-        ' 순 이익은 0 크레딧 입니다.'
-    )
+    assert said.data['text'] == '거래 건수는 1개 이상 20개 이하로 해주세요!'
 
-    await black_market_charge(bot, event, decimal.Decimal(500_000))
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 500,000 크레딧 상품의 수수료는 3.00%인 15,000 크레딧 입니다.'
-        ' 순 이익은 485,000 크레딧 입니다.'
-    )
+    prices = [Decimal(0), Decimal(500_000)] + [
+        Decimal(10_000_000) for _ in range(18)
+    ]
 
-    await black_market_charge(bot, event, decimal.Decimal(10_000_000))
+    await black_market_charge(bot, event, prices)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        ':closers: 10,000,000 크레딧 상품의 수수료는 3.50%인 350,000 크레딧 입니다.'
-        ' 순 이익은 9,650,000 크레딧 입니다.'
+        ':closers: 총 20개 거래건의 블랙마켓 수수료를 계산해드릴게요!\n\n'
+        '1. 0 크레딧 상품의 수수료는 3.00%인 0 크레딧 입니다. 순 이익은 0 크레딧 입니다.\n'
+        '2. 500,000 크레딧 상품의 수수료는 3.00%인 15,000 크레딧 입니다. '
+        '순 이익은 485,000 크레딧 입니다.\n'
+        '3. 10,000,000 크레딧 상품의 수수료는 3.50%인 350,000 크레딧 입니다. '
+        '순 이익은 9,650,000 크레딧 입니다.\n'
+        '4. 10,000,000 크레딧 상품의 수수료는 4.00%인 400,000 크레딧 입니다. '
+        '순 이익은 9,600,000 크레딧 입니다.\n'
+        '5. 10,000,000 크레딧 상품의 수수료는 4.50%인 450,000 크레딧 입니다.'
+        ' 순 이익은 9,550,000 크레딧 입니다.\n'
+        '6. 10,000,000 크레딧 상품의 수수료는 5.00%인 500,000 크레딧 입니다. '
+        '순 이익은 9,500,000 크레딧 입니다.\n'
+        '7. 10,000,000 크레딧 상품의 수수료는 5.50%인 550,000 크레딧 입니다. '
+        '순 이익은 9,450,000 크레딧 입니다.\n'
+        '8. 10,000,000 크레딧 상품의 수수료는 6.00%인 600,000 크레딧 입니다. '
+        '순 이익은 9,400,000 크레딧 입니다.'
+        '\n9. 10,000,000 크레딧 상품의 수수료는 6.50%인 650,000 크레딧 입니다. '
+        '순 이익은 9,350,000 크레딧 입니다.'
+        '\n10. 10,000,000 크레딧 상품의 수수료는 7.00%인 700,000 크레딧 입니다. '
+        '순 이익은 9,300,000 크레딧 입니다.'
+        '\n11. 10,000,000 크레딧 상품의 수수료는 7.50%인 750,000 크레딧 입니다. '
+        '순 이익은 9,250,000 크레딧 입니다.'
+        '\n12. 10,000,000 크레딧 상품의 수수료는 8.00%인 800,000 크레딧 입니다. '
+        '순 이익은 9,200,000 크레딧 입니다.'
+        '\n13. 10,000,000 크레딧 상품의 수수료는 8.50%인 850,000 크레딧 입니다. '
+        '순 이익은 9,150,000 크레딧 입니다.'
+        '\n14. 10,000,000 크레딧 상품의 수수료는 9.00%인 900,000 크레딧 입니다. '
+        '순 이익은 9,100,000 크레딧 입니다.'
+        '\n15. 10,000,000 크레딧 상품의 수수료는 9.50%인 950,000 크레딧 입니다. '
+        '순 이익은 9,050,000 크레딧 입니다.'
+        '\n16. 10,000,000 크레딧 상품의 수수료는 10.00%인 1,000,000 크레딧 입니다. '
+        '순 이익은 9,000,000 크레딧 입니다.'
+        '\n17. 10,000,000 크레딧 상품의 수수료는 10.00%인 1,000,000 크레딧 입니다. '
+        '순 이익은 9,000,000 크레딧 입니다.'
+        '\n18. 10,000,000 크레딧 상품의 수수료는 10.00%인 1,000,000 크레딧 입니다. '
+        '순 이익은 9,000,000 크레딧 입니다.'
+        '\n19. 10,000,000 크레딧 상품의 수수료는 10.00%인 1,000,000 크레딧 입니다. '
+        '순 이익은 9,000,000 크레딧 입니다.'
+        '\n20. 10,000,000 크레딧 상품의 수수료는 10.00%인 1,000,000 크레딧 입니다. '
+        '순 이익은 9,000,000 크레딧 입니다.'
+        '\n\n총 판매액 180,500,000 크레딧 중 수수료로 13,465,000 크레잇이 빠져서'
+        ' 총 순 이익은 167,035,000 크레딧 입니다.'
     )
+    assert said.data['thread_ts'] == '1234.5678'
 
-    await black_market_charge(bot, event, decimal.Decimal(20_000_000))
+    await black_market_charge(bot, event, prices + [Decimal(100)])
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 20,000,000 크레딧 상품의 수수료는 4.00%인 800,000 크레딧 입니다.'
-        ' 순 이익은 19,200,000 크레딧 입니다.'
-    )
-
-    await black_market_charge(bot, event, decimal.Decimal(30_000_000))
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 30,000,000 크레딧 상품의 수수료는 4.50%인 1,350,000 크레딧 입니다.'
-        ' 순 이익은 28,650,000 크레딧 입니다.'
-    )
-
-    await black_market_charge(bot, event, decimal.Decimal(140_000_000))
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 140,000,000 크레딧 상품의 수수료는 10.00%인'
-        ' 14,000,000 크레딧 입니다. 순 이익은 126,000,000 크레딧 입니다.'
-    )
-
-    await black_market_charge(bot, event, decimal.Decimal(150_000_000))
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 150,000,000 크레딧 상품의 수수료는 10.00%인'
-        ' 15,000,000 크레딧 입니다. 순 이익은 135,000,000 크레딧 입니다.'
-    )
-
-    await black_market_charge(bot, event, decimal.Decimal(500_000_000))
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':closers: 500,000,000 크레딧 상품의 수수료는 10.00%인'
-        ' 50,000,000 크레딧 입니다. 순 이익은 450,000,000 크레딧 입니다.'
-    )
+    assert said.data['text'] == '거래 건수는 1개 이상 20개 이하로 해주세요!'
