@@ -69,7 +69,7 @@ async def nyaa(
     keyword: str
 ):
     """
-    냐토렌트에서 주어진 검색어로 파일을 찾습니다
+    일본 서브컬처 토렌트 사이트 냐토렌트에서 주어진 검색어로 파일을 찾습니다
 
     `{PREFIX}nyaa boku no` (`boku no` 로 시작하는 Anime-Raw를 검색)
     `{PREFIX}nyaa --category=Audio boku no` (`boku no`로 시작하는 Audio를 검색)
@@ -82,6 +82,8 @@ async def nyaa(
     * 종이: Literature, Literature-ET, Literature-NET, Literature-Raw
 
     (ET: English-translated, NET: Non-English-translated)
+
+    Fab(sukebei) 검색은 지원하지 않습니다.
 
     """
 
