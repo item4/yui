@@ -1,14 +1,10 @@
-import functools
-from concurrent.futures import ProcessPoolExecutor
 from typing import List
-
-from lxml.html import fromstring
 
 from ..api import Attachment
 from ..box import box
+from ..browser import new_page
 from ..command import argument, option
 from ..event import Message
-from ..session import client_session
 from ..transform import choice
 
 
@@ -28,37 +24,34 @@ CATEGORIES = {
     'literature-raw': '3_3',
 }
 
+SCRIPT = '''
+(tr_list) => {
+    return tr_list.map((tr) => {
+        const title_td = tr.children[1];
+        const last_el_index = title_td.children.length - 1;
+        const title = title_td.children[last_el_index].textContent;
+        const page_url = tr.children[1].children[0].href;
+        const download_url = tr.children[2].children[0].href;
+        const size = tr.children[3].textContent;
+        const uploaded_at = tr.children[4].textContent;
+        const seeders = tr.children[5].textContent;
+        const leechers = tr.children[6].textContent;
+        const downloads = tr.children[7].textContent;
+        return {
+            title,
+            page_url,
+            download_url,
+            size,
+            uploaded_at,
+            seeders,
+            leechers,
+            downloads,
+        }
+    });
+}
+'''
 
-def parse(html: str) -> List[Attachment]:
-    h = fromstring(html)
-
-    tr_list = h.cssselect('table.torrent-list > tbody > tr')
-
-    attachments: List[Attachment] = []
-
-    if tr_list:
-        for i in range(min(5, len(tr_list))):
-            tr = tr_list[i]
-
-            title = tr[1][-1].text_content().strip()
-            download_link = 'https://nyaa.si{}'.format(tr[2][0].get('href'))
-
-            attachments.append(Attachment(
-                fallback='{} - {}'.format(title, download_link),
-                title=title,
-                title_link='https://nyaa.si{}'.format(tr[1][0].get('href')),
-                text=('{} / {} / {}\n'
-                      'Seeders: {} / Leechers: {} / Downloads: {}').format(
-                    download_link,
-                    tr[3].text_content().strip(),
-                    tr[4].text_content().strip(),
-                    tr[5].text_content().strip(),
-                    tr[6].text_content().strip(),
-                    tr[7].text_content().strip(),
-                )
-            ))
-
-    return attachments
+SELECTOR = 'table.torrent-list > tbody > tr'
 
 
 @box.command('nyaa', ['냐'])
@@ -72,7 +65,6 @@ def parse(html: str) -> List[Attachment]:
 async def nyaa(
     bot,
     event: Message,
-    loop,
     category_name: str,
     keyword: str
 ):
@@ -95,24 +87,39 @@ async def nyaa(
 
     category = CATEGORIES[category_name]
 
-    html = None
-
     url = 'https://nyaa.si/?f=0&c={}&q={}'.format(category, keyword)
 
-    async with client_session() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+    async with new_page(bot) as page:
+        await page.goto(url)
+        await page.waitForSelector(SELECTOR)
+        result = await page.querySelectorAllEval(SELECTOR, SCRIPT)
 
-    ex = ProcessPoolExecutor()
-    attachments = await loop.run_in_executor(ex, functools.partial(
-        parse,
-        html,
-    ))
+    attachments: List[Attachment] = []
+
+    for i in range(min(7, len(result))):
+        row = result[i]
+
+        attachments.append(Attachment(
+            fallback='{} - {}'.format(row['title'], row['download_url']),
+            title=row['title'],
+            title_link=row['page_url'],
+            text=('{} / {} / {}\n'
+                  'Seeders: {} / Leechers: {} / Downloads: {}').format(
+                row['download_url'],
+                row['size'],
+                row['uploaded_at'],
+                row['seeders'],
+                row['leechers'],
+                row['downloads'],
+            )
+        ))
+
     if attachments:
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
             as_user=True,
+            thread_ts=event.ts,
         )
     else:
         await bot.say(
