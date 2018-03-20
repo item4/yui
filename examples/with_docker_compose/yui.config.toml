@@ -49,6 +49,8 @@ GOOGLE_API_KEY = 'GOOGLE_API_KEY'
 
 AQI_API_TOKEN = 'AQI_API_TOKEN'
 
+WEBSOCKETDEBUGGERURL = 'http://headless_chrome:9222/json/version'
+
 [CHANNELS]
 general = '_general'
 game = 'game'

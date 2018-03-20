@@ -145,6 +145,20 @@ AQI_API_TOKEN
   You can get this value on `this request form`_
   **Do not** upload this value on VCS.
 
+WEBSOCKETDEBUGGERURL
+  string. URL of Chrome websocket debugger.
+  This is using for access webpage via headless Chrome for bypass anti-DDoS tool such as CloudFlare.
+
+  .. code-block:: toml
+
+     WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
+
+  You can launch headless chrome by this command.
+
+  .. code-block:: bash
+
+     docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN justinribeiro/chrome-headless --headless --disable-gpu --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
+
 LOGGING
   complex dict. Python logging config.
   You can use default setting.

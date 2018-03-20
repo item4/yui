@@ -8,8 +8,10 @@ version: '3'
         - YUI_CONFIG_FILE_PATH=data/yui.config.toml
       depends_on:
         - db
+        - headless_chrome
       links:
         - db
+        - headless_chrome
       command: ./data/run.sh
     db:
       image: postgres:alpine
@@ -22,3 +24,7 @@ version: '3'
         interval: 3s
         timeout: 1s
         retries: 10
+    headless_chrome:
+      image: justinribeiro/chrome-headless
+      cap_add:
+      - SYS_ADMIN
