@@ -7,12 +7,20 @@ import pytest
 
 import ujson
 
+from yui.api import Attachment
 from yui.event import create_event
-from yui.handlers.book import book
+from yui.handlers.book import (
+    PACKTPUB_URL,
+    auto_packtpub_dotd,
+    book,
+    packtpub_dotd,
+    parse_packtpub_dotd,
+)
+from yui.session import client_session
 
 from ..util import FakeBot
 
-result_pattern_re = re.compile(
+book_result_pattern_re = re.compile(
     r'키워드 \*(.+?)\* \(으\)로 네이버 책 DB 검색 결과,'
     r' 총 \d+(?:,\d{3})*개의 결과가 나왔어요\.'
     r' 그 중 상위 (\d+)개를 보여드릴게요!'
@@ -55,7 +63,7 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    match = result_pattern_re.match(said.data['text'])
+    match = book_result_pattern_re.match(said.data['text'])
     assert match
     assert match.group(1) == '소드 아트 온라인'
     assert len(ujson.loads(said.data['attachments'])) == int(match.group(2))
@@ -71,3 +79,58 @@ async def test_book(fx_naver_client_id, fx_naver_client_secret):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '검색 결과가 없어요!'
+
+
+@pytest.mark.asyncio
+async def test_parse_packtpub_dotd():
+    async with client_session() as session:
+        async with session.get(PACKTPUB_URL) as resp:
+            html = await resp.text()
+
+    result = parse_packtpub_dotd(html)
+
+    assert isinstance(result, Attachment)
+    assert result.fallback.endswith(PACKTPUB_URL)
+    assert result.title
+    assert result.title_link == PACKTPUB_URL
+    assert result.image_url.startswith('https://')
+
+
+@pytest.mark.asyncio
+async def test_packtpub_dotd(event_loop):
+    bot = FakeBot()
+    bot.add_channel('C1', 'general')
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+    })
+
+    await packtpub_dotd(bot, event, event_loop)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
+    assert said.data['attachments']
+
+
+@pytest.mark.asyncio
+async def test_auto_packtpub_dotd(event_loop):
+    assert auto_packtpub_dotd._crontab.spec == '5 9 * * *'
+
+    config = AttrDict({
+        'CHANNELS': {
+            'general': 'general',
+        },
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+
+    await auto_packtpub_dotd(bot, event_loop)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
+    assert said.data['attachments']
