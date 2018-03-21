@@ -381,6 +381,7 @@ class Crontab:
         """Use as decorator"""
 
         self.func = func
+        setattr(func, '_crontab', self)
 
         return func
 
