@@ -93,7 +93,19 @@ async def test_parse_packtpub_dotd():
     assert result.fallback.endswith(PACKTPUB_URL)
     assert result.title
     assert result.title_link == PACKTPUB_URL
+    assert result.text == (
+        f'오늘의 Packt Book Deal of The Day: {result.title} - {PACKTPUB_URL}'
+    )
     assert result.image_url.startswith('https://')
+
+
+@pytest.mark.asyncio
+async def test_no_parse_packtpub_dotd():
+    html = '<!doctype html>\n<html></html>'
+
+    result = parse_packtpub_dotd(html)
+
+    assert result is None
 
 
 @pytest.mark.asyncio
@@ -113,6 +125,26 @@ async def test_packtpub_dotd(event_loop):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
     assert said.data['attachments']
+
+
+@pytest.mark.asyncio
+async def test_no_packtpub_dotd(event_loop, response_mock):
+    response_mock.get(PACKTPUB_URL, body='<!doctype html>\n<html></html>')
+
+    bot = FakeBot()
+    bot.add_channel('C1', 'general')
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+    })
+
+    await packtpub_dotd(bot, event, event_loop)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '오늘은 PACKT Book의 무료책이 없는 것 같아요'
 
 
 @pytest.mark.asyncio

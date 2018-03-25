@@ -1,7 +1,8 @@
 import functools
 from concurrent.futures import ProcessPoolExecutor
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
+from urllib.parse import quote
 
 from lxml.html import fromstring
 
@@ -17,15 +18,24 @@ from ..util import strip_tags
 PACKTPUB_URL = 'https://www.packtpub.com/packt/offers/free-learning'
 
 
-def parse_packtpub_dotd(html: str) -> Attachment:
+def parse_packtpub_dotd(html: str) -> Optional[Attachment]:
     h = fromstring(html)
-    title = h.cssselect('.dotd-title')[0].text_content().strip()
-    image_url = h.cssselect('.imagecache-dotd_main_image')[0].get('src')
+    title_els = h.cssselect('.dotd-title')
+    image_els = h.cssselect('.imagecache-dotd_main_image')
+    if not title_els:
+        return None
+    title: str = title_els[0].text_content().strip()
+    image_url = None
+    if image_els:
+        image_url = 'https:' + '/'.join(
+            map(quote, image_els[0].get('src').split('/'))
+        )
     return Attachment(
         fallback=f'{title} - {PACKTPUB_URL}',
         title=title,
         title_link=PACKTPUB_URL,
-        image_url=f'https:{image_url}',
+        text=f'오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}',
+        image_url=image_url,
     )
 
 
@@ -105,12 +115,18 @@ async def say_packtpub_dotd(bot, channel, loop):
         functools.partial(parse_packtpub_dotd, html),
     )
 
-    await bot.api.chat.postMessage(
-        channel=channel,
-        text='오늘자 PACKT Book의 무료책이에요!',
-        attachments=[attachment],
-        as_user=True,
-    )
+    if attachment is None:
+        await bot.say(
+            channel,
+            '오늘은 PACKT Book의 무료책이 없는 것 같아요'
+        )
+    else:
+        await bot.api.chat.postMessage(
+            channel=channel,
+            text='오늘자 PACKT Book의 무료책이에요!',
+            attachments=[attachment],
+            as_user=True,
+        )
 
 
 @box.command('무료책', ['freebook'])
