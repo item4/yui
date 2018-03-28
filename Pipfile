@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-aiohttp = "*"
+aiohttp = {version = ">=3.1.1"}
 cchardet = "*"
 aiodns = "*"
 async-timeout = "*"
@@ -33,7 +33,7 @@ mypy = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
-aioresponses = "*"
+aioresponses = {version = ">=0.4.1"}
 "flake8" = "*"
 "flake8-import-order" = "*"
 codecov = "*"
