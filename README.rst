@@ -20,6 +20,7 @@ Who do use YUI?
 
 * item4(owner)'s private slack
 * 9xd
+* xnuk fan club
 
 
 Requirements
