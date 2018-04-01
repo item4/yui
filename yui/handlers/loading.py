@@ -57,7 +57,7 @@ async def auto_weekend_end(bot):
 
     if holiday:
         says = [
-            '월' * random.randint(10, 30) + '…' + ''.join(
+            '월' * random.randint(5, 15) + '…' + ''.join(
                 random.choice(['?', '!']) for x in range(random.randint(3, 10))
             ),
             '(하지만 {}이라 쉬는 날이었다고 한다)'.format(holiday)
@@ -66,12 +66,12 @@ async def auto_weekend_end(bot):
             await monday_dog_say(text=say)
     else:
         says = [
-            '월' * random.randint(30, 120),
+            '월' * random.randint(50, 180),
             ''.join(
                 '월' * random.randint(1, 6) + '!' * random.randint(1, 3)
                 for x in range(40)
             ),
-            '월요일' * random.randint(10, 40),
+            '월요일' * random.randint(20, 50),
         ]
         random.shuffle(says)
 
