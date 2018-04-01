@@ -1,4 +1,5 @@
 import random
+import re
 from typing import List
 
 from ..box import box
@@ -51,10 +52,12 @@ RESPONSES: List[str] = [
 ]
 icon_url = 'https://i.imgur.com/uDcouRb.jpg'
 
+SUMMON_PREFIX = re.compile('^마법의?\s*소라고[둥동]님?\s*')
+
 
 @box.on(Message)
 async def magic_conch(bot, event: Message):
-    if event.text.startswith('마법의 소라고둥님'):
+    if SUMMON_PREFIX.search(event.text):
         await bot.api.chat.postMessage(
             channel=event.channel,
             text=random.choice(RESPONSES),

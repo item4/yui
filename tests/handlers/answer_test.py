@@ -38,3 +38,16 @@ async def test_magic_conch():
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] in RESPONSES
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+        'text': '마법 소라고동'
+    })
+
+    assert not await magic_conch(bot, event)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] in RESPONSES
