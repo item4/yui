@@ -370,10 +370,10 @@
         },
         "sqlalchemy": {
             "hashes": [
-                "sha256:249000654107a420a40200f1e0b555a79dfd4eff235b2ff60bc77714bd045f2d"
+                "sha256:7cb00cc9b9f92ef8b4391c8a2051f81eeafefe32d63c6b395fd51401e9a39edb"
             ],
             "index": "pypi",
-            "version": "==1.2.5"
+            "version": "==1.2.6"
         },
         "sqlalchemy-utils": {
             "hashes": [
