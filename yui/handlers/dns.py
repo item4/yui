@@ -86,42 +86,45 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
 
     """
 
-    await bot.say(
+    chat = await bot.say(
         event.channel,
         f'{domain} 에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
     )
-    tasks = []
-    if server_list:
-        for ip in server_list:
-            tasks.append(query_custom(domain, ip))
-    else:
-        for server in SERVER_LIST:
-            tasks.append(query(domain, server))
+    if chat['ok']:
+        tasks = []
+        if server_list:
+            for ip in server_list:
+                tasks.append(query_custom(domain, ip))
+        else:
+            for server in SERVER_LIST:
+                tasks.append(query(domain, server))
 
-    ok, no = await asyncio.wait(tasks)
+        ok, no = await asyncio.wait(tasks)
 
-    result: List[Result] = []
-    for r in ok:
-        try:
-            res = r.result()
-        except aiohttp.client_exceptions.ClientConnectionError:
-            continue
-        result.append(Result(
-            server_name=res['server_name'],
-            server_ip=res['server_ip'],
-            a_record=res['A'],
-        ))
+        result: List[Result] = []
+        for r in ok:
+            try:
+                res = r.result()
+            except aiohttp.client_exceptions.ClientConnectionError:
+                continue
+            result.append(Result(
+                server_name=res['server_name'],
+                server_ip=res['server_ip'],
+                a_record=res['A'],
+            ))
 
-    result.sort(key=lambda x: x.server_name)
+        result.sort(key=lambda x: x.server_name)
 
-    await bot.say(
-        event.channel,
-        '{} 에 대해 {} DNS에 조회한 결과에요!\n\n{}'.format(
-            domain,
-            '주어진' if server_list else '많이 쓰이는',
-            '\n'.join(
-                f'{r.server_name}({r.server_ip}): {r.a_record}'
-                for r in result
-            )
+        await bot.say(
+            event.channel,
+            '<@{}>, {} 에 대해 {} DNS에 조회한 결과에요!\n\n{}'.format(
+                event.user.id,
+                domain,
+                '주어진' if server_list else '많이 쓰이는',
+                '\n'.join(
+                    f'{r.server_name}({r.server_ip}): {r.a_record}'
+                    for r in result
+                )
+            ),
+            thread_ts=chat['ts'],
         )
-    )
