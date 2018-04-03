@@ -40,7 +40,8 @@ SERVER_LIST: List[DNSServer] = [
     DNSServer('Google', '8.8.8.8'),
     DNSServer('Google', '8.8.4.4'),
     DNSServer('OpenDNS', '208.67.222.222'),
-    DNSServer('OpenDNS', '208.67.220.220'),
+    DNSServer('CloudFlare', '1.1.1.1'),
+    DNSServer('CloudFlare', '1.0.0.1'),
 ]
 
 
