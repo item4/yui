@@ -185,7 +185,14 @@ async def test_cat_command(response_mock):
 
     await cat(bot, event, 0.001)
 
-    assert not bot.call_queue
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'].startswith('아직 쿨타임이다냥! ')
+    assert said.data['text'].endswith(' 이후로 다시 시도해보라냥!')
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '냥짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/hIBJUMI.jpg'
 
     event = create_event({
         'type': 'message',
@@ -264,7 +271,14 @@ async def test_dog_command(response_mock):
 
     await dog(bot, event, 0.001)
 
-    assert not bot.call_queue
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'].startswith('아직 쿨타임이다멍! ')
+    assert said.data['text'].endswith(' 이후로 다시 시도해보라멍!')
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '멍짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/Q9FKplO.png'
 
     event = create_event({
         'type': 'message',

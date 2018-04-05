@@ -78,18 +78,18 @@ async def cat(bot, event: Message, timeout: float):
     if event.channel.id in cat.last_call:
         last_call = cat.last_call[event.channel.id]
         if isinstance(event.channel, DirectMessageChannel):
-            if now_dt - last_call < DM_COOLTIME:
-                fine = last_call + DM_COOLTIME
-                await cat_say(
-                    text=(
-                        f"아직 쿨타임이다냥! "
-                        f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
-                    )
-                )
-                return
+            cooltime = DM_COOLTIME
         else:
-            if now_dt - last_call < DEFAULT_COOLTIME:
-                return
+            cooltime = DEFAULT_COOLTIME
+        if now_dt - last_call < cooltime:
+            fine = last_call + cooltime
+            await cat_say(
+                text=(
+                    f"아직 쿨타임이다냥! "
+                    f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
+                )
+            )
+            return
 
     cat.last_call[event.channel.id] = now_dt
 
@@ -122,18 +122,18 @@ async def dog(bot, event: Message, timeout: float):
     if event.channel.id in dog.last_call:
         last_call = dog.last_call[event.channel.id]
         if isinstance(event.channel, DirectMessageChannel):
-            if now_dt - last_call < DM_COOLTIME:
-                fine = last_call + DM_COOLTIME
-                await dog_say(
-                    text=(
-                        f"아직 쿨타임이다멍! "
-                        f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
-                    )
-                )
-                return
+            cooltime = DM_COOLTIME
         else:
-            if now_dt - last_call < DEFAULT_COOLTIME:
-                return
+            cooltime = DEFAULT_COOLTIME
+        if now_dt - last_call < cooltime:
+            fine = last_call + cooltime
+            await dog_say(
+                text=(
+                    f"아직 쿨타임이다멍! "
+                    f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
+                )
+            )
+            return
 
     dog.last_call[event.channel.id] = now_dt
 
