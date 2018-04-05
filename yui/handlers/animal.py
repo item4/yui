@@ -134,7 +134,7 @@ async def dog(bot, event: Message, timeout: float):
                 )
             )
             return
-            
+
     dog.last_call[event.channel.id] = now_dt
 
     url = await get_dog_image_url(timeout)
