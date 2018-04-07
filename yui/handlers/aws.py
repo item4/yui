@@ -1,7 +1,7 @@
 import datetime
 import functools
 from concurrent.futures import ProcessPoolExecutor
-from typing import List, Optional
+from typing import List
 
 import aiohttp
 
@@ -18,7 +18,7 @@ from ..transform import choice
 from ..util import truncate_table
 
 
-def parse(html: str) -> Optional[List[AWS]]:
+def parse(html: str) -> List[AWS]:
     h = lxml.html.fromstring(html)
     try:
         observed_at = datetime.datetime.strptime(
@@ -29,7 +29,7 @@ def parse(html: str) -> Optional[List[AWS]]:
             '%Y.%m.%d.%H:%M'
         )
     except IndexError:
-        return None
+        return []
 
     records: List[AWS] = []
     for tr in h.cssselect('table table tr')[1:]:
@@ -138,7 +138,7 @@ async def crawl(bot, loop, sess):
         html
     ))
 
-    if records is None:
+    if not records:
         return
 
     truncate_table(engine, AWS)
