@@ -38,62 +38,76 @@ def parse(html: str) -> Optional[List[AWS]]:
         record.name = tr[1].text_content().replace('*', '').strip()
         try:
             record.height = int(tr[2].text_content()[:-1])
-        except ValueError:
+        except (ValueError, IndexError):
             record.height = -1
 
-        record.is_raining = {'○': False, '●': True}.get(
-            tr[3].text_content()
-        )
+        try:
+            record.is_raining = {'○': False, '●': True}.get(
+                tr[3].text_content()
+            )
+        except IndexError:
+            pass
         try:
             record.rain15 = float(tr[4].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
         try:
             record.rain60 = float(tr[5].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
         try:
             record.rain6h = float(tr[6].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
         try:
             record.rain12h = float(tr[7].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
         try:
             record.rainday = float(tr[8].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
         try:
             record.temperature = float(tr[9].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
-        wind_direction1 = tr[11].text_content().strip()
-        record.wind_direction1 = wind_direction1 if wind_direction1 else None
+        try:
+            wind_d1 = tr[11].text_content().strip()
+        except IndexError:
+            pass
+        else:
+            record.wind_direction1 = wind_d1 if wind_d1 else None
         try:
             record.wind_speed1 = float(tr[12].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
-        wind_d10 = tr[14].text_content().strip()
-        record.wind_direction10 = wind_d10 if wind_d10 else None
+        try:
+            wind_d10 = tr[14].text_content().strip()
+        except IndexError:
+            pass
+        else:
+            record.wind_direction10 = wind_d10 if wind_d10 else None
         try:
             record.wind_speed10 = float(tr[15].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
         try:
             record.humidity = int(tr[16].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
         try:
             record.pressure = float(tr[17].text_content())
-        except ValueError:
+        except (ValueError, IndexError):
             pass
 
-        record.location = tr[18].text_content()
+        try:
+            record.location = tr[18].text_content()
+        except IndexError:
+            pass
 
         record.observed_at = observed_at
 
