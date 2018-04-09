@@ -1202,6 +1202,13 @@ class Evaluator:
     def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
+    def visit_unaryop(self, node: _ast.UnaryOp):  # op, operand
+        return {
+            _ast.Invert: lambda x: ~x,
+            _ast.UAdd: lambda x: +x,
+            _ast.USub: lambda x: -x,
+        }.get(node.op.__class__)(self._run(node.operand))
+
 
 def calculate(
     expr: str,

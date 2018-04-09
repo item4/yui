@@ -147,3 +147,10 @@ def test_tuple():
     assert e.run('(1, 1, 2, 3, 3)') == (1, 1, 2, 3, 3)
     e.run('a = (1, 1, 2, 3, 3)')
     assert e.symbol_table['a'] == (1, 1, 2, 3, 3)
+
+
+def test_unaryop():
+    e = Evaluator()
+    assert e.run('~100') == ~100
+    assert e.run('+100') == +100
+    assert e.run('-100') == -100
