@@ -48,6 +48,13 @@ def test_boolop():
     assert e.run('True or False') == (True or False)
 
 
+def test_bytes():
+    e = Evaluator()
+    assert e.run('b"asdf"') == b'asdf'
+    e.run('a = b"asdf"')
+    assert e.symbol_table['a'] == b'asdf'
+
+
 def test_classdef():
     e = Evaluator()
     err = 'Defining new class via def syntax is not allowed'

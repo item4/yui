@@ -1100,6 +1100,9 @@ class Evaluator:
             return functools.reduce(op, map(self._run, node.values), True)
         raise NotImplementedError
 
+    def visit_bytes(self, node: _ast.Bytes):  # s,
+        return node.s
+
     def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
         out = True
