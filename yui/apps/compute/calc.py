@@ -12,6 +12,8 @@ import statistics
 from collections.abc import Iterable
 from typing import Any, Dict
 
+import _ast
+
 from async_timeout import timeout
 
 from ...bot import Bot
@@ -1013,6 +1015,168 @@ class Validator(ast.NodeVisitor):
 
     def visit_Continue(self, node):  # noqa
         raise SyntaxError('continue stmt is not permitted.')
+
+
+class Evaluator:
+
+    def __init__(self) -> None:
+        self.symbol_table = {}
+        self.last_dump = None
+
+    def run(self, expr: str):
+        h = ast.parse(expr, mode='exec')
+        self.last_dump = ast.dump(h)
+        return self._run(h)
+
+    def _run(self, node):
+        return getattr(
+            self,
+            f'visit_{node.__class__.__name__.lower()}',
+            self.no_impl,
+        )(node)
+
+    def assign(self, node, val):
+        cls = node.__class__
+
+        if cls == _ast.Name:
+            self.symbol_table[node.id] = val
+        elif cls in (_ast.Tuple, _ast.List):
+            if len(val) == len(node.elts):
+                for telem, tval in zip(node.elts, val):
+                    self.assign(telem, tval)
+            else:
+                raise ValueError('too many values to unpack')
+
+    def delete(self, node):
+        cls = node.__class__
+
+        if cls == _ast.Name:
+            del self.symbol_table[node.id]
+
+    def no_impl(self, node):
+        raise NotImplementedError
+
+    def visit_assign(self, node: _ast.Assign):  # targets, value
+        value = self._run(node.value)
+        for tnode in node.targets:
+            self.assign(tnode, value)
+        return
+
+    def visit_binop(self, node: _ast.BinOp):  # left, op, right
+        op = {
+            _ast.Add: lambda a, b: a + b,
+            _ast.BitAnd: lambda a, b: a & b,
+            _ast.BitOr: lambda a, b: a | b,
+            _ast.BitXor: lambda a, b: a ^ b,
+            _ast.Div: lambda a, b: a / b,
+            _ast.FloorDiv: lambda a, b: a // b,
+            _ast.LShift: lambda a, b: a << b,
+            _ast.MatMult: lambda a, b: a @ b,
+            _ast.Mult: lambda a, b: a * b,
+            _ast.Mod: lambda a, b: a % b,
+            _ast.Pow: lambda a, b: a ** b,
+            _ast.RShift: lambda a, b: a >> b,
+            _ast.Sub: lambda a, b: a - b,
+        }.get(node.op.__class__)
+
+        if op:
+            return op(self._run(node.left), self._run(node.right))
+        raise NotImplementedError
+
+    def visit_boolop(self, node: _ast.BoolOp):  # left, op, right
+        op = {
+            _ast.And: lambda a, b: a and b,
+            _ast.Or: lambda a, b: a or b,
+        }.get(node.op.__class__)
+
+        if op:
+            return functools.reduce(op, map(self._run, node.values), True)
+        raise NotImplementedError
+
+    def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
+        lval = self._run(node.left)
+        out = True
+        for op, rnode in zip(node.ops, node.comparators):
+            rval = self._run(rnode)
+            out = {
+                _ast.Eq: lambda a, b: a == b,
+                _ast.Gt: lambda a, b: a > b,
+                _ast.GtE: lambda a, b: a >= b,
+                _ast.In: lambda a, b: a in b,
+                _ast.Is: lambda a, b: a is b,
+                _ast.IsNot: lambda a, b: a is not b,
+                _ast.Lt: lambda a, b: a < b,
+                _ast.LtE: lambda a, b: a <= b,
+                _ast.NotEq: lambda a, b: a != b,
+                _ast.NotIn: lambda a, b: a not in b,
+            }.get(op.__class__)(lval, rval)
+            lval = rval
+        return out
+
+    def visit_dict(self, node: _ast.Dict):  # keys, values
+        return {
+            self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
+        }
+
+    def visit_expr(self, node: _ast.Expr):  # value,
+        return self._run(node.value)
+
+    def visit_list(self, node: _ast.List):  # elts, ctx
+        return [self._run(x) for x in node.elts]
+
+    def visit_listcomp(self, node: _ast.ListComp):  # elt, generators
+        result = []
+        current_gen = node.generators[0]
+        if current_gen.__class__ == _ast.comprehension:
+            for val in self._run(current_gen.iter):
+                self.assign(current_gen.target, val)
+                add = True
+                for cond in current_gen.ifs:
+                    add = add and self._run(cond)
+                if add:
+                    if len(node.generators) > 1:
+                        r = self.visit_listcomp(
+                            _ast.ListComp(
+                                elt=node.elt,
+                                generators=node.generators[1:],
+                            )
+                        )
+                        result += r
+                    else:
+                        r = self._run(node.elt)
+                        result.append(r)
+                self.delete(current_gen.target)
+        return result
+
+    def visit_module(self, node: _ast.Module):  # body,
+        last = None
+        for body_node in node.body:
+            last = self._run(body_node)
+        return last
+
+    def visit_name(self, node: _ast.Name):  # id, ctx
+        ctx = node.ctx.__class__
+        if ctx in (_ast.Param, _ast.Del):
+            return node.id
+        else:
+            if node.id in self.symbol_table:
+                return self.symbol_table[node.id]
+            raise NameError()
+
+    def visit_nameconstant(self, node: _ast.NameConstant):  # value,
+        return node.value
+
+    def visit_num(self, node: _ast.Num):  # n,
+        return node.n
+
+    def visit_set(self, node: _ast.Set):  # elts,
+        return {self._run(x) for x in node.elts}
+
+    def visit_str(self, node: _ast.Str):  # s,
+        return node.s
+
+    def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
+        return tuple(self._run(x) for x in node.elts)
 
 
 def calculate(
