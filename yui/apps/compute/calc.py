@@ -1131,6 +1131,9 @@ class Evaluator:
             self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
         }
 
+    def visit_ellipsis(self, node: _ast.Ellipsis):
+        return Ellipsis
+
     def visit_expr(self, node: _ast.Expr):  # value,
         return self._run(node.value)
 

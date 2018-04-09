@@ -87,6 +87,11 @@ def test_dict():
     assert e.symbol_table['a'] == {1: 111, 2: 222}
 
 
+def test_ellipsis():
+    e = Evaluator()
+    assert e.run('...') == Ellipsis
+
+
 def test_expr():
     e = Evaluator()
     assert e.run('True') is True
