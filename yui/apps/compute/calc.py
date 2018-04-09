@@ -1017,6 +1017,10 @@ class Validator(ast.NodeVisitor):
         raise SyntaxError('continue stmt is not permitted.')
 
 
+class BadSyntax(Exception):
+    pass
+
+
 class Evaluator:
 
     def __init__(self) -> None:
@@ -1055,6 +1059,9 @@ class Evaluator:
 
     def no_impl(self, node):
         raise NotImplementedError
+
+    def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
+        raise BadSyntax('Defining new coroutine via def syntax is not allowed')
 
     def visit_assign(self, node: _ast.Assign):  # targets, value
         value = self._run(node.value)
@@ -1113,6 +1120,9 @@ class Evaluator:
             lval = rval
         return out
 
+    def visit_classdef(self, node: _ast.ClassDef):
+        raise BadSyntax('Defining new class via def syntax is not allowed')
+
     def visit_dict(self, node: _ast.Dict):  # keys, values
         return {
             self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
@@ -1120,6 +1130,13 @@ class Evaluator:
 
     def visit_expr(self, node: _ast.Expr):  # value,
         return self._run(node.value)
+
+    def visit_functiondef(self, node: _ast.FunctionDef):
+        raise BadSyntax('Defining new function via def syntax is not allowed')
+
+    def visit_lambda(self, node: _ast.Lambda):
+        raise BadSyntax('Defining new function via lambda'
+                        ' syntax is not allowed')
 
     def visit_list(self, node: _ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]

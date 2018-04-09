@@ -1,6 +1,18 @@
 import pytest
 
-from yui.handlers.calc import Evaluator
+from yui.handlers.calc import BadSyntax, Evaluator
+
+
+def test_asyncfunctiondef():
+    e = Evaluator()
+    err = 'Defining new coroutine via def syntax is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+async def abc():
+    pass
+
+''')
+    assert 'abc' not in e.symbol_table
 
 
 def test_assign():
@@ -36,6 +48,18 @@ def test_boolop():
     assert e.run('True or False') == (True or False)
 
 
+def test_classdef():
+    e = Evaluator()
+    err = 'Defining new class via def syntax is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+class ABCD:
+    pass
+
+''')
+    assert 'ABCD' not in e.symbol_table
+
+
 def test_compare():
     e = Evaluator()
     assert e.run('1 == 2') == (1 == 2)
@@ -67,6 +91,25 @@ def test_expr():
     assert e.run('(1, 2, 3, 3)') == (1, 2, 3, 3)
     assert e.run('{1, 2, 3, 3}') == {1, 2, 3}
     assert e.run('{1: 111, 2: 222}') == {1: 111, 2: 222}
+
+
+def test_functiondef():
+    e = Evaluator()
+    err = 'Defining new function via def syntax is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+def abc():
+    pass
+
+''')
+    assert 'abc' not in e.symbol_table
+
+
+def test_lambda():
+    e = Evaluator()
+    err = 'Defining new function via lambda syntax is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('lambda x: x*2')
 
 
 def test_list():
