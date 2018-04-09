@@ -1172,6 +1172,30 @@ class Evaluator:
     def visit_set(self, node: _ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
 
+    def visit_setcomp(self, node: _ast.SetComp):  # elt, generators
+        result = set()
+        current_gen = node.generators[0]
+        if current_gen.__class__ == _ast.comprehension:
+            for val in self._run(current_gen.iter):
+                self.assign(current_gen.target, val)
+                add = True
+                for cond in current_gen.ifs:
+                    add = add and self._run(cond)
+                if add:
+                    if len(node.generators) > 1:
+                        r = self.visit_setcomp(
+                            _ast.SetComp(
+                                elt=node.elt,
+                                generators=node.generators[1:],
+                            )
+                        )
+                        result |= r
+                    else:
+                        r = self._run(node.elt)
+                        result.add(r)
+                self.delete(current_gen.target)
+        return result
+
     def visit_str(self, node: _ast.Str):  # s,
         return node.s
 

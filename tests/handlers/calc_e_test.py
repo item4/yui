@@ -119,6 +119,22 @@ def test_set():
     assert e.symbol_table['a'] == {1, 2, 3}
 
 
+def test_setcomp():
+    e = Evaluator()
+    assert e.run('{x ** 2 for x in [1, 2, 3, 3]}') == {1, 4, 9}
+    assert 'x' not in e.symbol_table
+    assert e.run('{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}') == (
+        {x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
+    )
+    assert 'x' not in e.symbol_table
+    assert 'y' not in e.symbol_table
+    assert e.run('{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}') == (
+        {y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}
+    )
+    assert 'x' not in e.symbol_table
+    assert 'y' not in e.symbol_table
+
+
 def test_str():
     e = Evaluator()
     assert e.run('"asdf"') == 'asdf'
