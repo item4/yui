@@ -1231,6 +1231,7 @@ class Evaluator:
     def visit_unaryop(self, node: _ast.UnaryOp):  # op, operand
         return {
             _ast.Invert: lambda x: ~x,
+            _ast.Not: lambda x: not x,
             _ast.UAdd: lambda x: +x,
             _ast.USub: lambda x: -x,
         }.get(node.op.__class__)(self._run(node.operand))

@@ -218,5 +218,6 @@ def test_tuple():
 def test_unaryop():
     e = Evaluator()
     assert e.run('~100') == ~100
+    assert e.run('not 100') == (not 100)
     assert e.run('+100') == +100
     assert e.run('-100') == -100
