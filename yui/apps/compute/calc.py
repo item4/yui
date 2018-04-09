@@ -1134,6 +1134,12 @@ class Evaluator:
     def visit_functiondef(self, node: _ast.FunctionDef):
         raise BadSyntax('Defining new function via def syntax is not allowed')
 
+    def visit_import(self, node: _ast.Import):
+        raise BadSyntax('You can not import anything')
+
+    def visit_importfrom(self, node: _ast.ImportFrom):
+        raise BadSyntax('You can not import anything')
+
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax('Defining new function via lambda'
                         ' syntax is not allowed')

@@ -105,6 +105,22 @@ def abc():
     assert 'abc' not in e.symbol_table
 
 
+def test_import():
+    e = Evaluator()
+    err = 'You can not import anything'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('import sys')
+    assert 'sys' not in e.symbol_table
+
+
+def test_importfrom():
+    e = Evaluator()
+    err = 'You can not import anything'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('from os import path')
+    assert 'path' not in e.symbol_table
+
+
 def test_lambda():
     e = Evaluator()
     err = 'Defining new function via lambda syntax is not allowed'
