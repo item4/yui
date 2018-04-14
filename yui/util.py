@@ -17,6 +17,7 @@ __all__ = (
     'bold',
     'bool2str',
     'code',
+    'fuzzy_korean_partial_ratio',
     'fuzzy_korean_ratio',
     'get_count',
     'italics',
@@ -91,12 +92,30 @@ def normalize_korean_nfc_to_nfd(value: str) -> str:
 
 
 def fuzzy_korean_ratio(str1: str, str2: str) -> int:
-    """Fuzzy Search with Korean."""
+    """Fuzzy Search with Korean"""
 
     return fuzz.ratio(
         normalize_korean_nfc_to_nfd(str1),
         normalize_korean_nfc_to_nfd(str2),
     )
+
+
+def fuzzy_korean_partial_ratio(str1: str, str2: str) -> int:
+    """Fuzzy Search with partial Korean strings"""
+
+    nstr1 = normalize_korean_nfc_to_nfd(str1)
+    nstr2 = normalize_korean_nfc_to_nfd(str2)
+
+    len1 = len(nstr1)
+    len2 = len(nstr2)
+
+    ratio = fuzz.ratio(nstr1, nstr2)
+    if len1 * 1.2 < len2 or len2 * 1.2 < len1:
+        return int(
+            (fuzz.partial_ratio(nstr1, nstr2) * 2 + ratio) / 3
+        )
+    else:
+        return ratio
 
 
 def bold(text: str) -> str:

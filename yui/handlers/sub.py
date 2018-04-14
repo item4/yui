@@ -15,7 +15,7 @@ from ..box import box
 from ..command import argument, option
 from ..event import Message
 from ..session import client_session
-from ..util import fuzzy_korean_ratio
+from ..util import fuzzy_korean_partial_ratio
 
 
 class Sub(NamedTuple):
@@ -185,7 +185,10 @@ async def search_on_air(bot, event: Message, title: str):
 
     for ani in ohli_data:
         ani['ratio'] = max(
-            fuzzy_korean_ratio(title.lower(), a['s'].lower()) for a in ani['n']
+            fuzzy_korean_partial_ratio(
+                title.lower(),
+                a['s'].lower(),
+            ) for a in ani['n']
         )
 
     ohli_data.sort(key=lambda x: x['ratio'], reverse=True)
@@ -195,7 +198,7 @@ async def search_on_air(bot, event: Message, title: str):
     if ohli_ani_result['ratio'] > 10:
         for ani in anissia_data:
             ani['ratio'] = max(
-                fuzzy_korean_ratio(a['s'].lower(), ani['s'].lower())
+                fuzzy_korean_partial_ratio(a['s'].lower(), ani['s'].lower())
                 for a in ohli_ani_result['n']
             )
 
