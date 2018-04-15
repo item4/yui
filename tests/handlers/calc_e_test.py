@@ -117,6 +117,57 @@ def abc():
     assert 'abc' not in e.symbol_table
 
 
+def test_if():
+    e = Evaluator()
+    e.symbol_table['a'] = 1
+    e.run('''
+if a == 1:
+    a = 2
+    b = 3
+''')
+    assert e.symbol_table['a'] == 2
+    assert e.symbol_table['b'] == 3
+
+    e.run('''
+if a == 1:
+    a = 2
+    b = 3
+    z = 1
+else:
+    a = 3
+    b = 4
+    c = 5
+''')
+    assert e.symbol_table['a'] == 3
+    assert e.symbol_table['b'] == 4
+    assert e.symbol_table['c'] == 5
+    assert 'z' not in e.symbol_table
+
+    e.run('''
+if a == 1:
+    a = 2
+    b = 3
+    z = 1
+elif a == 3:
+    d = 4
+    e = 5
+    f = 6
+else:
+    a = 3
+    b = 4
+    c = 5
+    y = 7
+''')
+    assert e.symbol_table['a'] == 3
+    assert e.symbol_table['b'] == 4
+    assert e.symbol_table['c'] == 5
+    assert e.symbol_table['d'] == 4
+    assert e.symbol_table['e'] == 5
+    assert e.symbol_table['f'] == 6
+    assert 'y' not in e.symbol_table
+    assert 'z' not in e.symbol_table
+
+
 def test_ifexp():
     e = Evaluator()
     assert e.run('100 if 1 == 1 else 200') == 100

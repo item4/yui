@@ -1155,6 +1155,12 @@ class Evaluator:
     def visit_functiondef(self, node: _ast.FunctionDef):
         raise BadSyntax('Defining new function via def syntax is not allowed')
 
+    def visit_if(self, node: _ast.If):  # test, body, orelse
+        stmts = node.body if self._run(node.test) else node.orelse
+        for stmt in stmts:
+            self._run(stmt)
+        return
+
     def visit_ifexp(self, node: _ast.IfExp):  # test, body, orelse
         return self._run(node.body if self._run(node.test) else node.orelse)
 
