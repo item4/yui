@@ -10,7 +10,7 @@ import operator
 import random
 import statistics
 from collections.abc import Iterable
-from typing import Any, Dict
+from typing import Any, Callable, Dict, List, Set
 
 import _ast
 
@@ -1021,11 +1021,50 @@ class BadSyntax(Exception):
     pass
 
 
+BINOP_TABLE: Dict[Any, Callable[[Any, Any], Any]] = {
+    _ast.Add: lambda a, b: a + b,
+    _ast.BitAnd: lambda a, b: a & b,
+    _ast.BitOr: lambda a, b: a | b,
+    _ast.BitXor: lambda a, b: a ^ b,
+    _ast.Div: lambda a, b: a / b,
+    _ast.FloorDiv: lambda a, b: a // b,
+    _ast.LShift: lambda a, b: a << b,
+    _ast.MatMult: lambda a, b: a @ b,
+    _ast.Mult: lambda a, b: a * b,
+    _ast.Mod: lambda a, b: a % b,
+    _ast.Pow: lambda a, b: a ** b,
+    _ast.RShift: lambda a, b: a >> b,
+    _ast.Sub: lambda a, b: a - b,
+}
+BOOLOP_TABLE: Dict[Any, Callable[[Any, Any], Any]] = {
+    _ast.And: lambda a, b: a and b,
+    _ast.Or: lambda a, b: a or b,
+}
+COMPARE_TABLE: Dict[Any, Callable[[Any, Any], bool]] = {
+    _ast.Eq: lambda a, b: a == b,
+    _ast.Gt: lambda a, b: a > b,
+    _ast.GtE: lambda a, b: a >= b,
+    _ast.In: lambda a, b: a in b,
+    _ast.Is: lambda a, b: a is b,
+    _ast.IsNot: lambda a, b: a is not b,
+    _ast.Lt: lambda a, b: a < b,
+    _ast.LtE: lambda a, b: a <= b,
+    _ast.NotEq: lambda a, b: a != b,
+    _ast.NotIn: lambda a, b: a not in b,
+}
+UNARYOP_TABLE: Dict[Any, Callable[[Any], Any]] = {
+    _ast.Invert: lambda x: ~x,
+    _ast.Not: lambda x: not x,
+    _ast.UAdd: lambda x: +x,
+    _ast.USub: lambda x: -x,
+}
+
+
 class Evaluator:
 
     def __init__(self) -> None:
-        self.symbol_table = {}
-        self.last_dump = None
+        self.symbol_table: Dict[str, Any] = {}
+        self.last_dump: str = None
 
     def run(self, expr: str):
         h = ast.parse(expr, mode='exec')
@@ -1070,31 +1109,14 @@ class Evaluator:
         return
 
     def visit_binop(self, node: _ast.BinOp):  # left, op, right
-        op = {
-            _ast.Add: lambda a, b: a + b,
-            _ast.BitAnd: lambda a, b: a & b,
-            _ast.BitOr: lambda a, b: a | b,
-            _ast.BitXor: lambda a, b: a ^ b,
-            _ast.Div: lambda a, b: a / b,
-            _ast.FloorDiv: lambda a, b: a // b,
-            _ast.LShift: lambda a, b: a << b,
-            _ast.MatMult: lambda a, b: a @ b,
-            _ast.Mult: lambda a, b: a * b,
-            _ast.Mod: lambda a, b: a % b,
-            _ast.Pow: lambda a, b: a ** b,
-            _ast.RShift: lambda a, b: a >> b,
-            _ast.Sub: lambda a, b: a - b,
-        }.get(node.op.__class__)
+        op = BINOP_TABLE.get(node.op.__class__)
 
         if op:
             return op(self._run(node.left), self._run(node.right))
         raise NotImplementedError
 
     def visit_boolop(self, node: _ast.BoolOp):  # left, op, right
-        op = {
-            _ast.And: lambda a, b: a and b,
-            _ast.Or: lambda a, b: a or b,
-        }.get(node.op.__class__)
+        op = BOOLOP_TABLE.get(node.op.__class__)
 
         if op:
             return functools.reduce(op, map(self._run, node.values), True)
@@ -1108,19 +1130,12 @@ class Evaluator:
         out = True
         for op, rnode in zip(node.ops, node.comparators):
             rval = self._run(rnode)
-            out = {
-                _ast.Eq: lambda a, b: a == b,
-                _ast.Gt: lambda a, b: a > b,
-                _ast.GtE: lambda a, b: a >= b,
-                _ast.In: lambda a, b: a in b,
-                _ast.Is: lambda a, b: a is b,
-                _ast.IsNot: lambda a, b: a is not b,
-                _ast.Lt: lambda a, b: a < b,
-                _ast.LtE: lambda a, b: a <= b,
-                _ast.NotEq: lambda a, b: a != b,
-                _ast.NotIn: lambda a, b: a not in b,
-            }.get(op.__class__)(lval, rval)
-            lval = rval
+            cmpop = COMPARE_TABLE.get(op.__class__)
+            if cmpop:
+                out = cmpop(lval, rval)
+                lval = rval
+            else:
+                raise NotImplementedError
         return out
 
     def visit_classdef(self, node: _ast.ClassDef):
@@ -1154,7 +1169,7 @@ class Evaluator:
         return [self._run(x) for x in node.elts]
 
     def visit_listcomp(self, node: _ast.ListComp):  # elt, generators
-        result = []
+        result: List[Any] = []
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
             for val in self._run(current_gen.iter):
@@ -1202,7 +1217,7 @@ class Evaluator:
         return {self._run(x) for x in node.elts}
 
     def visit_setcomp(self, node: _ast.SetComp):  # elt, generators
-        result = set()
+        result: Set[Any] = set()
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
             for val in self._run(current_gen.iter):
@@ -1232,12 +1247,10 @@ class Evaluator:
         return tuple(self._run(x) for x in node.elts)
 
     def visit_unaryop(self, node: _ast.UnaryOp):  # op, operand
-        return {
-            _ast.Invert: lambda x: ~x,
-            _ast.Not: lambda x: not x,
-            _ast.UAdd: lambda x: +x,
-            _ast.USub: lambda x: -x,
-        }.get(node.op.__class__)(self._run(node.operand))
+        op = UNARYOP_TABLE.get(node.op.__class__)
+        if op:
+            return op(self._run(node.operand))
+        raise NotImplementedError
 
 
 def calculate(
