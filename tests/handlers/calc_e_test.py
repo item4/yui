@@ -117,6 +117,12 @@ def abc():
     assert 'abc' not in e.symbol_table
 
 
+def test_ifexp():
+    e = Evaluator()
+    assert e.run('100 if 1 == 1 else 200') == 100
+    assert e.run('100 if 1 == 2 else 200') == 200
+
+
 def test_import():
     e = Evaluator()
     err = 'You can not import anything'
