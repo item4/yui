@@ -1,4 +1,7 @@
+import datetime
 from typing import List
+
+import tzlocal
 
 from ..api import Attachment
 from ..box import box
@@ -33,7 +36,7 @@ SCRIPT = '''
         const page_url = tr.children[1].children[0].href;
         const download_url = tr.children[2].children[0].href;
         const size = tr.children[3].textContent;
-        const uploaded_at = tr.children[4].textContent;
+        const uploaded_at = Number(tr.children[4].dataset.timestamp);
         const seeders = tr.children[5].textContent;
         const leechers = tr.children[6].textContent;
         const downloads = tr.children[7].textContent;
@@ -109,7 +112,10 @@ async def nyaa(
                   'Seeders: {} / Leechers: {} / Downloads: {}').format(
                 row['download_url'],
                 row['size'],
-                row['uploaded_at'],
+                datetime.datetime.fromtimestamp(
+                    row['uploaded_at'],
+                    tz=tzlocal.get_localzone(),
+                ).strftime('%Y-%m-%d %H:%M'),
                 row['seeders'],
                 row['leechers'],
                 row['downloads'],
