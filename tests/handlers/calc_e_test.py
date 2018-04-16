@@ -3,6 +3,14 @@ import pytest
 from yui.handlers.calc import BadSyntax, Evaluator
 
 
+class GetItemSpy:
+    def __init__(self):
+        self.queue = []
+
+    def __getitem__(self, item):
+        self.queue.append(item)
+
+
 def test_asyncfunctiondef():
     e = Evaluator()
     err = 'Defining new coroutine via def syntax is not allowed'
@@ -105,6 +113,21 @@ def test_expr():
     assert e.run('{1: 111, 2: 222}') == {1: 111, 2: 222}
 
 
+def test_extslice():
+    e = Evaluator()
+    e.symbol_table['obj'] = GetItemSpy()
+    e.run('obj[1,2:3,4]')
+    es = e.symbol_table['obj'].queue.pop()
+    assert isinstance(es, tuple)
+    assert len(es) == 3
+    assert es[0] == 1
+    assert isinstance(es[1], slice)
+    assert es[1].start == 2
+    assert es[1].stop == 3
+    assert es[1].step is None
+    assert es[2] == 4
+
+
 def test_functiondef():
     e = Evaluator()
     err = 'Defining new function via def syntax is not allowed'
@@ -190,6 +213,17 @@ def test_importfrom():
     assert 'path' not in e.symbol_table
 
 
+def test_index():
+    e = Evaluator()
+    e.symbol_table['obj'] = GetItemSpy()
+    e.run('obj[10]')
+    index = e.symbol_table['obj'].queue.pop()
+    assert index == 10
+    e.run('obj["asdf"]')
+    index = e.symbol_table['obj'].queue.pop()
+    assert index == 'asdf'
+
+
 def test_lambda():
     e = Evaluator()
     err = 'Defining new function via lambda syntax is not allowed'
@@ -263,11 +297,39 @@ def test_setcomp():
     assert 'y' not in e.symbol_table
 
 
+def test_slice():
+    e = Evaluator()
+    e.symbol_table['obj'] = GetItemSpy()
+    e.run('obj[10:20:3]')
+    s = e.symbol_table['obj'].queue.pop()
+    assert isinstance(s, slice)
+    assert s.start == 10
+    assert s.stop == 20
+    assert s.step == 3
+
+
 def test_str():
     e = Evaluator()
     assert e.run('"asdf"') == 'asdf'
     e.run('a = "asdf"')
     assert e.symbol_table['a'] == 'asdf'
+
+
+def test_subscript():
+    e = Evaluator()
+    assert e.run('[10, 20, 30][0]') == 10
+    assert e.run('(100, 200, 300)[0]') == 100
+    assert e.run('{"a": 1000, "b": 2000, "c": 3000}["a"]') == 1000
+    e.run('a = [10, 20, 30][0]')
+    e.run('b = (100, 200, 300)[0]')
+    e.run('c = {"a": 1000, "b": 2000, "c": 3000}["a"]')
+    assert e.symbol_table['a'] == 10
+    assert e.symbol_table['b'] == 100
+    assert e.symbol_table['c'] == 1000
+    e.symbol_table['l'] = [11, 22, 33]
+    assert e.run('l[2]') == 33
+    e.run('l[2] = 44')
+    assert e.symbol_table['l'] == [11, 22, 44]
 
 
 def test_tuple():

@@ -1072,6 +1072,9 @@ class Evaluator:
         return self._run(h)
 
     def _run(self, node):
+        if node is None:
+            return None
+
         return getattr(
             self,
             f'visit_{node.__class__.__name__.lower()}',
@@ -1089,6 +1092,15 @@ class Evaluator:
                     self.assign(telem, tval)
             else:
                 raise ValueError('too many values to unpack')
+        elif cls == _ast.Subscript:
+            sym = self._run(node.value)
+            xslice = self._run(node.slice)
+            if isinstance(node.slice, _ast.Index):
+                sym[xslice] = val
+            elif isinstance(node.slice, _ast.Slice):
+                sym[slice(xslice.start, xslice.stop)] = val
+            elif isinstance(node.slice, _ast.ExtSlice):
+                sym[xslice] = val
 
     def delete(self, node):
         cls = node.__class__
@@ -1152,6 +1164,9 @@ class Evaluator:
     def visit_expr(self, node: _ast.Expr):  # value,
         return self._run(node.value)
 
+    def visit_extslice(self, node: _ast.ExtSlice):  # dims,
+        return tuple(self._run(x) for x in node.dims)
+
     def visit_functiondef(self, node: _ast.FunctionDef):
         raise BadSyntax('Defining new function via def syntax is not allowed')
 
@@ -1169,6 +1184,9 @@ class Evaluator:
 
     def visit_importfrom(self, node: _ast.ImportFrom):
         raise BadSyntax('You can not import anything')
+
+    def visit_index(self, node: _ast.Index):  # value,
+        return self._run(node.value)
 
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax('Defining new function via lambda'
@@ -1249,8 +1267,18 @@ class Evaluator:
                 self.delete(current_gen.target)
         return result
 
+    def visit_slice(self, node: _ast.Slice):  # lower, upper, step
+        return slice(
+            self._run(node.lower),
+            self._run(node.upper),
+            self._run(node.step),
+        )
+
     def visit_str(self, node: _ast.Str):  # s,
         return node.s
+
+    def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
+        return self._run(node.value)[self._run(node.slice)]
 
     def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
