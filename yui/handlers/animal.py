@@ -68,7 +68,7 @@ async def get_dog_image_url(timeout: float) -> str:
 
 
 @box.command('cat', ['냥', '야옹', '냐옹'])
-@option('--timeout', default=0.5)
+@option('--timeout', default=1.5)
 @static_vars(last_call={})
 async def cat(bot, event: Message, timeout: float):
     """
@@ -110,7 +110,7 @@ async def cat(bot, event: Message, timeout: float):
 
 
 @box.command('dog', ['멍'])
-@option('--timeout', default=0.5)
+@option('--timeout', default=1.5)
 @static_vars(last_call={})
 async def dog(bot, event: Message, timeout: float):
     """
