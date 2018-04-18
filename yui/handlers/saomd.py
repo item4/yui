@@ -40,9 +40,7 @@ class NoticeItem(NamedTuple):
     image_url: Optional[str]
 
 
-def parse(html: str) -> List[NoticeItem]:
-    base = 'https://api-defrag-ap.wrightflyer.net'
-
+def parse(base: str, html: str) -> List[NoticeItem]:
     h = fromstring(html)
     dls = h.cssselect('dl')
 
@@ -97,6 +95,7 @@ async def watch_notice(bot, loop, sess):
         ex = ProcessPoolExecutor()
         notice_items = await loop.run_in_executor(ex, functools.partial(
             parse,
+            '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server])),
             html,
         ))
 
