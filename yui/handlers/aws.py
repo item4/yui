@@ -34,8 +34,11 @@ def parse(html: str) -> List[AWS]:
     records: List[AWS] = []
     for tr in h.cssselect('table table tr')[1:]:
         record = AWS()
-        record.id = int(tr[0].text_content())
-        record.name = tr[1].text_content().replace('*', '').strip()
+        try:
+            record.id = int(tr[0].text_content())
+            record.name = tr[1].text_content().replace('*', '').strip()
+        except IndexError:
+            continue
         try:
             record.height = int(tr[2].text_content()[:-1])
         except (ValueError, IndexError):
