@@ -20,16 +20,16 @@ async def test_select_command():
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == 'cat'
+    assert said.data['text'] == '선택결과: cat'
 
     await select(bot, event, '/', 'cat/dog', seed)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == 'cat'
+    assert said.data['text'] == '선택결과: cat'
 
     await select(bot, event, ',', 'cat, dog', seed)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == 'cat'
+    assert said.data['text'] == '선택결과: cat'
