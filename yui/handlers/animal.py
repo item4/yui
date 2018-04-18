@@ -4,6 +4,8 @@ import functools
 
 import aiohttp
 
+import async_timeout
+
 from lxml import etree
 
 import ujson
@@ -23,18 +25,23 @@ async def get_cat_image_url(timeout: float) -> str:
     api_url = 'http://thecatapi.com/api/images/get'
     async with client_session() as session:
         while True:
-            async with session.get(api_url, params={
-                'format': 'xml',
-                'type': 'jpg,png',
-            }) as res:
-                xml_result = await res.read()
-                tree = etree.fromstring(xml_result)
-                url = tree.find('data/images/image/url').text
             try:
-                async with session.get(url, timeout=timeout) as res:
-                    async with res:
-                        if res.status == 200:
-                            return url
+                async with session.get(api_url, params={
+                    'format': 'xml',
+                    'type': 'jpg,png',
+                }) as res:
+                    xml_result = await res.read()
+                    tree = etree.fromstring(xml_result)
+                    url = tree.find('data/images/image/url').text
+            except aiohttp.client_exceptions.ServerDisconnectedError:
+                await asyncio.sleep(0.1)
+                continue
+            try:
+                async with async_timeout.timeout(timeout=timeout):
+                    async with session.get(url) as res:
+                        async with res:
+                            if res.status == 200:
+                                return url
             except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
                 continue
 
@@ -43,14 +50,19 @@ async def get_dog_image_url(timeout: float) -> str:
     api_url = 'https://dog.ceo/api/breeds/image/random'
     async with client_session() as session:
         while True:
-            async with session.get(api_url) as res:
-                data = await res.json(loads=ujson.loads)
-                url = data['message']
             try:
-                async with session.get(url, timeout=timeout) as res:
-                    async with res:
-                        if res.status == 200:
-                            return url
+                async with session.get(api_url) as res:
+                    data = await res.json(loads=ujson.loads)
+                    url = data['message']
+            except aiohttp.client_exceptions.ServerDisconnectedError:
+                await asyncio.sleep(0.1)
+                continue
+            try:
+                async with async_timeout.timeout(timeout=timeout):
+                    async with session.get(url) as res:
+                        async with res:
+                            if res.status == 200:
+                                return url
             except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
                 continue
 
