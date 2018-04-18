@@ -28,7 +28,7 @@ async def get_geometric_info_by_address(
     address: str,
     api_key: str,
 ) -> Tuple[str, float, float]:
-    url = f'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
         'address': address,
         'key': api_key,
     })
@@ -48,11 +48,14 @@ async def get_geometric_info_by_address(
     return full_address, lat, lng
 
 
-async def get_aqi(lat: float, lng: float, token: str) -> AQIRecord:
+async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
     async with client_session() as session:
         async with session.get(url) as res:
             data = await res.json(loads=ujson.loads)
+
+    if data is None:
+        return None
 
     return AQIRecord(
         aqi=data['data']['aqi'],
@@ -116,6 +119,14 @@ async def aqi(bot, event: Message, address: str):
         return
 
     result = await get_aqi(lat, lng, bot.config.AQI_API_TOKEN)
+
+    if result is None:
+        await bot.say(
+            event.channel,
+            '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
+        )
+        return
+
     time = datetime.datetime.fromtimestamp(result.time)
     time -= tzlocal.get_localzone().utcoffset(time)
 

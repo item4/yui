@@ -1,9 +1,12 @@
 import os
 import re
+from urllib.parse import urlencode
 
 from attrdict import AttrDict
 
 import pytest
+
+import ujson
 
 from yui.event import create_event
 from yui.handlers.aqi import (
@@ -79,6 +82,19 @@ async def test_get_aqi(fx_aqi_api_token):
     assert isinstance(result, AQIRecord)
 
 
+@pytest.mark.asyncio
+async def test_get_aqi_none(response_mock):
+    response_mock.get(
+        'https://api.waqi.info/feed/geo:123;456/?token=asdf',
+        body='null',
+        headers={'Content-Type': 'application/json'},
+    )
+
+    result = await get_aqi(123, 456, 'asdf')
+
+    assert result is None
+
+
 def test_get_aqi_description():
     assert get_aqi_description(0).startswith('좋음')
     assert get_aqi_description(50).startswith('좋음')
@@ -127,3 +143,58 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
+
+
+@pytest.mark.asyncio
+async def test_aqi_none(response_mock):
+    response_mock.get(
+        'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+            'address': '부천',
+            'key': 'qwer',
+        }),
+        body=ujson.dumps({
+            'results': [
+                {
+                    'address_components': [
+                        {
+                            'long_name': '부천',
+                        },
+                    ],
+                    'geometry': {
+                        'location': {
+                            'lat': 37.5034138,
+                            'lng': 126.7660309,
+                        },
+                    },
+                },
+            ],
+        }),
+        headers={'Content-Type': 'application/json'},
+    )
+    response_mock.get(
+        'https://api.waqi.info/feed/geo:37.5034138;126.7660309/?token=asdf',
+        body='null',
+        headers={'Content-Type': 'application/json'},
+    )
+
+    config = AttrDict({
+        'AQI_API_TOKEN': 'asdf',
+        'GOOGLE_API_KEY': 'qwer',
+    })
+    bot = FakeBot(config)
+    bot.add_channel('C1', 'general')
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+        'ts': '1234.5678',
+    })
+
+    await aqi(bot, event, '부천')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
+    )
