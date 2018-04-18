@@ -40,7 +40,7 @@ RESULT_TEMPLATE = {
             False: '*Expr*: `{expr}`\n*Result*\n```{result}{more}```',
         },
         False: {
-            True: '`{expr}` == Empry string',
+            True: '`{expr}` == Empty string',
             False: '`{expr}` == `{result}{more}`',
         }
     },
