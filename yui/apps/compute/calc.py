@@ -10,7 +10,7 @@ import operator
 import random
 import statistics
 from collections.abc import Iterable
-from typing import Any, Callable, Dict, List, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import _ast
 
@@ -1065,6 +1065,9 @@ class Evaluator:
     def __init__(self) -> None:
         self.symbol_table: Dict[str, Any] = {}
         self.last_dump: str = None
+        self.current_interrupt: Optional[
+            Union[_ast.Break, _ast.Continue]
+        ] = None
 
     def run(self, expr: str):
         h = ast.parse(expr, mode='exec')
@@ -1140,6 +1143,9 @@ class Evaluator:
     def visit_bytes(self, node: _ast.Bytes):  # s,
         return node.s
 
+    def visit_break(self, node: _ast.Break):
+        self.current_interrupt = node
+
     def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
         out = True
@@ -1152,6 +1158,9 @@ class Evaluator:
             else:
                 raise NotImplementedError
         return out
+
+    def visit_continue(self, node: _ast.Continue):
+        self.current_interrupt = node
 
     def visit_classdef(self, node: _ast.ClassDef):
         raise BadSyntax('Defining new class via def syntax is not allowed')
@@ -1198,6 +1207,22 @@ class Evaluator:
 
     def visit_functiondef(self, node: _ast.FunctionDef):
         raise BadSyntax('Defining new function via def syntax is not allowed')
+
+    def visit_for(self, node: _ast.For):  # target, iter, body, orelse
+        for val in self._run(node.iter):
+            self.assign(node.target, val)
+            self.current_interrupt = None
+            for tnode in node.body:
+                self._run(tnode)
+                if self.current_interrupt is not None:
+                    break
+            if isinstance(self.current_interrupt, _ast.Break):
+                break
+        else:
+            for tnode in node.orelse:
+                self._run(tnode)
+
+        self.current_interrupt = None
 
     def visit_if(self, node: _ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse

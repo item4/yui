@@ -56,6 +56,12 @@ def test_boolop():
     assert e.run('True or False') == (True or False)
 
 
+def test_break():
+    e = Evaluator()
+    e.run('break')
+    assert e.current_interrupt.__class__.__name__ == 'Break'
+
+
 def test_bytes():
     e = Evaluator()
     assert e.run('b"asdf"') == b'asdf'
@@ -86,6 +92,12 @@ def test_compare():
     assert e.run('1 is not 2') == (1 is not 2)
     assert e.run('3 < 2') == (3 < 2)
     assert e.run('3 <= 2') == (3 <= 2)
+
+
+def test_continue():
+    e = Evaluator()
+    e.run('continue')
+    assert e.current_interrupt.__class__.__name__ == 'Continue'
 
 
 def test_dict():
@@ -157,6 +169,50 @@ def abc():
 
 ''')
     assert 'abc' not in e.symbol_table
+
+
+def test_for():
+    total = 0
+    for x in [1, 2, 3, 4, 5, 6]:
+        total = total + x
+        if total > 10:
+            continue
+        total = total * 2
+    else:
+        total = total + 10000
+    e = Evaluator()
+    e.run('''
+total = 0
+for x in [1, 2, 3, 4, 5, 6]:
+    total = total + x
+    if total > 10:
+        continue
+    total = total * 2
+else:
+    total = total + 10000
+''')
+    assert e.symbol_table['total'] == total
+
+    total2 = 0
+    for x in [1, 2, 3, 4, 5, 6]:
+        total2 = total2 + x
+        if total2 > 10:
+            break
+        total2 = total2 * 2
+    else:
+        total2 = total2 + 10000
+
+    e.run('''
+total2 = 0
+for x in [1, 2, 3, 4, 5, 6]:
+    total2 = total2 + x
+    if total2 > 10:
+        break
+    total2 = total2 * 2
+else:
+    total2 = total2 + 10000
+''')
+    assert e.symbol_table['total2'] == total2
 
 
 def test_if():
