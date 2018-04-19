@@ -95,6 +95,25 @@ def test_dict():
     assert e.symbol_table['a'] == {1: 111, 2: 222}
 
 
+def test_dictcomp():
+    e = Evaluator()
+    assert e.run('{k+1: v**2 for k, v in {1: 1, 2: 11, 3: 111}}') == {
+        2: 1,
+        3: 121,
+        4: 12321,
+    }
+    assert 'k' not in e.symbol_table
+    assert 'v' not in e.symbol_table
+    e.run('a = {k+1: v**2 for k, v in {1: 1, 2: 11, 3: 111}}')
+    assert e.symbol_table['a'] == {
+        2: 1,
+        3: 121,
+        4: 12321,
+    }
+    assert 'k' not in e.symbol_table
+    assert 'v' not in e.symbol_table
+
+
 def test_ellipsis():
     e = Evaluator()
     assert e.run('...') == Ellipsis

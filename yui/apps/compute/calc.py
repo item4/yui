@@ -1107,6 +1107,9 @@ class Evaluator:
 
         if cls == _ast.Name:
             del self.symbol_table[node.id]
+        elif cls == _ast.Tuple:
+            for elt in node.elts:
+                self.delete(elt)
 
     def no_impl(self, node):
         raise NotImplementedError
@@ -1157,6 +1160,32 @@ class Evaluator:
         return {
             self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
         }
+
+    def visit_dictcomp(self, node: _ast.DictComp):  # key, value, generators
+        result: Dict[Any, Any] = {}
+        current_gen = node.generators[0]
+        if current_gen.__class__ == _ast.comprehension:
+            for val in self._run(current_gen.iter).items():
+                self.assign(current_gen.target, val)
+                add = True
+                for cond in current_gen.ifs:
+                    add = add and self._run(cond)
+                if add:
+                    if len(node.generators) > 1:
+                        r = self.visit_dictcomp(
+                            _ast.DictComp(
+                                key=node.key,
+                                value=node.value,
+                                generators=node.generators[1:],
+                            )
+                        )
+                        result.update(r)
+                    else:
+                        key = self._run(node.key)
+                        value = self._run(node.value)
+                        result[key] = value
+                self.delete(current_gen.target)
+        return result
 
     def visit_ellipsis(self, node: _ast.Ellipsis):
         return Ellipsis
