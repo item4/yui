@@ -53,20 +53,19 @@ async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
     async with client_session() as session:
         async with session.get(url) as res:
             data = await res.json(loads=ujson.loads)
-
-    if data is None:
+    try:
+        return AQIRecord(
+            aqi=data['data']['aqi'],
+            pm10=data['data']['iaqi'].get('pm10', {'v': None})['v'],
+            pm25=data['data']['iaqi'].get('pm25', {'v': None})['v'],
+            o3=data['data']['iaqi'].get('o3', {'v': None})['v'],
+            no2=data['data']['iaqi'].get('no2', {'v': None})['v'],
+            so2=data['data']['iaqi'].get('so2', {'v': None})['v'],
+            co=data['data']['iaqi'].get('co', {'v': None})['v'],
+            time=data['data']['time']['v'],
+        )
+    except TypeError:
         return None
-
-    return AQIRecord(
-        aqi=data['data']['aqi'],
-        pm10=data['data']['iaqi'].get('pm10', {'v': None})['v'],
-        pm25=data['data']['iaqi'].get('pm25', {'v': None})['v'],
-        o3=data['data']['iaqi'].get('o3', {'v': None})['v'],
-        no2=data['data']['iaqi'].get('no2', {'v': None})['v'],
-        so2=data['data']['iaqi'].get('so2', {'v': None})['v'],
-        co=data['data']['iaqi'].get('co', {'v': None})['v'],
-        time=data['data']['time']['v'],
-    )
 
 
 def get_aqi_description(aqi: int) -> str:
