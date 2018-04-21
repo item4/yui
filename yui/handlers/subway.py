@@ -83,7 +83,7 @@ async def refresh_db(sess):
 
 
 @box.command('지하철', ['전철', 'subway'])
-@option('--region', '-r', default='수도권',
+@option('--region', '-r', '--지역', default='수도권',
         transform_func=choice(list(REGION_TABLE.keys())),
         transform_error='지원되는 지역이 아니에요')
 @argument('start', count_error='출발역을 입력해주세요')
