@@ -82,21 +82,7 @@ async def refresh_db(sess):
     await asyncio.wait(tasks)
 
 
-@box.command('지하철', ['전철', 'subway'])
-@option('--region', '-r', '--지역', default='수도권',
-        transform_func=choice(list(REGION_TABLE.keys())),
-        transform_error='지원되는 지역이 아니에요')
-@argument('start', count_error='출발역을 입력해주세요')
-@argument('end', count_error='도착역을 입력해주세요')
-async def subway(bot, event: Message, sess, region: str, start: str, end: str):
-    """
-    전철/지하철의 예상 소요시간 및 탑승 루트 안내
-
-    `{PREFIX}지하철 부천 선릉` (수도권 전철 부천역에서 선릉역까지 가는 가장 빠른 방법 안내)
-    `{PREFIX}지하철 --region 부산 가야대 노포` (부산 전철 가야대역 출발 노포역 도착으로 조회)
-
-    """
-
+async def body(bot, event: Message, sess, region: str, start: str, end: str):
     service_region, api_version = REGION_TABLE[region]
 
     try:
@@ -196,7 +182,7 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
                         x['transfer']['exitTrainNumber'],
                         x['transfer']['exitDoorNumber'],
                     ) if 'transfer' in x else '',
-                ) for x in routes
+                    ) for x in routes
             )
             text += '\n\n'
 
@@ -209,9 +195,87 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
             math.ceil(summary['overallTravelTimeInSecondOnAverage']/60),
             summary['overallTravelDistanceInMeter']/1000,
             fare,
-        )
+            )
 
         await bot.say(
             event.channel,
             text
         )
+
+
+@box.command('지하철', ['전철', 'subway'])
+@option('--region', '-r', '--지역', default='수도권',
+        transform_func=choice(list(REGION_TABLE.keys())),
+        transform_error='지원되는 지역이 아니에요')
+@argument('start', count_error='출발역을 입력해주세요')
+@argument('end', count_error='도착역을 입력해주세요')
+async def subway(bot, event: Message, sess, region: str, start: str, end: str):
+    """
+    전철/지하철의 예상 소요시간 및 탑승 루트 안내
+
+    `{PREFIX}지하철 부천 선릉` (수도권 전철 부천역에서 선릉역까지 가는 가장 빠른 방법 안내)
+    `{PREFIX}지하철 --region 부산 가야대 노포` (부산 전철 가야대역 출발 노포역 도착으로 조회)
+
+    """
+
+    await body(bot, event, sess, region, start, end)
+
+
+@box.command('부산지하철', ['부산전철'])
+@argument('start', count_error='출발역을 입력해주세요')
+@argument('end', count_error='도착역을 입력해주세요')
+async def busan_subway(bot, event: Message, sess, start: str, end: str):
+    """
+    부산 전철/지하철의 예상 소요시간 및 탑승 루트 안내
+
+    `{PREFIX}지하철 --region 부산` 의 단축 명령어입니다.
+    자세한 도움말은 `{PREFIX}help 지하철` 을 참조해주세요.
+
+    """
+
+    await body(bot, event, sess, '부산', start, end)
+
+
+@box.command('대구지하철', ['대구전철'])
+@argument('start', count_error='출발역을 입력해주세요')
+@argument('end', count_error='도착역을 입력해주세요')
+async def daegu_subway(bot, event: Message, sess, start: str, end: str):
+    """
+    대구 전철/지하철의 예상 소요시간 및 탑승 루트 안내
+
+    `{PREFIX}지하철 --region 대구` 의 단축 명령어입니다.
+    자세한 도움말은 `{PREFIX}help 지하철` 을 참조해주세요.
+
+    """
+
+    await body(bot, event, sess, '대구', start, end)
+
+
+@box.command('광주지하철', ['광주전철'])
+@argument('start', count_error='출발역을 입력해주세요')
+@argument('end', count_error='도착역을 입력해주세요')
+async def gwangju_subway(bot, event: Message, sess, start: str, end: str):
+    """
+    광주 전철/지하철의 예상 소요시간 및 탑승 루트 안내
+
+    `{PREFIX}지하철 --region 광주` 의 단축 명령어입니다.
+    자세한 도움말은 `{PREFIX}help 지하철` 을 참조해주세요.
+
+    """
+
+    await body(bot, event, sess, '광주', start, end)
+
+
+@box.command('대전지하철', ['대전전철'])
+@argument('start', count_error='출발역을 입력해주세요')
+@argument('end', count_error='도착역을 입력해주세요')
+async def daejeon_subway(bot, event: Message, sess, start: str, end: str):
+    """
+    대전 전철/지하철의 예상 소요시간 및 탑승 루트 안내
+
+    `{PREFIX}지하철 --region 대전` 의 단축 명령어입니다.
+    자세한 도움말은 `{PREFIX}help 지하철` 을 참조해주세요.
+
+    """
+
+    await body(bot, event, sess, '대전', start, end)
