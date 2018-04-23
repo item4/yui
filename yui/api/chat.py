@@ -13,6 +13,31 @@ class Chat(Endpoint):
 
     name = 'chat'
 
+    async def delete(
+        self,
+        channel: Union[Channel, ChannelID],
+        ts: Ts,
+        as_user: Optional[bool]=None,
+        *,
+        token: Optional[str]=None,
+    ):
+        """https://api.slack.com/methods/chat.delete"""
+
+        if isinstance(channel, Channel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
+
+        params = {
+            'channel': channel_id,
+            'ts': ts,
+        }
+
+        if as_user is not None:
+            params['as_user'] = bool2str(as_user)
+
+        return await self._call('delete', params, token=token)
+
     async def postMessage(
         self,
         channel: Union[Channel, ChannelID],

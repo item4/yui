@@ -11,5 +11,11 @@ class Endpoint:
     def __init__(self, bot) -> None:
         self.bot = bot
 
-    async def _call(self, method: str, data: Dict[str, str]) -> Dict[str, Any]:
-        return await self.bot.call(f'{self.name}.{method}', data)
+    async def _call(
+        self,
+        method: str,
+        data: Dict[str, str],
+        *,
+        token=None,
+    ) -> Dict[str, Any]:
+        return await self.bot.call(f'{self.name}.{method}', data, token=token)
