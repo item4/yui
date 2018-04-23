@@ -118,9 +118,10 @@ async def cat(bot, event: Message, timeout: float):
 
     if random.randrange(3)%3 == 0:
         await lee_say()
-    else:
-        url = await get_cat_image_url(timeout)
-        await cat_say(text=url)
+        return
+
+    url = await get_cat_image_url(timeout)
+    await cat_say(text=url)
 
 
 @box.command('dog', ['멍'])
