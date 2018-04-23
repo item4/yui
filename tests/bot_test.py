@@ -55,9 +55,6 @@ async def test_call(response_mock):
         'https://slack.com/api/test11',
         body=ujson.dumps({
             'res': 'hello world!',
-            'data': {
-                'token': token,
-            },
         }),
         headers={'content-type': 'application/json'},
         status=200,
@@ -67,7 +64,6 @@ async def test_call(response_mock):
         body=ujson.dumps({
             'res': 'hello world!',
             'data': {
-                'token': token,
                 'extra': 'wow',
             },
         }),
@@ -77,15 +73,27 @@ async def test_call(response_mock):
 
     response_mock.post(
         'https://slack.com/api/test21',
-        body='',
+        body=ujson.dumps({
+            'error': 'aaa',
+        }),
         headers={'content-type': 'application/json'},
         status=404,
     )
     response_mock.post(
         'https://slack.com/api/test22',
-        body='',
+        body=ujson.dumps({
+            'error': 'aaa',
+        }),
         headers={'content-type': 'application/json'},
         status=404,
+    )
+    response_mock.post(
+        'https://slack.com/api/test3',
+        body=ujson.dumps({
+            'res': 'hello world!',
+        }),
+        headers={'content-type': 'application/json'},
+        status=200,
     )
 
     config = AttrDict(copy.deepcopy(DEFAULT))
@@ -98,17 +106,24 @@ async def test_call(response_mock):
 
     res = await bot.call('test11')
     assert res['res'] == 'hello world!'
-    assert res['data']['token'] == 'asdf1234'
 
     res = await bot.call('test12', data={'extra': 'wow'})
     assert res['res'] == 'hello world!'
     assert res['data']['extra'] == 'wow'
-    assert res['data']['token'] == 'asdf1234'
 
     with pytest.raises(APICallError) as e:
         await bot.call('test21')
     assert str(e.value) == 'fail to call test21 with None'
+    assert e.value.status_code == 404
+    assert e.value.result == {'error': 'aaa'}
+    assert e.value.headers['Content-Type'] == 'application/json'
 
     with pytest.raises(APICallError) as e:
         await bot.call('test22', data={'extra': 'wow'})
     assert str(e.value) == "fail to call test22 with {'extra': 'wow'}"
+    assert e.value.status_code == 404
+    assert e.value.result == {'error': 'aaa'}
+    assert e.value.headers['Content-Type'] == 'application/json'
+
+    res = await bot.call('test3', token=token)
+    assert res['res'] == 'hello world!'

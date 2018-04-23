@@ -49,6 +49,20 @@ class BotReconnect(Exception):
 class APICallError(Exception):
     """Fail to call API"""
 
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int=None,
+        result: Dict[str, Any]=None,
+        headers: Any=None,
+    ) -> None:
+        super(APICallError, self).__init__(message)
+
+        self.status_code = status_code
+        self.result = result
+        self.headers = headers
+
 
 class Bot:
     """Yui."""
@@ -165,24 +179,32 @@ class Bot:
     async def call(
         self,
         method: str,
-        data: Dict[str, str]=None
+        data: Dict[str, str]=None,
+        *,
+        token: str=None,
     ) -> Dict[str, Any]:
         """Call API methods."""
 
         async with client_session() as session:
             form = aiohttp.FormData(data or {})
-            form.add_field('token', self.config.TOKEN)
+            form.add_field('token', token or self.config.TOKEN)
             try:
                 async with session.post(
                     'https://slack.com/api/{}'.format(method),
                     data=form
                 ) as response:
+                    result = await response.json(loads=ujson.loads)
                     if response.status == 200:
-                        return await response.json(loads=ujson.loads)
+                        return result
                     else:
-                        raise APICallError('fail to call {} with {}'.format(
-                            method, data
-                        ))
+                        raise APICallError(
+                            'fail to call {} with {}'.format(
+                                method, data
+                            ),
+                            status_code=response.status,
+                            result=result,
+                            headers=response.headers,
+                        )
             except aiohttp.client_exceptions.ClientConnectorError:
                 raise APICallError('fail to call {} with {}'.format(
                     method, data

@@ -1,4 +1,4 @@
-from typing import Callable, Dict, List, NamedTuple
+from typing import Callable, Dict, List, NamedTuple, Optional
 
 from attrdict import AttrDict
 
@@ -19,6 +19,7 @@ class Call(NamedTuple):
 
     method: str
     data: Dict[str, str]
+    token: Optional[str]
 
 
 class FakeBot(Bot):
@@ -35,8 +36,14 @@ class FakeBot(Bot):
         self.responses: Dict[str, Callable] = {}
         self.config = config
 
-    async def call(self, method: str, data: Dict[str, str]=None):
-        self.call_queue.append(Call(method, data))
+    async def call(
+        self,
+        method: str,
+        data: Dict[str, str]=None,
+        *,
+        token: Optional[str]=None,
+    ):
+        self.call_queue.append(Call(method, data, token))
         callback = self.responses.get(method)
         if callback:
             return callback(data)
