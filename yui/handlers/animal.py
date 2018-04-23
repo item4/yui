@@ -10,6 +10,8 @@ from lxml import etree
 
 import ujson
 
+import random
+
 from ..box import box
 from ..command import option
 from ..event import Message
@@ -86,6 +88,15 @@ async def cat(bot, event: Message, timeout: float):
         icon_url='https://i.imgur.com/hIBJUMI.jpg',
     )
 
+    lee_say = functools.partial(
+        bot.api.chat.postMessage,
+        channel=event.channel,
+        as_user=False,
+        username='Lee의 요정',
+        icon_url='https://i.imgur.com/hIBJUMI.jpg',
+        text='https://pbs.twimg.com/profile_images/756486934747242496/Y0VaYlyr.jpg'
+    )
+
     now_dt = now()
     if event.channel.id in cat.last_call:
         last_call = cat.last_call[event.channel.id]
@@ -105,8 +116,11 @@ async def cat(bot, event: Message, timeout: float):
 
     cat.last_call[event.channel.id] = now_dt
 
-    url = await get_cat_image_url(timeout)
-    await cat_say(text=url)
+    if random.randrange(3)%3 == 0:
+        await lee_say()
+    else:
+        url = await get_cat_image_url(timeout)
+        await cat_say(text=url)
 
 
 @box.command('dog', ['멍'])
