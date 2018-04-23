@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..type import PublicChannel, PublicChannelID
+from ..type import PublicChannel, PublicChannelID, Ts
 
 __all__ = 'Channels',
 
@@ -10,6 +10,43 @@ __all__ = 'Channels',
 class Channels(Endpoint):
 
     name = 'channels'
+
+    async def history(
+        self,
+        channel: Union[PublicChannel, PublicChannelID],
+        count: Optional[int]=None,
+        inclusive: Optional[bool]=None,
+        latest: Optional[Ts]=None,
+        oldest: Optional[Ts]=None,
+        unreads: Optional[bool]=None,
+    ):
+        """https://api.slack.com/methods/channels.history"""
+
+        if isinstance(channel, PublicChannel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
+
+        params = {
+            'channel': channel_id,
+        }
+
+        if count is not None:
+            params['count'] = str(count)
+
+        if inclusive is not None:
+            params['inclusive'] = bool2str(inclusive)
+
+        if latest is not None:
+            params['latest'] = latest
+
+        if oldest is not None:
+            params['oldest'] = oldest
+
+        if unreads is not None:
+            params['unreads'] = bool2str(unreads)
+
+        return await self._call('history', params)
 
     async def info(
         self,
