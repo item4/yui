@@ -114,12 +114,12 @@ def parse_python(html: str) -> List[Tuple[str, str, str]]:
 
     result = []
     for a in a_tags:
-        code = None
+        code = ''
         code_el = a.cssselect('code.docutils.literal')
         name = INDEX_NUM_RE.sub('', a.text_content())
         link = f'https://docs.python.org/3/library/{a.get("href")}'
         if code_el:
-            code = code_el[0].text_content()
+            code = str(code_el[0].text_content())
         result.append((
             code,
             name,

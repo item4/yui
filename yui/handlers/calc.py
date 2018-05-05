@@ -208,15 +208,16 @@ async def calc_decimal(bot, loop, event: Message, raw: str):
 
 @box.command('=', ['calc'], subtype='message_changed')
 async def calc_decimal_on_change(bot, loop, event: Message, raw: str):
-    await body(
-        bot,
-        loop,
-        event.channel,
-        raw,
-        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
-        True,
-        event.message.ts,
-    )
+    if event.message:
+        await body(
+            bot,
+            loop,
+            event.channel,
+            raw,
+            '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+            True,
+            event.message.ts,
+        )
 
 
 @box.command('==')
@@ -242,15 +243,16 @@ async def calc_num(bot, loop, event: Message, raw: str):
 
 @box.command('==', subtype='message_changed')
 async def calc_num_on_change(bot, loop, event: Message, raw: str):
-    await body(
-        bot,
-        loop,
-        event.channel,
-        raw,
-        '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
-        False,
-        event.message.ts,
-    )
+    if event.message:
+        await body(
+            bot,
+            loop,
+            event.channel,
+            raw,
+            '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
+            False,
+            event.message.ts,
+        )
 
 
 class Decimal(decimal.Decimal):
@@ -408,7 +410,7 @@ FUNCTOOLS_CONTEXT = {
     'reduce': functools.reduce,
 }
 
-GLOBAL_CONTEXT = {
+GLOBAL_CONTEXT: Dict[str, Any] = {
     # builtin constant
     'True': True,
     'False': False,

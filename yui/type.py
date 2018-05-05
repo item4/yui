@@ -140,7 +140,7 @@ class ChannelPurpose(Namespace):
 class BotLinkedNamespace(Namespace):
     """Bot-linked namespace."""
 
-    _bot: '_Bot' = None
+    _bot: '_Bot'
 
 
 class FromID(BotLinkedNamespace):
@@ -229,7 +229,7 @@ class PublicChannel(Channel):
 class DirectMessageChannel(Channel):
 
     is_im: bool
-    user: UserID = None
+    user: UserID
     last_read: Ts
     is_open: bool
 

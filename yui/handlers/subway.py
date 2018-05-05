@@ -129,78 +129,80 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
             '도착역으로 지정하신 역 이름을 찾지 못하겠어요'
         )
         return
-    elif find_start['id'] == find_end['id']:
-        await bot.say(
-            event.channel,
-            '출발역과 도착역이 동일한 역이에요!'
-        )
-        return
-
-    ts = datetime.datetime.utcnow()
-    url = 'http://map.naver.com/pubtrans/searchSubwayPath.nhn?{}'.format(
-        urlencode({
-            'serviceRegion': service_region,
-            'fromStationID': find_start['id'],
-            'toStationID': find_end['id'],
-            'dayType': timestamp['result']['dateType'],
-            'presetTime': '3',
-            'departureDateTime': ts.strftime('%Y%m%d%H%M%S00'),
-            'caller': 'naver_map',
-            'output': 'json',
-            'searchType': '1',
-        })
-    )
-
-    async with client_session(headers=headers) as session:
-        async with session.get(url) as res:
-            result = ujson.loads(await res.text())
-
-    text = ''
-
-    subway_paths = result['result']['subwayPaths']
-
-    if subway_paths:
-        text += '{} {}에서 {} {}으로 가는 노선을 안내드릴게요!\n\n'.format(
-            find_start['logicalLine']['name'],
-            find_start['name'],
-            find_end['logicalLine']['name'],
-            find_end['name'],
-        )
-        for subway_path in subway_paths:
-            routes = subway_path['path']['routes']
-            text += '\n'.join(
-                TEMPLATE.format(
-                    x['stations'][0]['name'],
-                    x['logicalLine']['name'],
-                    x['logicalLine']['direction'],
-                    '급행' if x['isExpress'] else '',
-                    len(list(filter(
-                        lambda s: s['isNonstop'] == 0, x['stations']
-                    )))-1,
-                    x['stations'][-1]['name'],
-                    ' (빠른환승 {}-{})'.format(
-                        x['transfer']['exitTrainNumber'],
-                        x['transfer']['exitDoorNumber'],
-                    ) if 'transfer' in x else '',
-                    ) for x in routes
+    elif find_start and find_end:
+        if find_start['id'] == find_end['id']:
+            await bot.say(
+                event.channel,
+                '출발역과 도착역이 동일한 역이에요!'
             )
-            text += '\n\n'
+            return
 
-        summary = subway_path['summary']
-        fare = list(filter(
-            lambda f: f['paymentMethod'] == 1,
-            subway_path['fareInfos']
-        ))[0]['fare']
-        text += '소요시간: {:,}분 / 거리: {:,.2f}㎞ / 요금(카드 기준): {:,}원'.format(
-            math.ceil(summary['overallTravelTimeInSecondOnAverage']/60),
-            summary['overallTravelDistanceInMeter']/1000,
-            fare,
-            )
-
-        await bot.say(
-            event.channel,
-            text
+        ts = datetime.datetime.utcnow()
+        url = 'http://map.naver.com/pubtrans/searchSubwayPath.nhn?{}'.format(
+            urlencode({
+                'serviceRegion': service_region,
+                'fromStationID': find_start['id'],
+                'toStationID': find_end['id'],
+                'dayType': timestamp['result']['dateType'],
+                'presetTime': '3',
+                'departureDateTime': ts.strftime('%Y%m%d%H%M%S00'),
+                'caller': 'naver_map',
+                'output': 'json',
+                'searchType': '1',
+            })
         )
+
+        async with client_session(headers=headers) as session:
+            async with session.get(url) as res:
+                result = ujson.loads(await res.text())
+
+        text = ''
+
+        subway_paths = result['result']['subwayPaths']
+
+        if subway_paths:
+            text += '{} {}에서 {} {}으로 가는 노선을 안내드릴게요!\n\n'.format(
+                find_start['logicalLine']['name'],
+                find_start['name'],
+                find_end['logicalLine']['name'],
+                find_end['name'],
+            )
+            for subway_path in subway_paths:
+                routes = subway_path['path']['routes']
+                text += '\n'.join(
+                    TEMPLATE.format(
+                        x['stations'][0]['name'],
+                        x['logicalLine']['name'],
+                        x['logicalLine']['direction'],
+                        '급행' if x['isExpress'] else '',
+                        len(list(filter(
+                            lambda s: s['isNonstop'] == 0, x['stations']
+                        )))-1,
+                        x['stations'][-1]['name'],
+                        ' (빠른환승 {}-{})'.format(
+                            x['transfer']['exitTrainNumber'],
+                            x['transfer']['exitDoorNumber'],
+                        ) if 'transfer' in x else '',
+                        ) for x in routes
+                )
+                text += '\n\n'
+
+            summary = subway_path['summary']
+            fare = list(filter(
+                lambda f: f['paymentMethod'] == 1,
+                subway_path['fareInfos']
+            ))[0]['fare']
+            text += ('소요시간: {:,}분 / 거리: {:,.2f}㎞'
+                     ' / 요금(카드 기준): {:,}원').format(
+                math.ceil(summary['overallTravelTimeInSecondOnAverage']/60),
+                summary['overallTravelDistanceInMeter']/1000,
+                fare,
+                )
+
+            await bot.say(
+                event.channel,
+                text
+            )
 
 
 @box.command('지하철', ['전철', 'subway'])

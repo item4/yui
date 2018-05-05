@@ -57,7 +57,7 @@ class Attachment:
         self.footer_icon = footer_icon
         self.ts = ts
 
-    def add_field(self, title: str, value: str, short: Optional[bool]=False):
+    def add_field(self, title: str, value: str, short: bool=False):
         self.fields.append(Field(title, value, short))
 
     def __str__(self) -> str:

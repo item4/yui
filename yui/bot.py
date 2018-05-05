@@ -305,7 +305,7 @@ class Bot:
         event: Event
     ):
         func_params = handler.signature.parameters
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
 
         sess = Session(bind=self.config.DATABASE_ENGINE)
 
@@ -350,7 +350,8 @@ class Bot:
                 call, args = SPACE_RE.split(event.text, 1)
             except ValueError:
                 call = event.text
-        elif hasattr(event, 'message') and hasattr(event.message, 'text'):
+        elif hasattr(event, 'message') and event.message and \
+                hasattr(event.message, 'text'):
             try:
                 call, args = SPACE_RE.split(event.message.text, 1)
             except ValueError:

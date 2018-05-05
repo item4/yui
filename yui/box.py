@@ -218,7 +218,7 @@ class Handler:
                 )
 
             if argument.transform_func:
-                if argument.container_cls:
+                if argument.container_cls and r:
                     try:
                         r = argument.container_cls(
                             argument.transform_func(x)
@@ -363,6 +363,8 @@ class Box:
 class Crontab:
     """Crontab"""
 
+    func: Callable
+
     def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict) -> None:
         """Initialize."""
 
@@ -373,7 +375,6 @@ class Crontab:
         self.spec = spec
         self.args = args
         self.kwargs = kwargs
-        self.func: Callable = None
         self.start = None
         self.stop = None
 
