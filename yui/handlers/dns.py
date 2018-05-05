@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, List, NamedTuple
+from typing import List, NamedTuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -25,6 +25,7 @@ class Result(NamedTuple):
     server_name: str
     server_ip: str
     a_record: str
+    error: bool
 
 
 SERVER_LIST: List[DNSServer] = [
@@ -45,7 +46,7 @@ SERVER_LIST: List[DNSServer] = [
 ]
 
 
-async def query_custom(domain: str, ip: str) -> Dict[str, str]:
+async def query_custom(domain: str, ip: str) -> Result:
     name = 'Custom Input'
     for s in SERVER_LIST:
         if ip == s.ip:
@@ -55,7 +56,7 @@ async def query_custom(domain: str, ip: str) -> Dict[str, str]:
     return await query(domain, server)
 
 
-async def query(domain: str, server: DNSServer) -> Dict[str, str]:
+async def query(domain: str, server: DNSServer) -> Result:
     url = 'http://checkdnskr.appspot.com/api/lookup?{}'.format(
         urlencode({
             'domain': domain,
@@ -64,10 +65,29 @@ async def query(domain: str, server: DNSServer) -> Dict[str, str]:
     )
     async with client_session() as session:
         async with session.get(url) as res:
-            result = await res.json(loads=ujson.loads)
-            result['server_name'] = server.name
-            result['server_ip'] = server.ip
-            return result
+            async with res:
+                if res.status == 200:
+                    try:
+                        data = await res.json(loads=ujson.loads)
+                        data['error'] = False
+                    except aiohttp.client_exceptions.ContentTypeError:
+                        data = {
+                            'A': '',
+                            'error': True,
+                        }
+                    return Result(
+                        server_name=server.name,
+                        server_ip=server.ip,
+                        a_record=data['A'],
+                        error=data['error'],
+                    )
+
+                return Result(
+                    server_name=server.name,
+                    server_ip=server.ip,
+                    a_record='',
+                    error=False,
+                )
 
 
 @box.command('dns')
@@ -107,11 +127,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
                 res = r.result()
             except aiohttp.client_exceptions.ClientConnectionError:
                 continue
-            result.append(Result(
-                server_name=res['server_name'],
-                server_ip=res['server_ip'],
-                a_record=res['A'],
-            ))
+            result.append(res)
 
         result.sort(key=lambda x: x.server_name)
 
@@ -122,6 +138,8 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
                 domain,
                 '주어진' if server_list else '많이 쓰이는',
                 '\n'.join(
+                    f'{r.server_name}({r.server_ip}): 조회중 에러발생'
+                    if r.error else
                     f'{r.server_name}({r.server_ip}): {r.a_record}'
                     for r in result
                 )
