@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
-from yui.handlers.loading import get_holiday_name
-from yui.handlers.loading import weekend_loading_percent
+from yui.handlers.loading.monday import get_holiday_name
+from yui.handlers.loading.weekend import weekend_loading_percent
 
 
 def test_weekend_loading_percent():
