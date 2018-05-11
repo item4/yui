@@ -6,7 +6,7 @@ __all__ = 'hi',
 
 @box.on(Message)
 async def hi(bot, event: Message):
-    if event.text in ['안녕', '안녕 유이', '유이 안녕', '똑바로 서라, 유이"]:
+    if event.text in ['안녕', '안녕 유이', '유이 안녕', '똑바로 서라, 유이']:
         try:
             await bot.say(
                 event.channel,
