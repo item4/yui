@@ -27,6 +27,7 @@ tzlocal = "*"
 "psycopg2-binary" = "*"
 pyppeteer = "*"
 asyncio-contextmanager = "*"
+aiohttp-doh = "*"
 
 [dev-packages]
 mypy = "*"

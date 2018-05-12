@@ -1,8 +1,10 @@
 import socket
 
-from aiohttp.client import ClientSession
-from aiohttp.connector import TCPConnector
 from aiohttp.resolver import AsyncResolver
+
+from aiohttp_doh import ClientSession
+
+import ujson
 
 __all__ = 'client_session',
 
@@ -18,9 +20,11 @@ class YuiAsyncResolver(AsyncResolver):
 
 
 def client_session(*args, **kwargs) -> ClientSession:
-    """aiohttp.client.ClientSession with aiodns"""
+    """aiohttp.client.ClientSession with DNS over HTTPS"""
 
-    resolver = YuiAsyncResolver()
-    connector = TCPConnector(resolver=resolver)
-
-    return ClientSession(*args, **kwargs, connector=connector)
+    return ClientSession(
+        *args,
+        **kwargs,
+        json_loads=ujson.loads,
+        resolver_class=YuiAsyncResolver,
+    )
