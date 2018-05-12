@@ -1,30 +1,46 @@
 version: '3'
-  services:
-    bot_item4:
-      image: item4/yui:latest
-      volumes:
-        - .:/yui/data
-      environment:
-        - YUI_CONFIG_FILE_PATH=data/yui.config.toml
-      depends_on:
-        - db
-        - headless_chrome
-      links:
-        - db
-        - headless_chrome
-      command: ./data/run.sh
-    db:
-      image: postgres:alpine
-      volumes:
-        - ./postgres/data:/var/lib/postgresql/data
-      environment:
-        - POSTGRES_PASSWORD=MYSECRET
-      healthcheck:
-        test: "pg_isready -h localhost -p 5432 -q -U postgres"
-        interval: 3s
-        timeout: 1s
-        retries: 10
-    headless_chrome:
-      image: justinribeiro/chrome-headless
-      cap_add:
+services:
+  bot_item4:
+    image: item4/yui:latest
+    volumes:
+      - ./item4:/yui/data
+    environment:
+      - YUI_CONFIG_FILE_PATH=data/yui.config.toml
+    depends_on:
+      - db
+      - headless_chrome
+    links:
+      - db
+      - headless_chrome
+    command: ./data/run.sh
+    networks:
+      yuinet:
+        ipv4_address: 10.5.0.101
+  db:
+    image: postgres:alpine
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=MYSECRET
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 1s
+      retries: 10
+    networks:
+      yuinet:
+        ipv4_address: 10.5.0.3
+  headless_chrome:
+    image: yukinying/chrome-headless-browser
+    cap_add:
       - SYS_ADMIN
+    networks:
+      yuinet:
+        ipv4_address: 10.5.0.2
+
+networks:
+  yuinet:
+    driver: bridge
+    ipam:
+      config:
+       - subnet: 10.5.0.0/16

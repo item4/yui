@@ -158,7 +158,7 @@ WEBSOCKETDEBUGGERURL
 
   .. code-block:: bash
 
-     docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN justinribeiro/chrome-headless --headless --disable-gpu --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
+     docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN yukinying/chrome-headless-browser
 
 LOGGING
   complex dict. Python logging config.
