@@ -1062,9 +1062,10 @@ UNARYOP_TABLE: Dict[Any, Callable[[Any], Any]] = {
 
 class Evaluator:
 
+    last_dump: str
+
     def __init__(self) -> None:
         self.symbol_table: Dict[str, Any] = {}
-        self.last_dump: str = None
         self.current_interrupt: Optional[
             Union[_ast.Break, _ast.Continue]
         ] = None
