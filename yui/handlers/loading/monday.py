@@ -42,7 +42,7 @@ async def monday_dog(bot):
         ]
         random.shuffle(says)
 
-        for say in says:
+        for say in says[:bot.config.get('MONDAY_DOG_LIMIT', len(says))]:
             await monday_dog_say(text=say)
 
 
