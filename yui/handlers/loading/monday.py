@@ -33,12 +33,12 @@ async def monday_dog(bot):
             await monday_dog_say(text=say)
     else:
         says = [
-            '월' * random.randint(50, 180),
+            '월' * random.randint(60, 220),
             ''.join(
                 '월' * random.randint(1, 6) + '!' * random.randint(1, 3)
                 for x in range(40)
             ),
-            '월요일' * random.randint(20, 50),
+            '월요일' * random.randint(30, 70),
         ]
         random.shuffle(says)
 
