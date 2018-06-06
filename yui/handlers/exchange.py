@@ -3,8 +3,6 @@ from decimal import Decimal
 from typing import Dict
 from urllib.parse import urlencode
 
-import aiohttp
-
 import ujson
 
 from ..box import box
@@ -34,12 +32,8 @@ class SameBaseAndTo(ExchangeError):
     """Base and to symbol is same."""
 
 
-class WrongBase(ExchangeError):
-    """Wrong base unit."""
-
-
-class WrongTo(ExchangeError):
-    """Wrong to unit."""
+class WrongUnit(ExchangeError):
+    """Wrong unit."""
 
 
 async def get_exchange_rate(base: str, to: str) -> Dict:
@@ -48,20 +42,17 @@ async def get_exchange_rate(base: str, to: str) -> Dict:
     if base == to:
         raise SameBaseAndTo()
 
-    url = 'https://api.fixer.io/latest?{}'.format(
-        urlencode({'base': base, 'symbols': to})
+    url = 'https://api.manana.kr/exchange/rate.json?{}'.format(
+        urlencode({'base': to, 'code': base})
     )
 
-    try:
-        async with client_session() as session:
-            async with session.get(url) as res:
-                data = await res.json(loads=ujson.loads)
-                if to in data['rates']:
-                    return data
-                else:
-                    raise WrongTo()
-    except aiohttp.client_exceptions.ClientResponseError:
-        raise WrongBase()
+    async with client_session() as session:
+        async with session.get(url) as res:
+            data = await res.json(loads=ujson.loads)
+            if isinstance(data, list):
+                return data[0]
+            else:
+                raise WrongUnit()
 
 
 @box.command('환율', ['exchange'])
@@ -87,10 +78,8 @@ async def exchange(bot, event: Message, query: str):
             data = await get_exchange_rate(base, to)
         except SameBaseAndTo:
             error = '변환하려는 두 화폐가 같은 단위에요!'
-        except WrongBase:
-            error = '출발 화폐가 지원되는 통화기호가 아니에요!'
-        except WrongTo:
-            error = '도착 화폐가 지원되는 통화기호가 아니에요!'
+        except WrongUnit:
+            error = '지원되는 통화기호가 아니에요!'
 
         if error:
             await bot.say(
@@ -101,7 +90,7 @@ async def exchange(bot, event: Message, query: str):
 
         if data:
             date = data['date']
-            rate = Decimal(data['rates'][to])
+            rate = Decimal(data['rate'])
 
             result = quantity * rate
 
