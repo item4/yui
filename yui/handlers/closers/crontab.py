@@ -63,3 +63,60 @@ async def midnight_overflood_back_start(bot):
         '#game',
         ':closers: 오염지옥 오버플루드(이면) 개장 시간입니다.'
     )
+
+
+@box.crontab('0 4 * * 0')
+async def sunday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스 / 오염위상 요드'
+    )
+
+
+@box.crontab('0 4 * * 1')
+async def monday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 오염위상 요드'
+    )
+
+
+@box.crontab('0 4 * * 2')
+async def tuesday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 거울잡이 니토크리스'
+    )
+
+
+@box.crontab('0 4 * * 3')
+async def wednesday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'
+    )
+
+
+@box.crontab('0 4 * * 4')
+async def thursday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 거울잡이 니토크리스'
+    )
+
+
+@box.crontab('0 4 * * 5')
+async def friday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 오염위상 요드'
+    )
+
+
+@box.crontab('0 4 * * 6')
+async def saturday_dungeon_info(bot):
+    await bot.say(
+        '#game',
+        ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'
+        ' / 거울잡이 니토크리스'
+    )
