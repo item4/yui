@@ -128,6 +128,9 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
     await aqi(bot, event, '부천')
 
     said = bot.call_queue.pop(0)
+
+    if said.data['text'] == '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!':
+        pytest.skip('AQI Server problem')
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert result_pattern_re.match(said.data['text'])
