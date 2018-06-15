@@ -27,6 +27,9 @@ class AWS(Base):
     # 강수60
     rain60 = Column(Float)
 
+    # 강수3H
+    rain3h = Column(Float)
+
     # 강수6H
     rain6h = Column(Float)
 

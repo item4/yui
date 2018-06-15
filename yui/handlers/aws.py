@@ -59,56 +59,60 @@ def parse(html: str) -> List[AWS]:
         except (ValueError, IndexError):
             pass
         try:
-            record.rain6h = float(tr[6].text_content())
+            record.rain3h = float(tr[6].text_content())
         except (ValueError, IndexError):
             pass
         try:
-            record.rain12h = float(tr[7].text_content())
+            record.rain6h = float(tr[7].text_content())
         except (ValueError, IndexError):
             pass
         try:
-            record.rainday = float(tr[8].text_content())
+            record.rain12h = float(tr[8].text_content())
+        except (ValueError, IndexError):
+            pass
+        try:
+            record.rainday = float(tr[9].text_content())
         except (ValueError, IndexError):
             pass
 
         try:
-            record.temperature = float(tr[9].text_content())
+            record.temperature = float(tr[10].text_content())
         except (ValueError, IndexError):
             pass
 
         try:
-            wind_d1 = tr[11].text_content().strip()
+            wind_d1 = tr[12].text_content().strip()
         except IndexError:
             pass
         else:
             record.wind_direction1 = wind_d1 if wind_d1 else None
         try:
-            record.wind_speed1 = float(tr[12].text_content())
+            record.wind_speed1 = float(tr[13].text_content())
         except (ValueError, IndexError):
             pass
         try:
-            wind_d10 = tr[14].text_content().strip()
+            wind_d10 = tr[15].text_content().strip()
         except IndexError:
             pass
         else:
             record.wind_direction10 = wind_d10 if wind_d10 else None
         try:
-            record.wind_speed10 = float(tr[15].text_content())
+            record.wind_speed10 = float(tr[16].text_content())
         except (ValueError, IndexError):
             pass
 
         try:
-            record.humidity = int(tr[16].text_content())
+            record.humidity = int(tr[17].text_content())
         except (ValueError, IndexError):
             pass
 
         try:
-            record.pressure = float(tr[17].text_content())
+            record.pressure = float(tr[18].text_content())
         except (ValueError, IndexError):
             pass
 
         try:
-            record.location = tr[18].text_content()
+            record.location = tr[19].text_content()
         except IndexError:
             pass
 
