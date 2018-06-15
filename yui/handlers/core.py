@@ -159,4 +159,5 @@ async def direct_message_channel_mutation_detected(bot):
 
 @box.on(TeamMigrationStarted)
 async def team_migration_started():
+    logger.info('Slack sent team_migration_started. restart bot')
     raise BotReconnect()

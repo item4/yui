@@ -241,6 +241,7 @@ class Bot:
                 logger.info('SystemExit')
                 raise
             except BotReconnect:
+                logger.info('BotReconnect raised.')
                 self.restart = True
                 return False
             except:  # noqa: E722
@@ -481,4 +482,5 @@ class Bot:
                                     msg,
                                 )
             except BotReconnect:
+                logger.info('BotReconnect raised. I will reconnect to rtm.')
                 continue
