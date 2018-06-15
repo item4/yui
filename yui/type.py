@@ -118,7 +118,7 @@ class Namespace(SimpleNamespace):
             if t:
                 kwargs[k] = cast(t, v)
 
-        super(Namespace, self).__init__(**kwargs)
+        super(Namespace, self).__init__(**kwargs)  # type: ignore
 
 
 class ChannelTopic(Namespace):

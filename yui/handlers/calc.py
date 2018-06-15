@@ -17,6 +17,7 @@ from async_timeout import timeout
 
 from ..box import box
 from ..event import Message
+from ..type import Channel
 
 TIMEOUT = 1
 LENGTH_LIMIT = 300
@@ -54,7 +55,7 @@ def timeout_handler(signum, frame):
 async def body(
     bot,
     loop,
-    channel: str,
+    channel: Channel,
     expr: str,
     help: str,
     num_to_decimal: bool=True,
