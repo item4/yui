@@ -441,7 +441,13 @@ class Bot:
         sleep = 0
         while True:
             try:
-                rtm = await self.call('rtm.start')
+                try:
+                    rtm = await self.call('rtm.start')
+                except Exception as e:
+                    logger.exception(e)
+                    await asyncio.sleep((sleep + 1) * 10)
+                    sleep += 1
+                    raise BotReconnect()
 
                 if not rtm['ok']:
                     await asyncio.sleep((sleep+1)*10)
