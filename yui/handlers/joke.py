@@ -1,5 +1,9 @@
+import re
+
 from ..box import box
 from ..event import Message
+
+HASSAN_TRIGGER_RE = re.compile('^똑바로\s*서라\s*[,\.!]*\s*유이')
 
 
 @box.command('안심')
@@ -15,7 +19,7 @@ async def relax(bot, event: Message):
 
 @box.on(Message)
 async def hassan(bot, event: Message):
-    if event.text.startswith('똑바로 서라 유이'):
+    if HASSAN_TRIGGER_RE.search(event.text):
         try:
             await bot.say(
                 event.channel,
