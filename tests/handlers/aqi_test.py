@@ -79,6 +79,8 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 async def test_get_aqi(fx_aqi_api_token):
     result = await get_aqi(37.5034138, 126.9779692, fx_aqi_api_token)
 
+    if result is None:
+        pytest.skip('AQI Server problem')
     assert isinstance(result, AQIRecord)
 
 
