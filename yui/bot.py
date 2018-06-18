@@ -441,31 +441,30 @@ class Bot:
         sleep = 0
         while True:
             try:
-                try:
-                    rtm = await self.call('rtm.start')
-                except Exception as e:
-                    logger.exception(e)
-                    await asyncio.sleep((sleep + 1) * 10)
-                    sleep += 1
-                    raise BotReconnect()
+                rtm = await self.call('rtm.start')
+            except Exception as e:
+                logger.exception(e)
+                await asyncio.sleep((sleep + 1) * 10)
+                sleep += 1
+                continue
 
-                if not rtm['ok']:
-                    await asyncio.sleep((sleep+1)*10)
-                    sleep += 1
-                    raise BotReconnect()
-                else:
-                    sleep = 0
+            if not rtm['ok']:
+                await asyncio.sleep((sleep+1)*10)
+                sleep += 1
+                continue
+            else:
+                sleep = 0
 
-                await self.queue.put(create_event({
-                    'type': 'chatterbox_system_start',
-                }))
-
+            await self.queue.put(create_event({
+                'type': 'chatterbox_system_start',
+            }))
+            try:
                 async with client_session() as session:
                     async with session.ws_connect(rtm['url']) as ws:
                         async for msg in ws:
                             if self.restart:
                                 self.restart = False
-                                raise BotReconnect()
+                                break
 
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
@@ -480,13 +479,18 @@ class Bot:
                                 logger.error(
                                     f'Error: {traceback.format_exc()}'
                                 )
-                                raise BotReconnect()
+                                break
                             else:
                                 logger.error(
                                     'Type: %s / MSG: %s',
                                     msg.type,
                                     msg,
                                 )
+                                break
+                        raise BotReconnect()
             except BotReconnect:
                 logger.info('BotReconnect raised. I will reconnect to rtm.')
+                continue
+            except:  # noqa
+                logger.exception('Unexpected Exception raised')
                 continue
