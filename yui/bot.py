@@ -162,19 +162,20 @@ class Bot:
     def run(self):
         """Run"""
 
-        loop = asyncio.get_event_loop()
-        loop.set_debug(self.config.DEBUG)
-        self.loop = loop
-
-        loop.run_until_complete(
-            asyncio.wait(
-                (
-                    self.receive(),
-                    self.process(),
+        while True:
+            loop = asyncio.get_event_loop()
+            loop.set_debug(self.config.DEBUG)
+            self.loop = loop
+            loop.run_until_complete(
+                asyncio.wait(
+                    (
+                        self.receive(),
+                        self.process(),
+                    ),
+                    return_when=asyncio.FIRST_EXCEPTION,
                 )
             )
-        )
-        loop.close()
+            loop.close()
 
     async def call(
         self,
