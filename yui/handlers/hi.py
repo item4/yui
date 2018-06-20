@@ -1,12 +1,23 @@
+import re
+
 from ..box import box
 from ..event import Message
 
 __all__ = 'hi',
 
+HI_RE1 = re.compile(
+    '^(?:안녕(?:하세요)?|헬로우?|할로|hello|hi)[!,\?]*(?:\s*유이)?',
+    re.IGNORECASE,
+)
+HI_RE2 = re.compile(
+    '^유이\s*(?:안녕(?:하세요)?|헬로우?|할로|hello|hi)[!,\?]*',
+    re.IGNORECASE,
+)
+
 
 @box.on(Message)
 async def hi(bot, event: Message):
-    if event.text in ['안녕', '안녕 유이', '유이 안녕']:
+    if HI_RE1.search(event.text) or HI_RE2.search(event.text):
         try:
             await bot.say(
                 event.channel,
