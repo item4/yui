@@ -10,6 +10,7 @@ cache:
   directories:
   - .mypy_cache
   - $HOME/.cache/pip
+  - $HOME/.cache/pipenv
 before_install:
 - source ./ci/docker_login.sh
 - docker pull item4/yui:latest
