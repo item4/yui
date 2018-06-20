@@ -462,24 +462,32 @@ class Bot:
             try:
                 async with client_session() as session:
                     async with session.ws_connect(rtm['url']) as ws:
-                        async for msg in ws:
+                        while True:
                             if self.restart:
                                 self.restart = False
+                                await ws.close()
+                                break
+
+                            msg: aiohttp.WSMessage = await ws.receive()
+                            if msg == aiohttp.http.WS_CLOSED_MESSAGE:
                                 break
 
                             if msg.type == aiohttp.WSMsgType.TEXT:
                                 try:
-                                    event = create_event(ujson.loads(msg.data))
+                                    event = create_event(
+                                        msg.json(loads=ujson.loads)
+                                    )
                                 except:  # noqa: F722
                                     logger.exception(msg.data)
-                                    pass
                                 else:
                                     await self.queue.put(event)
-                            elif msg.type in (aiohttp.WSMsgType.ERROR,
-                                              aiohttp.WSMsgType.CLOSED):
-                                logger.error(
-                                    f'Error: {traceback.format_exc()}'
-                                )
+                            elif msg.type in (aiohttp.WSMsgType.CLOSE,
+                                              aiohttp.WSMsgType.CLOSED,
+                                              aiohttp.WSMsgType.CLOSING):
+                                logger.info('websocket closed')
+                                break
+                            elif msg.type == aiohttp.WSMsgType.ERROR:
+                                logger.error(msg.data)
                                 break
                             else:
                                 logger.error(
