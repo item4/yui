@@ -59,6 +59,10 @@ PREFIX
   for example, if you set PREFIX to '=' and you want to run help command,
   you must type ``=help``
 
+RECEIVE_TIMEOUT
+  integer. timeout seconds for receiving data from Slask WebSocket.
+  default is ``900`` (15min)
+
 HANDLERS
   list of str. Python module path of handlers.
   Yui import given paths automatically.

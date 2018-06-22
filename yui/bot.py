@@ -13,6 +13,8 @@ import aiocron
 
 import aiohttp
 
+import async_timeout
+
 from sqlalchemy.orm import sessionmaker
 
 import ujson
@@ -438,6 +440,7 @@ class Bot:
         """Receive stream from slack."""
 
         logger = logging.getLogger(f'{__name__}.Bot.receive')
+        timeout = self.config.RECEIVE_TIMEOUT
 
         sleep = 0
         while True:
@@ -468,7 +471,14 @@ class Bot:
                                 await ws.close()
                                 break
 
-                            msg: aiohttp.WSMessage = await ws.receive()
+                            try:
+                                async with async_timeout.timeout(timeout):
+                                    msg: aiohttp.WSMessage = await ws.receive()
+                            except asyncio.TimeoutError:
+                                logger.error(f'receive timeout({timeout})')
+                                await ws.close()
+                                break
+
                             if msg == aiohttp.http.WS_CLOSED_MESSAGE:
                                 break
 
@@ -496,7 +506,7 @@ class Bot:
                                     msg,
                                 )
                                 break
-                        raise BotReconnect()
+                raise BotReconnect()
             except BotReconnect:
                 logger.info('BotReconnect raised. I will reconnect to rtm.')
                 continue
