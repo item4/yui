@@ -190,7 +190,7 @@ LOGGING
       formatter = 'default'
       level = 'WARNING'
       filename = 'log/warning.log'
-      maxBytes = 1024
+      maxBytes = 102400
       backupCount = 3
 
       [LOGGING.loggers.yui]
