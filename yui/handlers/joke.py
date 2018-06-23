@@ -10,10 +10,20 @@ HASSAN_TRIGGER_RE = re.compile('^똑바로\s*서라\s*[,\.!]*\s*유이')
 async def relax(bot, event: Message):
     await bot.api.chat.postMessage(
         channel=event.channel,
-        text='유이에게 나쁜 것을 주입하려는 사악한 재벌은 이 너굴맨이 처리했으니 안심하라구!',
+        text='https://goo.gl/cRjLEJ\r\n안심하십시오 괜찮습니다.',
         as_user=False,
-        icon_url='https://i.imgur.com/dG6wXTX.jpg',
-        username='너굴맨',
+        icon_url='https://i.imgur.com/GIHYPOx.jpg',
+        username='우주안심수호자',
+    )
+
+@box.command('등심')
+async def sirloin(bot, event: Message):
+    await bot.api.chat.postMessage(
+        channel=event.channel,
+        text='https://i.imgur.com/ntil8cT.jpg',
+        as_user=False,
+        icon_url='https://i.imgur.com/X0pdPIM.jpg',
+        username='고든렘지',
     )
 
 
