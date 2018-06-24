@@ -17,6 +17,17 @@ async def relax(bot, event: Message):
     )
 
 
+@box.command('똥코드')
+async def luwak(bot, event: Message):
+    await bot.api.chat.postMessage(
+        channel=event.channel,
+        text='https://bucket.qdon.space/qdon/media_attachments/files/000/016/534/original/849158fb11372209.png',  # noqa
+        as_user=False,
+        icon_url='https://i.imgur.com/46eg1v9.jpg',
+        username='지옥에서 온 램지'
+    )
+
+
 @box.on(Message)
 async def hassan(bot, event: Message):
     if HASSAN_TRIGGER_RE.search(event.text):
