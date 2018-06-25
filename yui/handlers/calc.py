@@ -466,7 +466,7 @@ GLOBAL_CONTEXT: Dict[str, Any] = {
     'sha3_256': lambda *x: hashlib.sha3_256(*x).hexdigest(),
     'sha3_384': lambda *x: hashlib.sha3_384(*x).hexdigest(),
     'sha3_512': lambda *x: hashlib.sha3_512(*x).hexdigest(),
-    'md5': lambda x: hashlib.md5(*x).hexdigest(),
+    'md5': lambda *x: hashlib.md5(*x).hexdigest(),
     # datetime
     'date': datetime.date,
     'time': datetime.time,
