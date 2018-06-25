@@ -35,6 +35,7 @@ __all__ = (
     'ChannelMarked',
     'ChannelRename',
     'ChannelUnarchive',
+    'ChatterboxSystemStart',
     'DnDUpdated',
     'DnDUpdatedUser',
     'EmailDomainChanged',
