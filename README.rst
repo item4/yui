@@ -28,7 +28,7 @@ Requirements
 
 - Git
 - Slack bot permission for bot account
-- Python 3.6 or higher
+- Python 3.7 or higher
 - Pipenv
 
 
