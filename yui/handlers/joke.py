@@ -35,6 +35,32 @@ async def luwak(bot, event: Message):
     )
 
 
+@box.command('gdpr')
+async def gdpr(bot, event: Message):
+    """
+    Privacy policy update
+    """
+    await bot.api.chat.postMessage(
+        channel=event.channel,
+        attachments=[
+            Attachment(
+                fallback='Wake up gordon',
+                image_url='https://files.mastodon.social/media_attachments'
+                '/files/004/192/196/original/f19cfcbb0830aafa.png'
+            ),
+            Attachment(
+                fallback='We have updated our privacy policy',
+                image_url='https://files.mastodon.social/media_attachments'
+                '/files/004/192/197/original/bead89e8ae197ecd.png'
+            ),
+        ],
+        as_user=False,
+        icon_url='https://pm1.narvii.com/6046/'
+        'dcf537e42d788e13cd2f51da1f6d60d277e554f4_128.jpg',
+        username='G-man'
+    )
+
+
 @box.on(Message)
 async def hassan(bot, event: Message):
     if HASSAN_TRIGGER_RE.search(event.text):
