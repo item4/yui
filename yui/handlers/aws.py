@@ -37,7 +37,7 @@ def parse(html: str) -> List[AWS]:
         try:
             record.id = int(tr[0].text_content())
             record.name = tr[1].text_content().replace('*', '').strip()
-        except IndexError:
+        except (ValueError, IndexError):
             continue
         try:
             record.height = int(tr[2].text_content()[:-1])
