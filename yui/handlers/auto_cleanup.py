@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 @box.crontab('*/10 * * * *')
 async def cleanup_channels(bot):
-    channels = Cs.auto_cleanup_targets.get()
+    try:
+        channels = Cs.auto_cleanup_targets.get()
+    except KeyError:
+        return
 
     naive_now = datetime.datetime.now()
     time_limit = naive_now - datetime.timedelta(hours=3)
