@@ -57,7 +57,7 @@ def test_get_channel_names():
     bot.add_dm('D1', 'U1')
     bot.add_private_channel('G1', 'secret')
 
-    names, dm = get_channel_names([
+    names, dm, fetch_error = get_channel_names([
         C.general,
         Cs.commons,
         Channel.from_name('food'),
@@ -66,12 +66,26 @@ def test_get_channel_names():
     ])
 
     assert names == {'general', 'random', 'food', 'work'}
-    assert dm
+    assert dm is True
+    assert fetch_error is False
+
+    fetch_error = get_channel_names([
+        C.bug,
+        Cs.bugs,
+    ])[2]
+
+    assert fetch_error is True
 
 
 @pytest.mark.asyncio
 async def test_only():
-    bot = FakeBot()
+    config = AttrDict({
+        'CHANNELS': {
+            'general': 'general',
+            'commons': ['general', 'random'],
+        }
+    })
+    bot = FakeBot(config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -176,10 +190,26 @@ async def test_only():
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
+    callback = only(C.bug)
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = only(Cs.bug)
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
+    assert not bot.call_queue
+
 
 @pytest.mark.asyncio
 async def test_not_():
-    bot = FakeBot()
+    config = AttrDict({
+        'CHANNELS': {
+            'general': 'general',
+            'commons': ['general', 'random'],
+        }
+    })
+    bot = FakeBot(config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -282,6 +312,16 @@ async def test_not_():
 
     event = create_event(dict(type='message', channel='G1'))
     assert await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = not_(C.bug)
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = not_(Cs.bug)
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
     assert not bot.call_queue
 
 

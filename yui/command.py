@@ -83,21 +83,30 @@ ACCEPTABLE_CHANNEL_TYPES = Union[
 
 
 def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
-        -> Tuple[Set[str], bool]:
+        -> Tuple[Set[str], bool, bool]:
     dm = False
     channel_names = set()
+    fetch_error = False
     for channel in channels:
         if isinstance(channel, (PrivateChannel, PublicChannel)):
             channel_names.add(channel.name)
         elif isinstance(channel, ChannelFromConfig):
-            channel_names.add(channel.get().name)
+            try:
+                channel_names.add(channel.get().name)
+            except KeyError:
+                fetch_error = True
         elif isinstance(channel, ChannelsFromConfig):
-            channel_names = channel_names.union(c.name for c in channel.get())
+            try:
+                channel_names = channel_names.union(
+                    c.name for c in channel.get()
+                )
+            except KeyError:
+                fetch_error = True
         elif channel == DM:
             dm = True
         elif isinstance(channel, str):
             channel_names.add(channel)
-    return channel_names, dm
+    return channel_names, dm, fetch_error
 
 
 def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
@@ -105,7 +114,10 @@ def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
     """Mark channel to allow to use handler."""
 
     async def callback(bot, event: Event) -> bool:
-        channel_names, allow_dm = get_channel_names(channels)
+        channel_names, allow_dm, fetch_error = get_channel_names(channels)
+
+        if fetch_error:
+            return False
 
         if isinstance(event.channel, (PrivateChannel, PublicChannel)):
             if event.channel.name in channel_names:
@@ -136,7 +148,10 @@ def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None) \
     """Mark channel to deny to use handler."""
 
     async def callback(bot, event: Event) -> bool:
-        channel_names, deny_dm = get_channel_names(channels)
+        channel_names, deny_dm, fetch_error = get_channel_names(channels)
+
+        if fetch_error:
+            return False
 
         if isinstance(event.channel, (PrivateChannel, PublicChannel)):
             if event.channel.name in channel_names:
