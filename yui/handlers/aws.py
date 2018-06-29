@@ -1,6 +1,6 @@
 import datetime
 import functools
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import List
 
 import aiohttp
@@ -122,6 +122,16 @@ def parse(html: str) -> List[AWS]:
     return records
 
 
+def save(engine, sess, records: List[AWS]):
+    if not records:
+        return
+
+    truncate_table(engine, AWS)
+
+    with sess.begin():
+        sess.add_all(records)
+
+
 @box.crontab('*/3 * * * *')
 async def crawl(bot, loop, sess):
     """Crawl from Korea Meteorological Administration AWS."""
@@ -142,16 +152,16 @@ async def crawl(bot, loop, sess):
     ex = ProcessPoolExecutor()
     records = await loop.run_in_executor(ex, functools.partial(
         parse,
-        html
+        html,
     ))
 
-    if not records:
-        return
-
-    truncate_table(engine, AWS)
-
-    with sess.begin():
-        sess.add_all(records)
+    ex2 = ThreadPoolExecutor()
+    await loop.run_in_executor(ex2, functools.partial(
+        save,
+        engine,
+        sess,
+        records,
+    ))
 
 
 @box.command('날씨', ['aws', 'weather'])
