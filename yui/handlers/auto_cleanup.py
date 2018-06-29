@@ -33,7 +33,7 @@ async def cleanup_channels(bot):
         )
 
         if history['ok']:
-            logger.debug(f'channel histroy: {len(history["messages"])}')
+            logger.debug(f'channel history: {len(history["messages"])}')
             for message in history['messages']:
                 try:
                     r = await bot.api.chat.delete(
