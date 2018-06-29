@@ -1,15 +1,15 @@
 import inspect
+from collections import abc
 from types import SimpleNamespace
 from typing import (
     Any,
     Dict,
     List,
     Mapping,
-    MutableSequence,
     NewType,
     Optional,
-    Sequence,
     TYPE_CHECKING,
+    TypeVar,
     Union,
     cast as typing_cast,
 )
@@ -435,46 +435,52 @@ UnionType = type(Union)
 def cast(t, value):
     """Magical casting."""
 
-    if type(t) == UnionType:
-        for ty in t.__args__:
-            try:
-                return cast(ty, value)
-            except:  # noqa: E722
-                continue
-        raise ValueError()
+    if isinstance(t, TypeVar):
+        if t.__constraints__:
+            for ty in t.__constraints__:
+                try:
+                    return cast(ty, value)
+                except:  # noqa: E722
+                    continue
+            raise ValueError()
+        else:
+            return value
     elif t == Any:
         return value
-    elif t == NoneType:
-        return None
     elif t in (str, bytes):
         return t(value)
+    if hasattr(t, '__origin__'):
+        origin = t.__origin__
 
-    if inspect.isclass(t):
-        if issubclass(t, FromID):
-            return t.from_id(value)
+        if origin == Union:
+            for ty in t.__args__:
+                try:
+                    return cast(ty, value)
+                except:  # noqa: E722
+                    continue
+            raise ValueError()
 
-        if issubclass(t, Namespace):
-            return t(**value)
-
-        if issubclass(t, tuple):
+        if origin == tuple:
             if t.__args__:
-                return tuple(cast(ty, x) for ty, x in zip(t.__args__, value))
+                return tuple(
+                    cast(ty, x) for ty, x in zip(t.__args__, value)
+                )
             else:
                 return tuple(value)
 
-        if issubclass(t, set):
+        if origin in (set, abc.MutableSet):
             if t.__args__:
                 return {cast(t.__args__[0], x) for x in value}
             else:
                 return set(value)
 
-        if issubclass(t, (list, MutableSequence, Sequence)):
+        if origin in (list, abc.MutableSequence, abc.Sequence):
             if t.__args__:
                 return [cast(t.__args__[0], x) for x in value]
             else:
                 return list(value)
 
-        if issubclass(t, (Dict, Mapping)):
+        if origin in (dict, abc.Mapping, abc.MutableMapping):
             if t.__args__:
                 return {
                     cast(t.__args__[0], k): cast(t.__args__[1], v)
@@ -483,10 +489,36 @@ def cast(t, value):
             else:
                 return dict(value)
 
+    if inspect.isclass(t):
+        if issubclass(t, FromID):
+            return t.from_id(value)
+
+        if issubclass(t, Namespace):
+            return t(**value)
+
+        if callable(t) and t() is None:
+            return None
+
     return t(value)
+
+
+CONTAINER_ORIGINS = (
+    # tuple
+    tuple,
+    # set
+    set,
+    abc.MutableSet,
+    # list
+    list,
+    abc.MutableSequence,
+    abc.Sequence,
+)
 
 
 def is_container(t) -> bool:
     """Check given value is container type?"""
 
-    return any(issubclass(t, x) for x in [set, tuple, list])
+    if hasattr(t, '__origin__'):
+        return t.__origin__ in CONTAINER_ORIGINS
+
+    return t in (set, tuple, list)

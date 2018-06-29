@@ -22,12 +22,13 @@ ujson = "*"
 libearth = "*"
 attrdict = "*"
 pytz = "*"
-"e1839a8" = {path = ".", editable = true}
+"yui" = {path = ".", editable = true}
 tzlocal = "*"
 "psycopg2-binary" = "*"
 pyppeteer = "*"
 asyncio-contextmanager = "*"
 aiohttp-doh = "*"
+idna-ssl = {version = "*", markers = "python_version == '<3.7'"}
 
 [dev-packages]
 mypy = "*"
