@@ -1,5 +1,6 @@
 import re
 
+from ..api import Attachment
 from ..box import box
 from ..event import Message
 
@@ -21,7 +22,13 @@ async def relax(bot, event: Message):
 async def luwak(bot, event: Message):
     await bot.api.chat.postMessage(
         channel=event.channel,
-        text='https://bucket.qdon.space/qdon/media_attachments/files/000/016/534/original/849158fb11372209.png',  # noqa
+        attachments=[
+            Attachment(
+                fallback='니 코드가 너무 똥같아서 루왁커피를 만들 수도 있겠다!',
+                image_url='https://bucket.qdon.space/qdon/media_attachments/'
+                          'files/000/016/534/original/849158fb11372209.png'
+            ),
+        ],
         as_user=False,
         icon_url='https://i.imgur.com/46eg1v9.jpg',
         username='지옥에서 온 램지'
