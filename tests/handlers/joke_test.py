@@ -3,7 +3,7 @@ import pytest
 import ujson
 
 from yui.event import create_event
-from yui.handlers.joke import hassan, luwak, relax
+from yui.handlers.joke import gdpr, hassan, luwak, relax
 
 from ..util import FakeBot
 
@@ -77,3 +77,22 @@ async def test_luwak_command():
     assert len(ujson.loads(said.data['attachments']))
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '지옥에서 온 램지'
+
+
+@pytest.mark.asyncio
+async def test_gdpr_command():
+    bot = FakeBot()
+    bot.add_channel('C1', 'general')
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+    })
+
+    await gdpr(bot, event)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert len(ujson.loads(said.data['attachments'])) == 2
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == 'G-man'
