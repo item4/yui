@@ -61,7 +61,7 @@ PREFIX
 
 RECEIVE_TIMEOUT
   integer. timeout seconds for receiving data from Slask WebSocket.
-  default is ``900`` (15min)
+  default is ``300`` (5min)
 
 HANDLERS
   list of str. Python module path of handlers.

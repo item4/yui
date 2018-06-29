@@ -12,7 +12,7 @@ __all__ = 'error', 'load',
 
 DEFAULT = {
     'DEBUG': False,
-    'RECEIVE_TIMEOUT': 900,  # 60 * 15 seconds
+    'RECEIVE_TIMEOUT': 300,  # 60 * 5 seconds
     'PREFIX': '',
     'HANDLERS': (),
     'DATABASE_URL': '',
