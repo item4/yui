@@ -109,11 +109,11 @@ async def say_packtpub_dotd(bot, channel, loop):
         async with session.get(PACKTPUB_URL) as resp:
             html = await resp.text()
 
-    ex = ProcessPoolExecutor()
-    attachment: Attachment = await loop.run_in_executor(
-        ex,
-        functools.partial(parse_packtpub_dotd, html),
-    )
+    with ProcessPoolExecutor() as ex:
+        attachment: Attachment = await loop.run_in_executor(
+            ex,
+            functools.partial(parse_packtpub_dotd, html),
+        )
 
     if attachment is None:
         await bot.say(

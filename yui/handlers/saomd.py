@@ -92,12 +92,17 @@ async def watch_notice(bot, loop, sess):
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 
-        ex = ProcessPoolExecutor()
-        notice_items = await loop.run_in_executor(ex, functools.partial(
-            parse,
-            '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server])),
-            html,
-        ))
+        with ProcessPoolExecutor() as ex:
+            notice_items = await loop.run_in_executor(
+                ex,
+                functools.partial(
+                    parse,
+                    '{u.scheme}://{u.netloc}'.format(
+                        u=urlparse(NOTICE_URLS[server])
+                    ),
+                    html,
+                ),
+            )
 
         attachments: List[Attachment] = []
 

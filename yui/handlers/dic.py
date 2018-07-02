@@ -109,11 +109,14 @@ async def dic(bot, event: Message, loop, category: str, keyword: str):
         async with session.get(url) as res:
             html = await res.text()
 
-    ex = ProcessPoolExecutor()
-    redirect, attachments = await loop.run_in_executor(ex, functools.partial(
-        parse,
-        html,
-    ))
+    with ProcessPoolExecutor() as ex:
+        redirect, attachments = await loop.run_in_executor(
+            ex,
+            functools.partial(
+                parse,
+                html,
+            ),
+        )
 
     if redirect:
         await bot.say(

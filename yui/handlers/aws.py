@@ -149,19 +149,19 @@ async def crawl(bot, loop, sess):
     except aiohttp.client_exceptions.ServerDisconnectedError:
         return
 
-    ex = ProcessPoolExecutor()
-    records = await loop.run_in_executor(ex, functools.partial(
-        parse,
-        html,
-    ))
+    with ProcessPoolExecutor() as ex:
+        records = await loop.run_in_executor(ex, functools.partial(
+            parse,
+            html,
+        ))
 
-    ex2 = ThreadPoolExecutor()
-    await loop.run_in_executor(ex2, functools.partial(
-        save,
-        engine,
-        sess,
-        records,
-    ))
+    with ThreadPoolExecutor() as ex:
+        await loop.run_in_executor(ex, functools.partial(
+            save,
+            engine,
+            sess,
+            records,
+        ))
 
 
 @box.command('날씨', ['aws', 'weather'])

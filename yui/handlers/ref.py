@@ -64,13 +64,13 @@ async def fetch_css_ref(loop, sess):
         async with session.get(url) as res:
             html = await res.text()
 
-    ex = ProcessPoolExecutor()
-    body = await loop.run_in_executor(ex, functools.partial(
-        parse,
-        html,
-        'a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]',
-        'https://developer.mozilla.org',
-    ))
+    with ProcessPoolExecutor() as ex:
+        body = await loop.run_in_executor(ex, functools.partial(
+            parse,
+            html,
+            'a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]',
+            'https://developer.mozilla.org',
+        ))
 
     ref.body = body
     ref.created_at = now()
@@ -91,13 +91,13 @@ async def fetch_html_ref(loop, sess):
         async with session.get(url) as res:
             html = await res.text()
 
-    ex = ProcessPoolExecutor()
-    body = await loop.run_in_executor(ex, functools.partial(
-        parse,
-        html,
-        'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
-        'https://developer.mozilla.org'
-    ))
+    with ProcessPoolExecutor() as ex:
+        body = await loop.run_in_executor(ex, functools.partial(
+            parse,
+            html,
+            'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
+            'https://developer.mozilla.org'
+        ))
 
     ref.body = body
     ref.created_at = now()
@@ -138,11 +138,11 @@ async def fetch_python_ref(loop, sess):
         async with session.get(url) as res:
             html = await res.text()
 
-    ex = ProcessPoolExecutor()
-    body = await loop.run_in_executor(ex, functools.partial(
-        parse_python,
-        html,
-    ))
+    with ProcessPoolExecutor() as ex:
+        body = await loop.run_in_executor(ex, functools.partial(
+            parse_python,
+            html,
+        ))
 
     ref.body = body
     ref.created_at = now()

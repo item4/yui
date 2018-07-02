@@ -70,15 +70,15 @@ async def body(
     local = None
     try:
         async with timeout(TIMEOUT):
-            ex = ProcessPoolExecutor()
-            result, local = await loop.run_in_executor(
-                ex,
-                functools.partial(
-                    calculate,
-                    expr,
-                    replace_num_to_decimal=num_to_decimal,
-                ),
-            )
+            with ProcessPoolExecutor() as ex:
+                result, local = await loop.run_in_executor(
+                    ex,
+                    functools.partial(
+                        calculate,
+                        expr,
+                        replace_num_to_decimal=num_to_decimal,
+                    ),
+                )
     except SyntaxError as e:
         await bot.say(
             channel,
