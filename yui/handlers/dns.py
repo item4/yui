@@ -43,6 +43,9 @@ SERVER_LIST: List[DNSServer] = [
     DNSServer('OpenDNS', '208.67.222.222'),
     DNSServer('CloudFlare', '1.1.1.1'),
     DNSServer('CloudFlare', '1.0.0.1'),
+    DNSServer('Quad9', '9.9.9.9'),
+    DNSServer('Quad9', '149.112.112.112'),
+    DNSServer('Quad9', '2620:fe::fe'),
 ]
 
 
