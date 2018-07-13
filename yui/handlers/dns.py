@@ -28,7 +28,7 @@ class Result(NamedTuple):
     error: bool
 
 
-SERVER_LIST: List[DNSServer] = [
+SERVER_LIST_V4: List[DNSServer] = [
     DNSServer('KT', '168.126.63.1'),
     DNSServer('KT', '168.126.63.2'),
     DNSServer('SK', '210.220.163.82'),
@@ -45,13 +45,27 @@ SERVER_LIST: List[DNSServer] = [
     DNSServer('CloudFlare', '1.0.0.1'),
     DNSServer('Quad9', '9.9.9.9'),
     DNSServer('Quad9', '149.112.112.112'),
+]
+
+SERVER_LIST_V6: List[DNSServer] = [
+    DNSServer('Google', '2001:4860:4860::8888'),
+    DNSServer('Google', '2001:4860:4860::8844'),
     DNSServer('Quad9', '2620:fe::fe'),
 ]
 
 
+async def is_ipv6_enabled() -> bool:
+    try:
+        with client_session() as session:
+            async with session.get('http://ipv6.icanhazip.com'):
+                return True
+    except:  # noqa
+        return False
+
+
 async def query_custom(domain: str, ip: str) -> Result:
     name = 'Custom Input'
-    for s in SERVER_LIST:
+    for s in SERVER_LIST_V4 + SERVER_LIST_V6:
         if ip == s.ip:
             name = s.name
             break
@@ -119,7 +133,11 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
             for ip in server_list:
                 tasks.append(query_custom(domain, ip))
         else:
-            for server in SERVER_LIST:
+            servers = SERVER_LIST_V4
+            if await is_ipv6_enabled():
+                servers += SERVER_LIST_V6
+
+            for server in servers:
                 tasks.append(query(domain, server))
 
         ok, no = await asyncio.wait(tasks)
