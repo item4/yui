@@ -150,6 +150,10 @@ AQI_API_TOKEN
   You can get this value on `this request form`_
   **Do not** upload this value on VCS.
 
+DNF_API_KEY
+  string. API Key for using Neople API.
+  **Do not** upload this value on VCS.
+
 WEBSOCKETDEBUGGERURL
   string. URL of Chrome websocket debugger.
   This is using for access webpage via headless Chrome for bypass anti-DDoS tool such as CloudFlare.
