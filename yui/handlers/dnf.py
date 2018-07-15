@@ -65,6 +65,13 @@ async def dnf_auction(
     rarity: str,
     keyword: str,
 ):
+    """
+    던전앤 파이터 경매장 검색
+
+    `{PREFIX}던파경매장 플래티넘 엠블램` (던전 앤 파이터 경매장에서 플래티넘 엠블램으로 검색)
+
+    """
+
     query = []
     if min_level is not None:
         query.append(f'minLevel:{min_level}')
