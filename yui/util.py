@@ -22,6 +22,7 @@ __all__ = (
     'get_count',
     'italics',
     'normalize_korean_nfc_to_nfd',
+    'now',
     'preformatted',
     'quote',
     'strike',
