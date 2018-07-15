@@ -27,8 +27,11 @@ def parse_packtpub_dotd(html: str) -> Optional[Attachment]:
     title: str = title_els[0].text_content().strip()
     image_url = None
     if image_els:
-        image_url = 'https:' + '/'.join(
-            map(quote, image_els[0].get('src').split('/'))
+        image_url = 'https://' + '/'.join(
+            map(
+                quote,
+                image_els[0].get('src').replace('https://', '').split('/')
+            )
         )
     return Attachment(
         fallback=f'{title} - {PACKTPUB_URL}',
