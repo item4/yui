@@ -1,15 +1,31 @@
 from decimal import Decimal
 from typing import List
 
+from .base import get_next_overflood_info
 from ...box import box
 from ...command import Cs, argument, only
 from ...event import Message
-
+from ...util import now
 
 BASE = Decimal(3)
 INCREASE = Decimal(0.5)
 UNIT = Decimal(10_000_000)
 MAX = Decimal(10)
+
+
+@box.command('오버플루드', ['overflood'])
+async def overflood_info(bot, event: Message):
+    """
+    클로저스 오염지옥 오버플루드 정보
+
+    `{PREFIX}오버플루드` (현재 시각의 오버플루드 정보 출력)
+
+    """
+
+    await bot.say(
+        event.channel,
+        f':closers: {get_next_overflood_info(now())}'
+    )
 
 
 @box.command('블마수수료', channels=only(Cs.game_and_test))
