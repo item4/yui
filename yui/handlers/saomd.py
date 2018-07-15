@@ -51,8 +51,22 @@ def parse(base: str, html: str) -> List[NoticeItem]:
         detail_url = base + onclick \
             .replace("javascript:location.href='", '') \
             .replace("'", '')
+
         id = int(parse_qs(urlparse(detail_url).query)['id'][0])
-        title = dl.cssselect('h2')[0].text_content().strip()
+
+        title_els = dl.cssselect('h2')
+        if title_els:
+            title = title_els[0].text_content().strip()
+        else:
+            title_els = dl.cssselect('dd')
+            if title_els:
+                dd = title_els[0]
+                if dd.get('class') == 'm_announcement_summary':
+                    title = title_els[0].text_content().strip()
+                else:
+                    title = 'No title'
+            else:
+                title = 'No title'
 
         duration_els = dl.cssselect('h3')
         if duration_els:
