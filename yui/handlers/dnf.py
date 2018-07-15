@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List
 
 import aiohttp
 
@@ -90,7 +90,7 @@ async def dnf_auction(
     }
     if query:
         params['q'] = ','.join(query)
-    data = {}
+    data: Dict[str, Any] = {}
     try:
         async with ClientSession() as sess:
             async with sess.get(
