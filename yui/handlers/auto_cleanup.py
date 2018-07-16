@@ -18,7 +18,7 @@ async def cleanup_channels(bot):
         return
 
     naive_now = datetime.datetime.now()
-    time_limit = naive_now - datetime.timedelta(hours=3)
+    time_limit = naive_now - datetime.timedelta(hours=6)
 
     latest_ts = str(time.mktime(time_limit.timetuple()))
     logger.debug(f'latest_ts: {latest_ts}')
