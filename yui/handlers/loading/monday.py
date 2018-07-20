@@ -10,7 +10,7 @@ from yui.session import client_session
 from yui.util import now
 
 
-@box.crontab('0 0 * * 1')
+@box.crontab('0 0 * * mon,fri')
 async def monday_dog(bot):
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,
@@ -21,6 +21,11 @@ async def monday_dog(bot):
     )
     today = now()
     holiday = await get_holiday_name(today)
+
+    if datetime.datetime.today().weekday() == 3:
+        picker = random.choice([2, 3])
+        if picker % 2 == 0:
+            return
 
     if holiday:
         says = [
