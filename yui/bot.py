@@ -196,7 +196,17 @@ class Bot:
                     'https://slack.com/api/{}'.format(method),
                     data=form
                 ) as response:
-                    result = await response.json(loads=ujson.loads)
+                    try:
+                        result = await response.json(loads=ujson.loads)
+                    except aiohttp.client_exceptions.ContentTypeError:
+                        raise APICallError(
+                            'fail to call {} with {}'.format(
+                                method, data
+                            ),
+                            status_code=response.status,
+                            result=await response.text(),
+                            headers=response.headers,
+                        )
                     if response.status == 200:
                         return result
                     else:
