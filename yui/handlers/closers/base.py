@@ -33,7 +33,7 @@ def get_next_overflood_info(dt: datetime.datetime):
     if time < 4 * 60:
         if weekday == 3:
             return '오버플루드: 휴무'
-        type = '표면' if weekday in [1, 5] else '이면'
+        type = '표면' if weekday in [0, 1, 5] else '이면'
     else:
         if weekday == 2:
             return '오버플루드: 휴무'
