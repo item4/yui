@@ -1,6 +1,5 @@
 import functools
 import re
-from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlencode
 
@@ -109,14 +108,13 @@ async def dic(bot, event: Message, loop, category: str, keyword: str):
         async with session.get(url) as res:
             html = await res.text()
 
-    with ProcessPoolExecutor() as ex:
-        redirect, attachments = await loop.run_in_executor(
-            ex,
-            functools.partial(
-                parse,
-                html,
-            ),
-        )
+    redirect, attachments = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(
+            parse,
+            html,
+        ),
+    )
 
     if redirect:
         await bot.say(

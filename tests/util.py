@@ -1,3 +1,4 @@
+from concurrent.futures import ProcessPoolExecutor
 from typing import Callable, Dict, List, NamedTuple, Optional
 
 from attrdict import AttrDict
@@ -35,6 +36,7 @@ class FakeBot(Bot):
         self.users: Dict[UserID, User] = {}
         self.responses: Dict[str, Callable] = {}
         self.config = config
+        self.process_pool_executor = ProcessPoolExecutor()
 
     async def call(
         self,

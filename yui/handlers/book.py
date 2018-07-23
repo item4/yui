@@ -1,5 +1,4 @@
 import functools
-from concurrent.futures import ProcessPoolExecutor
 from decimal import Decimal
 from typing import List, Optional
 from urllib.parse import quote
@@ -112,11 +111,10 @@ async def say_packtpub_dotd(bot, channel, loop):
         async with session.get(PACKTPUB_URL) as resp:
             html = await resp.text()
 
-    with ProcessPoolExecutor() as ex:
-        attachment: Attachment = await loop.run_in_executor(
-            ex,
-            functools.partial(parse_packtpub_dotd, html),
-        )
+    attachment: Attachment = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(parse_packtpub_dotd, html),
+    )
 
     if attachment is None:
         await bot.say(

@@ -7,6 +7,7 @@ import logging.config
 import re
 import shlex
 import traceback
+from concurrent.futures import ProcessPoolExecutor
 from typing import Any, Dict, List, Union
 
 import aiocron
@@ -87,6 +88,7 @@ class Bot:
         BotLinkedNamespace._bot = self
 
         self.loop = None
+        self.process_pool_executor = ProcessPoolExecutor()
 
         logger.info('connect to DB')
         config.DATABASE_ENGINE = get_database_engine(config)

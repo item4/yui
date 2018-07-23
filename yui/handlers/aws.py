@@ -1,6 +1,6 @@
 import datetime
 import functools
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
 import aiohttp
@@ -149,11 +149,13 @@ async def crawl(bot, loop, sess):
     except aiohttp.client_exceptions.ServerDisconnectedError:
         return
 
-    with ProcessPoolExecutor() as ex:
-        records = await loop.run_in_executor(ex, functools.partial(
+    records = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(
             parse,
             html,
-        ))
+        ),
+    )
 
     with ThreadPoolExecutor() as ex:
         await loop.run_in_executor(ex, functools.partial(

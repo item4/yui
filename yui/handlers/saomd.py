@@ -1,7 +1,6 @@
 import asyncio
 import functools
 import logging
-from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, List, NamedTuple, Optional
 from urllib.parse import parse_qs, urlparse
 
@@ -106,17 +105,16 @@ async def watch_notice(bot, loop, sess):
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 
-        with ProcessPoolExecutor() as ex:
-            notice_items = await loop.run_in_executor(
-                ex,
-                functools.partial(
-                    parse,
-                    '{u.scheme}://{u.netloc}'.format(
-                        u=urlparse(NOTICE_URLS[server])
-                    ),
-                    html,
+        notice_items = await loop.run_in_executor(
+            bot.process_pool_executor,
+            functools.partial(
+                parse,
+                '{u.scheme}://{u.netloc}'.format(
+                    u=urlparse(NOTICE_URLS[server])
                 ),
-            )
+                html,
+            ),
+        )
 
         attachments: List[Attachment] = []
 

@@ -10,7 +10,6 @@ import operator
 import random
 import statistics
 from collections.abc import Iterable
-from concurrent.futures import ProcessPoolExecutor
 from typing import Any, Dict
 
 from async_timeout import timeout
@@ -70,15 +69,14 @@ async def body(
     local = None
     try:
         async with timeout(TIMEOUT):
-            with ProcessPoolExecutor() as ex:
-                result, local = await loop.run_in_executor(
-                    ex,
-                    functools.partial(
-                        calculate,
-                        expr,
-                        replace_num_to_decimal=num_to_decimal,
-                    ),
-                )
+            result, local = await loop.run_in_executor(
+                bot.process_pool_executor,
+                functools.partial(
+                    calculate,
+                    expr,
+                    replace_num_to_decimal=num_to_decimal,
+                ),
+            )
     except SyntaxError as e:
         await bot.say(
             channel,

@@ -1,7 +1,7 @@
 import datetime
 import functools
 import re
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from typing import List, NamedTuple
 from urllib.parse import parse_qs, urlparse
 
@@ -270,11 +270,10 @@ async def crawl_notice(bot, sess, loop):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    with ProcessPoolExecutor() as ex:
-        articles = await loop.run_in_executor(
-            ex,
-            functools.partial(parse_notice_list, html),
-        )
+    articles = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(parse_notice_list, html),
+    )
 
     with ThreadPoolExecutor() as ex:
         attachments = await loop.run_in_executor(
@@ -300,11 +299,10 @@ async def crawl_event(bot, sess, loop):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    with ProcessPoolExecutor() as ex:
-        articles = await loop.run_in_executor(
-            ex,
-            functools.partial(parse_event_list, html),
-        )
+    articles = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(parse_event_list, html),
+    )
 
     with ThreadPoolExecutor() as ex:
         attachments = await loop.run_in_executor(
@@ -328,11 +326,10 @@ async def crawl_gm_note(bot, sess, loop):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    with ProcessPoolExecutor() as ex:
-        articles = await loop.run_in_executor(
-            ex,
-            functools.partial(parse_gm_note_list, html),
-        )
+    articles = await loop.run_in_executor(
+        bot.process_pool_executor,
+        functools.partial(parse_gm_note_list, html),
+    )
 
     with ThreadPoolExecutor() as ex:
         attachments = await loop.run_in_executor(
