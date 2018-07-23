@@ -1,5 +1,6 @@
 import datetime
 import functools
+import re
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import List, NamedTuple
 from urllib.parse import parse_qs, urlparse
@@ -12,6 +13,11 @@ from ...box import box
 from ...models.closers import Event, GMNote, Notice
 from ...session import client_session
 from ...util import now
+
+
+MINUTE_PATTERN = re.compile('^(\d+)분 전$')
+HOUR_PATTERN = re.compile('^(\d+)시간 전$')
+HOUR_MINUTE_PATTERN = re.compile('^(\d+)시간 (\d+)분 전$')
 
 
 class NoticeArticle(NamedTuple):
@@ -38,6 +44,31 @@ class GMNoteArticle(NamedTuple):
     posted_date: datetime.date
 
 
+def parse_date(input: str) -> datetime.date:
+    match = HOUR_MINUTE_PATTERN.match(input)
+    if match:
+        return (now() - datetime.timedelta(
+            hours=int(match.group(1)),
+            minutes=int(match.group(2)),
+        )).date()
+
+    match = HOUR_PATTERN.match(input)
+    if match:
+        return (now() - datetime.timedelta(
+            hours=int(match.group(1)),
+        )).date()
+
+    match = MINUTE_PATTERN.match(input)
+    if match:
+        return (now() - datetime.timedelta(
+            minutes=int(match.group(1)),
+        )).date()
+
+    return datetime.date(
+        *map(int, input.split('.'))
+    )
+
+
 def parse_notice_list(html: str) -> List[NoticeArticle]:
     h = fromstring(html)
     tds = h.cssselect('table.notice_list tr td')
@@ -51,9 +82,7 @@ def parse_notice_list(html: str) -> List[NoticeArticle]:
         article_sn = int(parse_qs(
             urlparse(a_tag.get('href')).query
         )['noticearticlesn'][0])
-        posted_date = datetime.date(
-            *map(int, td[1].text_content().strip().split('.'))
-        )
+        posted_date = parse_date(td[1].text_content().strip())
         result.append(NoticeArticle(
             article_sn=article_sn,
             category=category,
@@ -131,9 +160,7 @@ def parse_event_list(html: str) -> List[EventArticle]:
         article_sn = int(parse_qs(
             urlparse(a_tag.get('href')).query
         )['n4articlesn'][0])
-        posted_date = datetime.date(
-            *map(int, td[1].text_content().strip().split('.'))
-        )
+        posted_date = parse_date(td[1].text_content().strip())
         result.append(EventArticle(
             article_sn=article_sn,
             title=title,
@@ -187,9 +214,7 @@ def parse_gm_note_list(html: str) -> List[GMNoteArticle]:
         article_sn = int(parse_qs(
             urlparse(td[1][0].get('href')).query
         )['n4articlesn'][0])
-        posted_date = datetime.date(
-            *map(int, td[3][0].text_content().strip().split('.'))
-        )
+        posted_date = parse_date(td[3][0].text_content().strip())
         result.append(GMNoteArticle(
             article_sn=article_sn,
             title=title,
