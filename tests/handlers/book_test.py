@@ -109,7 +109,7 @@ async def test_no_parse_packtpub_dotd():
 
 
 @pytest.mark.asyncio
-async def test_packtpub_dotd(event_loop):
+async def test_packtpub_dotd():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
 
@@ -118,7 +118,7 @@ async def test_packtpub_dotd(event_loop):
         'channel': 'C1',
     })
 
-    await packtpub_dotd(bot, event, event_loop)
+    await packtpub_dotd(bot, event)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -128,7 +128,7 @@ async def test_packtpub_dotd(event_loop):
 
 
 @pytest.mark.asyncio
-async def test_no_packtpub_dotd(event_loop, response_mock):
+async def test_no_packtpub_dotd(response_mock):
     response_mock.get(PACKTPUB_URL, body='<!doctype html>\n<html></html>')
 
     bot = FakeBot()
@@ -139,7 +139,7 @@ async def test_no_packtpub_dotd(event_loop, response_mock):
         'channel': 'C1',
     })
 
-    await packtpub_dotd(bot, event, event_loop)
+    await packtpub_dotd(bot, event)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -148,7 +148,7 @@ async def test_no_packtpub_dotd(event_loop, response_mock):
 
 
 @pytest.mark.asyncio
-async def test_auto_packtpub_dotd(event_loop):
+async def test_auto_packtpub_dotd():
     assert auto_packtpub_dotd._crontab.spec == '5 9 * * *'
 
     config = AttrDict({
@@ -159,7 +159,7 @@ async def test_auto_packtpub_dotd(event_loop):
     bot = FakeBot(config)
     bot.add_channel('C1', 'general')
 
-    await auto_packtpub_dotd(bot, event_loop)
+    await auto_packtpub_dotd(bot)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'

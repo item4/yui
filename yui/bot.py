@@ -1,4 +1,5 @@
 import asyncio
+import functools
 import html
 import importlib
 import inspect
@@ -7,8 +8,8 @@ import logging.config
 import re
 import shlex
 import traceback
-from concurrent.futures import ProcessPoolExecutor
-from typing import Any, Dict, List, Union
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from typing import Any, Callable, Dict, List, TypeVar, Union
 
 import aiocron
 
@@ -43,6 +44,8 @@ __all__ = 'APICallError', 'Bot', 'BotReconnect', 'Session'
 Session = sessionmaker(autocommit=True)
 
 SPACE_RE = re.compile('\s+')
+
+R = TypeVar('R')
 
 
 class BotReconnect(Exception):
@@ -89,6 +92,7 @@ class Bot:
 
         self.loop = None
         self.process_pool_executor = ProcessPoolExecutor()
+        self.thread_pool_executor = ThreadPoolExecutor()
 
         logger.info('connect to DB')
         config.DATABASE_ENGINE = get_database_engine(config)
@@ -180,6 +184,28 @@ class Bot:
                 )
             )
             loop.close()
+
+    async def run_in_other_process(
+        self,
+        f: Callable[..., R],
+        *args,
+        **kwargs,
+    ) -> R:
+        return await self.loop.run_in_executor(
+            executor=self.process_pool_executor,
+            func=functools.partial(f, *args, **kwargs),
+        )
+
+    async def run_in_other_thread(
+        self,
+        f: Callable[..., R],
+        *args,
+        **kwargs,
+    ) -> R:
+        return await self.loop.run_in_executor(
+            executor=self.thread_pool_executor,
+            func=functools.partial(f, *args, **kwargs),
+        )
 
     async def call(
         self,

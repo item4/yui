@@ -1,5 +1,4 @@
 import asyncio
-import functools
 import logging
 from typing import Dict, List, NamedTuple, Optional
 from urllib.parse import parse_qs, urlparse
@@ -9,6 +8,7 @@ from lxml.html import fromstring
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..api import Attachment
+from ..bot import Bot
 from ..box import box
 from ..command import C
 from ..models.saomd import (
@@ -98,22 +98,17 @@ def parse(base: str, html: str) -> List[NoticeItem]:
 
 
 @box.crontab('*/1 * * * *')
-async def watch_notice(bot, loop, sess):
+async def watch_notice(bot: Bot, sess):
     async def watch(server: Server):
         html = ''
         async with client_session() as session:
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 
-        notice_items = await loop.run_in_executor(
-            bot.process_pool_executor,
-            functools.partial(
-                parse,
-                '{u.scheme}://{u.netloc}'.format(
-                    u=urlparse(NOTICE_URLS[server])
-                ),
-                html,
-            ),
+        notice_items = await bot.run_in_other_process(
+            parse,
+            '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server])),
+            html,
         )
 
         attachments: List[Attachment] = []

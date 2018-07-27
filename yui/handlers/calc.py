@@ -14,6 +14,7 @@ from typing import Any, Dict
 
 from async_timeout import timeout
 
+from ..bot import Bot
 from ..box import box
 from ..event import Message
 from ..type import Channel
@@ -52,8 +53,7 @@ def timeout_handler(signum, frame):
 
 
 async def body(
-    bot,
-    loop,
+    bot: Bot,
     channel: Channel,
     expr: str,
     help: str,
@@ -69,13 +69,10 @@ async def body(
     local = None
     try:
         async with timeout(TIMEOUT):
-            result, local = await loop.run_in_executor(
-                bot.process_pool_executor,
-                functools.partial(
-                    calculate,
-                    expr,
-                    replace_num_to_decimal=num_to_decimal,
-                ),
+            result, local = await bot.run_in_other_process(
+                calculate,
+                expr,
+                replace_num_to_decimal=num_to_decimal,
             )
     except SyntaxError as e:
         await bot.say(
@@ -185,7 +182,7 @@ async def body(
 
 
 @box.command('=', ['calc'])
-async def calc_decimal(bot, loop, event: Message, raw: str):
+async def calc_decimal(bot, event: Message, raw: str):
     """
     정수타입 수식 계산기
 
@@ -197,7 +194,6 @@ async def calc_decimal(bot, loop, event: Message, raw: str):
 
     await body(
         bot,
-        loop,
         event.channel,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
@@ -206,11 +202,10 @@ async def calc_decimal(bot, loop, event: Message, raw: str):
 
 
 @box.command('=', ['calc'], subtype='message_changed')
-async def calc_decimal_on_change(bot, loop, event: Message, raw: str):
+async def calc_decimal_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
-            loop,
             event.channel,
             raw,
             '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
@@ -220,7 +215,7 @@ async def calc_decimal_on_change(bot, loop, event: Message, raw: str):
 
 
 @box.command('==')
-async def calc_num(bot, loop, event: Message, raw: str):
+async def calc_num(bot, event: Message, raw: str):
     """
     부동소숫점타입 수식 계산기
 
@@ -232,7 +227,6 @@ async def calc_num(bot, loop, event: Message, raw: str):
 
     await body(
         bot,
-        loop,
         event.channel,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
@@ -241,11 +235,10 @@ async def calc_num(bot, loop, event: Message, raw: str):
 
 
 @box.command('==', subtype='message_changed')
-async def calc_num_on_change(bot, loop, event: Message, raw: str):
+async def calc_num_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
-            loop,
             event.channel,
             raw,
             '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),

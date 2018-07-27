@@ -1,6 +1,4 @@
 import datetime
-import functools
-from concurrent.futures import ThreadPoolExecutor
 from typing import List
 
 import aiohttp
@@ -9,6 +7,7 @@ import lxml.html
 
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
+from ..bot import Bot
 from ..box import box
 from ..command import argument, option
 from ..event import Message
@@ -133,7 +132,7 @@ def save(engine, sess, records: List[AWS]):
 
 
 @box.crontab('*/3 * * * *')
-async def crawl(bot, loop, sess):
+async def crawl(bot: Bot, sess):
     """Crawl from Korea Meteorological Administration AWS."""
 
     engine = bot.config.DATABASE_ENGINE
@@ -149,21 +148,9 @@ async def crawl(bot, loop, sess):
     except aiohttp.client_exceptions.ServerDisconnectedError:
         return
 
-    records = await loop.run_in_executor(
-        bot.process_pool_executor,
-        functools.partial(
-            parse,
-            html,
-        ),
-    )
+    records = await bot.run_in_other_process(parse, html)
 
-    with ThreadPoolExecutor() as ex:
-        await loop.run_in_executor(ex, functools.partial(
-            save,
-            engine,
-            sess,
-            records,
-        ))
+    await bot.run_in_other_thread(save, engine, sess, records)
 
 
 @box.command('날씨', ['aws', 'weather'])

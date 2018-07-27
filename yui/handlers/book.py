@@ -1,4 +1,3 @@
-import functools
 from decimal import Decimal
 from typing import List, Optional
 from urllib.parse import quote
@@ -8,6 +7,7 @@ from lxml.html import fromstring
 import ujson
 
 from ..api import Attachment
+from ..bot import Bot
 from ..box import box
 from ..command import C, argument
 from ..event import Message
@@ -106,14 +106,14 @@ async def book(bot, event: Message, keyword: str):
         )
 
 
-async def say_packtpub_dotd(bot, channel, loop):
+async def say_packtpub_dotd(bot: Bot, channel):
     async with client_session() as session:
         async with session.get(PACKTPUB_URL) as resp:
             html = await resp.text()
 
-    attachment: Attachment = await loop.run_in_executor(
-        bot.process_pool_executor,
-        functools.partial(parse_packtpub_dotd, html),
+    attachment: Attachment = await bot.run_in_other_process(
+        parse_packtpub_dotd,
+        html,
     )
 
     if attachment is None:
@@ -131,7 +131,7 @@ async def say_packtpub_dotd(bot, channel, loop):
 
 
 @box.command('무료책', ['freebook'])
-async def packtpub_dotd(bot, event: Message, loop):
+async def packtpub_dotd(bot, event: Message):
     """
     PACKT Book 무료책 안내
 
@@ -141,9 +141,9 @@ async def packtpub_dotd(bot, event: Message, loop):
 
     """
 
-    await say_packtpub_dotd(bot, event.channel, loop)
+    await say_packtpub_dotd(bot, event.channel)
 
 
 @box.crontab('5 9 * * *')
-async def auto_packtpub_dotd(bot, loop):
-    await say_packtpub_dotd(bot, C.general.get(), loop)
+async def auto_packtpub_dotd(bot):
+    await say_packtpub_dotd(bot, C.general.get())

@@ -1,7 +1,5 @@
 import datetime
-import functools
 import re
-from concurrent.futures import ThreadPoolExecutor
 from typing import List, NamedTuple
 from urllib.parse import parse_qs, urlparse
 
@@ -9,6 +7,7 @@ from lxml.html import fromstring
 
 from .base import get_next_overflood_info
 from ...api import Attachment
+from ...bot import Bot
 from ...box import box
 from ...models.closers import Event, GMNote, Notice
 from ...session import client_session
@@ -267,22 +266,19 @@ def make_gm_note_attachments(sess, articles: List[GMNoteArticle]) -> \
 
 
 @box.crontab('*/1 * * * *')
-async def crawl_notice(bot, sess, loop):
+async def crawl_notice(bot: Bot, sess):
     url = 'http://closers.nexon.com/news/notice/list.aspx'
     async with client_session() as session:
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await loop.run_in_executor(
-        bot.process_pool_executor,
-        functools.partial(parse_notice_list, html),
-    )
+    articles = await bot.run_in_other_process(parse_notice_list, html)
 
-    with ThreadPoolExecutor() as ex:
-        attachments = await loop.run_in_executor(
-            ex,
-            functools.partial(make_notice_attachments, sess, articles),
-        )
+    attachments = await bot.run_in_other_thread(
+        make_notice_attachments,
+        sess,
+        articles,
+    )
 
     if attachments:
         await bot.api.chat.postMessage(
@@ -294,7 +290,7 @@ async def crawl_notice(bot, sess, loop):
 
 
 @box.crontab('*/1 * * * *')
-async def crawl_event(bot, sess, loop):
+async def crawl_event(bot: Bot, sess):
     url = (
         'http://closers.nexon.com/news/events/list.aspx?n4ArticleCategorySN=4'
     )
@@ -302,16 +298,13 @@ async def crawl_event(bot, sess, loop):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await loop.run_in_executor(
-        bot.process_pool_executor,
-        functools.partial(parse_event_list, html),
-    )
+    articles = await bot.run_in_other_process(parse_event_list, html)
 
-    with ThreadPoolExecutor() as ex:
-        attachments = await loop.run_in_executor(
-            ex,
-            functools.partial(make_event_attachments, sess, articles),
-        )
+    attachments = await bot.run_in_other_thread(
+        make_event_attachments,
+        sess,
+        articles,
+    )
 
     if attachments:
         await bot.api.chat.postMessage(
@@ -323,22 +316,19 @@ async def crawl_event(bot, sess, loop):
 
 
 @box.crontab('*/1 * * * *')
-async def crawl_gm_note(bot, sess, loop):
+async def crawl_gm_note(bot: Bot, sess):
     url = 'http://closers.nexon.com/news/gmnote/list.aspx'
     async with client_session() as session:
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await loop.run_in_executor(
-        bot.process_pool_executor,
-        functools.partial(parse_gm_note_list, html),
-    )
+    articles = await bot.run_in_other_process(parse_gm_note_list, html)
 
-    with ThreadPoolExecutor() as ex:
-        attachments = await loop.run_in_executor(
-            ex,
-            functools.partial(make_gm_note_attachments, sess, articles),
-        )
+    attachments = await bot.run_in_other_thread(
+        make_gm_note_attachments,
+        sess,
+        articles,
+    )
 
     if attachments:
         await bot.api.chat.postMessage(
