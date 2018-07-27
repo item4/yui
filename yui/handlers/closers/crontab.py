@@ -45,6 +45,9 @@ class GMNoteArticle(NamedTuple):
 
 
 def parse_date(input: str) -> datetime.date:
+    if input == '방금전':
+        return datetime.date.today()
+
     match = HOUR_MINUTE_PATTERN.match(input)
     if match:
         return (now() - datetime.timedelta(
