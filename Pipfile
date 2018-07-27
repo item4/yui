@@ -29,6 +29,7 @@ pyppeteer = "*"
 asyncio-contextmanager = "*"
 aiohttp-doh = "*"
 idna-ssl = {version = "*", markers = "python_version == '<3.7'"}
+attrs = "*"
 
 [dev-packages]
 mypy = "*"
