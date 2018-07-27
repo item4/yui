@@ -428,7 +428,7 @@ class IMOpen(Event):
 class ManualPresenceChange(Event):
     """You manually updated your presence."""
 
-    type: str = 'manualPresence_change'
+    type: str = 'manual_presence_change'
     presence: str
 
 
@@ -576,7 +576,7 @@ class SubteamSelfAdded(Event):
     """You have been added to a User Group."""
 
     type: str = 'subteam_self_added'
-    subteam_id = SubteamID
+    subteam_id: SubteamID
 
 
 class SubteamSelfRemoved(Event):
