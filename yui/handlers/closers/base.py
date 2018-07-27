@@ -20,8 +20,8 @@ SCHEDULE = [
 ]
 
 ITEM_PURPOSE = {
-    '표면': '코어, 모듈 초월',
-    '이면': '리시버 초월',
+    '표면': '다크메터(코어, 모듈 초월 재료)',
+    '이면': '니토크리스의 오염 위상(리시버 초월 재료)',
 }
 
 
@@ -45,4 +45,4 @@ def get_next_overflood_info(dt: datetime.datetime):
             description = desc
             break
 
-    return f'오버플루드 {type}: {description} / {ITEM_PURPOSE[type]} 재료 획득 가능'
+    return f'오버플루드 {type}: {description} / {ITEM_PURPOSE[type]} 획득 가능'
