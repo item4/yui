@@ -83,6 +83,8 @@ async def test_only():
         'CHANNELS': {
             'general': 'general',
             'commons': ['general', 'random'],
+            'all': '*',
+            'no': None,
         }
     })
     bot = FakeBot(config)
@@ -200,6 +202,23 @@ async def test_only():
     assert not await callback(bot, event)
     assert not bot.call_queue
 
+    callback = only(Cs.all)
+    event = create_event(dict(type='message', channel='C1'))
+    assert await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = only(Cs.no)
+    event = create_event(dict(type='message', channel='C1'))
+    assert not await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = only(Cs.no, error='error!')
+    event = create_event(dict(type='message', channel='C1'))
+    assert not await callback(bot, event)
+    say = bot.call_queue.pop()
+    assert say.method == 'chat.postMessage'
+    assert say.data['text'] == 'error!'
+
 
 @pytest.mark.asyncio
 async def test_not_():
@@ -207,6 +226,8 @@ async def test_not_():
         'CHANNELS': {
             'general': 'general',
             'commons': ['general', 'random'],
+            'all': '*',
+            'no': None,
         }
     })
     bot = FakeBot(config)
@@ -322,6 +343,23 @@ async def test_not_():
     callback = not_(Cs.bug)
     event = create_event(dict(type='message', channel='G1'))
     assert not await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = not_(Cs.all)
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
+    assert not bot.call_queue
+
+    callback = not_(Cs.all, error='error!')
+    event = create_event(dict(type='message', channel='G1'))
+    assert not await callback(bot, event)
+    say = bot.call_queue.pop()
+    assert say.method == 'chat.postMessage'
+    assert say.data['text'] == 'error!'
+
+    callback = not_(Cs.no)
+    event = create_event(dict(type='message', channel='G1'))
+    assert await callback(bot, event)
     assert not bot.call_queue
 
 

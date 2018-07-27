@@ -17,12 +17,14 @@ from attrdict import AttrDict
 import pytest
 
 from yui.type import (
+    AllChannelsError,
     ChannelFromConfig,
     ChannelsFromConfig,
     DirectMessageChannel,
     FromChannelID,
     FromUserID,
     Namespace,
+    NoChannelsError,
     PrivateChannel,
     PublicChannel,
     UnknownChannel,
@@ -294,6 +296,9 @@ def test_channels_from_config():
         'CHANNELS': {
             'main': 'general',
             'commons': ['general', 'random'],
+            'all_1': '*',
+            'all_2': ['*'],
+            'empty': [],
         },
     })
     bot = FakeBot(config)
@@ -314,3 +319,12 @@ def test_channels_from_config():
 
     with pytest.raises(KeyError):
         ChannelsFromConfig('no').get()
+
+    with pytest.raises(AllChannelsError):
+        ChannelsFromConfig('all_1').get()
+
+    with pytest.raises(AllChannelsError):
+        ChannelsFromConfig('all_2').get()
+
+    with pytest.raises(NoChannelsError):
+        ChannelsFromConfig('empty').get()

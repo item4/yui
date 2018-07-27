@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .bot import Bot as _Bot  # noqa
 
 __all__ = (
+    'AllChannelsError',
     'AppID',
     'Bot',
     'BotID',
@@ -42,6 +43,7 @@ __all__ = (
     'MessageMessageEdited',
     'MessagePreviousMessage',
     'Namespace',
+    'NoChannelsError',
     'PrivateChannel',
     'PrivateChannelID',
     'PublicChannel',
@@ -106,6 +108,14 @@ BotID = NewType('BotID', str)
 
 #: :type:`type` Type for store UnixTimestamp.
 UnixTimestamp = NewType('UnixTimestamp', int)
+
+
+class AllChannelsError(Exception):
+    pass
+
+
+class NoChannelsError(Exception):
+    pass
 
 
 class Namespace(SimpleNamespace):
@@ -192,7 +202,12 @@ class FromChannelID(FromID):
     @classmethod
     def from_config_list(cls, key: str)\
             -> List[Union['PrivateChannel', 'PublicChannel']]:
-        return [cls.from_name(x) for x in cls._bot.config.CHANNELS[key]]
+        channels = cls._bot.config.CHANNELS[key]
+        if not channels:
+            raise NoChannelsError()
+        if channels == ['*'] or channels == '*':
+            raise AllChannelsError()
+        return [cls.from_name(x) for x in channels]
 
 
 class Channel(FromChannelID):

@@ -21,8 +21,10 @@ from typing import (
 
 from .event import Event
 from .type import (
+    AllChannelsError,
     ChannelFromConfig,
     ChannelsFromConfig,
+    NoChannelsError,
     PrivateChannel,
     PublicChannel,
 )
@@ -114,7 +116,17 @@ def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
     """Mark channel to allow to use handler."""
 
     async def callback(bot, event: Event) -> bool:
-        channel_names, allow_dm, fetch_error = get_channel_names(channels)
+        try:
+            channel_names, allow_dm, fetch_error = get_channel_names(channels)
+        except AllChannelsError:
+            return True
+        except NoChannelsError:
+            if error:
+                await bot.say(
+                    event.channel,
+                    error
+                )
+            return False
 
         if fetch_error:
             return False
@@ -148,7 +160,17 @@ def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None) \
     """Mark channel to deny to use handler."""
 
     async def callback(bot, event: Event) -> bool:
-        channel_names, deny_dm, fetch_error = get_channel_names(channels)
+        try:
+            channel_names, deny_dm, fetch_error = get_channel_names(channels)
+        except AllChannelsError:
+            if error:
+                await bot.say(
+                    event.channel,
+                    error
+                )
+            return False
+        except NoChannelsError:
+            return True
 
         if fetch_error:
             return False
