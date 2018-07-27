@@ -9,6 +9,7 @@ from .base import get_next_overflood_info
 from ...api import Attachment
 from ...bot import Bot
 from ...box import box
+from ...command import C
 from ...models.closers import Event, GMNote, Notice
 from ...session import client_session
 from ...util import now
@@ -282,7 +283,7 @@ async def crawl_notice(bot: Bot, sess):
 
     if attachments:
         await bot.api.chat.postMessage(
-            channel='#game',
+            channel=C.game.get(),
             text=':closers: 클로저스 공지사항 목록의 변동이 감지되었어요!.',
             attachments=attachments,
             as_user=True,
@@ -308,7 +309,7 @@ async def crawl_event(bot: Bot, sess):
 
     if attachments:
         await bot.api.chat.postMessage(
-            channel='#game',
+            channel=C.game.get(),
             text=':closers: 클로저스 이벤트 당첨자 발표 목록의 변동이 감지되었어요!',
             attachments=attachments,
             as_user=True,
@@ -332,7 +333,7 @@ async def crawl_gm_note(bot: Bot, sess):
 
     if attachments:
         await bot.api.chat.postMessage(
-            channel='#game',
+            channel=C.game.get(),
             text=':closers: 클로저스 GM노트 목록의 변동이 감지되었어요!',
             attachments=attachments,
             as_user=True,
@@ -344,7 +345,7 @@ async def overflood_before_30m(bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
-            '#game',
+            C.game.get(),
             f':closers: {info}'
         )
 
@@ -354,7 +355,7 @@ async def overflood_start(bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
-            '#game',
+            C.game.get(),
             f':closers: {info}'
         )
 
@@ -364,7 +365,7 @@ async def midnight_overflood_before_30m(bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
-            '#game',
+            C.game.get(),
             f':closers: {info}'
         )
 
@@ -374,7 +375,7 @@ async def midnight_overflood_start(bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
-            '#game',
+            C.game.get(),
             f':closers: {info}'
         )
 
@@ -382,7 +383,7 @@ async def midnight_overflood_start(bot):
 @box.crontab('0 4 * * 0')
 async def sunday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스 / 오염위상 요드'
     )
 
@@ -390,7 +391,7 @@ async def sunday_dungeon_info(bot):
 @box.crontab('0 4 * * 1')
 async def monday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 오염위상 요드'
     )
 
@@ -398,7 +399,7 @@ async def monday_dungeon_info(bot):
 @box.crontab('0 4 * * 2')
 async def tuesday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 거울잡이 니토크리스'
     )
 
@@ -406,7 +407,7 @@ async def tuesday_dungeon_info(bot):
 @box.crontab('0 4 * * 3')
 async def wednesday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'
     )
 
@@ -414,7 +415,7 @@ async def wednesday_dungeon_info(bot):
 @box.crontab('0 4 * * 4')
 async def thursday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 거울잡이 니토크리스'
     )
 
@@ -422,7 +423,7 @@ async def thursday_dungeon_info(bot):
 @box.crontab('0 4 * * 5')
 async def friday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 오염위상 요드'
     )
 
@@ -430,7 +431,7 @@ async def friday_dungeon_info(bot):
 @box.crontab('0 4 * * 6')
 async def saturday_dungeon_info(bot):
     await bot.say(
-        '#game',
+        C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'
         ' / 거울잡이 니토크리스'
     )

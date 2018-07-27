@@ -1,3 +1,4 @@
+import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Callable, Dict, List, NamedTuple, Optional
 
@@ -28,6 +29,7 @@ class FakeBot(Bot):
 
     def __init__(self, config: AttrDict=None) -> None:
         BotLinkedNamespace._bot = self
+        self.loop = asyncio.get_event_loop()
         self.call_queue: List[Call] = []
         self.api = SlackAPI(self)
         self.channels: List[PublicChannel] = []

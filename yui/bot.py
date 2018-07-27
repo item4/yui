@@ -73,6 +73,8 @@ class APICallError(Exception):
 class Bot:
     """Yui."""
 
+    loop: asyncio.AbstractEventLoop
+
     def __init__(
         self,
         config: Config,
@@ -90,7 +92,6 @@ class Bot:
 
         BotLinkedNamespace._bot = self
 
-        self.loop = None
         self.process_pool_executor = ProcessPoolExecutor()
         self.thread_pool_executor = ThreadPoolExecutor()
 

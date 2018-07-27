@@ -27,7 +27,7 @@ class Attachment:
     title: Optional[str] = None
     title_link: Optional[str] = None
     text: Optional[str] = None
-    fields: Optional[List[Field]] = attr.Factory(list)
+    fields: List[Field] = attr.Factory(list)
     image_url: Optional[str] = None
     thumb_url: Optional[str] = None
     footer: Optional[str] = None

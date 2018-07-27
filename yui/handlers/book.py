@@ -111,7 +111,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
         async with session.get(PACKTPUB_URL) as resp:
             html = await resp.text()
 
-    attachment: Attachment = await bot.run_in_other_process(
+    attachment = await bot.run_in_other_process(
         parse_packtpub_dotd,
         html,
     )

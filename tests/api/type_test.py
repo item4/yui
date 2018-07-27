@@ -9,7 +9,6 @@ def test_field_class():
     assert field.title == title
     assert field.value == value
     assert field.short
-    assert str(field) == f"Field('{title}', '{value}', True)"
 
 
 def test_attachment_class():
