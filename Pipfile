@@ -27,7 +27,7 @@ tzlocal = "*"
 "psycopg2-binary" = "*"
 pyppeteer = "*"
 asyncio-contextmanager = "*"
-aiohttp-doh = "*"
+aiohttp-doh = {version = ">=0.0.1"}
 idna-ssl = {version = "*", markers = "python_version == '<3.7'"}
 attrs = "*"
 
