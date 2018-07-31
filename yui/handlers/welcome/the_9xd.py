@@ -37,4 +37,3 @@ async def welcome_9xd(bot, event: TeamJoin):
             f'이외에도 더 많은 채널들이 있어요. 채널 목록을 참조해주세요!',
             thread_ts=chat['ts'],
         )
-
