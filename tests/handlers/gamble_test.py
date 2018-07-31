@@ -5,6 +5,7 @@ from yui.handlers.gamble import dice
 
 from ..util import FakeBot
 
+
 @pytest.mark.asyncio
 async def test_dice_handler():
     bot = FakeBot()
