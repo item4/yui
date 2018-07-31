@@ -17,6 +17,7 @@ HANDLERS = [
     'yui.handlers.dic',
     'yui.handlers.dns',
     'yui.handlers.exchange',
+    'yui.handlers.gamble',
     'yui.handlers.help',
     'yui.handlers.hi',
     'yui.handlers.loading',
@@ -30,8 +31,7 @@ HANDLERS = [
     'yui.handlers.select',
     'yui.handlers.sub',
     'yui.handlers.subscribe',
-    'yui.handlers.subway',
-    'yui.handlers.gamble',
+    'yui.handlers.subway'
 ]
 
 MODELS = [
