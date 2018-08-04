@@ -18,10 +18,39 @@ async def test_dice_handler():
         'text': '주사위',
     })
 
-    assert not await dice(bot, event)
+    assert not await dice(bot, event, 0, 0)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '정상적인 범위를 입력해주세요!'
+
+    assert not await dice(bot, event, 0, 100, seed=100)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '딜러'
+    assert said.data['text'] == (
+        '유이가 기도하며 주사위를 굴려줬습니다. 18입니다.'
+    )
+
+    assert not await dice(bot, event, 0, 100, seed=104)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '딜러'
+    assert said.data['text'] == '콩'
+
+    assert not await dice(bot, event, 0, 100, seed=166)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '딜러'
+    assert said.data['text'] == '콩콩'
+
