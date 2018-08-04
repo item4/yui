@@ -53,4 +53,3 @@ async def test_dice_handler():
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '딜러'
     assert said.data['text'] == '콩콩'
-
