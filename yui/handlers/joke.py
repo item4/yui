@@ -9,6 +9,8 @@ HASSAN_TRIGGER_RE = re.compile('^똑바로\s*서라\s*[,\.!]*\s*유이')
 
 @box.command('안심')
 async def relax(bot, event: Message):
+    """유이의 변절을 우려하는 분들을 위한 상태 점검 명령어"""
+
     await bot.api.chat.postMessage(
         channel=event.channel,
         text='유이에게 나쁜 것을 주입하려는 사악한 재벌은 이 너굴맨이 처리했으니 안심하라구!',
@@ -20,6 +22,8 @@ async def relax(bot, event: Message):
 
 @box.command('똥코드')
 async def luwak(bot, event: Message):
+    """공짜 코드 리뷰"""
+
     await bot.api.chat.postMessage(
         channel=event.channel,
         attachments=[
