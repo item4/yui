@@ -20,14 +20,15 @@ def weekend_loading_percent(now: datetime.datetime) -> float:
     return delta.total_seconds() / (5*24*60*60) * 100
 
 
-@box.crontab('0 0,8,12,18,22 * * 1-5')
+@box.crontab('0 * * * 1-5')
 async def auto_weekend_loading(bot):
     now_dt = now()
-    percent = weekend_loading_percent(now_dt)
-    await bot.say(
-        C.general.get(),
-        f'주말로딩… {percent:.2f}%'
-    )
+    if now_dt.hour in bot.config.WEEKEND_LOADING_TIME:
+        percent = weekend_loading_percent(now_dt)
+        await bot.say(
+            C.general.get(),
+            f'주말로딩… {percent:.2f}%'
+        )
 
 
 @box.crontab('0 0 * * 6')
