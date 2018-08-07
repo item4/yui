@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, Dict, List
 
 import aiohttp
@@ -10,6 +11,9 @@ from ..command import argument, option
 from ..event import Message
 from ..session import ClientSession
 from ..transform import choice, value_range
+from ..util import now, static_vars
+
+AUCTION_COOLTIME = datetime.timedelta(minutes=3)
 
 RARITY_TABLE = {
     '커먼': '#FFFFFF',
@@ -49,6 +53,7 @@ RARITY_TABLE = {
 @option('--max-refine')
 @option('--rarity', transform_func=choice(list(RARITY_TABLE.keys())))
 @argument('keyword', nargs=-1, concat=True)
+@static_vars(last_call=None)
 async def dnf_auction(
     bot,
     event: Message,
@@ -70,7 +75,22 @@ async def dnf_auction(
 
     `{PREFIX}던파경매장 플래티넘 엠블램` (던전 앤 파이터 경매장에서 플래티넘 엠블램으로 검색)
 
+    해당 명령어는 3분의 쿨타임을 가집니다. (채널/사용자 무관)
+
     """
+
+    now_dt = now()
+    if dnf_auction.last_call:
+        if now_dt - dnf_auction.last_call < AUCTION_COOLTIME:
+            fine = dnf_auction.last_call + AUCTION_COOLTIME
+            await bot.say(
+                event.channel,
+                f"아직 쿨타임이에요! {fine.strftime('%H시 %M분')}"
+                f" 이후로 다시 시도해주세요!"
+            )
+            return
+
+    dnf_auction.last_call = now_dt
 
     query = []
     if min_level is not None:
