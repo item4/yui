@@ -110,6 +110,7 @@ async def dnf_auction(
             event.channel,
             '던전 앤 파이터 API 서버 상태가 좋지 않아요! 나중에 시도해주세요!'
         )
+        return
 
     if data and data['rows']:
         attachments: List[Attachment] = []
