@@ -8,7 +8,13 @@ import pytest
 import ujson
 
 from yui.event import create_event
-from yui.handlers.animal import cat, dog, get_cat_image_url, get_dog_image_url
+from yui.handlers.animal import (
+    APIServerError,
+    cat,
+    dog,
+    get_cat_image_url,
+    get_dog_image_url,
+)
 
 from ..util import FakeBot
 
@@ -18,6 +24,11 @@ dog_cooltime_re = re.compile('아직 쿨타임이다멍! \d+시 \d+분 이후로
 
 @pytest.mark.asyncio
 async def test_get_cat_image_url(response_mock):
+    response_mock.get(
+        'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
+        body='',
+        status=500,
+    )
     response_mock.get(
         'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
         exception=aiohttp.client_exceptions.ServerDisconnectedError(),
@@ -81,12 +92,20 @@ async def test_get_cat_image_url(response_mock):
     response_mock.get('http://cat.com/404.jpg', status=404)
     response_mock.get('http://cat.com/200.jpg', status=200)
 
+    with pytest.raises(APIServerError):
+        await get_cat_image_url(0.001)
+
     url = await get_cat_image_url(0.001)
     assert url == 'http://cat.com/200.jpg'
 
 
 @pytest.mark.asyncio
 async def test_get_dog_image_url(response_mock):
+    response_mock.get(
+        'https://dog.ceo/api/breeds/image/random',
+        body='',
+        status=500,
+    )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
         exception=aiohttp.client_exceptions.ServerDisconnectedError(),
@@ -134,12 +153,20 @@ async def test_get_dog_image_url(response_mock):
     response_mock.get('http://dog.com/404.jpg', status=404)
     response_mock.get('http://dog.com/200.jpg', status=200)
 
+    with pytest.raises(APIServerError):
+        await get_dog_image_url(0.001)
+
     url = await get_dog_image_url(0.001)
     assert url == 'http://dog.com/200.jpg'
 
 
 @pytest.mark.asyncio
 async def test_cat_command(response_mock):
+    response_mock.get(
+        'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
+        body='',
+        status=500,
+    )
     response_mock.get(
         'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
         body=(
@@ -151,6 +178,11 @@ async def test_cat_command(response_mock):
             '</image></images></data></response>'
         ),
         headers={'Content-Type': 'text/xml'},
+    )
+    response_mock.get(
+        'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
+        body='',
+        status=500,
     )
     response_mock.get(
         'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
@@ -184,6 +216,20 @@ async def test_cat_command(response_mock):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!'
+    )
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '냥짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/hIBJUMI.jpg'
+
+    assert cat.last_call.get('C1') is None
+
+    await cat(bot, event, 0.001)
+
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
     assert said.data['text'] == 'http://cat.com/200.jpg'
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '냥짤의 요정'
@@ -196,8 +242,7 @@ async def test_cat_command(response_mock):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith('아직 쿨타임이다냥! ')
-    assert said.data['text'].endswith(' 이후로 다시 시도해보라냥!')
+    assert cat_cooltime_re.match(said.data['text'])
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '냥짤의 요정'
     assert said.data['icon_url'] == 'https://i.imgur.com/hIBJUMI.jpg'
@@ -206,6 +251,20 @@ async def test_cat_command(response_mock):
         'type': 'message',
         'channel': 'D1',
     })
+
+    assert cat.last_call.get('D1') is None
+
+    await cat(bot, event, 0.001)
+
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'D1'
+    assert said.data['text'] == (
+        '냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!'
+    )
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '냥짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/hIBJUMI.jpg'
 
     assert cat.last_call.get('D1') is None
 
@@ -236,11 +295,21 @@ async def test_cat_command(response_mock):
 async def test_dog_command(response_mock):
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
+        body='',
+        status=500,
+    )
+    response_mock.get(
+        'https://dog.ceo/api/breeds/image/random',
         body=ujson.dumps({
             'status': 'success',
             'message': 'http://dog.com/200.jpg',
         }),
         headers={'Content-Type': 'application/json'},
+    )
+    response_mock.get(
+        'https://dog.ceo/api/breeds/image/random',
+        body='',
+        status=500,
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
@@ -270,6 +339,20 @@ async def test_dog_command(response_mock):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!'
+    )
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '멍짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/Q9FKplO.png'
+
+    assert dog.last_call.get('C1') is None
+
+    await dog(bot, event, 0.001)
+
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
     assert said.data['text'] == 'http://dog.com/200.jpg'
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '멍짤의 요정'
@@ -282,8 +365,7 @@ async def test_dog_command(response_mock):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith('아직 쿨타임이다멍! ')
-    assert said.data['text'].endswith(' 이후로 다시 시도해보라멍!')
+    assert dog_cooltime_re.match(said.data['text'])
     assert said.data['as_user'] == '0'
     assert said.data['username'] == '멍짤의 요정'
     assert said.data['icon_url'] == 'https://i.imgur.com/Q9FKplO.png'
@@ -292,6 +374,20 @@ async def test_dog_command(response_mock):
         'type': 'message',
         'channel': 'D1',
     })
+
+    assert dog.last_call.get('D1') is None
+
+    await dog(bot, event, 0.001)
+
+    said = bot.call_queue.pop()
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'D1'
+    assert said.data['text'] == (
+        '멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!'
+    )
+    assert said.data['as_user'] == '0'
+    assert said.data['username'] == '멍짤의 요정'
+    assert said.data['icon_url'] == 'https://i.imgur.com/Q9FKplO.png'
 
     assert dog.last_call.get('D1') is None
 

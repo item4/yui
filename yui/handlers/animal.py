@@ -21,6 +21,10 @@ DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
 DM_COOLTIME = datetime.timedelta(minutes=3)
 
 
+class APIServerError(RuntimeError):
+    pass
+
+
 async def get_cat_image_url(timeout: float) -> str:
     api_url = 'http://thecatapi.com/api/images/get'
     async with client_session() as session:
@@ -30,6 +34,8 @@ async def get_cat_image_url(timeout: float) -> str:
                     'format': 'xml',
                     'type': 'jpg,png',
                 }) as res:
+                    if res.status != 200:
+                        raise APIServerError
                     xml_result = await res.read()
                     tree = etree.fromstring(xml_result)
                     url = tree.find('data/images/image/url').text
@@ -52,6 +58,8 @@ async def get_dog_image_url(timeout: float) -> str:
         while True:
             try:
                 async with session.get(api_url) as res:
+                    if res.status != 200:
+                        raise APIServerError
                     data = await res.json(loads=ujson.loads)
                     url = data['message']
             except aiohttp.client_exceptions.ServerDisconnectedError:
@@ -103,9 +111,14 @@ async def cat(bot, event: Message, timeout: float):
             )
             return
 
+    try:
+        url = await get_cat_image_url(timeout)
+    except APIServerError:
+        await cat_say(text='냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!')
+        return
+
     cat.last_call[event.channel.id] = now_dt
 
-    url = await get_cat_image_url(timeout)
     await cat_say(text=url)
 
 
@@ -147,7 +160,12 @@ async def dog(bot, event: Message, timeout: float):
             )
             return
 
+    try:
+        url = await get_dog_image_url(timeout)
+    except APIServerError:
+        await dog_say(text='멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!')
+        return
+
     dog.last_call[event.channel.id] = now_dt
 
-    url = await get_dog_image_url(timeout)
     await dog_say(text=url)
