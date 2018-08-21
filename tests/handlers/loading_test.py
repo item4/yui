@@ -1,6 +1,5 @@
 import datetime
-
-import aiohttp
+import os
 
 import pytest
 
@@ -28,19 +27,21 @@ def test_weekend_loading_percent():
     assert weekend_loading_percent(sun) == 100.0
 
 
+@pytest.fixture()
+def fx_tdcproject_key():
+    key = os.getenv('TDCPROJECT_KEY')
+    if not key:
+        pytest.skip('Can not test this without TDCPROJECT_KEY envvar')
+    return key
+
+
 @pytest.mark.asyncio
-async def test_get_holiday_name():
-    jan_first = datetime.datetime(2018, 1, 1)  # Holiday
-    jan_second = datetime.datetime(2018, 1, 2)  # Not holiday
+async def test_get_holiday_name(fx_tdcproject_key):
+    jan_first = datetime.datetime(2018, 1, 1)
+    jan_second = datetime.datetime(2018, 1, 2)
 
-    try:
-        holiday = await get_holiday_name(jan_first)
-    except aiohttp.client_exceptions.ClientOSError:
-        pytest.skip('API error')
-    assert holiday is not None and type(holiday) == str
+    holiday = await get_holiday_name(fx_tdcproject_key, jan_first)
+    assert holiday == '신정'
 
-    try:
-        holiday = await get_holiday_name(jan_second)
-    except aiohttp.client_exceptions.ClientOSError:
-        pytest.skip('API error')
+    holiday = await get_holiday_name(fx_tdcproject_key, jan_second)
     assert holiday is None

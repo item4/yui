@@ -1,6 +1,7 @@
 import datetime
 import functools
 import random
+from typing import Optional
 
 import aiohttp
 
@@ -24,7 +25,7 @@ async def monday_dog(bot):
     today = now()
     holiday = None
     try:
-        holiday = await get_holiday_name(today)
+        holiday = await get_holiday_name(bot.config.TDCPROJECT_KEY, today)
     except aiohttp.client_exceptions.ClientOSError:
         pass
 
@@ -52,14 +53,25 @@ async def monday_dog(bot):
             await monday_dog_say(text=say)
 
 
-async def get_holiday_name(dt: datetime.datetime):
-    url = 'http://api.manana.kr/calendar/{date}/holiday/kr.json'.format(
-        date=dt.strftime('%Y/%m/%d')
-    )
+async def get_holiday_name(
+    api_key: str,
+    dt: datetime.datetime,
+) -> Optional[str]:
+    year, month, day = dt.strftime('%Y/%m/%d').split('/')
+    url = 'https://apis.sktelecom.com/v1/eventday/days'
+    params = {
+        'year': year,
+        'month': month,
+        'day': day,
+    }
+    headers = {
+        'TDCProjectKey': api_key,
+    }
 
     async with client_session() as session:
-        async with session.get(url) as resp:
-            holidays = ujson.loads(await resp.text())
+        async with session.get(url, params=params, headers=headers) as resp:
+            data = await resp.json(loads=ujson.loads)
 
-    if holidays:
-        return holidays[0]['name']
+    if data['results']:
+        return data['results'][0]['name']
+    return None

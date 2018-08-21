@@ -51,6 +51,8 @@ AQI_API_TOKEN = 'AQI_API_TOKEN'
 
 WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
 
+TDCPROJECT_KEY = 'TDCPROJECT_KEY'
+
 [CHANNELS]
 general = '_general'
 game = 'game'
