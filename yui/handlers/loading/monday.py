@@ -2,6 +2,8 @@ import datetime
 import functools
 import random
 
+import aiohttp
+
 import ujson
 
 from yui.box import box
@@ -20,7 +22,11 @@ async def monday_dog(bot):
         icon_url='https://i.imgur.com/UtBQSLl.jpg',
     )
     today = now()
-    holiday = await get_holiday_name(today)
+    holiday = None
+    try:
+        holiday = await get_holiday_name(today)
+    except aiohttp.client_exceptions.ClientOSError:
+        pass
 
     if holiday:
         says = [

@@ -1,5 +1,7 @@
 import datetime
 
+import aiohttp
+
 import pytest
 
 from yui.handlers.loading.monday import get_holiday_name
@@ -31,8 +33,14 @@ async def test_get_holiday_name():
     jan_first = datetime.datetime(2018, 1, 1)  # Holiday
     jan_second = datetime.datetime(2018, 1, 2)  # Not holiday
 
-    holiday = await get_holiday_name(jan_first)
+    try:
+        holiday = await get_holiday_name(jan_first)
+    except aiohttp.client_exceptions.ClientOSError:
+        pytest.skip('API error')
     assert holiday is not None and type(holiday) == str
 
-    holiday = await get_holiday_name(jan_second)
+    try:
+        holiday = await get_holiday_name(jan_second)
+    except aiohttp.client_exceptions.ClientOSError:
+        pytest.skip('API error')
     assert holiday is None
