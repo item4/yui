@@ -1,5 +1,6 @@
 import datetime
 from typing import List
+from urllib.parse import urlencode
 
 import tzlocal
 
@@ -92,7 +93,11 @@ async def nyaa(
 
     category = CATEGORIES[category_name]
 
-    url = 'https://nyaa.si/?f=0&c={}&q={}'.format(category, keyword)
+    url = 'https://nyaa.si/?{}'.format(urlencode({
+        'f': '0',
+        'c': category,
+        'q': keyword,
+    }))
 
     async with new_page(bot) as page:
         await page.goto(url)
