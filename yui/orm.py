@@ -5,11 +5,13 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.expression import select
 
-__all__ = 'Base', 'get_database_engine'
+__all__ = 'Base', 'Session', 'get_database_engine'
 
 Base = declarative_base()
+Session = sessionmaker(autocommit=True)
 
 
 def get_database_engine(config: AttrDict) -> Engine:

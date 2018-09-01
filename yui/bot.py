@@ -1,12 +1,9 @@
 import asyncio
 import functools
-import html
 import importlib
 import inspect
 import logging
 import logging.config
-import re
-import shlex
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, TypeVar, Union
@@ -17,15 +14,13 @@ import aiohttp
 
 import async_timeout
 
-from sqlalchemy.orm import sessionmaker
-
 import ujson
 
 from .api import SlackAPI
-from .box import Box, Crontab, Handler, box
+from .box import Box, Crontab, box
 from .config import Config
-from .event import Event, Message, create_event
-from .orm import Base, get_database_engine
+from .event import create_event
+from .orm import Base, Session, get_database_engine
 from .session import client_session
 from .type import (
     BotLinkedNamespace,
@@ -40,10 +35,6 @@ from .type import (
 
 
 __all__ = 'APICallError', 'Bot', 'BotReconnect', 'Session'
-
-Session = sessionmaker(autocommit=True)
-
-SPACE_RE = re.compile('\s+')
 
 R = TypeVar('R')
 
@@ -273,12 +264,9 @@ class Bot:
 
         logger = logging.getLogger(f'{__name__}.Bot.process')
 
-        async def handle(func, args, event):
+        async def handle(handler, event):
             try:
-                return await func(
-                    *args,
-                    event=event,
-                )
+                return await handler.run(self, event)
             except SystemExit:
                 logger.info('SystemExit')
                 raise
@@ -310,170 +298,10 @@ class Bot:
             subtype = event.subtype
             handlers = self.box.handlers[type]
 
-            if type == 'message':
-                running = True
-                for name, handler in handlers[subtype].items():
-                    result = await handle(
-                        self.process_message_handler,
-                        (name, handler),
-                        event,
-                    )
-                    if not result:
-                        running = False
-                        break
-                if running:
-                    for name, alias_to in self.box.aliases[subtype].items():
-                        handler = self.box.handlers[type][subtype][alias_to]
-                        if handler:
-                            result = await handle(
-                                self.process_message_handler,
-                                (name, handler),
-                                event,
-                            )
-                            if not result:
-                                break
-            else:
-                for name, handler in handlers[subtype].items():
-                    result = await handle(
-                        self.process_handler,
-                        (handler,),
-                        event,
-                    )
-                    if not result:
-                        break
-
-    async def process_handler(
-        self,
-        handler: Handler,
-        event: Event
-    ):
-        func_params = handler.signature.parameters
-        kwargs: Dict[str, Any] = {}
-
-        sess = Session(bind=self.config.DATABASE_ENGINE)
-
-        if 'bot' in func_params:
-            kwargs['bot'] = self
-        if 'loop' in func_params:
-            kwargs['loop'] = self.loop
-        if 'event' in func_params:
-            kwargs['event'] = event
-        if 'sess' in func_params:
-            kwargs['sess'] = sess
-
-        validation = True
-        if handler.channel_validator:
-            validation = await handler.channel_validator(self, event)
-
-        if validation:
-            try:
-                res = await handler.callback(**kwargs)
-            finally:
-                sess.close()
-        else:
-            sess.close()
-            return True
-
-        if not res:
-            return False
-
-        return True
-
-    async def process_message_handler(
-        self,
-        name: str,
-        handler: Handler,
-        event: Message
-    ):
-
-        call = ''
-        args = ''
-        if hasattr(event, 'text'):
-            try:
-                call, args = SPACE_RE.split(event.text, 1)
-            except ValueError:
-                call = event.text
-        elif hasattr(event, 'message') and event.message and \
-                hasattr(event.message, 'text'):
-            try:
-                call, args = SPACE_RE.split(event.message.text, 1)
-            except ValueError:
-                call = event.message.text
-
-        match = True
-        if handler.is_command:
-            match = call == self.config.PREFIX + name
-
-        if match:
-            func_params = handler.signature.parameters
-            kwargs = {}
-            options: Dict[str, Any] = {}
-            arguments: Dict[str, Any] = {}
-            raw = html.unescape(args)
-            if handler.use_shlex:
-                try:
-                    option_chunks = shlex.split(raw)
-                except ValueError:
-                    await self.say(
-                        event.channel,
-                        '*Error*: Can not parse this command'
-                    )
-                    return False
-            else:
-                option_chunks = raw.split(' ')
-
-            try:
-                options, argument_chunks = handler.parse_options(option_chunks)
-            except SyntaxError as e:
-                await self.say(event.channel, '*Error*\n{}'.format(e))
-                return False
-
-            try:
-                arguments, remain_chunks = handler.parse_arguments(
-                    argument_chunks
-                )
-            except SyntaxError as e:
-                await self.say(event.channel, '*Error*\n{}'.format(e))
-                return False
-            else:
-                kwargs.update(options)
-                kwargs.update(arguments)
-
-                sess = Session(bind=self.config.DATABASE_ENGINE)
-
-                if 'bot' in func_params:
-                    kwargs['bot'] = self
-                if 'loop' in func_params:
-                    kwargs['loop'] = self.loop
-                if 'event' in func_params:
-                    kwargs['event'] = event
-                if 'sess' in func_params:
-                    kwargs['sess'] = sess
-                if 'raw' in func_params:
-                    kwargs['raw'] = raw
-                if 'remain_chunks' in func_params:
-                    annotation = func_params['remain_chunks'].annotation
-                    if annotation in [str, inspect._empty]:  # type: ignore
-                        kwargs['remain_chunks'] = ' '.join(remain_chunks)
-                    else:
-                        kwargs['remain_chunks'] = remain_chunks
-
-                validation = True
-                if handler.channel_validator:
-                    validation = await handler.channel_validator(self, event)
-
-                if validation:
-                    try:
-                        res = await handler.callback(**kwargs)
-                    finally:
-                        sess.close()
-                else:
-                    sess.close()
-                    return True
-
-                if not res:
-                    return False
-        return True
+            for handler in handlers[subtype]:
+                result = await handle(handler, event)
+                if not result:
+                    break
 
     async def receive(self):
         """Receive stream from slack."""

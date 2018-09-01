@@ -1,24 +1,55 @@
+from __future__ import annotations
+
 import collections
 import functools
+import html
 import inspect
-from typing import (Any, Awaitable, Callable, Dict, List, Optional, Tuple,
-                    Type, Union)
+import re
+import shlex
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    TYPE_CHECKING,
+    Tuple,
+    Type,
+    Union,
+)
 
 from .command import Argument, Option
-from .event import Event
+from .event import Event, Message
+from .orm import Session
 from .type import cast, is_container
+
+if TYPE_CHECKING:
+    from .bot import Bot
 
 
 __all__ = 'Box', 'Crontab', 'Handler', 'box'
 
 
-class Handler:
+SPACE_RE = re.compile('\s+')
+
+
+class AbstractHandler:
+    """Abstract Handler"""
+
+    async def run(self, bot: Bot, event: Event):
+        raise NotImplementedError
+
+
+class Handler(AbstractHandler):
     """Handler"""
 
     def __init__(
         self,
         callback,
         *,
+        name: Optional[str]=None,
+        aliases: Optional[List[str]]=None,
         short_help: Optional[str]=None,
         help: Optional[str]=None,
         use_shlex: bool=False,
@@ -30,12 +61,149 @@ class Handler:
         """Initialize"""
 
         self.callback = callback
+        self.name = name
+        self.aliases: List[str] = [] if aliases is None else aliases
+        self.names: List[str] = self.aliases[:]
+        if name:
+            self.names.append(name)
+
         self.short_help = short_help
         self.help = help
         self.is_command = is_command
         self.use_shlex = use_shlex
         self.channel_validator = channel_validator
         self.signature = inspect.signature(callback)
+
+    async def run(self, bot: Bot, event: Event):
+        if isinstance(event, Message):
+            return await self._run_message_event(bot, event)
+        else:
+            return await self._run(bot, event)
+
+    async def _run(self, bot: Bot, event: Event):
+        func_params = self.signature.parameters
+        kwargs: Dict[str, Any] = {}
+
+        sess = Session(bind=bot.config.DATABASE_ENGINE)
+
+        if 'bot' in func_params:
+            kwargs['bot'] = bot
+        if 'loop' in func_params:
+            kwargs['loop'] = bot.loop
+        if 'event' in func_params:
+            kwargs['event'] = event
+        if 'sess' in func_params:
+            kwargs['sess'] = sess
+
+        validation = True
+        if self.channel_validator:
+            validation = await self.channel_validator(self, event)
+
+        if validation:
+            try:
+                res = await self.callback(**kwargs)
+            finally:
+                sess.close()
+        else:
+            sess.close()
+            return True
+
+        if not res:
+            return False
+
+        return True
+
+    async def _run_message_event(self, bot: Bot, event: Message):
+        call = ''
+        args = ''
+        if hasattr(event, 'text'):
+            try:
+                call, args = SPACE_RE.split(event.text, 1)
+            except ValueError:
+                call = event.text
+        elif hasattr(event, 'message') and event.message and \
+                hasattr(event.message, 'text'):
+            try:
+                call, args = SPACE_RE.split(event.message.text, 1)
+            except ValueError:
+                call = event.message.text
+
+        match = True
+        if self.is_command:
+            match = any(
+                call == bot.config.PREFIX + name for name in self.names
+            )
+
+        if match:
+            func_params = self.signature.parameters
+            kwargs = {}
+            options: Dict[str, Any] = {}
+            arguments: Dict[str, Any] = {}
+            raw = html.unescape(args)
+            if self.use_shlex:
+                try:
+                    option_chunks = shlex.split(raw)
+                except ValueError:
+                    await bot.say(
+                        event.channel,
+                        '*Error*: Can not parse this command'
+                    )
+                    return False
+            else:
+                option_chunks = raw.split(' ')
+
+            try:
+                options, argument_chunks = self.parse_options(option_chunks)
+            except SyntaxError as e:
+                await bot.say(event.channel, '*Error*\n{}'.format(e))
+                return False
+
+            try:
+                arguments, remain_chunks = self.parse_arguments(
+                    argument_chunks
+                )
+            except SyntaxError as e:
+                await bot.say(event.channel, '*Error*\n{}'.format(e))
+                return False
+            else:
+                kwargs.update(options)
+                kwargs.update(arguments)
+
+                sess = Session(bind=bot.config.DATABASE_ENGINE)
+
+                if 'bot' in func_params:
+                    kwargs['bot'] = bot
+                if 'loop' in func_params:
+                    kwargs['loop'] = bot.loop
+                if 'event' in func_params:
+                    kwargs['event'] = event
+                if 'sess' in func_params:
+                    kwargs['sess'] = sess
+                if 'raw' in func_params:
+                    kwargs['raw'] = raw
+                if 'remain_chunks' in func_params:
+                    annotation = func_params['remain_chunks'].annotation
+                    if annotation in [str, inspect._empty]:  # type: ignore
+                        kwargs['remain_chunks'] = ' '.join(remain_chunks)
+                    else:
+                        kwargs['remain_chunks'] = remain_chunks
+
+                validation = True
+                if self.channel_validator:
+                    validation = await self.channel_validator(self, event)
+
+                if validation:
+                    try:
+                        res = await self.callback(**kwargs)
+                    finally:
+                        sess.close()
+                else:
+                    sess.close()
+                    return True
+
+                if not res:
+                    return False
+        return True
 
     def parse_options(self, chunk: List[str]) -> Tuple[Dict, List[str]]:
 
@@ -252,14 +420,8 @@ class Box:
 
         self.handlers: Dict[
             Optional[str],
-            Dict[Optional[str], Dict[str, Awaitable]]
-        ] = collections.defaultdict(
-            lambda: collections.defaultdict(dict)
-        )
-        self.aliases: Dict[
-            Optional[str],
-            Dict[str, str]
-        ] = collections.defaultdict(dict)
+            Dict[Optional[str], List[AbstractHandler]]
+        ] = collections.defaultdict(lambda: collections.defaultdict(list))
         self.crontabs: List[Crontab] = []
 
     def command(
@@ -299,18 +461,16 @@ class Box:
 
             @functools.wraps(func)
             def internal(func_):
-                self.handlers['message'][subtype][name] = Handler(
+                self.handlers['message'][subtype].append(Handler(
                     func_,
+                    name=name,
+                    aliases=aliases,
                     short_help=_short_help,
                     help=help_message,
                     is_command=True,
                     use_shlex=use_shlex,
                     channel_validator=channels,
-                )
-
-                if aliases is not None:
-                    for alias in aliases:
-                        self.aliases[subtype][alias] = name
+                ))
 
                 return func
 
@@ -338,14 +498,13 @@ class Box:
             if not hasattr(func, '__options__'):
                 func.__options__ = []
 
-            name = f'{func.__module__}.{func.__name__}'
-
             @functools.wraps(func)
             def internal(func_):
-                self.handlers[type_][subtype][name] = Handler(
+                self.handlers[type_][subtype].append(Handler(
                     func,
                     channel_validator=channels,
-                )
+                ))
+
                 return func_
 
             return internal(func)

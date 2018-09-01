@@ -2,6 +2,13 @@ from ..box import box
 from ..event import Message
 
 
+def make_inline_help_text(prefix, h):
+    return (
+        f'{"/".join(f"`{prefix}{n}`" for n in h.names)}:'
+        f' {h.short_help}'
+    )
+
+
 @box.command('help', ['도움', '도움말'])
 async def help(bot, event: Message, raw: str):
     """
@@ -16,21 +23,23 @@ async def help(bot, event: Message, raw: str):
         await bot.say(
             event.channel,
             '\n'.join(
-                f'`{bot.config.PREFIX}{name}`: {h.short_help}'
-                for name, h in bot.box.handlers['message'][None].items()
+                make_inline_help_text(bot.config.PREFIX, h)
+                for h in bot.box.handlers['message'][None]
                 if h.is_command
             ),
             thread_ts=event.ts,
         )
     else:
-        name = bot.box.aliases[None].get(raw, raw)
-        handler = bot.box.handlers['message'][None].get(name)
+        handlers = [
+            h for h in bot.box.handlers['message'][None] if raw in h.names
+        ]
 
-        if handler:
+        if handlers:
             await bot.say(
                 event.channel,
-                f'{handler.short_help}\n\n{handler.help}'.format(
-                    PREFIX=bot.config.PREFIX
+                '\n'.join(
+                    make_inline_help_text(bot.config.PREFIX, h)
+                    for h in handlers
                 ),
                 thread_ts=event.ts,
             )

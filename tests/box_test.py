@@ -13,11 +13,10 @@ from yui.transform import str_to_date, value_range
 def test_box_class():
     box = Box()
 
-    assert not box.aliases
     assert not box.handlers
     assert not box.crontabs
 
-    @box.command('test1')
+    @box.command(0)
     async def test1(bot, event):
         """
         TEST SHORT HELP
@@ -26,59 +25,62 @@ def test_box_class():
 
         """
 
-    assert not box.aliases
-    assert type(box.handlers['message'][None]['test1']) == Handler
-    assert box.handlers['message'][None]['test1'].is_command
-    assert box.handlers['message'][None]['test1'].use_shlex
-    assert box.handlers['message'][None]['test1'].callback == test1
+    assert type(box.handlers['message'][None][0]) == Handler
+    assert box.handlers['message'][None][0].is_command
+    assert box.handlers['message'][None][0].use_shlex
+    assert box.handlers['message'][None][0].callback == test1
     params = set(
-        box.handlers['message'][None]['test1'].signature.parameters.keys()
+        box.handlers['message'][None][0].signature.parameters.keys()
     )
     assert params == {'bot', 'event'}
-    assert box.handlers['message'][None]['test1'].short_help == (
+    assert box.handlers['message'][None][0].short_help == (
         'TEST SHORT HELP'
     )
-    assert box.handlers['message'][None]['test1'].help == (
+    assert box.handlers['message'][None][0].help == (
         'LONG CAT IS LONG'
     )
     assert not box.crontabs
 
-    @box.command('test2', ['t2'], use_shlex=False)
+    @box.command(1, ['t2'], use_shlex=False)
     async def test2():
         """Short only"""
 
-    assert box.aliases[None]['t2'] == 'test2'
-    assert type(box.handlers['message'][None]['test1']) == Handler
-    assert type(box.handlers['message'][None]['test2']) == Handler
-    assert box.handlers['message'][None]['test1'].is_command
-    assert box.handlers['message'][None]['test2'].is_command
-    assert box.handlers['message'][None]['test1'].use_shlex
-    assert not box.handlers['message'][None]['test2'].use_shlex
-    assert box.handlers['message'][None]['test1'].callback == test1
-    assert box.handlers['message'][None]['test2'].callback == test2
-    assert box.handlers['message'][None]['test2'].short_help == (
+    assert type(box.handlers['message'][None][0]) == Handler
+    assert type(box.handlers['message'][None][1]) == Handler
+    assert box.handlers['message'][None][0].is_command
+    assert box.handlers['message'][None][1].is_command
+    assert box.handlers['message'][None][0].use_shlex
+    assert not box.handlers['message'][None][1].use_shlex
+    assert box.handlers['message'][None][0].callback == test1
+    assert box.handlers['message'][None][1].callback == test2
+    assert box.handlers['message'][None][0].short_help == (
+        'TEST SHORT HELP'
+    )
+    assert box.handlers['message'][None][1].short_help == (
         'Short only'
     )
-    assert box.handlers['message'][None]['test2'].help is None
+    assert box.handlers['message'][None][0].help == (
+        'LONG CAT IS LONG'
+    )
+    assert box.handlers['message'][None][1].help is None
     assert not box.crontabs
 
     @box.on(Hello)
     async def test3():
         pass
 
-    assert box.aliases[None]['t2'] == 'test2'
-    assert type(box.handlers['message'][None]['test1']) == Handler
-    assert type(box.handlers['message'][None]['test2']) == Handler
-    assert type(box.handlers['hello'][None]['tests.box_test.test3']) == Handler
-    assert box.handlers['message'][None]['test1'].is_command
-    assert box.handlers['message'][None]['test2'].is_command
-    assert not box.handlers['hello'][None]['tests.box_test.test3'].is_command
-    assert box.handlers['message'][None]['test1'].is_command
-    assert not box.handlers['message'][None]['test2'].use_shlex
-    assert not box.handlers['hello'][None]['tests.box_test.test3'].use_shlex
-    assert box.handlers['message'][None]['test1'].callback == test1
-    assert box.handlers['message'][None]['test2'].callback == test2
-    assert box.handlers['hello'][None]['tests.box_test.test3'].callback == \
+    assert type(box.handlers['message'][None][0]) == Handler
+    assert type(box.handlers['message'][None][1]) == Handler
+    assert type(box.handlers['hello'][None][0]) == Handler
+    assert box.handlers['message'][None][0].is_command
+    assert box.handlers['message'][None][1].is_command
+    assert not box.handlers['hello'][None][0].is_command
+    assert box.handlers['message'][None][0].is_command
+    assert not box.handlers['message'][None][1].use_shlex
+    assert not box.handlers['hello'][None][0].use_shlex
+    assert box.handlers['message'][None][0].callback == test1
+    assert box.handlers['message'][None][1].callback == test2
+    assert box.handlers['hello'][None][0].callback == \
         test3
     assert not box.crontabs
 
@@ -86,19 +88,18 @@ def test_box_class():
     async def test4():
         pass
 
-    assert box.aliases[None]['t2'] == 'test2'
-    assert type(box.handlers['message'][None]['test1']) == Handler
-    assert type(box.handlers['message'][None]['test2']) == Handler
-    assert type(box.handlers['hello'][None]['tests.box_test.test3']) == Handler
-    assert box.handlers['message'][None]['test1'].is_command
-    assert box.handlers['message'][None]['test2'].is_command
-    assert not box.handlers['hello'][None]['tests.box_test.test3'].is_command
-    assert box.handlers['message'][None]['test1'].is_command
-    assert not box.handlers['message'][None]['test2'].use_shlex
-    assert not box.handlers['hello'][None]['tests.box_test.test3'].use_shlex
-    assert box.handlers['message'][None]['test1'].callback == test1
-    assert box.handlers['message'][None]['test2'].callback == test2
-    assert box.handlers['hello'][None]['tests.box_test.test3'].callback == \
+    assert type(box.handlers['message'][None][0]) == Handler
+    assert type(box.handlers['message'][None][1]) == Handler
+    assert type(box.handlers['hello'][None][0]) == Handler
+    assert box.handlers['message'][None][0].is_command
+    assert box.handlers['message'][None][1].is_command
+    assert not box.handlers['hello'][None][0].is_command
+    assert box.handlers['message'][None][0].is_command
+    assert not box.handlers['message'][None][1].use_shlex
+    assert not box.handlers['hello'][None][0].use_shlex
+    assert box.handlers['message'][None][0].callback == test1
+    assert box.handlers['message'][None][1].callback == test2
+    assert box.handlers['hello'][None][0].callback == \
         test3
     assert box.crontabs[0].spec == '*/3 * * * *'
     assert box.crontabs[0].func == test4
@@ -107,7 +108,7 @@ def test_box_class():
 def test_handler_class():
     box = Box()
 
-    @box.command('test')
+    @box.command('test', aliases=['tttt'])
     @option('--foo', '-f')
     @option('--bar')
     @argument('baz')
@@ -123,7 +124,10 @@ def test_handler_class():
 
         """
 
-    handler: Handler = box.handlers['message'][None]['test']
+    handler: Handler = box.handlers['message'][None][0]
+    assert handler.name == 'test'
+    assert handler.aliases == ['tttt']
+    assert handler.names == ['tttt', 'test']
     assert handler.callback == test
     assert handler.channel_validator is None
     assert handler.is_command
@@ -195,7 +199,7 @@ def test_handler_parse_option():
     ):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test']
+    handler: Handler = box.handlers['message'][None][0]
 
     option_chunks = shlex.split(
         '--required-option 1111 '
@@ -294,7 +298,7 @@ def test_handler_parse_argument():
     ):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test']
+    handler: Handler = box.handlers['message'][None][0]
 
     argument_chunks = shlex.split(
         'hello '
@@ -315,12 +319,12 @@ def test_handler_parse_argument():
         datetime.date(2017, 10, 24),
     ]
 
-    @box.command('test2')
+    @box.command(1)
     @argument('args', nargs=-1)
     async def test2(args):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test2']
+    handler: Handler = box.handlers['message'][None][1]
 
     argument_chunks = shlex.split('')
 
@@ -335,7 +339,7 @@ def test_handler_parse_argument():
     async def test3(args):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test3']
+    handler: Handler = box.handlers['message'][None][2]
 
     argument_chunks = shlex.split('1')
 
@@ -356,7 +360,7 @@ def test_handler_parse_argument():
     async def test4(args: int):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test4']
+    handler: Handler = box.handlers['message'][None][3]
 
     argument_chunks = shlex.split('asdf')
 
@@ -371,7 +375,7 @@ def test_handler_parse_argument():
     async def test5(args):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test5']
+    handler: Handler = box.handlers['message'][None][4]
 
     argument_chunks = shlex.split('2017-10-99')
 
@@ -385,7 +389,7 @@ def test_handler_parse_argument():
     async def test6(args):
         pass
 
-    handler: Handler = box.handlers['message'][None]['test6']
+    handler: Handler = box.handlers['message'][None][5]
 
     argument_chunks = shlex.split('2017-10-99 2017-10-00')
 
