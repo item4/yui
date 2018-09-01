@@ -2,6 +2,8 @@ import datetime
 from typing import List
 from urllib.parse import urlencode
 
+from pyppeteer.errors import TimeoutError
+
 import tzlocal
 
 from ..api import Attachment
@@ -55,7 +57,9 @@ SCRIPT = '''
 }
 '''
 
-SELECTOR = 'table.torrent-list > tbody > tr'
+CONTAINER_SELECTOR = 'div.container'
+NOT_FOUND_SELECTOR = 'div.container h3'
+TABLE_ROW_SELECTOR = 'table.torrent-list > tbody > tr'
 
 
 @box.command('nyaa', ['냐'])
@@ -101,8 +105,23 @@ async def nyaa(
 
     async with new_page(bot) as page:
         await page.goto(url)
-        await page.waitForSelector(SELECTOR)
-        result = await page.querySelectorAllEval(SELECTOR, SCRIPT)
+        try:
+            await page.waitForSelector(CONTAINER_SELECTOR)
+        except TimeoutError:
+            await bot.say(
+                event.channel,
+                'nyaa 접속에 실패했어요!'
+            )
+            return
+
+        not_found_tag = await page.querySelector(NOT_FOUND_SELECTOR)
+        if not_found_tag is None:
+            result = await page.querySelectorAllEval(
+                TABLE_ROW_SELECTOR,
+                SCRIPT,
+            )
+        else:
+            result = []
 
     attachments: List[Attachment] = []
 
