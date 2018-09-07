@@ -294,11 +294,7 @@ class Bot:
 
             logger.info(event)
 
-            type = event.type
-            subtype = event.subtype
-            handlers = self.box.handlers[type]
-
-            for handler in handlers[subtype]:
+            for handler in self.box.handlers:
                 result = await handle(handler, event)
                 if not result:
                     break

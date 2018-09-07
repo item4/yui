@@ -2,13 +2,6 @@ from ..box import box
 from ..event import Message
 
 
-def make_inline_help_text(prefix, h):
-    return (
-        f'{"/".join(f"`{prefix}{n}`" for n in h.names)}:'
-        f' {h.short_help}'
-    )
-
-
 @box.command('help', ['도움', '도움말'])
 async def help(bot, event: Message, raw: str):
     """
@@ -18,31 +11,41 @@ async def help(bot, event: Message, raw: str):
     `{PREFIX}help quit` (개별 명령어 도움말)
 
     """
-
+    p = bot.config.PREFIX
     if raw == '':
         await bot.say(
             event.channel,
             '\n'.join(
-                make_inline_help_text(bot.config.PREFIX, h)
-                for h in bot.box.handlers['message'][None]
-                if h.is_command
+                h.get_short_help(p)
+                for h in bot.box.handlers if h.has_short_help
             ),
             thread_ts=event.ts,
         )
     else:
         handlers = [
-            h for h in bot.box.handlers['message'][None] if raw in h.names
+            h for h in bot.box.handlers
+            if h.has_short_help and raw in h.names
         ]
 
         if handlers:
-            await bot.say(
-                event.channel,
-                '\n'.join(
-                    make_inline_help_text(bot.config.PREFIX, h)
-                    for h in handlers
-                ),
-                thread_ts=event.ts,
-            )
+            if len(handlers) == 1:
+                h = handlers[0]
+                try:
+                    help = h.get_full_help(p)
+                except NotImplementedError:
+                    help = h.get_short_help(p)
+
+                await bot.say(
+                    event.channel,
+                    help,
+                    thread_ts=event.ts,
+                )
+            else:
+                await bot.say(
+                    event.channel,
+                    '\n'.join(h.get_short_help(p) for h in handlers),
+                    thread_ts=event.ts,
+                )
         else:
             await bot.say(
                 event.channel,

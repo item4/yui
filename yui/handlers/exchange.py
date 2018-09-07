@@ -61,8 +61,8 @@ async def exchange(bot, event: Message, query: str):
     """
     환전시 얼마가 되는지 계산.
 
-    `환율 100엔` (100 JPY가 KRW로 얼마인지 계산)
-    `환율 100 JPY to USD` (100 JPY가 USD로 얼마인지 계산)
+    `{PREFIX}환율 100엔` (100 JPY가 KRW로 얼마인지 계산)
+    `{PREFIX}환율 100 JPY to USD` (100 JPY가 USD로 얼마인지 계산)
 
     """
 

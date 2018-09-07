@@ -103,8 +103,6 @@ async def aqi(bot, event: Message, address: str):
 
     `{PREFIX}공기 부천` (경기도 부천시의 AQI 지수 열람)
 
-    이 명령어는 `{PREFIX}공기`, `{PREFIX}aqi` 중 편하신 이름으로 사용하실 수 있습니다.
-
     """
 
     try:

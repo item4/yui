@@ -4,7 +4,7 @@ from typing import List, Set
 
 import pytest
 
-from yui.box import Box, Handler
+from yui.box import Box, Handler, parse_option_and_arguments
 from yui.command import argument, option
 from yui.event import Hello, Message
 from yui.transform import str_to_date, value_range
@@ -25,82 +25,43 @@ def test_box_class():
 
         """
 
-    assert type(box.handlers['message'][None][0]) == Handler
-    assert box.handlers['message'][None][0].is_command
-    assert box.handlers['message'][None][0].use_shlex
-    assert box.handlers['message'][None][0].callback == test1
-    params = set(
-        box.handlers['message'][None][0].signature.parameters.keys()
-    )
-    assert params == {'bot', 'event'}
-    assert box.handlers['message'][None][0].short_help == (
-        'TEST SHORT HELP'
-    )
-    assert box.handlers['message'][None][0].help == (
-        'LONG CAT IS LONG'
-    )
+    h1 = box.handlers.pop()
+    assert isinstance(h1, Handler)
+    assert h1.is_command
+    assert h1.use_shlex
+    assert h1.callback == test1
+    assert h1.short_help == 'TEST SHORT HELP'
+    assert h1.help == 'LONG CAT IS LONG'
     assert not box.crontabs
 
     @box.command(1, ['t2'], use_shlex=False)
     async def test2():
         """Short only"""
 
-    assert type(box.handlers['message'][None][0]) == Handler
-    assert type(box.handlers['message'][None][1]) == Handler
-    assert box.handlers['message'][None][0].is_command
-    assert box.handlers['message'][None][1].is_command
-    assert box.handlers['message'][None][0].use_shlex
-    assert not box.handlers['message'][None][1].use_shlex
-    assert box.handlers['message'][None][0].callback == test1
-    assert box.handlers['message'][None][1].callback == test2
-    assert box.handlers['message'][None][0].short_help == (
-        'TEST SHORT HELP'
-    )
-    assert box.handlers['message'][None][1].short_help == (
-        'Short only'
-    )
-    assert box.handlers['message'][None][0].help == (
-        'LONG CAT IS LONG'
-    )
-    assert box.handlers['message'][None][1].help is None
+    h2 = box.handlers.pop()
+    assert isinstance(h2, Handler)
+    assert h2.is_command
+    assert not h2.use_shlex
+    assert h2.callback == test2
+    assert h2.short_help == 'Short only'
+    assert h2.help is None
     assert not box.crontabs
 
     @box.on(Hello)
     async def test3():
         pass
 
-    assert type(box.handlers['message'][None][0]) == Handler
-    assert type(box.handlers['message'][None][1]) == Handler
-    assert type(box.handlers['hello'][None][0]) == Handler
-    assert box.handlers['message'][None][0].is_command
-    assert box.handlers['message'][None][1].is_command
-    assert not box.handlers['hello'][None][0].is_command
-    assert box.handlers['message'][None][0].is_command
-    assert not box.handlers['message'][None][1].use_shlex
-    assert not box.handlers['hello'][None][0].use_shlex
-    assert box.handlers['message'][None][0].callback == test1
-    assert box.handlers['message'][None][1].callback == test2
-    assert box.handlers['hello'][None][0].callback == \
-        test3
+    h3 = box.handlers.pop()
+    assert isinstance(h3, Handler)
+    assert not h3.is_command
+    assert not h3.use_shlex
+    assert h3.callback == test3
     assert not box.crontabs
 
     @box.crontab('*/3 * * * *')
     async def test4():
         pass
 
-    assert type(box.handlers['message'][None][0]) == Handler
-    assert type(box.handlers['message'][None][1]) == Handler
-    assert type(box.handlers['hello'][None][0]) == Handler
-    assert box.handlers['message'][None][0].is_command
-    assert box.handlers['message'][None][1].is_command
-    assert not box.handlers['hello'][None][0].is_command
-    assert box.handlers['message'][None][0].is_command
-    assert not box.handlers['message'][None][1].use_shlex
-    assert not box.handlers['hello'][None][0].use_shlex
-    assert box.handlers['message'][None][0].callback == test1
-    assert box.handlers['message'][None][1].callback == test2
-    assert box.handlers['hello'][None][0].callback == \
-        test3
     assert box.crontabs[0].spec == '*/3 * * * *'
     assert box.crontabs[0].func == test4
 
@@ -124,7 +85,7 @@ def test_handler_class():
 
         """
 
-    handler: Handler = box.handlers['message'][None][0]
+    handler: Handler = box.handlers.pop()
     assert handler.name == 'test'
     assert handler.aliases == ['tttt']
     assert handler.names == ['tttt', 'test']
@@ -132,42 +93,32 @@ def test_handler_class():
     assert handler.channel_validator is None
     assert handler.is_command
     assert handler.use_shlex
+    assert handler.has_short_help
+    assert handler.has_full_help
     assert handler.short_help == 'TEST TITLE'
     assert handler.help == """LONG
 CAT
 IS
 LONG"""
-    assert handler.signature.parameters['bot']
-    assert handler.signature.parameters['event']
-    assert handler.signature.parameters['event'].annotation == Message
-    assert handler.signature.parameters['foo']
-    assert handler.signature.parameters['foo'].annotation == int
-    assert handler.signature.parameters['bar']
-    assert handler.signature.parameters['bar'].annotation == str
-    assert handler.signature.parameters['baz']
-    assert handler.signature.parameters['baz'].annotation == str
-    assert handler.signature.parameters['kw']
-    assert handler.signature.parameters['kw'].annotation == str
-
-    option_chunks = shlex.split('-f 111 --bar aaaa first_arg second is long')
-
-    options, argument_chunks = handler.parse_options(option_chunks)
-    assert options['foo'] == 111
-    assert options['bar'] == 'aaaa'
-
-    arguments, remain_chunks = handler.parse_arguments(argument_chunks)
-    assert arguments['baz'] == 'first_arg'
-    assert arguments['kw'] == 'second is long'
-    assert not remain_chunks
+    assert handler.get_short_help('=') == '`=test`: TEST TITLE'
+    assert handler.get_full_help('=') == (
+        '*=test*\n'
+        '(Aliases: `=tttt`)\n'
+        'TEST TITLE\n\n'
+        'LONG\n'
+        'CAT\n'
+        'IS\n'
+        'LONG'
+    )
 
 
-def test_handler_parse_option():
+def test_parse_option_and_arguments():
     box = Box()
 
     def callable_default():
         return 'hello'
 
-    @box.command('test')
+    @box.command('test-option')
     @option('--required-option', required=True)
     @option('--dest-change-option', dest='dest_changed_option')
     @option('--is-flag', is_flag=True)
@@ -183,7 +134,7 @@ def test_handler_parse_option():
             container_cls=set, nargs=3)
     @option('--transform-two', transform_func=str_to_date(),
             container_cls=list, nargs=2)
-    async def test(
+    async def test_option(
         required_option: int,
         dest_changed_option: int,
         is_flag: bool,
@@ -199,11 +150,10 @@ def test_handler_parse_option():
     ):
         pass
 
-    handler: Handler = box.handlers['message'][None][0]
+    handler: Handler = box.handlers.pop()
 
-    option_chunks = shlex.split(
-        '--required-option 1111 '
-        '--dest-change-option 2222 '
+    chunks = shlex.split(
+        '--dest-change-option=2222 '
         '--is-flag '
         '--multiple 3333 --multiple=4444 '
         '--container 55.55 66.66 '
@@ -212,85 +162,82 @@ def test_handler_parse_option():
         '--transform-non-type 2017-10-07 '
         '--transform-container 4 6 2 '
         '--transform-two 2017-10-07 2017-10-24 '
+        '--required-option 1111 '
     )
 
-    options, argument_chunks = handler.parse_options(option_chunks)
-    assert options['required_option'] == 1111
-    assert options['dest_changed_option'] == 2222
-    assert options['is_flag']
-    assert options['multiple'] == [3333, 4444]
-    assert options['container'] == {55.55, 66.66}
-    assert options['callable_default'] == 'hello'
-    assert options['non_type'] == 'world'
-    assert options['default_option'] == '!!!'
-    assert options['transform'] == 4
-    assert options['transform_non_type'] == datetime.date(2017, 10, 7)
-    assert options['transform_container'] == {2, 4, 6}
-    assert options['transform_two'] == [
+    kw, remain_chunks = parse_option_and_arguments(handler.callback, chunks)
+    assert kw['required_option'] == 1111
+    assert kw['dest_changed_option'] == 2222
+    assert kw['is_flag']
+    assert kw['multiple'] == [3333, 4444]
+    assert kw['container'] == {55.55, 66.66}
+    assert kw['callable_default'] == 'hello'
+    assert kw['non_type'] == 'world'
+    assert kw['default_option'] == '!!!'
+    assert kw['transform'] == 4
+    assert kw['transform_non_type'] == datetime.date(2017, 10, 7)
+    assert kw['transform_container'] == {2, 4, 6}
+    assert kw['transform_two'] == [
         datetime.date(2017, 10, 7),
         datetime.date(2017, 10, 24),
     ]
-    assert not argument_chunks
+    assert not remain_chunks
 
-    option_chunks = shlex.split('')
+    chunks = shlex.split('')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_options(option_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ('--required-option: incorrect option value count.'
                            ' expected 1, 0 given.')
 
-    option_chunks = shlex.split(
+    chunks = shlex.split(
         '--required-option 1111 '
         '--container 55.55 '
     )
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_options(option_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ("--container: incorrect option value count."
                            " expected 2, 1 given.")
 
-    option_chunks = shlex.split(
+    chunks = shlex.split(
         '--required-option 1111 '
         '--container a b '
     )
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_options(option_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ("--container: invalid type of option value"
                            "(could not convert string to float: 'a')")
 
-    option_chunks = shlex.split(
+    chunks = shlex.split(
         '--required-option 1111 '
         '--transform-non-type 2017-10-99'
     )
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_options(option_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ("--transform-non-type: fail to transform option "
                            "value (day is out of range for month)")
 
-    option_chunks = shlex.split(
+    chunks = shlex.split(
         '--required-option 1111 '
         '--transform-two 2017-10-99 2017-10-00'
     )
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_options(option_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ("--transform-two: fail to transform option "
                            "value (day is out of range for month)")
 
-
-def test_handler_parse_argument():
-    box = Box()
-
-    @box.command('test')
+    @box.command('test-argument1')
     @argument('non_type')
     @argument('transform_non_type', transform_func=str_to_date())
     @argument('container', nargs=3, container_cls=set, type_=float)
     @argument('container_with_typing', nargs=3)
     @argument('container_with_transform', nargs=2, container_cls=list,
               transform_func=str_to_date())
-    async def test(
+    async def test_argument1(
         non_type,
         transform_non_type: datetime.date,
         container_with_typing: List[int],
@@ -298,9 +245,9 @@ def test_handler_parse_argument():
     ):
         pass
 
-    handler: Handler = box.handlers['message'][None][0]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split(
+    chunks = shlex.split(
         'hello '
         '2017-10-07 '
         '3.3 1.1 2.2 '
@@ -308,92 +255,92 @@ def test_handler_parse_argument():
         '2017-10-07 2017-10-24 '
     )
 
-    arguments, remain_chunks = handler.parse_arguments(argument_chunks)
+    kw, remain_chunks = parse_option_and_arguments(handler.callback, chunks)
 
-    assert arguments['non_type'] == 'hello'
-    assert arguments['transform_non_type'] == datetime.date(2017, 10, 7)
-    assert arguments['container'] == {1.1, 2.2, 3.3}
-    assert arguments['container_with_typing'] == [1, 2, 3]
-    assert arguments['container_with_transform'] == [
+    assert kw['non_type'] == 'hello'
+    assert kw['transform_non_type'] == datetime.date(2017, 10, 7)
+    assert kw['container'] == {1.1, 2.2, 3.3}
+    assert kw['container_with_typing'] == [1, 2, 3]
+    assert kw['container_with_transform'] == [
         datetime.date(2017, 10, 7),
         datetime.date(2017, 10, 24),
     ]
 
-    @box.command(1)
+    @box.command('test-argument2')
     @argument('args', nargs=-1)
-    async def test2(args):
+    async def test_argument2(args):
         pass
 
-    handler: Handler = box.handlers['message'][None][1]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split('')
+    chunks = shlex.split('')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_arguments(argument_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ('args: incorrect argument value count.'
                            ' expected >0, 0 given.')
 
-    @box.command('test3')
+    @box.command('test-argument3')
     @argument('args', nargs=2)
     @argument('concat', nargs=3, concat=True)
-    async def test3(args):
+    async def test_argument3(args):
         pass
 
-    handler: Handler = box.handlers['message'][None][2]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split('1')
+    chunks = shlex.split('1')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_arguments(argument_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ('args: incorrect argument value count.'
                            ' expected 2, 1 given.')
 
-    argument_chunks = shlex.split('1 2 hell o world')
+    chunks = shlex.split('1 2 hell o world')
 
-    arguments, remain_chunks = handler.parse_arguments(argument_chunks)
-    assert arguments['args'] == ('1', '2')
-    assert arguments['concat'] == 'hell o world'
+    kw, remain_chunks = parse_option_and_arguments(handler.callback, chunks)
+    assert kw['args'] == ('1', '2')
+    assert kw['concat'] == 'hell o world'
     assert not remain_chunks
 
-    @box.command('test4')
+    @box.command('test-argument4')
     @argument('args')
-    async def test4(args: int):
+    async def test_argument4(args: int):
         pass
 
-    handler: Handler = box.handlers['message'][None][3]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split('asdf')
+    chunks = shlex.split('asdf')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_arguments(argument_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ("args: invalid type of argument value"
                            "(invalid literal for int() with "
                            "base 10: 'asdf')")
 
-    @box.command('test5')
+    @box.command('test-argument5')
     @argument('args', transform_func=str_to_date())
-    async def test5(args):
+    async def test_argument5(args):
         pass
 
-    handler: Handler = box.handlers['message'][None][4]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split('2017-10-99')
+    chunks = shlex.split('2017-10-99')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_arguments(argument_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ('args: fail to transform argument value '
                            '(day is out of range for month)')
 
-    @box.command('test6')
+    @box.command('test-argument6')
     @argument('args', nargs=2, transform_func=str_to_date())
-    async def test6(args):
+    async def test_argument6(args):
         pass
 
-    handler: Handler = box.handlers['message'][None][5]
+    handler: Handler = box.handlers.pop()
 
-    argument_chunks = shlex.split('2017-10-99 2017-10-00')
+    chunks = shlex.split('2017-10-99 2017-10-00')
 
     with pytest.raises(SyntaxError) as e:
-        handler.parse_arguments(argument_chunks)
+        parse_option_and_arguments(handler.callback, chunks)
     assert e.value.msg == ('args: fail to transform argument value '
                            '(day is out of range for month)')

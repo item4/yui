@@ -159,9 +159,7 @@ async def aws(bot, event: Message, sess, keyword: str):
     """
     지역의 현재 기상상태를 조회합니다.
 
-    `날씨 부천` (부천지역의 현재 기상상태를 출력)
-
-    이 명령어는 `aws`, `날씨`, `weather` 중 편한 이름으로 사용할 수 있습니다.
+    `{PREFIX}날씨 부천` (부천지역의 현재 기상상태를 출력)
 
     """
 
@@ -249,10 +247,8 @@ async def search_aws_zone(bot, event: Message, sess, by: str, keyword: str):
     주어진 키워드를 기준으로 비슷한 지역명을 모두 출력합니다.
     해당 명령어는 DB에 `like '%keyword%'` 연산을 사용합니다.
 
-    `날씨지역검색 부산` (이름에 `부산` 이 들어가는 모든 지역 검색)
-    `날씨지역검색 --by location 서울` (관측기 위치 주소에 `서울`이 들어가는 모든 지역 검색)
-
-    이 명령어는 `날씨지역검색`, `search-aws-zone` 중 편한 이름으로 사용할 수 있습니다.
+    `{PREFIX}날씨지역검색 부산` (이름에 `부산` 이 들어가는 모든 지역 검색)
+    `{PREFIX}날씨지역검색 --by location 서울` (관측기 위치 주소에 `서울`이 들어가는 모든 지역 검색)
 
     """
 
