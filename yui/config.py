@@ -1,7 +1,7 @@
 import copy
 import pathlib
 import sys
-from typing import Any, Dict, List, Set, Union
+from typing import Any, Dict, List, Set
 
 from sqlalchemy.engine import Engine
 
@@ -77,7 +77,7 @@ class Config(Namespace):
     MODELS: List[str]
     LOGGING: Dict[str, Any]
     REGISTER_CRONTAB: bool
-    CHANNELS: Dict[str, Union[List[str], str]]
+    CHANNELS: Dict[str, Any]
     WEBSOCKETDEBUGGERURL: str
     DATABASE_ENGINE: Engine
 
@@ -133,6 +133,8 @@ class Config(Namespace):
                     if isinstance(value, list):
                         if all(isinstance(x, str) for x in value):
                             continue
+                else:
+                    continue
                 raise ConfigurationError(
                     f'Channel config has wrong type: {key}'
                 )
