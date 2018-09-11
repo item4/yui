@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, NamedTuple
+from typing import List
 from urllib.parse import parse_qs, urlparse
 
 from lxml.html import fromstring
@@ -11,6 +11,7 @@ from ...bot import Bot
 from ...box import box
 from ...command import C
 from ...models.closers import Event, GMNote, Notice
+from ...orm import Session
 from ...session import client_session
 from ...util import now
 
@@ -18,30 +19,6 @@ from ...util import now
 MINUTE_PATTERN = re.compile('^(\d+)분 전$')
 HOUR_PATTERN = re.compile('^(\d+)시간 전$')
 HOUR_MINUTE_PATTERN = re.compile('^(\d+)시간 (\d+)분 전$')
-
-
-class NoticeArticle(NamedTuple):
-
-    article_sn: int
-    category: str
-    title: str
-    posted_date: datetime.date
-
-
-class EventArticle(NamedTuple):
-
-    article_sn: int
-    title: str
-    posted_date: datetime.date
-
-
-class GMNoteArticle(NamedTuple):
-
-    article_sn: int
-    title: str
-    text: str
-    image_url: str
-    posted_date: datetime.date
 
 
 def parse_date(input: str) -> datetime.date:
@@ -72,10 +49,31 @@ def parse_date(input: str) -> datetime.date:
     )
 
 
-def parse_notice_list(html: str) -> List[NoticeArticle]:
+def make_notice_url(article_sn: int) -> str:
+    return (
+        'http://closers.nexon.com/news/notice/'
+        f'View.aspx?noticearticlesn={article_sn}'
+    )
+
+
+def make_event_url(article_sn: int) -> str:
+    return (
+        'http://closers.nexon.com/news/events/'
+        f'view.aspx?n4articlecategorysn=4&n4articlesn={article_sn}'
+    )
+
+
+def make_gm_note_url(article_sn: int) -> str:
+    return (
+        'http://closers.nexon.com/news/gmnote/'
+        f'view.aspx?n4articlesn={article_sn}'
+    )
+
+
+def process_notice_list(html: str, sess: Session) -> List[Attachment]:
     h = fromstring(html)
     tds = h.cssselect('table.notice_list tr td')
-    result: List[NoticeArticle] = []
+    result: List[Attachment] = []
     for td in tds:
         a_tag = td[0][0]
         headline = a_tag.text_content()
@@ -86,77 +84,58 @@ def parse_notice_list(html: str) -> List[NoticeArticle]:
             urlparse(a_tag.get('href')).query
         )['noticearticlesn'][0])
         posted_date = parse_date(td[1].text_content().strip())
-        result.append(NoticeArticle(
-            article_sn=article_sn,
-            category=category,
-            title=title,
-            posted_date=posted_date,
-        ))
-    return result
 
-
-def make_notice_url(article_sn: int) -> str:
-    return (
-        'http://closers.nexon.com/news/notice/'
-        f'View.aspx?noticearticlesn={article_sn}'
-    )
-
-
-def make_notice_attachments(sess, articles: List[NoticeArticle]) -> \
-        List[Attachment]:
-    result: List[Attachment] = []
-    for article in articles:
-        a: Notice = sess.query(Notice).get(article.article_sn)
-        url = make_notice_url(article.article_sn)
-        if a:
-            if a.title != article.title:
+        article: Notice = sess.query(Notice).get(article_sn)
+        url = make_notice_url(article_sn)
+        if article:
+            if article.title != title:
                 result.append(Attachment(
                     fallback='{}: {} -> {} / {}'.format(
-                        article.category,
-                        a.title,
+                        category,
                         article.title,
+                        title,
                         url,
                     ),
                     title='{}: {} -> {}'.format(
                         article.category,
-                        a.title,
                         article.title,
+                        title,
                     ),
                     title_link=url,
                 ))
-                a.title = article.title
-                a.updated_at = now()
+                article.title = article.title
+                article.updated_at = now()
                 with sess.begin():
-                    sess.add(a)
+                    sess.add(article)
         else:
-            a = Notice()
-            a.article_sn = article.article_sn
-            a.category = article.category
-            a.title = article.title
-            a.posted_date = article.posted_date
-            a.updated_at = now()
+            article = Notice()
+            article.article_sn = article_sn
+            article.category = category
+            article.title = title
+            article.posted_date = posted_date
+            article.updated_at = now()
             result.append(Attachment(
                 fallback='{}: {} / {}'.format(
-                    a.category,
-                    a.title,
+                    article.category,
+                    article.title,
                     url,
                 ),
                 title='{}: {}'.format(
-                    a.category,
-                    a.title,
+                    article.category,
+                    article.title,
                 ),
                 title_link=url,
             ))
             with sess.begin():
-                sess.add(a)
+                sess.add(article)
 
     return result
 
 
-def parse_event_list(html: str) -> List[EventArticle]:
+def process_event_list(html: str, sess: Session) -> List[Attachment]:
     h = fromstring(html)
     tds = h.cssselect('table.notice_list tr td')
-    result: List[EventArticle] = []
+    result: List[Attachment] = []
     for td in tds:
         a_tag = td[0][1]
         title = a_tag.text_content().strip()
@@ -164,52 +143,34 @@ def parse_event_list(html: str) -> List[EventArticle]:
             urlparse(a_tag.get('href')).query
         )['n4articlesn'][0])
         posted_date = parse_date(td[1].text_content().strip())
-        result.append(EventArticle(
-            article_sn=article_sn,
-            title=title,
-            posted_date=posted_date,
-        ))
-    return result
 
-
-def make_event_url(article_sn: int) -> str:
-    return (
-        'http://closers.nexon.com/news/events/'
-        f'view.aspx?n4articlecategorysn=4&n4articlesn={article_sn}'
-    )
-
-
-def make_event_attachments(sess, articles: List[EventArticle]) -> \
-        List[Attachment]:
-    result: List[Attachment] = []
-    for article in articles:
-        a: Event = sess.query(Event).get(article.article_sn)
-        url = make_event_url(article.article_sn)
-        if a is None:
-            a = Event()
-            a.article_sn = article.article_sn
-            a.title = article.title
-            a.posted_date = article.posted_date
+        article: Event = sess.query(Event).get(article_sn)
+        url = make_event_url(article_sn)
+        if article is None:
+            article = Event()
+            article.article_sn = article_sn
+            article.title = title
+            article.posted_date = posted_date
             result.append(Attachment(
                 fallback='이벤트: {} / {}'.format(
-                    a.title,
+                    article.title,
                     url,
                 ),
                 title='이벤트: {}'.format(
-                    a.title,
+                    article.title,
                 ),
                 title_link=url,
             ))
             with sess.begin():
-                sess.add(a)
+                sess.add(article)
 
     return result
 
 
-def parse_gm_note_list(html: str) -> List[GMNoteArticle]:
+def process_gm_note_list(html: str, sess: Session) -> List[Attachment]:
     h = fromstring(html)
     tds = h.cssselect('table.gmnote_list tr td')
-    result: List[GMNoteArticle] = []
+    result: List[Attachment] = []
     for td in tds:
         image_url = td[0][0].get('src')
         title = td[1][0].text_content().strip()
@@ -218,50 +179,29 @@ def parse_gm_note_list(html: str) -> List[GMNoteArticle]:
             urlparse(td[1][0].get('href')).query
         )['n4articlesn'][0])
         posted_date = parse_date(td[3][0].text_content().strip())
-        result.append(GMNoteArticle(
-            article_sn=article_sn,
-            title=title,
-            text=text,
-            image_url=image_url,
-            posted_date=posted_date,
-        ))
-    return result
-
-
-def make_gm_note_url(article_sn: int) -> str:
-    return (
-        'http://closers.nexon.com/news/gmnote/'
-        f'view.aspx?n4articlesn={article_sn}'
-    )
-
-
-def make_gm_note_attachments(sess, articles: List[GMNoteArticle]) -> \
-        List[Attachment]:
-    result: List[Attachment] = []
-    for article in articles:
-        a: GMNote = sess.query(GMNote).get(article.article_sn)
-        url = make_gm_note_url(article.article_sn)
-        if a is None:
-            a = GMNote()
-            a.article_sn = article.article_sn
-            a.title = article.title
-            a.text = article.text
-            a.image_url = article.image_url
-            a.posted_date = article.posted_date
+        article: GMNote = sess.query(GMNote).get(article_sn)
+        url = make_gm_note_url(article_sn)
+        if article is None:
+            article = GMNote()
+            article.article_sn = article_sn
+            article.title = title
+            article.text = text
+            article.image_url = image_url
+            article.posted_date = posted_date
             result.append(Attachment(
                 fallback='GM노트: {} / {}'.format(
-                    a.title,
+                    article.title,
                     url,
                 ),
                 title='GM노트: {}'.format(
-                    a.title,
+                    article.title,
                 ),
                 image_url=article.image_url,
                 title_link=url,
-                text=a.text,
+                text=article.text,
             ))
             with sess.begin():
-                sess.add(a)
+                sess.add(article)
 
     return result
 
@@ -273,12 +213,10 @@ async def crawl_notice(bot: Bot, sess):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await bot.run_in_other_process(parse_notice_list, html)
-
-    attachments = await bot.run_in_other_thread(
-        make_notice_attachments,
+    attachments = await bot.run_in_other_process(
+        process_notice_list,
+        html,
         sess,
-        articles,
     )
 
     if attachments:
@@ -299,12 +237,10 @@ async def crawl_event(bot: Bot, sess):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await bot.run_in_other_process(parse_event_list, html)
-
-    attachments = await bot.run_in_other_thread(
-        make_event_attachments,
+    attachments = await bot.run_in_other_process(
+        process_event_list,
+        html,
         sess,
-        articles,
     )
 
     if attachments:
@@ -323,12 +259,10 @@ async def crawl_gm_note(bot: Bot, sess):
         async with session.get(url) as resp:
             html = await resp.text()
 
-    articles = await bot.run_in_other_process(parse_gm_note_list, html)
-
-    attachments = await bot.run_in_other_thread(
-        make_gm_note_attachments,
+    attachments = await bot.run_in_other_process(
+        process_gm_note_list,
+        html,
         sess,
-        articles,
     )
 
     if attachments:
@@ -341,7 +275,7 @@ async def crawl_gm_note(bot: Bot, sess):
 
 
 @box.crontab('30 9,14,17,19,22 * * *')
-async def overflood_before_30m(bot):
+async def overflood_before_30m(bot: Bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
@@ -351,7 +285,7 @@ async def overflood_before_30m(bot):
 
 
 @box.crontab('0 10,15,18,20,23 * * *')
-async def overflood_start(bot):
+async def overflood_start(bot: Bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
@@ -361,7 +295,7 @@ async def overflood_start(bot):
 
 
 @box.crontab('0 0,1 * * *')
-async def midnight_overflood_before_30m(bot):
+async def midnight_overflood_before_30m(bot: Bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
@@ -371,7 +305,7 @@ async def midnight_overflood_before_30m(bot):
 
 
 @box.crontab('30 0,1 * * *')
-async def midnight_overflood_start(bot):
+async def midnight_overflood_start(bot: Bot):
     info = get_next_overflood_info(now())
     if info != '오버플루드: 휴무':
         await bot.say(
@@ -381,7 +315,7 @@ async def midnight_overflood_start(bot):
 
 
 @box.crontab('0 4 * * 0')
-async def sunday_dungeon_info(bot):
+async def sunday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스 / 오염위상 요드'
@@ -389,7 +323,7 @@ async def sunday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 1')
-async def monday_dungeon_info(bot):
+async def monday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 오염위상 요드'
@@ -397,7 +331,7 @@ async def monday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 2')
-async def tuesday_dungeon_info(bot):
+async def tuesday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 거울잡이 니토크리스'
@@ -405,7 +339,7 @@ async def tuesday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 3')
-async def wednesday_dungeon_info(bot):
+async def wednesday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'
@@ -413,7 +347,7 @@ async def wednesday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 4')
-async def thursday_dungeon_info(bot):
+async def thursday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 괴조 하르파스 / 거울잡이 니토크리스'
@@ -421,7 +355,7 @@ async def thursday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 5')
-async def friday_dungeon_info(bot):
+async def friday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 오염위상 요드'
@@ -429,7 +363,7 @@ async def friday_dungeon_info(bot):
 
 
 @box.crontab('0 4 * * 6')
-async def saturday_dungeon_info(bot):
+async def saturday_dungeon_info(bot: Bot):
     await bot.say(
         C.game.get(),
         ':closers: 오늘의 대정화작전 보스 - 감시자 틴달로스 / 괴조 하르파스'

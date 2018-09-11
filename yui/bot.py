@@ -20,7 +20,7 @@ from .api import SlackAPI
 from .box import Box, Crontab, box
 from .config import Config
 from .event import create_event
-from .orm import Base, Session, get_database_engine
+from .orm import Base, get_database_engine, make_session
 from .session import client_session
 from .type import (
     BotLinkedNamespace,
@@ -34,7 +34,7 @@ from .type import (
 )
 
 
-__all__ = 'APICallError', 'Bot', 'BotReconnect', 'Session'
+__all__ = 'APICallError', 'Bot', 'BotReconnect'
 
 R = TypeVar('R')
 
@@ -134,7 +134,7 @@ class Bot:
                 if 'loop' in func_params:
                     kw['loop'] = self.loop
 
-                sess = Session(bind=self.config.DATABASE_ENGINE)
+                sess = make_session(bind=self.config.DATABASE_ENGINE)
                 if 'sess' in func_params:
                     kw['sess'] = sess
 

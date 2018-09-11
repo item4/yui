@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List
 from urllib.parse import parse_qs, urlparse
 
 from lxml.html import fromstring
@@ -16,6 +16,7 @@ from ..models.saomd import (
     SERVER_LABEL,
     Server,
 )
+from ..orm import Session
 from ..session import client_session
 
 logger = logging.getLogger(__name__)
@@ -28,22 +29,14 @@ NOTICE_URLS: Dict[Server, str] = {
 }
 
 
-class NoticeItem(NamedTuple):
-    """Notice item from notice page"""
-
-    detail_url: str
-    id: int
-    title: str
-    duration: Optional[str]
-    short_description: Optional[str]
-    image_url: Optional[str]
-
-
-def parse(base: str, html: str) -> List[NoticeItem]:
+def process(server: Server, html: str, sess: Session) -> List[Attachment]:
+    base = '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server]))
     h = fromstring(html)
     dls = h.cssselect('dl')
 
-    result: List[NoticeItem] = []
+    attachments: List[Attachment] = []
+
+    notice_ids: List[int] = []
 
     for dl in dls:
         onclick: str = dl.get('onclick')
@@ -85,132 +78,127 @@ def parse(base: str, html: str) -> List[NoticeItem]:
         else:
             image_url = None
 
-        result.append(NoticeItem(
-            detail_url=detail_url,
-            id=id,
-            title=title,
-            duration=duration,
-            short_description=short_description,
-            image_url=image_url,
-        ))
+        changes = []
+        notice_ids.append(id)
 
-    return result
+        status = 'pass'
+        try:
+            notice: Notice = sess.query(Notice).filter_by(
+                notice_id=id,
+                server=server,
+            ).one()
+        except NoResultFound:
+            status = 'new'
+            notice = Notice()
+            notice.notice_id = id
+            notice.server = server
+            notice.title = title
+            notice.duration = duration
+            notice.short_description = short_description
+
+        if notice.is_deleted:
+            status = 'change'
+            changes.append('is_deleted')
+        if title != notice.title:
+            status = 'change'
+            changes.append('title')
+        if duration != notice.duration:
+            status = 'change'
+            changes.append('duration')
+        if short_description != notice.short_description:
+            status = 'change'
+            changes.append('short_description')
+
+        if status == 'new':
+            text = ''
+            if duration:
+                text += f'기간: {duration}\n'
+            if short_description:
+                text += f'{short_description}\n'
+            attachments.append(Attachment(
+                fallback=f'{SERVER_LABEL[server]} 서버 새 공지 - '
+                         f'{title} - {detail_url}',
+                pretext=f'{SERVER_LABEL[server]} 서버에 새 공지가 있어요!',
+                title=title,
+                title_link=detail_url,
+                image_url=image_url,
+                text=text,
+            ))
+            with sess.begin():
+                sess.add(notice)
+        elif status == 'change':
+            text = ''
+            if 'title' in changes:
+                new_title = f'{notice.title} → {title}'
+                notice.title = title
+            else:
+                new_title = notice.title
+
+            if 'is_deleted' in changes:
+                new_title = f'[삭제 후 재생성] {new_title}'
+                notice.is_deleted = False
+
+            if 'duration' in changes:
+                text += (
+                    f'기간: {notice.duration} → {duration}\n'
+                )
+                notice.duration = duration
+            else:
+                if notice.duration:
+                    text += f'기간: {notice.duration}\n'
+
+            if 'short_description' in changes:
+                text += f'{notice.short_description} → ' \
+                        f'{short_description}\n'
+                notice.short_description = short_description
+            else:
+                if notice.short_description:
+                    text += f'{notice.short_description}\n'
+
+            attachments.append(Attachment(
+                fallback=f'{SERVER_LABEL[server]} 서버 변경된 공지 - '
+                         f'{new_title} - {detail_url}',
+                pretext=f'{SERVER_LABEL[server]} 서버에 변경된 공지가 있어요!',
+                title=new_title,
+                title_link=detail_url,
+                image_url=image_url,
+                text=text.strip(),
+            ))
+            with sess.begin():
+                sess.add(notice)
+
+    deleted_notices = sess.query(Notice).filter(
+        Notice.is_deleted == False,  # noqa
+        Notice.server == server,
+        ~Notice.notice_id.in_(notice_ids),
+    ).all()
+    for notice in deleted_notices:
+        attachments.append(Attachment(
+            fallback=f'{SERVER_LABEL[server]} 서버 삭제된 공지',
+            pretext=f'{SERVER_LABEL[server]} 서버에 삭제된 공지가 있어요!',
+            title=notice.title,
+        ))
+        notice.is_deleted = True
+        with sess.begin():
+            sess.add(notice)
+
+    return attachments
 
 
 @box.crontab('*/1 * * * *')
-async def watch_notice(bot: Bot, sess):
+async def watch_notice(bot: Bot, sess: Session):
     async def watch(server: Server):
         html = ''
         async with client_session() as session:
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 
-        notice_items = await bot.run_in_other_process(
-            parse,
-            '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server])),
+        attachments = await bot.run_in_other_process(
+            process,
+            server,
             html,
+            sess,
         )
-
-        attachments: List[Attachment] = []
-
-        notice_ids: List[int] = []
-
-        for item in notice_items:
-            changes = []
-            notice_ids.append(item.id)
-
-            status = 'pass'
-            try:
-                notice: Notice = sess.query(Notice).filter_by(
-                    notice_id=item.id,
-                    server=server,
-                ).one()
-            except NoResultFound:
-                status = 'new'
-                notice = Notice()
-                notice.notice_id = item.id
-                notice.server = server
-                notice.title = item.title
-                notice.duration = item.duration
-                notice.short_description = item.short_description
-
-            if item.title != notice.title:
-                status = 'change'
-                changes.append('title')
-            if item.duration != notice.duration:
-                status = 'change'
-                changes.append('duration')
-            if item.short_description != notice.short_description:
-                status = 'change'
-                changes.append('short_description')
-
-            if status == 'new':
-                text = ''
-                if item.duration:
-                    text += f'기간: {item.duration}\n'
-                if item.short_description:
-                    text += f'{item.short_description}\n'
-                attachments.append(Attachment(
-                    fallback=f'{SERVER_LABEL[server]} 서버 새 공지 - '
-                             f'{item.title} - {item.detail_url}',
-                    pretext=f'{SERVER_LABEL[server]} 서버에 새 공지가 있어요!',
-                    title=item.title,
-                    title_link=item.detail_url,
-                    image_url=item.image_url,
-                    text=text,
-                ))
-                with sess.begin():
-                    sess.add(notice)
-            elif status == 'change':
-                text = ''
-                if 'title' in changes:
-                    new_title = f'{notice.title} → {item.title}'
-                    notice.title = item.title
-                else:
-                    new_title = notice.title
-
-                if 'duration' in changes:
-                    text += (
-                        f'기간: {notice.duration} → {item.duration}\n'
-                    )
-                    notice.duration = item.duration
-                else:
-                    if notice.duration:
-                        text += f'기간: {notice.duration}\n'
-
-                if 'short_description' in changes:
-                    text += f'{notice.short_description} → ' \
-                            f'{item.short_description}\n'
-                    notice.short_description = item.short_description
-                else:
-                    if notice.short_description:
-                        text += f'{notice.short_description}\n'
-
-                attachments.append(Attachment(
-                    fallback=f'{SERVER_LABEL[server]} 서버 변경된 공지 - '
-                             f'{new_title} - {item.detail_url}',
-                    pretext=f'{SERVER_LABEL[server]} 서버에 변경된 공지가 있어요!',
-                    title=new_title,
-                    title_link=item.detail_url,
-                    image_url=item.image_url,
-                    text=text.strip(),
-                ))
-                with sess.begin():
-                    sess.add(notice)
-
-        deleted_notices = sess.query(Notice).filter(
-            Notice.server == server,
-            ~Notice.notice_id.in_(notice_ids),
-        ).all()
-        for notice in deleted_notices:
-            attachments.append(Attachment(
-                fallback=f'{SERVER_LABEL[server]} 서버 삭제된 공지',
-                pretext=f'{SERVER_LABEL[server]} 서버에 삭제된 공지가 있어요!',
-                title=notice.title,
-            ))
-            with sess.begin():
-                sess.delete(notice)
-
         if attachments:
             await bot.api.chat.postMessage(
                 channel=C.game.get(),

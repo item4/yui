@@ -23,7 +23,7 @@ from typing import (
 
 from .command import Argument, Option
 from .event import Event, Message
-from .orm import Session
+from .orm import make_session
 from .type import cast, is_container
 from .util import bold
 
@@ -287,7 +287,7 @@ class BaseHandler:
         func_params: Mapping[str, inspect.Parameter],
         **kwargs,
     ):
-        sess = Session(bind=bot.config.DATABASE_ENGINE)
+        sess = make_session(bind=bot.config.DATABASE_ENGINE)
         if 'bot' in func_params:
             kwargs['bot'] = bot
         if 'loop' in func_params:

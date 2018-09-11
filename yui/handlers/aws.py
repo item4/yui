@@ -12,12 +12,13 @@ from ..box import box
 from ..command import argument, option
 from ..event import Message
 from ..models.aws import AWS
+from ..orm import Session
 from ..session import client_session
 from ..transform import choice
 from ..util import truncate_table
 
 
-def parse(html: str) -> List[AWS]:
+def process(html: str, sess: Session):
     h = lxml.html.fromstring(html)
     try:
         observed_at = datetime.datetime.strptime(
@@ -118,24 +119,19 @@ def parse(html: str) -> List[AWS]:
         record.observed_at = observed_at
 
         records.append(record)
-    return records
 
-
-def save(engine, sess, records: List[AWS]):
     if not records:
         return
 
-    truncate_table(engine, AWS)
+    truncate_table(sess.bind, AWS)
 
     with sess.begin():
         sess.add_all(records)
 
 
 @box.crontab('*/3 * * * *')
-async def crawl(bot: Bot, sess):
+async def crawl(bot: Bot, sess: Session):
     """Crawl from Korea Meteorological Administration AWS."""
-
-    engine = bot.config.DATABASE_ENGINE
 
     html = ''
     url = 'http://www.kma.go.kr/cgi-bin/aws/nph-aws_txt_min'
@@ -148,14 +144,12 @@ async def crawl(bot: Bot, sess):
     except aiohttp.client_exceptions.ServerDisconnectedError:
         return
 
-    records = await bot.run_in_other_process(parse, html)
-
-    await bot.run_in_other_thread(save, engine, sess, records)
+    await bot.run_in_other_process(process, html, sess)
 
 
 @box.command('날씨', ['aws', 'weather'])
 @argument('keyword', nargs=-1, concat=True)
-async def aws(bot, event: Message, sess, keyword: str):
+async def aws(bot, event: Message, sess: Session, keyword: str):
     """
     지역의 현재 기상상태를 조회합니다.
 
@@ -240,7 +234,13 @@ async def aws(bot, event: Message, sess, keyword: str):
 @option('--by', transform_func=choice(['name', 'location']), default='name',
         type_error='`{name}`의 값으로는 `name` 이나 `location`만 가능합니다.')
 @argument('keyword', nargs=-1, concat=True)
-async def search_aws_zone(bot, event: Message, sess, by: str, keyword: str):
+async def search_aws_zone(
+    bot,
+    event: Message,
+    sess: Session,
+    by: str,
+    keyword: str,
+):
     """
     날씨 명령어에 사용되는 지역명 검색기능
 

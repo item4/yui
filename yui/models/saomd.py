@@ -2,7 +2,7 @@ import enum
 from typing import Dict
 
 from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer, String
+from sqlalchemy.types import Boolean, Integer, String
 
 from sqlalchemy_utils.types import ChoiceType
 
@@ -39,3 +39,5 @@ class Notice(Base):
     duration = Column(String)
 
     short_description = Column(String)
+
+    is_deleted = Column(Boolean, default=False)

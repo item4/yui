@@ -10,9 +10,9 @@ import pytest
 
 from sqlalchemy.exc import ProgrammingError
 
-from yui.bot import Bot, Session
+from yui.bot import Bot
 from yui.config import DEFAULT
-from yui.orm import Base
+from yui.orm import Base, make_session
 
 
 DEFAULT_DATABASE_URL = 'sqlite://'
@@ -99,7 +99,7 @@ def fx_sess(fx_engine):
         metadata.drop_all(bind=fx_engine)
         metadata.create_all(bind=fx_engine)
 
-    sess = Session(bind=fx_engine)
+    sess = make_session(bind=fx_engine)
     yield sess
     sess.rollback()
 
