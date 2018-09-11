@@ -9,7 +9,7 @@ from alembic.config import Config as AlembicConfig
 import click
 
 from .bot import Bot
-from .config import load
+from .config import ConfigurationError, load
 
 
 __all__ = 'error', 'load_config', 'main', 'yui'
@@ -61,9 +61,12 @@ def yui():
 @load_config
 def run(config):
     """Run YUI."""
-
-    bot = Bot(config)
-    bot.run()
+    try:
+        bot = Bot(config)
+    except ConfigurationError as e:
+        error(str(e))
+    else:
+        bot.run()
 
 
 @yui.command()

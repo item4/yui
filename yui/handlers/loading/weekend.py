@@ -1,9 +1,13 @@
 import datetime
+from typing import List
 
 from yui.box import box
 from yui.command import C
 from yui.event import Message
 from yui.util import now
+
+box.assert_config_required('WEEKEND_LOADING_TIME', List[int])
+box.assert_channel_required('general')
 
 
 def weekend_loading_percent(now: datetime.datetime) -> float:

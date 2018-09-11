@@ -1,8 +1,6 @@
 import os
 import re
 
-from attrdict import AttrDict
-
 import pytest
 
 import ujson
@@ -44,12 +42,10 @@ def fx_naver_client_secret():
 
 
 @pytest.mark.asyncio
-async def test_book(fx_naver_client_id, fx_naver_client_secret):
-    config = AttrDict({
-        'NAVER_CLIENT_ID': fx_naver_client_id,
-        'NAVER_CLIENT_SECRET': fx_naver_client_secret,
-    })
-    bot = FakeBot(config)
+async def test_book(fx_config, fx_naver_client_id, fx_naver_client_secret):
+    fx_config.NAVER_CLIENT_ID = fx_naver_client_id
+    fx_config.NAVER_CLIENT_SECRET = fx_naver_client_secret
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
 
     event = create_event({
@@ -148,15 +144,13 @@ async def test_no_packtpub_dotd(response_mock):
 
 
 @pytest.mark.asyncio
-async def test_auto_packtpub_dotd():
+async def test_auto_packtpub_dotd(fx_config):
     assert auto_packtpub_dotd._crontab.spec == '5 9 * * *'
 
-    config = AttrDict({
-        'CHANNELS': {
-            'general': 'general',
-        },
-    })
-    bot = FakeBot(config)
+    fx_config.CHANNELS = {
+        'general': 'general',
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
 
     await auto_packtpub_dotd(bot)

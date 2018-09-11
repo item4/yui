@@ -1,18 +1,21 @@
 import copy
 import pathlib
 import sys
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, List, Set, Union
 
-from attrdict import AttrDict
+from sqlalchemy.engine import Engine
 
 import toml
 
+from .type import Namespace, cast
 
-__all__ = 'error', 'load',
+
+__all__ = 'Config', 'ConfigurationError', 'DEFAULT', 'error', 'load',
 
 DEFAULT = {
     'DEBUG': False,
     'RECEIVE_TIMEOUT': 300,  # 60 * 5 seconds
+    'REGISTER_CRONTAB': True,
     'PREFIX': '',
     'HANDLERS': (),
     'DATABASE_URL': '',
@@ -58,16 +61,81 @@ DEFAULT = {
 }
 
 
-class Config(AttrDict):
+class ConfigurationError(Exception):
+    pass
+
+
+class Config(Namespace):
 
     TOKEN: str
+    RECEIVE_TIMEOUT: int
     DEBUG: bool
     PREFIX: str
-    HANDLERS: Sequence[str]
+    HANDLERS: List[str]
     DATABASE_URL: str
     DATABASE_ECHO: bool
-    MODELS: Sequence[str]
+    MODELS: List[str]
     LOGGING: Dict[str, Any]
+    REGISTER_CRONTAB: bool
+    CHANNELS: Dict[str, Union[List[str], str]]
+    WEBSOCKETDEBUGGERURL: str
+    DATABASE_ENGINE: Engine
+
+    def __init__(self, **kwargs) -> None:
+        kw = copy.deepcopy(DEFAULT)
+        kw.update(kwargs)
+        super(Config, self).__init__(**kw)
+
+    def check_and_cast(self, fields: Dict):
+        annotations = self.__annotations__
+        annotations.update(fields)
+        for key, type in annotations.items():
+            try:
+                value = getattr(self, key)
+            except AttributeError:
+                raise ConfigurationError(
+                    f'Required config key was not defined: {key}'
+                )
+            else:
+                try:
+                    setattr(self, key, cast(type, value))
+                except ValueError:
+                    raise ConfigurationError(
+                        f'Type of config value is wrong: {key}'
+                    )
+
+    def check_channel(
+        self,
+        single_channels: Set[str],
+        multiple_channels: Set[str],
+    ):
+        for key in single_channels:
+            try:
+                value = self.CHANNELS[key]
+            except KeyError:
+                raise ConfigurationError(
+                    f'Required channel key was not defined: {key}'
+                )
+            else:
+                if not isinstance(value, str):
+                    raise ConfigurationError(
+                        f'Channel config has wrong type: {key}'
+                    )
+        for key in multiple_channels:
+            try:
+                value = self.CHANNELS[key]
+            except KeyError:
+                raise ConfigurationError(
+                    f'Required channel key was not defined: {key}'
+                )
+            else:
+                if value != '*':
+                    if isinstance(value, list):
+                        if all(isinstance(x, str) for x in value):
+                            continue
+                raise ConfigurationError(
+                    f'Channel config has wrong type: {key}'
+                )
 
 
 def error(message: str, *args):
@@ -88,7 +156,6 @@ def load(path: pathlib.Path) -> Config:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = Config(copy.deepcopy(DEFAULT))
-    config.update(toml.load(path.open()))
+    config = Config(**toml.load(path.open()))
 
     return config

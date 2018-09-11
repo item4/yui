@@ -1,5 +1,3 @@
-from attrdict import AttrDict
-
 import pytest
 
 from yui.event import create_event
@@ -10,14 +8,12 @@ from ..util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_welcome_item4_handler():
-    config = AttrDict({
-        'PREFIX': '.',
-        'CHANNELS': {
-            'welcome': 'general',
-        },
-    })
-    bot = FakeBot(config)
+async def test_welcome_item4_handler(fx_config):
+    fx_config.PREFIX = '.'
+    fx_config.CHANNELS = {
+        'welcome': 'general',
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
     event = create_event({
@@ -39,14 +35,12 @@ async def test_welcome_item4_handler():
 
 
 @pytest.mark.asyncio
-async def test_welcome_9xd_handler():
-    config = AttrDict({
-        'PREFIX': '.',
-        'CHANNELS': {
-            'welcome': 'general',
-        },
-    })
-    bot = FakeBot(config)
+async def test_welcome_9xd_handler(fx_config):
+    fx_config.PREFIX = '.'
+    fx_config.CHANNELS = {
+        'welcome': 'general',
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
     event = create_event({

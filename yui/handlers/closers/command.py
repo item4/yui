@@ -3,9 +3,11 @@ from typing import List
 
 from .base import get_next_overflood_info
 from ...box import box
-from ...command import Cs, argument, only
+from ...command import C, argument, only
 from ...event import Message
 from ...util import now
+
+box.assert_channel_required('game')
 
 BASE = Decimal(3)
 INCREASE = Decimal(0.5)
@@ -28,7 +30,7 @@ async def overflood_info(bot, event: Message):
     )
 
 
-@box.command('블마수수료', channels=only(Cs.game_and_test))
+@box.command('블마수수료', channels=only(C.game))
 @argument('prices', nargs=-1, type_=Decimal)
 async def black_market_charge(bot, event: Message, prices: List[Decimal]):
     """

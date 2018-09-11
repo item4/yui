@@ -1,5 +1,3 @@
-from attrdict import AttrDict
-
 import pytest
 
 from yui.event import create_event
@@ -10,10 +8,7 @@ from ..util import FakeBot
 
 @pytest.mark.asyncio
 async def test_about_command():
-    config = AttrDict({
-        'PREFIX': '.',
-    })
-    bot = FakeBot(config)
+    bot = FakeBot()
     bot.add_channel('C1', 'general')
     event = create_event({
         'type': 'message',
@@ -25,4 +20,4 @@ async def test_about_command():
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == MESSAGE.format(prefix=config.PREFIX)
+    assert said.data['text'] == MESSAGE.format(prefix=bot.config.PREFIX)

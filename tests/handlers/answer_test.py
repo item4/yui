@@ -1,5 +1,3 @@
-from attrdict import AttrDict
-
 import pytest
 
 from yui.event import create_event
@@ -10,10 +8,7 @@ from ..util import FakeBot
 
 @pytest.mark.asyncio
 async def test_magic_conch():
-    config = AttrDict({
-        'PREFIX': '.',
-    })
-    bot = FakeBot(config)
+    bot = FakeBot()
     bot.add_channel('C1', 'general')
 
     event = create_event({

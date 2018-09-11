@@ -2,8 +2,6 @@ import os
 import re
 from urllib.parse import urlencode
 
-from attrdict import AttrDict
-
 import pytest
 
 import ujson
@@ -113,12 +111,11 @@ def test_get_aqi_description():
 
 
 @pytest.mark.asyncio
-async def test_aqi(fx_aqi_api_token, fx_google_api_key):
-    config = AttrDict({
-        'AQI_API_TOKEN': fx_aqi_api_token,
-        'GOOGLE_API_KEY': fx_google_api_key,
-    })
-    bot = FakeBot(config)
+async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
+    fx_config.AQI_API_TOKEN = fx_aqi_api_token
+    fx_config.GOOGLE_API_KEY = fx_google_api_key
+
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
 
     event = create_event({
@@ -151,7 +148,7 @@ async def test_aqi(fx_aqi_api_token, fx_google_api_key):
 
 
 @pytest.mark.asyncio
-async def test_aqi_none(response_mock):
+async def test_aqi_none(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
             'address': '부천',
@@ -182,11 +179,10 @@ async def test_aqi_none(response_mock):
         headers={'Content-Type': 'application/json'},
     )
 
-    config = AttrDict({
-        'AQI_API_TOKEN': 'asdf',
-        'GOOGLE_API_KEY': 'qwer',
-    })
-    bot = FakeBot(config)
+    fx_config.AQI_API_TOKEN = 'asdf'
+    fx_config.GOOGLE_API_KEY = 'qwer'
+
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
 
     event = create_event({

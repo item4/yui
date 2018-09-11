@@ -13,6 +13,8 @@ from ..session import ClientSession
 from ..transform import choice, value_range
 from ..util import now, static_vars
 
+box.assert_config_required('DNF_API_KEY', str)
+
 AUCTION_COOLTIME = datetime.timedelta(minutes=3)
 
 RARITY_TABLE = {

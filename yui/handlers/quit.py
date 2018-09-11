@@ -1,6 +1,8 @@
 from ..box import box
 from ..event import Message
 
+box.assert_config_required('OWNER_ID', str)
+
 
 @box.command('quit')
 async def quit(bot, event: Message):
@@ -13,7 +15,7 @@ async def quit(bot, event: Message):
 
     """
 
-    if event.user.id == bot.config.OWNER:
+    if event.user.id == bot.config.OWNER_ID:
         await bot.say(event.channel, '안녕히 주무세요!')
         raise SystemExit()
     else:

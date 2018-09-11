@@ -50,7 +50,7 @@ def test_load_empty(fx_tmpdir: pathlib.Path):
 
     assert not config.DEBUG
     assert config.PREFIX == ''
-    assert config.HANDLERS == ()
+    assert config.HANDLERS == []
 
 
 def test_load_fine(fx_tmpdir: pathlib.Path):
@@ -67,4 +67,4 @@ HANDLERS = ['a', 'b']
 
     assert config.DEBUG
     assert config.PREFIX == '.'
-    assert config.HANDLERS == ('a', 'b')
+    assert config.HANDLERS == ['a', 'b']

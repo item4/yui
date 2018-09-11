@@ -12,6 +12,10 @@ from yui.command import C
 from yui.session import client_session
 from yui.util import now
 
+box.assert_config_required('TDCPROJECT_KEY', str)
+box.assert_config_required('MONDAY_DOG_LIMIT', int)
+box.assert_channel_required('general')
+
 
 @box.crontab('0 0 * * 1')
 async def monday_dog(bot):
@@ -49,7 +53,7 @@ async def monday_dog(bot):
         ]
         random.shuffle(says)
 
-        for say in says[:bot.config.get('MONDAY_DOG_LIMIT', len(says))]:
+        for say in says[:min(bot.config.MONDAY_DOG_LIMIT, len(says))]:
             await monday_dog_say(text=say)
 
 

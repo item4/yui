@@ -1,7 +1,4 @@
 import asyncio
-import copy
-
-from attrdict import AttrDict
 
 import pytest
 
@@ -9,28 +6,22 @@ import ujson
 
 from yui.api import SlackAPI
 from yui.bot import APICallError, Bot
-from yui.box import box
-from yui.config import DEFAULT
+from yui.box import Box
 
 from .util import FakeImportLib
 
 
-def test_bot_init(monkeypatch):
+def test_bot_init(monkeypatch, fx_config):
     importlib = FakeImportLib()
 
     monkeypatch.setattr("importlib.import_module", importlib.import_module)
 
-    config = AttrDict(copy.deepcopy(DEFAULT))
-    config.DEBUG = True
-    config.DATABASE_URL = 'sqlite:///'
-    config.MODELS = ['yui.model1', 'yui.model2']
-    config.HANDLERS = ['yui.handler1', 'yui.handler2']
-    config['LOGGING']['loggers']['yui']['handlers'] = ['console']
-    config.REGISTER_CRONTAB = False
-    del config['LOGGING']['handlers']['file']
-    bot = Bot(config)
+    fx_config.MODELS = ['yui.model1', 'yui.model2']
+    fx_config.HANDLERS = ['yui.handler1', 'yui.handler2']
+    box = Box()
+    bot = Bot(fx_config, using_box=box)
 
-    assert bot.config == config
+    assert bot.config == fx_config
     assert bot.channels == []
     assert bot.ims == []
     assert bot.groups == []
@@ -47,7 +38,7 @@ def test_bot_init(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_call(response_mock):
+async def test_call(fx_config, response_mock):
     token = 'asdf1234'
 
     response_mock.post(
@@ -95,13 +86,8 @@ async def test_call(response_mock):
         status=200,
     )
 
-    config = AttrDict(copy.deepcopy(DEFAULT))
-    config.DATABASE_URL = 'sqlite:///'
-    config.TOKEN = 'asdf1234'
-    config['LOGGING']['loggers']['yui']['handlers'] = ['console']
-    del config['LOGGING']['handlers']['file']
-    config.REGISTER_CRONTAB = False
-    bot = Bot(config)
+    box = Box()
+    bot = Bot(fx_config, using_box=box)
 
     res = await bot.call('test11')
     assert res['res'] == 'hello world!'

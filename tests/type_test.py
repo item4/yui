@@ -12,8 +12,6 @@ from typing import (
     Union,
 )
 
-from attrdict import AttrDict
-
 import pytest
 
 from yui.type import (
@@ -134,16 +132,14 @@ def test_cast():
     assert unexpected.name == 'firefox'
 
 
-def test_from_channel_id():
-    config = AttrDict({
-        'CHANNELS': {
-            'main': 'general',
-            'commons': ['general', 'random'],
-            'no': 'no',
-            'nos': ['no'],
-        },
-    })
-    bot = FakeBot(config)
+def test_from_channel_id(fx_config):
+    fx_config.CHANNELS = {
+        'main': 'general',
+        'commons': ['general', 'random'],
+        'no': 'no',
+        'nos': ['no'],
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -190,7 +186,7 @@ def test_from_channel_id():
     assert main.id == 'C1'
     assert main.name == 'general'
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         FromChannelID.from_config('commons')
 
     with pytest.raises(KeyError):
@@ -208,7 +204,7 @@ def test_from_channel_id():
     assert commons[1].id == 'C2'
     assert commons[1].name == 'random'
 
-    with pytest.raises(KeyError):
+    with pytest.raises(ValueError):
         FromChannelID.from_config_list('main')
 
     with pytest.raises(KeyError):
@@ -266,14 +262,12 @@ def test_is_container():
     assert not is_container(bool)
 
 
-def test_channel_from_config():
-    config = AttrDict({
-        'CHANNELS': {
-            'main': 'general',
-            'commons': ['general', 'random'],
-        },
-    })
-    bot = FakeBot(config)
+def test_channel_from_config(fx_config):
+    fx_config.CHANNELS = {
+        'main': 'general',
+        'commons': ['general', 'random'],
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -291,17 +285,15 @@ def test_channel_from_config():
         ChannelFromConfig('no').get()
 
 
-def test_channels_from_config():
-    config = AttrDict({
-        'CHANNELS': {
-            'main': 'general',
-            'commons': ['general', 'random'],
-            'all_1': '*',
-            'all_2': ['*'],
-            'empty': [],
-        },
-    })
-    bot = FakeBot(config)
+def test_channels_from_config(fx_config):
+    fx_config.CHANNELS = {
+        'main': 'general',
+        'commons': ['general', 'random'],
+        'all_1': '*',
+        'all_2': ['*'],
+        'empty': [],
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')

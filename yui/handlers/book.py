@@ -14,6 +14,10 @@ from ..event import Message
 from ..session import client_session
 from ..util import strip_tags
 
+box.assert_config_required('NAVER_CLIENT_ID', str)
+box.assert_config_required('NAVER_CLIENT_SECRET', str)
+box.assert_channel_required('general')
+
 PACKTPUB_URL = 'https://www.packtpub.com/packt/offers/free-learning'
 
 

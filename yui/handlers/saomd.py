@@ -19,6 +19,8 @@ from ..models.saomd import (
 from ..orm import Session
 from ..session import client_session
 
+box.assert_channel_required('game')
+
 logger = logging.getLogger(__name__)
 
 NOTICE_URLS: Dict[Server, str] = {

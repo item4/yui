@@ -11,6 +11,9 @@ from ..command import argument
 from ..event import Message
 from ..session import client_session
 
+box.assert_config_required('GOOGLE_API_KEY', str)
+box.assert_config_required('AQI_API_TOKEN', str)
+
 
 class AQIRecord(NamedTuple):
 

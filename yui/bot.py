@@ -75,7 +75,7 @@ class Bot:
     ) -> None:
         """Initialize"""
 
-        logging.config.dictConfig(config['LOGGING'])
+        logging.config.dictConfig(config.LOGGING)
 
         logger = logging.getLogger(f'{__name__}.Bot.__init__')
 
@@ -111,7 +111,13 @@ class Bot:
         self.users: Dict[UserID, User] = {}
         self.restart = False
 
-        if self.config.get('REGISTER_CRONTAB', True):
+        self.config.check_and_cast(self.box.config_required)
+        self.config.check_channel(
+            self.box.channel_required,
+            self.box.channels_required,
+        )
+
+        if self.config.REGISTER_CRONTAB:
             logger.info('register crontab')
             self.register_crontab()
 

@@ -1,17 +1,15 @@
-import copy
 import os
 import pathlib
 
 import aioresponses
-
-from attrdict import AttrDict
 
 import pytest
 
 from sqlalchemy.exc import ProgrammingError
 
 from yui.bot import Bot
-from yui.config import DEFAULT
+from yui.box import Box
+from yui.config import Config
 from yui.orm import Base, make_session
 
 
@@ -37,16 +35,10 @@ def fx_engine(request):
         database_url = request.config.getoption('--database-url')
     except ValueError:
         database_url = None
-
-    config = AttrDict(copy.deepcopy(DEFAULT))
-    config.DEBUG = True
-    config.DATABASE_URL = database_url
-    config.MODELS = []
-    config.HANDLERS = []
-    config['LOGGING']['loggers']['yui']['handlers'] = ['console']
-    config.REGISTER_CRONTAB = False
-    del config['LOGGING']['handlers']['file']
-    bot = Bot(config)
+    config = gen_config()
+    if database_url:
+        config.DATABASE_URL = database_url
+    bot = Bot(config, using_box=Box())
     engine = bot.config.DATABASE_ENGINE
     try:
         metadata = Base.metadata
@@ -102,6 +94,25 @@ def fx_sess(fx_engine):
     sess = make_session(bind=fx_engine)
     yield sess
     sess.rollback()
+
+
+def gen_config():
+    config = Config(
+        DEBUG=True,
+        DATABASE_URL='sqlite:///',
+        TOKEN='asdf1234',
+        REGISTER_CRONTAB=False,
+        CHANNELS={},
+        WEBSOCKETDEBUGGERURL='',
+    )
+    config.LOGGING['loggers']['yui']['handlers'] = ['console']
+    del config.LOGGING['handlers']['file']
+    return config
+
+
+@pytest.fixture()
+def fx_config():
+    return gen_config()
 
 
 @pytest.yield_fixture()

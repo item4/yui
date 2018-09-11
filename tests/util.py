@@ -2,10 +2,9 @@ import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Callable, Dict, List, NamedTuple, Optional
 
-from attrdict import AttrDict
-
 from yui.api import SlackAPI
 from yui.bot import Bot
+from yui.config import Config
 from yui.type import (
     BotLinkedNamespace,
     DirectMessageChannel,
@@ -27,7 +26,10 @@ class Call(NamedTuple):
 class FakeBot(Bot):
     """Fake bot for test"""
 
-    def __init__(self, config: AttrDict=None) -> None:
+    def __init__(self, config: Config=None) -> None:
+        if config is None:
+            config = Config()
+
         BotLinkedNamespace._bot = self
         self.loop = asyncio.get_event_loop()
         self.call_queue: List[Call] = []

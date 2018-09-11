@@ -15,6 +15,7 @@ from ...orm import Session
 from ...session import client_session
 from ...util import now
 
+box.assert_channel_required('game')
 
 MINUTE_PATTERN = re.compile('^(\d+)분 전$')
 HOUR_PATTERN = re.compile('^(\d+)시간 전$')

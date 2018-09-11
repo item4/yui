@@ -128,7 +128,7 @@ DATABASE_URL
 DATABASE_ECHO
   bool. If you set it to true, you can see raw SQL in log
 
-OWNER
+OWNER_ID
   string. ID of owner.
   You can get ID value from `this test page`_
 

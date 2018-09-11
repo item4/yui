@@ -7,6 +7,9 @@ from ..bot import APICallError
 from ..box import box
 from ..command import Cs
 
+box.assert_config_required('OWNER_USER_TOKEN', str)
+box.assert_channels_required('auto_cleanup_targets')
+
 logger = logging.getLogger(__name__)
 
 

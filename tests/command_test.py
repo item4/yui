@@ -1,7 +1,5 @@
 from typing import List
 
-from attrdict import AttrDict
-
 import pytest
 
 from yui.command import (
@@ -42,14 +40,13 @@ def test_cs():
     assert ch.key == 'commons'
 
 
-def test_get_channel_names():
-    config = AttrDict({
-        'CHANNELS': {
-            'general': 'general',
-            'commons': ['general', 'random'],
-        }
-    })
-    bot = FakeBot(config)
+def test_get_channel_names(fx_config):
+    fx_config.CHANNELS = {
+        'general': 'general',
+        'commons': ['general', 'random'],
+    }
+
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -78,16 +75,14 @@ def test_get_channel_names():
 
 
 @pytest.mark.asyncio
-async def test_only():
-    config = AttrDict({
-        'CHANNELS': {
-            'general': 'general',
-            'commons': ['general', 'random'],
-            'all': '*',
-            'no': None,
-        }
-    })
-    bot = FakeBot(config)
+async def test_only(fx_config):
+    fx_config.CHANNELS = {
+        'general': 'general',
+        'commons': ['general', 'random'],
+        'all': '*',
+        'no': None,
+    }
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -221,16 +216,15 @@ async def test_only():
 
 
 @pytest.mark.asyncio
-async def test_not_():
-    config = AttrDict({
-        'CHANNELS': {
-            'general': 'general',
-            'commons': ['general', 'random'],
-            'all': '*',
-            'no': None,
-        }
-    })
-    bot = FakeBot(config)
+async def test_not_(fx_config):
+    fx_config.CHANNELS = {
+        'general': 'general',
+        'commons': ['general', 'random'],
+        'all': '*',
+        'no': None,
+    }
+
+    bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')

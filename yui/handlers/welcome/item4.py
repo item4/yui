@@ -2,6 +2,8 @@ from ...box import box
 from ...command import C
 from ...event import TeamJoin
 
+box.assert_channel_required('welcome')
+
 
 @box.on(TeamJoin)
 async def welcome_item4(bot, event: TeamJoin):

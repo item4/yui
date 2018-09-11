@@ -15,6 +15,7 @@ from typing import (
     Mapping,
     NamedTuple,
     Optional,
+    Set,
     TYPE_CHECKING,
     Tuple,
     Type,
@@ -558,6 +559,9 @@ class Box:
     def __init__(self) -> None:
         """Initialize"""
 
+        self.config_required: Dict[str, Any] = {}
+        self.channel_required: Set[str] = set()
+        self.channels_required: Set[str] = set()
         self.handlers: List[BaseHandler] = []
         self.crontabs: List[Crontab] = []
 
@@ -565,6 +569,21 @@ class Box:
         """Register Handler manually."""
 
         self.handlers.append(handler)
+
+    def assert_config_required(self, key: str, type):
+        """Mark required configuration key and type."""
+
+        self.config_required[key] = type
+
+    def assert_channel_required(self, key: str):
+        """Mark required channel name in configuration."""
+
+        self.channel_required.add(key)
+
+    def assert_channels_required(self, key: str):
+        """Mark required channels name in configuration."""
+
+        self.channels_required.add(key)
 
     def command(
         self,

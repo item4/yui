@@ -1,5 +1,3 @@
-from attrdict import AttrDict
-
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.event import listens_for
@@ -7,6 +5,8 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session as _Session, identity
 from sqlalchemy.sql.expression import select
+
+from .config import Config
 
 __all__ = 'Base', 'Session', 'get_database_engine', 'make_session'
 
@@ -33,7 +33,7 @@ class Session(_Session):
         )
 
     def __setstate__(self, state):
-        state['bind'] = get_database_engine(AttrDict(state['bind']))
+        state['bind'] = get_database_engine(Config(**state['bind']))
         self.__init__(**state)
 
 
@@ -42,7 +42,7 @@ def make_session(*args, **kwargs) -> Session:  # noqa
     return Session(*args, **kwargs)
 
 
-def get_database_engine(config: AttrDict) -> Engine:
+def get_database_engine(config: Config) -> Engine:
     try:
         return config.DATABASE_ENGINE
     except AttributeError:

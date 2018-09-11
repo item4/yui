@@ -197,7 +197,10 @@ class FromChannelID(FromID):
     @classmethod
     def from_config(cls, key: str)\
             -> Union['PrivateChannel', 'PublicChannel']:
-        return cls.from_name(cls._bot.config.CHANNELS[key])
+        channel_name = cls._bot.config.CHANNELS[key]
+        if isinstance(channel_name, str):
+            return cls.from_name(channel_name)
+        raise ValueError(f'{key} in CHANNELS is not str.')
 
     @classmethod
     def from_config_list(cls, key: str)\
@@ -207,7 +210,9 @@ class FromChannelID(FromID):
             raise NoChannelsError()
         if channels == ['*'] or channels == '*':
             raise AllChannelsError()
-        return [cls.from_name(x) for x in channels]
+        if isinstance(channels, list):
+            return [cls.from_name(x) for x in channels]
+        raise ValueError(f'{key} in CHANNELS is not list.')
 
 
 class Channel(FromChannelID):
@@ -447,10 +452,21 @@ NoneType = type(None)
 UnionType = type(Union)
 
 
+KNOWN_TYPES = {
+    bool,
+    bytes,
+    float,
+    int,
+    str,
+}
+
+
 def cast(t, value):
     """Magical casting."""
 
-    if isinstance(t, TypeVar):
+    if t in KNOWN_TYPES:
+        return t(value)
+    elif isinstance(t, TypeVar):
         if t.__constraints__:
             for ty in t.__constraints__:
                 try:
@@ -462,8 +478,6 @@ def cast(t, value):
             return value
     elif t == Any:
         return value
-    elif t in (str, bytes):
-        return t(value)
     if hasattr(t, '__origin__'):
         origin = t.__origin__
 
@@ -511,8 +525,8 @@ def cast(t, value):
         if issubclass(t, Namespace):
             return t(**value)
 
-        if callable(t) and t() is None:
-            return None
+        if isinstance(value, t):
+            return value
 
     return t(value)
 
