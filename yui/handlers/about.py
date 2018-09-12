@@ -33,5 +33,6 @@ async def about(bot, event: Message):
 
     await bot.say(
         event.channel,
-        MESSAGE.format(prefix=bot.config.PREFIX)
+        MESSAGE.format(prefix=bot.config.PREFIX),
+        thread_ts=event.ts,
     )

@@ -13,6 +13,7 @@ async def test_about_command():
     event = create_event({
         'type': 'message',
         'channel': 'C1',
+        'ts': '1234.56',
     })
 
     await about(bot, event)
@@ -21,3 +22,4 @@ async def test_about_command():
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == MESSAGE.format(prefix=bot.config.PREFIX)
+    assert said.data['thread_ts'] == '1234.56'
