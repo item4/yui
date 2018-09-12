@@ -1,5 +1,4 @@
 import inspect
-from collections import abc
 from types import SimpleNamespace
 from typing import (
     Any,
@@ -657,7 +656,7 @@ class NoHandleCaster(BaseCaster):
 class NoneTypeCaster(BaseCaster):
 
     def check(self, t, value):
-        return t == NoneType
+        return t == NoneType  # type: ignore
 
     def cast(self, caster, t, value):
         return None

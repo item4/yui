@@ -1,4 +1,4 @@
-from typing import Any, List, Dict, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from .type import (
     Bot,
