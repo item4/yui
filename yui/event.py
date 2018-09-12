@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, List, Dict, Optional, Union
 
 from .type import (
     Bot,
@@ -472,7 +472,7 @@ class PinAdded(Event):
     type: str = 'pin_added'
     user: User
     channel_id: ChannelID
-    item: Mapping
+    item: Dict
     event_ts: Ts
 
 
@@ -482,7 +482,7 @@ class PinRemoved(Event):
     type: str = 'pin_added'
     user: User
     channel_id: ChannelID
-    item: Mapping
+    item: Dict
     has_pins: bool
     event_ts: Ts
 
@@ -511,7 +511,7 @@ class ReactionAdded(Event):
     user: User
     reaction: str
     item_user: User
-    item: Mapping[str, Any]
+    item: Dict[str, Any]
     event_ts: Ts
 
 
@@ -522,7 +522,7 @@ class ReactionRemoved(Event):
     user: User
     reaction: str
     item_user: User
-    item: Mapping[str, Any]
+    item: Dict[str, Any]
     event_ts: Ts
 
 
@@ -538,7 +538,7 @@ class StarAdded(Event):
 
     type: str = 'star_added'
     user: User
-    item: Mapping
+    item: Dict
     event_ts: Ts
 
 
@@ -547,7 +547,7 @@ class StarRemoved(Event):
 
     type: str = 'star_removed'
     user: User
-    item: Mapping
+    item: Dict
     event_ts: Ts
 
 
@@ -633,21 +633,21 @@ class TeamProfileChange(Event):
     """Team profile fields have been updated."""
 
     type: str = 'team_profile_change'
-    profile: Mapping
+    profile: Dict
 
 
 class TeamProfileDelete(Event):
     """Team profile fields have been deleted."""
 
     type: str = 'team_profile_delete'
-    profile: Mapping
+    profile: Dict
 
 
 class TeamProfileReorder(Event):
     """Team profile fields have been reordered."""
 
     type: str = 'team_profile_reorder'
-    profile: Mapping
+    profile: Dict
 
 
 class TeamRename(Event):

@@ -5,7 +5,6 @@ from typing import (
     Any,
     Dict,
     List,
-    Mapping,
     NewType,
     Optional,
     TYPE_CHECKING,
@@ -379,7 +378,7 @@ class Bot(Namespace):
     id: BotID
     app_id: AppID
     name: str
-    icons: Mapping[str, str]
+    icons: Dict[str, str]
 
 
 class DnDStatus(Namespace):
@@ -453,7 +452,6 @@ UnionType = type(Union)
 
 
 KNOWN_TYPES = {
-    bool,
     bytes,
     float,
     int,
@@ -461,93 +459,234 @@ KNOWN_TYPES = {
 }
 
 
-def cast(t, value):
-    """Magical casting."""
+class CastError(Exception):
+    pass
 
-    if t in KNOWN_TYPES:
+
+class BaseCaster:
+
+    def check(self, t, value):
+        raise NotImplementedError
+
+    def cast(self, caster, t, value):
+        raise NotImplementedError
+
+
+class Caster:
+
+    def __init__(self, caster: List[BaseCaster]) -> None:
+        self.caster = caster
+
+    def __call__(self, t, value):
+        try:
+            return self.cast(t, value)
+        except CastError:
+            return t(value)
+
+    def sort(self, types, value):
+        return [
+            t for t in types for c in self.caster
+            if c.check(t, value)
+        ]
+
+    def cast(self, t, value):
+        for caster in self.caster:
+            if caster.check(t, value):
+                return caster.cast(self, t, value)
+        raise CastError
+
+
+class BoolCaster(BaseCaster):
+
+    def check(self, t, value):
+        return t == bool
+
+    def cast(self, caster, t, value):
         return t(value)
-    elif isinstance(t, TypeVar):
+
+
+class KnownTypesCaster(BaseCaster):
+
+    def check(self, t, value):
+        if t in KNOWN_TYPES and value is not None:
+            try:
+                t(value)
+            except ValueError:
+                return False
+            return True
+        return False
+
+    def cast(self, caster, t, value):
+        return t(value)
+
+
+class TypeVarCaster(BaseCaster):
+
+    def check(self, t, value):
+        return isinstance(t, TypeVar)
+
+    def cast(self, caster, t, value):
         if t.__constraints__:
-            for ty in t.__constraints__:
+            types = caster.sort(t.__constraints__)
+            for ty in types:
                 try:
-                    return cast(ty, value)
-                except:  # noqa: E722
+                    return caster.cast(ty, value)
+                except CastError:
                     continue
-            raise ValueError()
+            raise CastError
         else:
             return value
-    elif t == Any:
+
+
+class NewTypeCaster(BaseCaster):
+
+    def check(self, t, value):
+        return hasattr(t, '__supertype__')
+
+    def cast(self, caster, t, value):
+        return caster.cast(t.__supertype__, value)
+
+
+class AnyCaster(BaseCaster):
+
+    def check(self, t, value):
+        return t == Any
+
+    def cast(self, caster, t, value):
         return value
-    if hasattr(t, '__origin__'):
-        origin = t.__origin__
-
-        if origin == Union:
-            for ty in t.__args__:
-                try:
-                    return cast(ty, value)
-                except:  # noqa: E722
-                    continue
-            raise ValueError()
-
-        if origin == tuple:
-            if t.__args__:
-                return tuple(
-                    cast(ty, x) for ty, x in zip(t.__args__, value)
-                )
-            else:
-                return tuple(value)
-
-        if origin in (set, abc.MutableSet):
-            if t.__args__:
-                return {cast(t.__args__[0], x) for x in value}
-            else:
-                return set(value)
-
-        if origin in (list, abc.MutableSequence, abc.Sequence):
-            if t.__args__:
-                return [cast(t.__args__[0], x) for x in value]
-            else:
-                return list(value)
-
-        if origin in (dict, abc.Mapping, abc.MutableMapping):
-            if t.__args__:
-                return {
-                    cast(t.__args__[0], k): cast(t.__args__[1], v)
-                    for k, v in value.items()
-                }
-            else:
-                return dict(value)
-
-    if inspect.isclass(t):
-        if issubclass(t, FromID):
-            return t.from_id(value)
-
-        if issubclass(t, Namespace):
-            return t(**value)
-
-        if isinstance(value, t):
-            return value
-
-    return t(value)
 
 
-CONTAINER_ORIGINS = (
-    # tuple
-    tuple,
-    # set
-    set,
-    abc.MutableSet,
-    # list
-    list,
-    abc.MutableSequence,
-    abc.Sequence,
-)
+class UnionCaster(BaseCaster):
+
+    def check(self, t, value):
+        return getattr(t, '__origin__', None) == Union
+
+    def cast(self, caster, t, value):
+        types = caster.sort(t.__args__, value)
+        for ty in types:
+            try:
+                return caster.cast(ty, value)
+            except CastError:
+                continue
+        raise ValueError
+
+
+class TupleCaster(BaseCaster):
+
+    def check(self, t, value):
+        return getattr(t, '__origin__', None) == tuple
+
+    def cast(self, caster, t, value):
+        if t.__args__:
+            return tuple(
+                caster.cast(ty, x) for ty, x in zip(t.__args__, value)
+            )
+        else:
+            return tuple(value)
+
+
+class SetCaster(BaseCaster):
+
+    def check(self, t, value):
+        return getattr(t, '__origin__', None) == set
+
+    def cast(self, caster, t, value):
+        if t.__args__:
+            return {caster.cast(t.__args__[0], x) for x in value}
+        else:
+            return set(value)
+
+
+class ListCaster(BaseCaster):
+
+    def check(self, t, value):
+        return getattr(t, '__origin__', None) == list
+
+    def cast(self, caster, t, value):
+        if t.__args__:
+            return [caster.cast(t.__args__[0], x) for x in value]
+        else:
+            return list(value)
+
+
+class DictCaster(BaseCaster):
+
+    def check(self, t, value):
+        return getattr(t, '__origin__', None) == dict
+
+    def cast(self, caster, t, value):
+        if t.__args__:
+            return {
+                caster.cast(t.__args__[0], k): caster.cast(t.__args__[1], v)
+                for k, v in value.items()
+            }
+        else:
+            return dict(value)
+
+
+class FromIDCaster(BaseCaster):
+
+    def check(self, t, value):
+        return inspect.isclass(t) and issubclass(t, FromID)
+
+    def cast(self, caster, t, value):
+        return t.from_id(value)
+
+
+class NamespaceCaster(BaseCaster):
+
+    def check(self, t, value):
+        return inspect.isclass(t) and issubclass(t, Namespace)
+
+    def cast(self, caster, t, value):
+        return t(**value)
+
+
+class NoHandleCaster(BaseCaster):
+
+    def check(self, t, value):
+        try:
+            return isinstance(value, t)
+        except TypeError:
+            return False
+
+    def cast(self, caster, t, value):
+        return value
+
+
+class NoneTypeCaster(BaseCaster):
+
+    def check(self, t, value):
+        return t == NoneType
+
+    def cast(self, caster, t, value):
+        return None
+
+
+cast = Caster([
+    NoHandleCaster(),
+    BoolCaster(),
+    KnownTypesCaster(),
+    AnyCaster(),
+    TypeVarCaster(),
+    NewTypeCaster(),
+    UnionCaster(),
+    TupleCaster(),
+    SetCaster(),
+    ListCaster(),
+    DictCaster(),
+    FromIDCaster(),
+    NamespaceCaster(),
+])
+
+
+CONTAINER = (set, tuple, list)
 
 
 def is_container(t) -> bool:
     """Check given value is container type?"""
 
     if hasattr(t, '__origin__'):
-        return t.__origin__ in CONTAINER_ORIGINS
+        return t.__origin__ in CONTAINER
 
-    return t in (set, tuple, list)
+    return t in CONTAINER
