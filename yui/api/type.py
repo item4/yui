@@ -40,12 +40,12 @@ class Action:
     text: str
     type: str
     id: Optional[str] = None
-    confirm: Optional[List[Confirmation]] = attr.Factory(list)
+    confirm: Optional[List[Confirmation]] = None
     data_source: Optional[str] = None
     min_query_length: Optional[int] = None
     name: Optional[str] = None
-    options: Optional[List[OptionField]] = attr.Factory(list)
-    selected_options: Optional[List[OptionField]] = attr.Factory(list)
+    options: Optional[List[OptionField]] = None
+    selected_options: Optional[List[OptionField]] = None
     style: Optional[str] = None
     value: Optional[str] = None
     url: Optional[str] = None
@@ -65,7 +65,7 @@ class Attachment:
     title_link: Optional[str] = None
     text: Optional[str] = None
     fields: List[Field] = attr.Factory(list)
-    actions: Optional[List[Action]] = attr.Factory(list)
+    actions: Optional[List[Action]] = None
     image_url: Optional[str] = None
     thumb_url: Optional[str] = None
     footer: Optional[str] = None
@@ -77,4 +77,3 @@ class Attachment:
 
     def __str__(self) -> str:
         return f'Attachment(title={self.title!r})'
-

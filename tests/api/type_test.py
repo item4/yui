@@ -65,7 +65,7 @@ def test_attachment_class():
     assert attach.footer == footer
     assert attach.footer_icon == footer_icon
     assert attach.ts == ts
-    assert len(attach.actions) == 0
+    assert attach.actions is None
     assert str(attach) == f"Attachment(title='{title}')"
 
     attach.add_field('field3', '3')
@@ -76,7 +76,7 @@ def test_attachment_class():
     assert attach.fields[2].title == 'field3'
 
 
-def test_action_class(): 
+def test_action_class():
     id = None
     confirm = [Confirmation(
         dismiss_text='dismiss',
@@ -127,4 +127,3 @@ def test_action_class():
     assert action.type == type
     assert action.value == value
     assert action.url == url
-
