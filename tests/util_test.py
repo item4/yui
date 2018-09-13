@@ -2,6 +2,7 @@ from fuzzywuzzy import fuzz
 
 
 from yui.util import (
+    b64_redirect,
     bold,
     bool2str,
     code,
@@ -92,3 +93,10 @@ def test_fuzzy_korean_ratio():
 
     assert fuzz.ratio('사당', 'ㅅㅏㄷㅏㅇ') == 0
     assert fuzzy_korean_ratio('사당', 'ㅅㅏㄷㅏㅇ') == 80
+
+
+def test_b64_redirect():
+
+    assert b64_redirect('item4').startswith(
+        'https://item4.github.io/yui/helpers/b64-redirect.html?b64='
+    )

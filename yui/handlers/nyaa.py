@@ -12,6 +12,7 @@ from ..browser import new_page
 from ..command import argument, option
 from ..event import Message
 from ..transform import choice
+from ..util import b64_redirect
 
 
 CATEGORIES = {
@@ -136,7 +137,7 @@ async def nyaa(
         ), Action(
             type='button',
             text='Magnet Link',
-            url=row['magnet_url'],
+            url=b64_redirect(row['magnet_url']),
         )]
 
         attachments.append(Attachment(
