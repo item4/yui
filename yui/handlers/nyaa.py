@@ -132,11 +132,11 @@ async def nyaa(
         actions: List[Action] = [Action(
             type='button',
             text='Download',
-            url: row['download_url']
+            url=row['download_url'],
         ), Action(
             type='button',
             text='Magnet Link',
-            url: row['magnet_url']
+            url=row['magnet_url'],
         )]
 
         attachments.append(Attachment(
@@ -154,7 +154,7 @@ async def nyaa(
                 row['seeders'],
                 row['leechers'],
                 row['downloads'],
-            ),
+            )
         ))
 
     if attachments:

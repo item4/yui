@@ -26,10 +26,10 @@ class SlackEncoder(json.JSONEncoder):
             }
         elif isinstance(o, Confirmation):
             return {k: v for k, v in {
-                'dismiss_text': o.dismiss_text
-                'ok_text': o.ok_text
-                'text': o.text
-                'title': o.title
+                'dismiss_text': o.dismiss_text,
+                'ok_text': o.ok_text,
+                'text': o.text,
+                'title': o.title,
             }.items() if v is not None}
         elif isinstance(o, OptionField):
             return {k: v for k, v in {
@@ -39,18 +39,18 @@ class SlackEncoder(json.JSONEncoder):
             }.items() if v is not None}
         elif isinstance(o, Action):
             return {k: v for k, v in {
-                'id': o.id
-                'confirm': o.confirm
-                'data_source': o.data_source
-                'min_query_length': o.min_query_length
-                'name': o.name
-                'options': o.options
-                'selected_options': o.selected_options
-                'style': o.style
-                'text': o.text
-                'type': o.type
-                'value': o.value
-                'url': o.url
+                'id': o.id,
+                'confirm': o.confirm,
+                'data_source': o.data_source,
+                'min_query_length': o.min_query_length,
+                'name': o.name,
+                'options': o.options,
+                'selected_options': o.selected_options,
+                'style': o.style,
+                'text': o.text,
+                'type': o.type,
+                'value': o.value,
+                'url': o.url,
             }.items() if v is not None}
         elif isinstance(o, Attachment):
             return {k: v for k, v in {

@@ -100,31 +100,31 @@ def test_action_class():
     url = 'https://item4.github.io'
 
     action = Action(
-        id = id
-        confirm = confirm
-        data_source = data_source
-        min_query_length = min_query_length
-        name = name
-        options = options
-        selected_options = selected_options
-        style = style
-        text = text
-        type = type
-        value = value
-        url = url
+        id=id,
+        confirm=confirm,
+        data_source=data_source,
+        min_query_length=min_query_length,
+        name=name,
+        options=options,
+        selected_options=selected_options,
+        style=style,
+        text=text,
+        type=type,
+        value=value,
+        url=url
     )
 
-    assert action.id = id
-    assert len(action.confirm) = len(confirm)
-    assert action.data_source = action.data_source
-    assert action.min_query_length = min_query_length
-    assert action.name = name
-    assert action.options = options
-    assert len(action.selected_options) = len(1)
-    assert action.selected_options[0].text = selected_options[0].text
-    assert action.style = style
-    assert action.text = text
-    assert action.type =  type
-    assert action.value = value
-    assert action.url = url
+    assert action.id == id
+    assert len(action.confirm) == len(confirm)
+    assert action.data_source == action.data_source
+    assert action.min_query_length == min_query_length
+    assert action.name == name
+    assert action.options == options
+    assert len(action.selected_options) == len(1)
+    assert action.selected_options[0].text == selected_options[0].text
+    assert action.style == style
+    assert action.text == text
+    assert action.type ==  type
+    assert action.value == value
+    assert action.url == url
 
