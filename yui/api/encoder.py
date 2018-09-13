@@ -63,6 +63,7 @@ class SlackEncoder(json.JSONEncoder):
                 'title': o.title,
                 'title_link': o.title_link,
                 'text': o.text,
+                'actions': o.actions,
                 'fields': o.fields,
                 'image_url': o.image_url,
                 'thumb_url': o.thumb_url,
