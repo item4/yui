@@ -6,7 +6,7 @@ from pyppeteer.errors import TimeoutError
 
 import tzlocal
 
-from ..api import Attachment
+from ..api import Attachment, Action
 from ..box import box
 from ..browser import new_page
 from ..command import argument, option
@@ -38,6 +38,7 @@ SCRIPT = '''
         const title = title_td.children[last_el_index].textContent;
         const page_url = tr.children[1].children[0].href;
         const download_url = tr.children[2].children[0].href;
+        const magnet_url = tr.children[2].children[1].href;
         const size = tr.children[3].textContent;
         const uploaded_at = Number(tr.children[4].dataset.timestamp);
         const seeders = tr.children[5].textContent;
@@ -47,6 +48,7 @@ SCRIPT = '''
             title,
             page_url,
             download_url,
+            magnet_url,
             size,
             uploaded_at,
             seeders,
@@ -127,14 +129,23 @@ async def nyaa(
 
     for i in range(min(7, len(result))):
         row = result[i]
+        actions: List[Action] = [Action(
+            type='button',
+            text='Download',
+            url: row['download_url']
+        ), Action(
+            type='button',
+            text='Magnet Link',
+            url: row['magnet_url']
+        )]
 
         attachments.append(Attachment(
             fallback='{} - {}'.format(row['title'], row['download_url']),
             title=row['title'],
             title_link=row['page_url'],
-            text=('{} / {} / {}\n'
+            actions=actions,
+            text=('{} / {}\n'
                   'Seeders: {} / Leechers: {} / Downloads: {}').format(
-                row['download_url'],
                 row['size'],
                 datetime.datetime.fromtimestamp(
                     row['uploaded_at'],
@@ -143,7 +154,7 @@ async def nyaa(
                 row['seeders'],
                 row['leechers'],
                 row['downloads'],
-            )
+            ),
         ))
 
     if attachments:
