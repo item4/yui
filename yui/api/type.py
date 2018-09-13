@@ -28,9 +28,9 @@ class Confirmation:
 class OptionField:
     """Optional Field on Action"""
 
-    description: Optional[str] = None
     text: str
     value: str
+    description: Optional[str] = None
 
 
 @attr.dataclass(slots=True)
@@ -38,12 +38,12 @@ class Action:
     """Action of Attachment"""
 
     id: Optional[str] = None
-    confirm: Optional[List[Confirmation]] = None
+    confirm: Optional[List[Confirmation]] = attr.Factory(list)
     data_source: Optional[str] = None
     min_query_length: Optional[int] = None
     name: Optional[str] = None
-    options: Optional[List[OptionField]] = None
-    selected_options: Optional[List[OptionField]] = None
+    options: Optional[List[OptionField]] = attr.Factory(list)
+    selected_options: Optional[List[OptionField]] = attr.Factory(list)
     style: Optional[str] = None
     text: str
     type: str
@@ -65,7 +65,7 @@ class Attachment:
     title_link: Optional[str] = None
     text: Optional[str] = None
     fields: List[Field] = attr.Factory(list)
-    actions: Optional[List[Action]] = None
+    actions: Optional[List[Action]] = attr.Factory(list)
     image_url: Optional[str] = None
     thumb_url: Optional[str] = None
     footer: Optional[str] = None

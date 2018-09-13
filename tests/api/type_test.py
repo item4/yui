@@ -65,7 +65,7 @@ def test_attachment_class():
     assert attach.footer == footer
     assert attach.footer_icon == footer_icon
     assert attach.ts == ts
-    assert attach.actions == None
+    assert attach.actions is None
     assert str(attach) == f"Attachment(title='{title}')"
 
     attach.add_field('field3', '3')
@@ -111,7 +111,7 @@ def test_action_class():
         text=text,
         type=type,
         value=value,
-        url=url
+        url=url,
     )
 
     assert action.id == id
@@ -120,11 +120,11 @@ def test_action_class():
     assert action.min_query_length == min_query_length
     assert action.name == name
     assert action.options == options
-    assert len(action.selected_options) == len(1)
+    assert len(action.selected_options) == len(selected_options)
     assert action.selected_options[0].text == selected_options[0].text
     assert action.style == style
     assert action.text == text
-    assert action.type ==  type
+    assert action.type == type
     assert action.value == value
     assert action.url == url
 
