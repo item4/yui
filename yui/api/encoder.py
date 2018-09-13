@@ -1,6 +1,6 @@
 import json
 
-from .type import Attachment, Field
+from .type import Action, Attachment, Confirmation, Field, OptionField
 from ..type import ChannelFromConfig, ChannelsFromConfig
 
 __all__ = 'SlackEncoder',
@@ -24,6 +24,34 @@ class SlackEncoder(json.JSONEncoder):
                 'value': o.value,
                 'short': bool2str(o.short),
             }
+        elif isinstance(o, Confirmation):
+            return {k: v for k, v in {
+                'dismiss_text': o.dismiss_text,
+                'ok_text': o.ok_text,
+                'text': o.text,
+                'title': o.title,
+            }.items() if v is not None}
+        elif isinstance(o, OptionField):
+            return {k: v for k, v in {
+                'text': o.text,
+                'value': o.value,
+                'description': o.description,
+            }.items() if v is not None}
+        elif isinstance(o, Action):
+            return {k: v for k, v in {
+                'id': o.id,
+                'confirm': o.confirm,
+                'data_source': o.data_source,
+                'min_query_length': o.min_query_length,
+                'name': o.name,
+                'options': o.options,
+                'selected_options': o.selected_options,
+                'style': o.style,
+                'text': o.text,
+                'type': o.type,
+                'value': o.value,
+                'url': o.url,
+            }.items() if v is not None}
         elif isinstance(o, Attachment):
             return {k: v for k, v in {
                 'fallback': o.fallback,

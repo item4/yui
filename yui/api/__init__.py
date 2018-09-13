@@ -2,11 +2,18 @@ from .channels import Channels
 from .chat import Chat
 from .groups import Groups
 from .im import Im
-from .type import Attachment, Field
+from .type import Action, Attachment, Confirmation, Field, OptionField
 from .users import Users
 
 
-__all__ = 'Attachment', 'Field', 'SlackAPI'
+__all__ = (
+    'Action',
+    'Attachment',
+    'Confirmation',
+    'Field',
+    'OptionField',
+    'SlackAPI',
+)
 
 
 class SlackAPI:
