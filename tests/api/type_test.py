@@ -1,4 +1,4 @@
-from yui.api.type import Attachment, Field, Action, Confirmation, OptionField
+from yui.api.type import Action, Attachment, Confirmation, Field, OptionField
 
 
 def test_field_class():

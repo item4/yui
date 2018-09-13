@@ -1,6 +1,6 @@
 import json
 
-from .type import Attachment, Field, Confirmation, OptionField, Action
+from .type import Action, Attachment, Confirmation, Field, OptionField
 from ..type import ChannelFromConfig, ChannelsFromConfig
 
 __all__ = 'SlackEncoder',

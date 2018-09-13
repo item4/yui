@@ -6,7 +6,7 @@ from pyppeteer.errors import TimeoutError
 
 import tzlocal
 
-from ..api import Attachment, Action
+from ..api import Action, Attachment
 from ..box import box
 from ..browser import new_page
 from ..command import argument, option
