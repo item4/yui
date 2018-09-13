@@ -65,7 +65,7 @@ def test_attachment_class():
     assert attach.footer == footer
     assert attach.footer_icon == footer_icon
     assert attach.ts == ts
-    assert attach.actions is None
+    assert len(attach.actions) == 0
     assert str(attach) == f"Attachment(title='{title}')"
 
     attach.add_field('field3', '3')

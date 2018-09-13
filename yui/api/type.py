@@ -37,6 +37,8 @@ class OptionField:
 class Action:
     """Action of Attachment"""
 
+    text: str
+    type: str
     id: Optional[str] = None
     confirm: Optional[List[Confirmation]] = attr.Factory(list)
     data_source: Optional[str] = None
@@ -45,8 +47,6 @@ class Action:
     options: Optional[List[OptionField]] = attr.Factory(list)
     selected_options: Optional[List[OptionField]] = attr.Factory(list)
     style: Optional[str] = None
-    text: str
-    type: str
     value: Optional[str] = None
     url: Optional[str] = None
 
