@@ -104,7 +104,7 @@ def process_notice_list(html: str, sess: Session) -> List[Attachment]:
                     ),
                     title_link=url,
                 ))
-                article.title = article.title
+                article.title = title
                 article.updated_at = now()
                 with sess.begin():
                     sess.add(article)
