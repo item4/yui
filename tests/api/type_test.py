@@ -1,4 +1,4 @@
-from yui.api.type import Attachment, Field
+from yui.api.type import Attachment, Field, Action, Confirmation, OptionField
 
 
 def test_field_class():
@@ -65,6 +65,7 @@ def test_attachment_class():
     assert attach.footer == footer
     assert attach.footer_icon == footer_icon
     assert attach.ts == ts
+    assert attach.actions == None
     assert str(attach) == f"Attachment(title='{title}')"
 
     attach.add_field('field3', '3')
@@ -73,3 +74,57 @@ def test_attachment_class():
     assert attach.fields[0].title == 'field1'
     assert attach.fields[1].title == 'field2'
     assert attach.fields[2].title == 'field3'
+
+
+def test_action_class(): 
+    id = None
+    confirm = [Confirmation(
+        dismiss_text='dismiss',
+        ok_text='ok',
+        text='some text',
+        title='some title',
+    )]
+    data_source = 'data_source'
+    min_query_length = 100
+    name = 'Test Button'
+    options = []
+    selected_options = [OptionField(
+        text='text',
+        value='value',
+        description='some description',
+    )]
+    style = 'text-align: center'
+    text = 'Test Text'
+    type = 'Some Type'
+    value = ''
+    url = 'https://item4.github.io'
+
+    action = Action(
+        id = id
+        confirm = confirm
+        data_source = data_source
+        min_query_length = min_query_length
+        name = name
+        options = options
+        selected_options = selected_options
+        style = style
+        text = text
+        type = type
+        value = value
+        url = url
+    )
+
+    assert action.id = id
+    assert len(action.confirm) = len(confirm)
+    assert action.data_source = action.data_source
+    assert action.min_query_length = min_query_length
+    assert action.name = name
+    assert action.options = options
+    assert len(action.selected_options) = len(1)
+    assert action.selected_options[0].text = selected_options[0].text
+    assert action.style = style
+    assert action.text = text
+    assert action.type =  type
+    assert action.value = value
+    assert action.url = url
+
