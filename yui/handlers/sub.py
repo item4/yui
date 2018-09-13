@@ -308,6 +308,7 @@ async def search_on_air(bot, event: Message, title: str):
             channel=event.channel,
             attachments=attachments,
             as_user=True,
+            thread_ts=event.ts,
         )
 
     else:
