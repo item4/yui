@@ -25,6 +25,7 @@ __all__ = (
     'now',
     'preformatted',
     'quote',
+    'static_vars',
     'strike',
     'strip_tags',
     'truncate_table',
