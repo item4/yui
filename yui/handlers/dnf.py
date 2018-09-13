@@ -9,7 +9,7 @@ from ..api import Attachment, Field
 from ..box import box
 from ..command import argument, option
 from ..event import Message
-from ..session import ClientSession
+from ..session import client_session
 from ..transform import choice, value_range
 from ..util import now, static_vars
 
@@ -121,7 +121,7 @@ async def dnf_auction(
         params['q'] = ','.join(query)
     data: Dict[str, Any] = {}
     try:
-        async with ClientSession() as sess:
+        async with client_session() as sess:
             async with sess.get(
                 'https://api.neople.co.kr/df/auction',
                 params=params
