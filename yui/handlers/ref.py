@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import re
 from typing import Dict, List, Tuple
 
 from fuzzywuzzy import fuzz
@@ -18,8 +17,6 @@ from ..session import client_session
 from ..util import now
 
 logger = logging.getLogger(__name__)
-
-INDEX_NUM_RE = re.compile('^(\d+\.)*.')
 
 
 REF_URLS: Dict[str, str] = {
@@ -111,17 +108,22 @@ def parse_python(html: str) -> List[Tuple[str, str, str]]:
 
     result = []
     for a in a_tags:
-        code = ''
-        code_el = a.cssselect('code.docutils.literal')
-        name = INDEX_NUM_RE.sub('', a.text_content())
+        code_els = a.cssselect('code.docutils.literal')
+        name = str(a.text_content()).strip()
         link = f'https://docs.python.org/3/library/{a.get("href")}'
-        if code_el:
-            code = str(code_el[0].text_content())
-        result.append((
-            code,
-            name,
-            link,
-        ))
+        if code_els:
+            for code_el in code_els:
+                result.append((
+                    str(code_el.text_content()).strip(),
+                    name,
+                    link,
+                ))
+        else:
+            result.append((
+                '',
+                name,
+                link,
+            ))
     return result
 
 
