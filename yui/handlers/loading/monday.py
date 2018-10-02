@@ -64,6 +64,7 @@ async def get_holiday_name(
     year, month, day = dt.strftime('%Y/%m/%d').split('/')
     url = 'https://apis.sktelecom.com/v1/eventday/days'
     params = {
+        'type': 'h',
         'year': year,
         'month': month,
         'day': day,

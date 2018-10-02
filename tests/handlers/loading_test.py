@@ -39,9 +39,13 @@ def fx_tdcproject_key():
 async def test_get_holiday_name(fx_tdcproject_key):
     jan_first = datetime.datetime(2018, 1, 1)
     jan_second = datetime.datetime(2018, 1, 2)
+    armed_forces_day = datetime.datetime(2018, 10, 1)
 
     holiday = await get_holiday_name(fx_tdcproject_key, jan_first)
     assert holiday == '신정'
 
     holiday = await get_holiday_name(fx_tdcproject_key, jan_second)
+    assert holiday is None
+
+    holiday = await get_holiday_name(fx_tdcproject_key, armed_forces_day)
     assert holiday is None
