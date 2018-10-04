@@ -21,7 +21,7 @@ def weekend_loading_percent(now: datetime.datetime) -> float:
         microsecond=0,
     )
     delta = now - monday
-    return delta.total_seconds() / (5*24*60*60) * 100
+    return delta.total_seconds() / (5*24*60*60) * 100 * 0.8
 
 
 @box.crontab('0 * * * 1-5')
@@ -59,7 +59,7 @@ async def weekend_loading(bot, event: Message):
     if percent == 100.0:
         await bot.say(
             event.channel,
-            '주말이에요! 즐거운 주말 되세요!'
+            '주말이에요! 빨리 일어나서 주말 출근하세요! 어딜 쉬나요!'
         )
     else:
         await bot.say(
