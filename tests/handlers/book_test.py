@@ -119,7 +119,7 @@ async def test_packtpub_dotd():
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
+    assert said.data['text'] == '오늘자 PACKT Book의 무료책이다...읽냐??'
     assert said.data['attachments']
 
 
@@ -140,7 +140,7 @@ async def test_no_packtpub_dotd(response_mock):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '오늘은 PACKT Book의 무료책이 없는 것 같아요'
+    assert said.data['text'] == '오늘은 PACKT Book의 무료책이 없는데...다 읽었냐??
 
 
 @pytest.mark.asyncio
@@ -158,5 +158,5 @@ async def test_auto_packtpub_dotd(fx_config):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
+    assert said.data['text'] == '오늘자 PACKT Book의 무료책이다...읽냐??'
     assert said.data['attachments']

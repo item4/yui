@@ -123,12 +123,12 @@ async def say_packtpub_dotd(bot: Bot, channel):
     if attachment is None:
         await bot.say(
             channel,
-            '오늘은 PACKT Book의 무료책이 없는 것 같아요'
+            '오늘은 PACKT Book의 무료책이 없는데...다 읽었냐??'
         )
     else:
         await bot.api.chat.postMessage(
             channel=channel,
-            text='오늘자 PACKT Book의 무료책이에요!',
+            text='오늘자 PACKT Book의 무료책이다...읽냐??',
             attachments=[attachment],
             as_user=True,
         )
