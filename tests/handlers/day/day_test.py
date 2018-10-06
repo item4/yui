@@ -255,4 +255,3 @@ async def test_day_command(fx_config, fx_tdcproject_key):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '- 2017-10-01: 국군의 날 (기념일)'
     assert said.data['thread_ts'] == '1234.5678'
-

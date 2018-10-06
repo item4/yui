@@ -51,5 +51,3 @@ async def monday_dog(bot):
 
         for say in says[:min(bot.config.MONDAY_DOG_LIMIT, len(says))]:
             await monday_dog_say(text=say)
-
-
