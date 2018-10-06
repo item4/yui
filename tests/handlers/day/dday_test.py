@@ -3,9 +3,9 @@ import datetime
 import pytest
 
 from yui.event import create_event
-from yui.handlers.dday import dday
+from yui.handlers.day.dday import dday
 
-from ..util import FakeBot
+from ...util import FakeBot
 
 
 @pytest.mark.asyncio

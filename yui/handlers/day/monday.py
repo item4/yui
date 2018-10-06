@@ -1,16 +1,12 @@
-import datetime
 import functools
 import random
-from typing import Optional
 
 import aiohttp
 
-import ujson
-
-from yui.box import box
-from yui.command import C
-from yui.session import client_session
-from yui.util import now
+from .util import get_holiday_name
+from ...box import box
+from ...command import C
+from ...util import now
 
 box.assert_config_required('TDCPROJECT_KEY', str)
 box.assert_config_required('MONDAY_DOG_LIMIT', int)
@@ -57,26 +53,3 @@ async def monday_dog(bot):
             await monday_dog_say(text=say)
 
 
-async def get_holiday_name(
-    api_key: str,
-    dt: datetime.datetime,
-) -> Optional[str]:
-    year, month, day = dt.strftime('%Y/%m/%d').split('/')
-    url = 'https://apis.sktelecom.com/v1/eventday/days'
-    params = {
-        'type': 'h',
-        'year': year,
-        'month': month,
-        'day': day,
-    }
-    headers = {
-        'TDCProjectKey': api_key,
-    }
-
-    async with client_session() as session:
-        async with session.get(url, params=params, headers=headers) as resp:
-            data = await resp.json(loads=ujson.loads)
-
-    if data['results']:
-        return data['results'][0]['name']
-    return None

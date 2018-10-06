@@ -3,9 +3,9 @@ import datetime
 import pytest
 
 from yui.event import create_event
-from yui.handlers.age import age
+from yui.handlers.day.age import age
 
-from ..util import FakeBot
+from ...util import FakeBot
 
 
 @pytest.mark.asyncio

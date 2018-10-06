@@ -1,27 +1,13 @@
-import datetime
 from typing import List
 
-from yui.box import box
-from yui.command import C
-from yui.event import Message
-from yui.util import now
+from .util import weekend_loading_percent
+from ...box import box
+from ...command import C
+from ...event import Message
+from ...util import now
 
 box.assert_config_required('WEEKEND_LOADING_TIME', List[int])
 box.assert_channel_required('general')
-
-
-def weekend_loading_percent(now: datetime.datetime) -> float:
-    weekday = now.weekday()
-    if weekday in [5, 6]:
-        return 100.0
-    monday = (now - datetime.timedelta(days=weekday)).replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
-    )
-    delta = now - monday
-    return delta.total_seconds() / (5*24*60*60) * 100
 
 
 @box.crontab('0 * * * 1-5')

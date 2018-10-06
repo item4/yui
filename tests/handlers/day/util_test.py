@@ -1,10 +1,14 @@
 import datetime
+import functools
 import os
 
 import pytest
 
-from yui.handlers.loading.monday import get_holiday_name
-from yui.handlers.loading.weekend import weekend_loading_percent
+from yui.handlers.day.util import (
+    get_event_days,
+    get_holiday_name,
+    weekend_loading_percent,
+)
 
 
 def test_weekend_loading_percent():
@@ -33,6 +37,63 @@ def fx_tdcproject_key():
     if not key:
         pytest.skip('Can not test this without TDCPROJECT_KEY envvar')
     return key
+
+
+@pytest.mark.asyncio
+async def test_get_event_days(fx_tdcproject_key):
+    call = functools.partial(get_event_days, api_key=fx_tdcproject_key)
+
+    data = await call(year='2017')
+    assert len(data['results']) == 189
+    assert data['results'][0] == {
+        'year': '2017',
+        'month': '01',
+        'day': '01',
+        'type': 'h',
+        'name': '신정',
+    }
+
+    data = await call(year='2017', month='01')
+    assert len(data['results']) == 8
+    assert data['results'][0] == {
+        'year': '2017',
+        'month': '01',
+        'day': '01',
+        'type': 'h',
+        'name': '신정',
+    }
+
+    data = await call(year='2017', month='01', day='02')
+    assert data['results'] == []
+
+    data = await call(year='2017', month='10', day='03')
+    assert data['results'] == [
+        {
+            'year': '2017',
+            'month': '10',
+            'day': '03',
+            'type': 'h,k',
+            'name': '개천절',
+        },
+        {
+            'year': '2017',
+            'month': '10',
+            'day': '03',
+            'type': 'h',
+            'name': '추석연휴',
+        },
+    ]
+
+    data = await call(year='2017', month='10', day='03', type='k')
+    assert data['results'] == [
+        {
+            'year': '2017',
+            'month': '10',
+            'day': '03',
+            'type': 'k',
+            'name': '개천절',
+        },
+    ]
 
 
 @pytest.mark.asyncio
