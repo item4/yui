@@ -15,7 +15,7 @@ __all__ = (
 T = TypeVar('T', int, float, Decimal)
 
 DATE_FORMAT_RE = re.compile(
-    '(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?'
+    r'(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?'
 )
 
 

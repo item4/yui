@@ -14,7 +14,7 @@ DEALER_MESSAGE = [
     '소라고둥님이 {}이랍니다.',
 ]
 
-DICE_SYNTAX_SEPERATOR = re.compile('[,\s]+')
+DICE_SYNTAX_SEPERATOR = re.compile(r'[,\s]+')
 DICE_SYNTAX = re.compile(
     r'(?P<count>[0-9]*)'
     r'[dD]'

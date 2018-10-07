@@ -6,11 +6,11 @@ from ..event import Message
 __all__ = 'hi',
 
 HI_RE1 = re.compile(
-    '^(?:안녕(?:하세요)?|헬로우?|할로|하이|hello|hi)[!,\?]*\s*유이',
+    r'^(?:안녕(?:하세요)?|헬로우?|할로|하이|hello|hi)[!,\?]*\s*유이',
     re.IGNORECASE,
 )
 HI_RE2 = re.compile(
-    '^유이\s*(?:안녕(?:하세요)?|헬로우?|할로|하이|hello|hi)[!,\?]*',
+    r'^유이\s*(?:안녕(?:하세요)?|헬로우?|할로|하이|hello|hi)[!,\?]*',
     re.IGNORECASE,
 )
 
