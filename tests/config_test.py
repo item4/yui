@@ -50,7 +50,7 @@ def test_load_empty(fx_tmpdir: pathlib.Path):
 
     assert not config.DEBUG
     assert config.PREFIX == ''
-    assert config.HANDLERS == []
+    assert config.APPS == []
 
 
 def test_load_fine(fx_tmpdir: pathlib.Path):
@@ -61,10 +61,10 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
         f.write('''
 DEBUG = true
 PREFIX = '.'
-HANDLERS = ['a', 'b']
+APPS = ['a', 'b']
         ''')
     config = load(file)
 
     assert config.DEBUG
     assert config.PREFIX == '.'
-    assert config.HANDLERS == ['a', 'b']
+    assert config.APPS == ['a', 'b']

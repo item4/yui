@@ -74,7 +74,7 @@ def run(config):
 def init_db(config):
     """Creates a new migration repository."""
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config()
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', config.DATABASE_URL)
@@ -109,7 +109,7 @@ def revision(
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -151,7 +151,7 @@ def migrate(
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -178,7 +178,7 @@ def edit(config, revision: str):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -203,7 +203,7 @@ def merge(
     """Merge two revisions together.  Creates a new migration file."""
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -228,7 +228,7 @@ def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -247,7 +247,7 @@ def downgrade(config, revision: str, sql: bool, tag: str):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -264,7 +264,7 @@ def show(config, revision: str):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -282,7 +282,7 @@ def history(config, verbose: bool, rev_range: Optional[str]):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -300,7 +300,7 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -321,7 +321,7 @@ def branches(config, verbose: bool):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -338,7 +338,7 @@ def current(config, verbose: bool):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
@@ -358,7 +358,7 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
 
     bot = Bot(config)
 
-    directory = os.path.join('yui', 'models', 'migrations')
+    directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
     c.set_main_option('script_location', directory)
     c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)

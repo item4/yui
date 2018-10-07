@@ -89,15 +89,10 @@ class Bot:
         logger.info('connect to DB')
         config.DATABASE_ENGINE = get_database_engine(config)
 
-        logger.info('import handlers')
-        for module_name in config.HANDLERS:
-            logger.debug('import handlers: %s', module_name)
-            importlib.import_module(module_name)
-
-        logger.info('import models')
-        for module_name in config.MODELS:
-            logger.debug('import models: %s', module_name)
-            importlib.import_module(module_name)
+        logger.info('import apps')
+        for app_name in config.APPS:
+            logger.debug('import apps: %s', app_name)
+            importlib.import_module(app_name)
 
         self.config = config
 
@@ -150,7 +145,7 @@ class Bot:
                 except:  # noqa: E722
                     logger.error(f'Error: {traceback.format_exc()}')
                     await self.say(
-                        self.config.OWNER,
+                        self.config.OWNER_ID,
                         '*Traceback*\n```\n{}\n```\n'.format(
                             traceback.format_exc(),
                         )
@@ -286,7 +281,7 @@ class Bot:
                     f'Traceback: {traceback.format_exc()}'
                 )
                 await self.say(
-                    self.config.OWNER,
+                    self.config.OWNER_ID,
                     ('*Event*\n```\n{}\n```\n'
                      '*Traceback*\n```\n{}\n```\n').format(
                         event,
