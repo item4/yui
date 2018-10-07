@@ -52,7 +52,7 @@ RESPONSES: List[str] = [
 ]
 icon_url = 'https://i.imgur.com/uDcouRb.jpg'
 
-SUMMON_PREFIX = re.compile('^마법의?\s*소라고[둥동]님?\s*')
+SUMMON_PREFIX = re.compile(r'^마법의?\s*소라고[둥동]님?\s*')
 
 
 @box.on(Message)
