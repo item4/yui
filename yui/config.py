@@ -17,10 +17,9 @@ DEFAULT = {
     'RECEIVE_TIMEOUT': 300,  # 60 * 5 seconds
     'REGISTER_CRONTAB': True,
     'PREFIX': '',
-    'HANDLERS': (),
+    'APPS': (),
     'DATABASE_URL': '',
     'DATABASE_ECHO': False,
-    'MODELS': (),
     'LOGGING': {
         'version': 1,
         'disable_existing_loggers': False,
@@ -71,10 +70,9 @@ class Config(Namespace):
     RECEIVE_TIMEOUT: int
     DEBUG: bool
     PREFIX: str
-    HANDLERS: List[str]
+    APPS: List[str]
     DATABASE_URL: str
     DATABASE_ECHO: bool
-    MODELS: List[str]
     LOGGING: Dict[str, Any]
     REGISTER_CRONTAB: bool
     CHANNELS: Dict[str, Any]

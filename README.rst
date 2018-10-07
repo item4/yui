@@ -64,29 +64,16 @@ RECEIVE_TIMEOUT
   integer. timeout seconds for receiving data from Slask WebSocket.
   default is ``300`` (5min)
 
-HANDLERS
-  list of str. Python module path of handlers.
+APPS
+  list of str. Python module path of apps.
   Yui import given paths automatically.
-  You must use core handlers.
+  You must use core apps.
 
   .. code-block:: toml
 
      HANDLERS = [
-         'yui.handlers.core'
+         'yui.apps.core'
      ]
-
-MODELS
-  list of str. Python module path of ORM Models.
-  Yui import given path automatically.
-  You can define ORM Model with SQLAlchemy (see this_ and use ``yui.orm.Base``)
-
-  .. warning::
-
-     Yui **DO NOT** make table automatically.
-     You must need to run ``yui migrate`` to make migration and ``yui upgrade`` to make tables.
-
-.. _this: http://docs.sqlalchemy.org/en/rel_1_1/orm/extensions/declarative/basic_use.html
-
 
 CHANNELS
   dictionary of str. Channel names used in code.
@@ -149,10 +136,6 @@ GOOGLE_API_TOKEN
 AQI_API_TOKEN
   string. API Token for using AQI API.
   You can get this value on `this request form`_
-  **Do not** upload this value on VCS.
-
-DNF_API_KEY
-  string. API Key for using Neople API.
   **Do not** upload this value on VCS.
 
 TDCPROJECT_KEY
@@ -235,7 +218,7 @@ You can use command with ``yui`` such as ``pipenv run yui revision --autogenerat
 
 List of commands are below.
 
-* ``init_db``
+* ``init-db``
 * ``revision``
 * ``migrate`` (same as ``revision`` with ``--autogenerate``
 * ``edit``

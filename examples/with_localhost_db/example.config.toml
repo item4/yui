@@ -2,42 +2,62 @@ TOKEN = 'YOUR_TOKEN_HERE'
 
 PREFIX = '.'
 
-HANDLERS = [
-    'yui.handlers.age',
-    'yui.handlers.animal',
-    'yui.handlers.answer',
-    'yui.handlers.aqi',
-    'yui.handlers.aws',
-    'yui.handlers.book',
-    'yui.handlers.calc',
-    'yui.handlers.closers.command',
-    'yui.handlers.closers.crontab',
-    'yui.handlers.core',
-    'yui.handlers.dday',
-    'yui.handlers.dic',
-    'yui.handlers.dns',
-    'yui.handlers.exchange',
-    'yui.handlers.help',
-    'yui.handlers.hi',
-    'yui.handlers.loading',
-    'yui.handlers.memo',
-    'yui.handlers.nyaa',
-    'yui.handlers.ping',
-    'yui.handlers.pongdang',
-    'yui.handlers.quit',
-    'yui.handlers.ref',
-    'yui.handlers.saomd',
-    'yui.handlers.select',
-    'yui.handlers.sub',
-    'yui.handlers.subscribe',
-    'yui.handlers.subway',
+APPS = [
+    # Core apps
+    'yui.apps.core',
+
+    # Shared Models
+    'yui.apps.shared',
+
+    # Root apps
+    'yui.apps.animal',
+    'yui.apps.hi',
+    'yui.apps.ping',
+    'yui.apps.quit',
+
+    # Compute apps
+    'yui.apps.compute.calc',
+    'yui.apps.compute.exchange',
+    'yui.apps.compute.gacha',
+    'yui.apps.compute.gamble',
+    'yui.apps.compute.select',
+
+    # Date apps
+    'yui.apps.date.age',
+    'yui.apps.date.day',
+    'yui.apps.date.dday',
+    'yui.apps.date.monday',
+    'yui.apps.date.weekend',
+
+    # Funny apps
+    'yui.apps.fun.answer',
+    'yui.apps.fun.hassan',
+    'yui.apps.fun.relax',
+
+    # Info apps
+    'yui.apps.info.memo',
+    'yui.apps.info.saomd',
+    'yui.apps.info.subscribe',
+    'yui.apps.info.about',
+    'yui.apps.info.help',
+    'yui.apps.info.packtpub',
+
+    # Search apps
+    'yui.apps.search.book',
+    'yui.apps.search.dic',
+    'yui.apps.search.dns',
+    'yui.apps.search.nyaa',
+    'yui.apps.search.ref',
+    'yui.apps.search.sub',
+    'yui.apps.search.subway',
+
+    # Weather apps
+    'yui.apps.weather.aws',
+    'yui.apps.weather.aqi',
+    'yui.apps.weather.pongdang',
 ]
 
-MODELS = [
-    'yui.models',
-]
-
-OWNER = 'U11111111'
+OWNER_ID = 'U11111111'
 
 DATABASE_URL = 'postgresql://localhost/yui_item4'
 DATABASE_ECHO = false

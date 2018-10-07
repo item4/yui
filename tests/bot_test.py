@@ -16,8 +16,7 @@ def test_bot_init(monkeypatch, fx_config):
 
     monkeypatch.setattr("importlib.import_module", importlib.import_module)
 
-    fx_config.MODELS = ['yui.model1', 'yui.model2']
-    fx_config.HANDLERS = ['yui.handler1', 'yui.handler2']
+    fx_config.APPS = ['yui.app1', 'yui.app2']
     box = Box()
     bot = Bot(fx_config, using_box=box)
 
@@ -30,10 +29,8 @@ def test_bot_init(monkeypatch, fx_config):
     assert bot.box is box
     assert isinstance(bot.queue, asyncio.Queue)
     assert importlib.import_queue == [
-        'yui.handler1',
-        'yui.handler2',
-        'yui.model1',
-        'yui.model2',
+        'yui.app1',
+        'yui.app2',
     ]
 
 
