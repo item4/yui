@@ -125,6 +125,7 @@ class Bot:
 
         def register(c: Crontab):
             logger.info(f'register {c}')
+            lock = asyncio.Lock()
             func_params = inspect.signature(c.func).parameters
             kw = {}
             if 'bot' in func_params:
@@ -132,27 +133,30 @@ class Bot:
 
             @aiocron.crontab(c.spec, *c.args, **c.kwargs)
             async def task():
-                if 'loop' in func_params:
-                    kw['loop'] = self.loop
+                if lock.locked():
+                    return
+                async with lock:
+                    if 'loop' in func_params:
+                        kw['loop'] = self.loop
 
-                sess = make_session(bind=self.config.DATABASE_ENGINE)
-                if 'sess' in func_params:
-                    kw['sess'] = sess
+                    sess = make_session(bind=self.config.DATABASE_ENGINE)
+                    if 'sess' in func_params:
+                        kw['sess'] = sess
 
-                logger.debug(f'hit and start to run {c}')
-                try:
-                    await c.func(**kw)
-                except:  # noqa: E722
-                    logger.error(f'Error: {traceback.format_exc()}')
-                    await self.say(
-                        self.config.OWNER_ID,
-                        '*Traceback*\n```\n{}\n```\n'.format(
-                            traceback.format_exc(),
+                    logger.debug(f'hit and start to run {c}')
+                    try:
+                        await c.func(**kw)
+                    except:  # noqa: E722
+                        logger.error(f'Error: {traceback.format_exc()}')
+                        await self.say(
+                            self.config.OWNER_ID,
+                            '*Traceback*\n```\n{}\n```\n'.format(
+                                traceback.format_exc(),
+                            )
                         )
-                    )
-                finally:
-                    sess.close()
-                logger.debug(f'end {c}')
+                    finally:
+                        sess.close()
+                    logger.debug(f'end {c}')
 
             c.start = task.start
             c.stop = task.stop
