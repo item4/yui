@@ -20,7 +20,7 @@ from .api import SlackAPI
 from .box import Box, Crontab, box
 from .config import Config
 from .event import create_event
-from .orm import Base, get_database_engine, make_session
+from .orm import Base, EngineConfig, get_database_engine, make_session
 from .session import client_session
 from .type import (
     BotLinkedNamespace,
@@ -127,7 +127,7 @@ class Bot:
             logger.info(f'register {c}')
             lock = asyncio.Lock()
             func_params = inspect.signature(c.func).parameters
-            kw = {}
+            kw: Dict[str, Any] = {}
             if 'bot' in func_params:
                 kw['bot'] = self
 
@@ -142,6 +142,12 @@ class Bot:
                     sess = make_session(bind=self.config.DATABASE_ENGINE)
                     if 'sess' in func_params:
                         kw['sess'] = sess
+
+                    if 'engine_config' in func_params:
+                        kw['engine_config'] = EngineConfig(
+                            url=self.config.DATABASE_URL,
+                            echo=self.config.DATABASE_ECHO,
+                        )
 
                     logger.debug(f'hit and start to run {c}')
                     try:

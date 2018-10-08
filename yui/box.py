@@ -24,7 +24,7 @@ from typing import (
 
 from .command import Argument, Option
 from .event import Event, Message
-from .orm import make_session
+from .orm import EngineConfig, make_session
 from .type import cast, is_container
 from .util import bold
 
@@ -297,10 +297,16 @@ class BaseHandler:
             kwargs['event'] = event
         if 'sess' in func_params:
             kwargs['sess'] = sess
+        if 'engine_config' in func_params:
+            kwargs['engine_config'] = EngineConfig(
+                url=bot.config.DATABASE_URL,
+                echo=bot.config.DATABASE_ECHO,
+            )
 
-        yield kwargs
-
-        sess.close()
+        try:
+            yield kwargs
+        finally:
+            sess.close()
 
 
 class CommandMappingUnit(NamedTuple):
