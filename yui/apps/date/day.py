@@ -2,6 +2,8 @@ import re
 
 import aiohttp
 
+import tossi
+
 from .util import get_event_days, get_holiday_name
 from ...box import box
 from ...command import C
@@ -29,7 +31,9 @@ async def holiday_message(bot):
     if holiday:
         await bot.say(
             C.general.get(),
-            f'오늘은 {holiday} 에요! 즐거운 휴일 되세요!'
+            '오늘은 {}! 즐거운 휴일 되세요!'.format(
+                tossi.postfix(holiday, '(이)에요'),
+            )
         )
 
 

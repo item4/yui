@@ -7,6 +7,8 @@ from urllib.parse import urlencode
 
 from sqlalchemy.orm.exc import NoResultFound
 
+import tossi
+
 import ujson
 
 from ..shared.cache import JSONCache
@@ -161,11 +163,11 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
         subway_paths = result['result']['subwayPaths']
 
         if subway_paths:
-            text += '{} {}에서 {} {}으로 가는 노선을 안내드릴게요!\n\n'.format(
+            text += '{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n'.format(
                 find_start['logicalLine']['name'],
                 find_start['name'],
                 find_end['logicalLine']['name'],
-                find_end['name'],
+                tossi.postfix(find_end['name'], '(으)로'),
             )
             for subway_path in subway_paths:
                 routes = subway_path['path']['routes']

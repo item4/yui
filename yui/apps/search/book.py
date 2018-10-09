@@ -1,6 +1,8 @@
 from decimal import Decimal
 from typing import List
 
+import tossi
+
 import ujson
 
 from ...api import Attachment
@@ -62,9 +64,10 @@ async def book(bot, event: Message, keyword: str):
     if attachments:
         await bot.api.chat.postMessage(
             channel=event.channel,
-            text=('키워드 *{}* (으)로 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
+            text=('키워드 *{}*{} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
                   ' 그 중 상위 {}개를 보여드릴게요!').format(
                 keyword,
+                tossi.pick(keyword, '(으)로'),
                 data['total'],
                 count,
             ),

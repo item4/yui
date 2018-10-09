@@ -3,6 +3,8 @@ import random
 
 import aiohttp
 
+import tossi
+
 from .util import get_holiday_name
 from ...box import box
 from ...command import C
@@ -34,7 +36,7 @@ async def monday_dog(bot):
             '월' * random.randint(5, 15) + '…' + ''.join(
                 random.choice(['?', '!']) for x in range(random.randint(3, 10))
             ),
-            '(하지만 {}이라 쉬는 날이었다고 한다)'.format(holiday)
+            '(하지만 {} 쉬는 날이었다고 한다)'.format(tossi.postfix(holiday, '(이)라'))
         ]
         for say in says:
             await monday_dog_say(text=say)

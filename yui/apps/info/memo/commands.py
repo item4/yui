@@ -1,3 +1,5 @@
+import tossi
+
 from .models import Memo
 from ....box import box
 from ....command import argument
@@ -28,7 +30,10 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
 
     await bot.say(
         event.channel,
-        f'`{keyword}`로 기억 레코드를 생성했어요!'
+        '`{}`{} 기억 레코드를 생성했어요!'.format(
+            keyword,
+            tossi.pick(keyword, '(으)로'),
+        )
     )
 
 
@@ -53,7 +58,10 @@ async def memo_show(bot, event: Message, sess, keyword: str):
     else:
         await bot.say(
             event.channel,
-            f'`{keyword}`란 이름을 가진 기억 레코드가 없어요!'
+            '`{}`{} 이름을 가진 기억 레코드가 없어요!'.format(
+                keyword,
+                tossi.pick(keyword, '(이)란'),
+            )
         )
 
 

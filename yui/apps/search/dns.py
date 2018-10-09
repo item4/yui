@@ -125,7 +125,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
 
     chat = await bot.say(
         event.channel,
-        f'{domain} 에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
+        f'`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
     )
     if chat['ok']:
         tasks = []
@@ -154,7 +154,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
 
         await bot.say(
             event.channel,
-            '<@{}>, {} 에 대해 {} DNS에 조회한 결과에요!\n\n{}'.format(
+            '<@{}>, `{}`에 대해 {} DNS에 조회한 결과에요!\n\n{}'.format(
                 event.user.id,
                 domain,
                 '주어진' if server_list else '많이 쓰이는',

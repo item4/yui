@@ -104,7 +104,7 @@ class RSS(CommandMappingHandler):
 
         await bot.say(
             event.channel,
-            f'<#{event.channel.id}> 채널에서 `{url}` 을 구독하기 시작했어요!'
+            f'<#{event.channel.id}> 채널에서 `{url}`을 구독하기 시작했어요!'
         )
 
     async def list(self, bot, event: Message, sess):
@@ -141,7 +141,7 @@ class RSS(CommandMappingHandler):
 
         await bot.say(
             event.channel,
-            f'<#{feed.channel}> 에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!'
+            f'<#{feed.channel}>에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!'
         )
 
         with sess.begin():

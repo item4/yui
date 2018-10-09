@@ -2,6 +2,8 @@ import datetime
 from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
+import tossi
+
 import tzlocal
 
 import ujson
@@ -133,8 +135,9 @@ async def aqi(bot, event: Message, address: str):
     time -= tzlocal.get_localzone().utcoffset(time)
 
     ftime = time.strftime('%Y년 %m월 %d일 %H시')
+    j = tossi.pick(full_address, '를')
     text = (
-        f'{ftime} 계측 자료에요. {full_address}를 기준으로 AQI에 정보를 요청했어요!\n\n'
+        f'{ftime} 계측 자료에요. {full_address}{j} 기준으로 AQI에 정보를 요청했어요!\n\n'
         f'* 종합 AQI: {result.aqi} - {get_aqi_description(result.aqi)}\n'
     )
     if result.pm25:
