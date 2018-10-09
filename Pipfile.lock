@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3b20d50fab0eeeda2bbff43e1332fc1c94be73922e9e6b83b7b29278dd36efdd"
+            "sha256": "4f4ee19c07754130aa94ff81db8ef458afe67e14f5bab6d0345f9c64cde74feb"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -117,6 +117,13 @@
             ],
             "index": "pypi",
             "version": "==2.6.0"
+        },
+        "bidict": {
+            "hashes": [
+                "sha256:265699b30ec6bda7f145f27c5ae63ce9ecca355fa92c6b1df4ed42b3c9638c43",
+                "sha256:ae2885808a7d84725832d625f1876f4b644f1fa334d96cd161031d281b227f3d"
+            ],
+            "version": "==0.17.3"
         },
         "cchardet": {
             "hashes": [
@@ -430,11 +437,18 @@
         },
         "toml": {
             "hashes": [
-                "sha256:380178cde50a6a79f9d2cf6f42a62a5174febe5eea4126fe4038785f1d888d42",
-                "sha256:a7901919d3e4f92ffba7ff40a9d697e35bbbc8a8049fe8da742f34c83606d957"
+                "sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c",
+                "sha256:235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e"
             ],
             "index": "pypi",
-            "version": "==0.9.6"
+            "version": "==0.10.0"
+        },
+        "tossi": {
+            "hashes": [
+                "sha256:28e123c742a9a6f785901aa6c991ccc7f2c408af6a48d42e0ab3efde4b620552"
+            ],
+            "index": "pypi",
+            "version": "==0.3.1"
         },
         "tqdm": {
             "hashes": [
@@ -760,11 +774,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:0a72d8a9f559c006ba153e0c9b4838efd7b656cf1f993747ba7128770d6eb12c",
-                "sha256:95529588ff4e85114a0b0ad8e9cf0131ca47d46b28230e25366c5aba66b1d854"
+                "sha256:7e258ee50338f4e46957f9e09a0f10fb1c2d05493fa901d113a8dafd0790de4e",
+                "sha256:9332147e9af2dcf46cd7ceb14d5acadb6564744ddff1fe8c17f0ce60ece7d9a2"
             ],
             "index": "pypi",
-            "version": "==3.8.1"
+            "version": "==3.8.2"
         },
         "pytest-asyncio": {
             "hashes": [

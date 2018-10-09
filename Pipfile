@@ -31,6 +31,7 @@ aiohttp-doh = {version = ">=0.0.1"}
 idna-ssl = {version = "*", markers = "python_version == '<3.7'"}
 attrs = "*"
 sympy = "*"
+tossi = "*"
 
 [dev-packages]
 mypy = "*"
