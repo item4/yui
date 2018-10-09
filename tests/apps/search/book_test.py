@@ -11,7 +11,7 @@ from yui.event import create_event
 from ...util import FakeBot
 
 book_result_pattern_re = re.compile(
-    r'키워드 \*(.+?)\* \(으\)로 네이버 책 DB 검색 결과,'
+    r'키워드 \*(.+?)\* 으?로 네이버 책 DB 검색 결과,'
     r' 총 \d+(?:,\d{3})*개의 결과가 나왔어요\.'
     r' 그 중 상위 (\d+)개를 보여드릴게요!'
 )
