@@ -42,7 +42,8 @@ async def test_slack_api_chat_delete():
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_post_message():
-    channel = 'C1234'
+    channel_id = 'C1234'
+    channel = PublicChannel(id='C4567')
     attachments = [Attachment(
         fallback='fallback val',
         title='title val',
@@ -67,17 +68,17 @@ async def test_slack_api_chat_post_message():
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
     assert call.data == {
-        'channel': channel,
+        'channel': channel.id,
         'text': text,
         'as_user': bool2str(True),
     }
 
-    await bot.api.chat.postMessage(channel=channel, attachments=attachments)
+    await bot.api.chat.postMessage(channel=channel_id, attachments=attachments)
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
     assert call.data == {
-        'channel': channel,
+        'channel': channel_id,
         'attachments': ('[{"fallback":"fallback val","title":"title val",'
                         '"fields":[{"title":"field title1",'
                         '"value":"field value1","short":"0"}]}]'),
@@ -97,12 +98,15 @@ async def test_slack_api_chat_post_message():
         icon_emoji=icon_emoji,
         thread_ts=thread_ts,
         reply_broadcast=True,
+        response_type='in_channel',
+        replace_original=False,
+        delete_original=True,
     )
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
     assert call.data == {
-        'channel': channel,
+        'channel': channel.id,
         'text': text,
         'parse': parse,
         'link_names': bool2str(True),
@@ -117,4 +121,7 @@ async def test_slack_api_chat_post_message():
         'icon_emoji': icon_emoji,
         'thread_ts': thread_ts,
         'reply_broadcast': bool2str(True),
+        'response_type': 'in_channel',
+        'replace_original': bool2str(False),
+        'delete_original': bool2str(True),
     }

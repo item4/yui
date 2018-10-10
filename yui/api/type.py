@@ -1,8 +1,27 @@
-from typing import List, Optional
+import enum
+from typing import List, Optional, Union
 
 import attr
 
-__all__ = 'Attachment', 'Field'
+__all__ = (
+    'Action',
+    'ActionDataSource',
+    'ActionStyle',
+    'ActionType',
+    'Attachment',
+    'Confirmation',
+    'Field',
+    'OptionField',
+    'OptionGroup',
+)
+
+
+def call_or_none(enum):
+    def converter(value):
+        if value is None:
+            return None
+        return enum(value)
+    return converter
 
 
 @attr.dataclass(slots=True)
@@ -18,15 +37,15 @@ class Field:
 class Confirmation:
     """Confirmation of Action"""
 
+    text: str
     dismiss_text: Optional[str] = None
     ok_text: Optional[str] = None
-    text: Optional[str] = None
     title: Optional[str] = None
 
 
 @attr.dataclass(slots=True)
 class OptionField:
-    """Optional Field on Action"""
+    """Optional Option Field on Action"""
 
     text: str
     value: str
@@ -34,21 +53,66 @@ class OptionField:
 
 
 @attr.dataclass(slots=True)
+class OptionGroup:
+    """Optional Option Group on Action"""
+
+    text: str
+    options: List[OptionField]
+
+
+class ActionType(enum.Enum):
+
+    button = 'button'
+    select = 'select'
+
+
+class ActionStyle(enum.Enum):
+
+    default = 'default'
+    primary = 'primary'
+    danger = 'danger'
+
+
+class ActionDataSource(enum.Enum):
+
+    default = 'default'
+    static = 'static'
+    users = 'users'
+    channels = 'channels'
+    conversations = 'conversations'
+    external = 'external'
+
+
+@attr.dataclass(slots=True)
 class Action:
     """Action of Attachment"""
 
+    name: str
     text: str
-    type: str
+    type: Union[str, ActionType] = attr.ib(converter=ActionType)
+    style: Optional[Union[str, ActionStyle]] = attr.ib(
+        converter=call_or_none(ActionStyle),
+        default=None,
+    )
+    data_source: Optional[Union[str, ActionDataSource]] = attr.ib(
+        converter=call_or_none(ActionDataSource),
+        default=None,
+    )
     id: Optional[str] = None
-    confirm: Optional[List[Confirmation]] = None
-    data_source: Optional[str] = None
+    confirm: Optional[Confirmation] = None
     min_query_length: Optional[int] = None
-    name: Optional[str] = None
     options: Optional[List[OptionField]] = None
+    option_groups: Optional[List[OptionGroup]] = None
     selected_options: Optional[List[OptionField]] = None
-    style: Optional[str] = None
     value: Optional[str] = None
     url: Optional[str] = None
+
+    def __attrs_post_init__(self):
+        if self.data_source != ActionDataSource.external:
+            self.min_query_length = None
+
+        if self.options is not None and self.option_groups is not None:
+            self.options = None
 
 
 @attr.dataclass(slots=True)
@@ -71,9 +135,4 @@ class Attachment:
     footer: Optional[str] = None
     footer_icon: Optional[str] = None
     ts: Optional[int] = None
-
-    def add_field(self, title: str, value: str, short: bool=False):
-        self.fields.append(Field(title, value, short))
-
-    def __str__(self) -> str:
-        return f'Attachment(title={self.title!r})'
+    callback_id: Optional[str] = None
