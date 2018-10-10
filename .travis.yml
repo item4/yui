@@ -16,7 +16,6 @@ before_install:
 - docker pull item4/yui:latest
 install:
 - pip install --upgrade pip setuptools wheel pipenv
-- pipenv run pip install pip==18.0
 - pipenv install --dev
 before_script:
 - psql -c 'create database yui_test;' -U postgres
