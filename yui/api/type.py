@@ -16,11 +16,11 @@ __all__ = (
 )
 
 
-def call_or_none(enum):
+def call_or_none(c):
     def converter(value):
         if value is None:
             return None
-        return enum(value)
+        return c(value)
     return converter
 
 
@@ -91,11 +91,11 @@ class Action:
     text: str
     type: Union[str, ActionType] = attr.ib(converter=ActionType)
     style: Optional[Union[str, ActionStyle]] = attr.ib(
-        converter=call_or_none(ActionStyle),
+        converter=call_or_none(ActionStyle),  # type: ignore
         default=None,
     )
     data_source: Optional[Union[str, ActionDataSource]] = attr.ib(
-        converter=call_or_none(ActionDataSource),
+        converter=call_or_none(ActionDataSource),  # type: ignore
         default=None,
     )
     id: Optional[str] = None

@@ -119,26 +119,30 @@ async def nyaa(
 
         not_found_tag = await page.querySelector(NOT_FOUND_SELECTOR)
         if not_found_tag is None:
-            result = await page.querySelectorAllEval(
+            results = await page.querySelectorAllEval(
                 TABLE_ROW_SELECTOR,
                 SCRIPT,
             )
         else:
-            result = []
+            results = []
 
     attachments: List[Attachment] = []
 
-    for i in range(min(7, len(result))):
-        row = result[i]
-        actions: List[Action] = [Action(
-            type='button',
-            text='Download',
-            url=row['download_url'],
-        ), Action(
-            type='button',
-            text='Magnet Link',
-            url=b64_redirect(row['magnet_url']),
-        )]
+    for row in results:
+        actions: List[Action] = [
+            Action(
+                name='dl',
+                type='button',
+                text='Download',
+                url=row['download_url'],
+            ),
+            Action(
+                name='mg',
+                type='button',
+                text='Magnet Link',
+                url=b64_redirect(row['magnet_url']),
+            ),
+        ]
 
         attachments.append(Attachment(
             fallback='{} - {}'.format(row['title'], row['download_url']),
