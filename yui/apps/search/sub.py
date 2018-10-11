@@ -352,14 +352,14 @@ async def search_finished(bot, event: Message, title: str):
     )
 
     if data:
-        chat = await bot.say(
+        await bot.say(
             event.channel,
             (
                 f'완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의'
-                ' 애니가 검색되었어요!\n검색 결과는 도배의 우려가 있어서 thread로 남길게요!'
-            )
+                ' 애니가 검색되었어요!'
+            ),
+            thread_ts=event.event_ts,
         )
-        ts = chat['ts'] if chat['ok'] else event.event_ts
         for ani in data:
             subs = await get_json(
                 'http://ohli.moe/cap/{}'.format(ani['i']))
@@ -393,7 +393,7 @@ async def search_finished(bot, event: Message, title: str):
                 channel=event.channel,
                 attachments=attachments,
                 as_user=True,
-                thread_ts=ts,
+                thread_ts=event.event_ts,
             )
     else:
         await bot.say(
