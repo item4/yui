@@ -169,24 +169,28 @@ async def sub(bot, event: Message, finished: bool, title: str):
 
 async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
 
+    ohli_list_url = 'http://ohli.moe/anitime/list'
+    anissia_list_url = 'http://www.anissia.net/anitime/list'
+
     ohli = []
     anissia = []
     for w in range(7+1):
         ohli.append(
-            get_weekly_list('http://ohli.moe/anitime/list', w, timeout)
+            asyncio.create_task(
+                get_weekly_list(ohli_list_url, w, timeout)
+            )
         )
         anissia.append(
-            get_weekly_list('http://www.anissia.net/anitime/list', w, timeout)
+            asyncio.create_task(
+                get_weekly_list(anissia_list_url, w, timeout)
+            )
         )
 
-    o_responses, _ = await asyncio.wait(
+    o_responses, o_pending = await asyncio.wait(
         ohli,
         return_when=asyncio.FIRST_EXCEPTION,
     )
-    a_responses, _ = await asyncio.wait(
-        anissia,
-        return_when=asyncio.FIRST_EXCEPTION,
-    )
+
     o_data: List[Dict[str, Any]] = []
     a_data: List[Dict[str, Any]] = []
 
@@ -198,14 +202,23 @@ async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
                 event.channel,
                 'Error: {}: {}'.format(e.__class__.__name__, e)
             )
+            for p in o_pending:  # type: asyncio.Task
+                p.cancel()
             return
         else:
             o_data.extend(res)
+
+    a_responses, a_pending = await asyncio.wait(
+        anissia,
+        return_when=asyncio.FIRST_EXCEPTION,
+    )
     for r in a_responses:
         try:
             res = r.result()
         except Exception:
             a_data.clear()
+            for p in a_pending:  # type: asyncio.Task
+                p.cancel()
             break
         else:
             a_data.extend(res)
