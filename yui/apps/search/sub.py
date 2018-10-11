@@ -175,16 +175,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
     ohli = []
     anissia = []
     for w in range(7+1):
-        ohli.append(
-            asyncio.create_task(
-                get_weekly_list(ohli_list_url, w, timeout)
-            )
-        )
-        anissia.append(
-            asyncio.create_task(
-                get_weekly_list(anissia_list_url, w, timeout)
-            )
-        )
+        ohli.append(get_weekly_list(ohli_list_url, w, timeout))
+        anissia.append(get_weekly_list(anissia_list_url, w, timeout))
 
     o_responses, o_pending = await asyncio.wait(
         ohli,
@@ -202,8 +194,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
                 event.channel,
                 'Error: {}: {}'.format(e.__class__.__name__, e)
             )
-            for p in o_pending:  # type: asyncio.Task
-                p.cancel()
+            for op in o_pending:  # type: asyncio.Future
+                op.cancel()
             return
         else:
             o_data.extend(res)
@@ -217,8 +209,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
             res = r.result()
         except Exception:
             a_data.clear()
-            for p in a_pending:  # type: asyncio.Task
-                p.cancel()
+            for ap in a_pending:  # type: asyncio.Future
+                ap.cancel()
             break
         else:
             a_data.extend(res)
