@@ -6,6 +6,8 @@ from typing import Any, Dict, List, NamedTuple
 
 import aiohttp
 
+import async_timeout
+
 from fuzzywuzzy import fuzz
 
 import ujson
@@ -100,29 +102,33 @@ def make_sub_list(data: List[Sub]) -> List[Attachment]:
     return result
 
 
-async def get_json(*args, **kwargs):
+async def get_json(*args, timeout: float=0.5, **kwargs):
     weight = 1
     while True:
-        async with client_session() as session:
-            try:
-                async with session.get(*args, **kwargs) as res:
-                    if res.status != 200:
-                        return []
-                    try:
-                        return await res.json(loads=ujson.loads)
-                    except aiohttp.client_exceptions.ClientResponseError:
-                        return ujson.loads(await res.text())
-            except aiohttp.client_exceptions.ServerDisconnectedError:
-                await asyncio.sleep(weight/10)
-                weight += 1
-            except ValueError:
-                return []
+        async with async_timeout.timeout(timeout):
+            async with client_session() as session:
+                try:
+                    async with session.get(*args, **kwargs) as res:
+                        if res.status != 200:
+                            return []
+                        try:
+                            return await res.json(loads=ujson.loads)
+                        except aiohttp.client_exceptions.ClientResponseError:
+                            return ujson.loads(await res.text())
+                except aiohttp.client_exceptions.ServerDisconnectedError:
+                    if weight > 10:
+                        raise
+                    else:
+                        await asyncio.sleep(weight/10)
+                        weight += 1
+                except ValueError:
+                    return []
 
 
-async def get_weekly_list(url, week):
+async def get_weekly_list(url, week, timeout: float=0.5):
     weight = 1
     while True:
-        res = await get_json('{}?w={}'.format(url, week))
+        res = await get_json('{}?w={}'.format(url, week), timeout=timeout)
         if res:
             for r in res:
                 r['week'] = week
@@ -161,20 +167,26 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def search_on_air(bot, event: Message, title: str):
+async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
 
     ohli = []
     anissia = []
     for w in range(7+1):
         ohli.append(
-            get_weekly_list('http://ohli.moe/anitime/list', w)
+            get_weekly_list('http://ohli.moe/anitime/list', w, timeout)
         )
         anissia.append(
-            get_weekly_list('http://www.anissia.net/anitime/list', w)
+            get_weekly_list('http://www.anissia.net/anitime/list', w, timeout)
         )
 
-    o_responses, _ = await asyncio.wait(ohli)
-    a_responses, _ = await asyncio.wait(anissia)
+    o_responses, _ = await asyncio.wait(
+        ohli,
+        return_when=asyncio.FIRST_EXCEPTION,
+    )
+    a_responses, _ = await asyncio.wait(
+        anissia,
+        return_when=asyncio.FIRST_EXCEPTION,
+    )
     o_data: List[Dict[str, Any]] = []
     a_data: List[Dict[str, Any]] = []
 
