@@ -8,9 +8,13 @@ from yui.transform import (
     choice,
     enum_getitem,
     extract_url,
+    get_channel,
+    get_user,
     str_to_date,
     value_range,
 )
+
+from .util import FakeBot
 
 
 def test_str_to_date():
@@ -56,6 +60,48 @@ def test_extract_url():
     assert extract_url('http://item4.net') == 'http://item4.net'
     assert extract_url('<http://item4.net>') == 'http://item4.net'
     assert extract_url('<innocent|http://item4.net>') == 'http://item4.net'
+
+
+def test_get_channel():
+    """Test get_channel helper."""
+
+    bot = FakeBot()
+    test = bot.add_channel('C1', 'test')
+
+    assert get_channel('C1') == test
+    assert get_channel('test') == test
+    assert get_channel('#C1') == test
+    assert get_channel('#test') == test
+    assert get_channel('<C1>') == test
+    assert get_channel('<test>') == test
+    assert get_channel('<#C1>') == test
+    assert get_channel('<#test>') == test
+    assert get_channel('<C1|test>') == test
+    assert get_channel('<#C1|test>') == test
+
+    with pytest.raises(ValueError):
+        get_channel('not found')
+
+
+def test_get_user():
+    """Test get_user helper."""
+
+    bot = FakeBot()
+    item4 = bot.add_user('U1', 'item4')
+
+    assert get_user('U1') == item4
+    assert get_user('item4') == item4
+    assert get_user('@U1') == item4
+    assert get_user('@item4') == item4
+    assert get_user('<U1>') == item4
+    assert get_user('<item4>') == item4
+    assert get_user('<@U1>') == item4
+    assert get_user('<@item4>') == item4
+    assert get_user('<U1|item4>') == item4
+    assert get_user('<@U1|item4>') == item4
+
+    with pytest.raises(ValueError):
+        get_user('not found')
 
 
 @pytest.mark.parametrize('items', [

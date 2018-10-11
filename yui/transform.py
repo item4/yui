@@ -3,11 +3,15 @@ import re
 from decimal import Decimal
 from typing import Any, Callable, Optional, Sequence, TypeVar
 
+from .type import FromChannelID, FromUserID
+
 __all__ = (
     'DATE_FORMAT_RE',
     'choice',
     'enum_getitem',
     'extract_url',
+    'get_channel',
+    'get_user',
     'str_to_date',
     'value_range',
 )
@@ -43,15 +47,51 @@ def str_to_date(
     return callback
 
 
-def extract_url(value: str) -> str:
-    """Helper to extract URL from given value."""
-
-    if value.startswith('<') and value.endswith('>'):
-        if '|' in value:
-            return value[1:-1].split('|', 1)[1]
+def _extract(text: str) -> str:
+    if text.startswith('<') and text.endswith('>'):
+        if '|' in text:
+            return text[1:-1].split('|', 1)[1]
         else:
-            return value[1:-1]
-    return value
+            return text[1:-1]
+    return text
+
+
+def extract_url(text: str) -> str:
+    """Helper to extract URL from given text."""
+
+    return _extract(text)
+
+
+def get_channel(text: str) -> FromChannelID:
+    """Helper to get Channel from given text."""
+
+    result = _extract(text)
+
+    if result.startswith('#'):
+        result = result[1:]
+    try:
+        return FromChannelID.from_id(result, raise_error=True)
+    except KeyError:
+        try:
+            return FromChannelID.from_name(result)
+        except KeyError:
+            raise ValueError('Given channel was not found')
+
+
+def get_user(text: str) -> FromUserID:
+    """Helper to get User from given text."""
+
+    result = _extract(text)
+
+    if result.startswith('@'):
+        result = result[1:]
+    try:
+        return FromUserID.from_id(result, raise_error=True)
+    except KeyError:
+        try:
+            return FromUserID.from_name(result)
+        except KeyError:
+            raise ValueError('Given user was not found')
 
 
 def enum_getitem(cls, *, fallback: Optional[str]=None) -> Callable[[str], Any]:

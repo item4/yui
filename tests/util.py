@@ -11,7 +11,6 @@ from yui.type import (
     PrivateChannel,
     PublicChannel,
     User,
-    UserID,
 )
 
 
@@ -37,7 +36,7 @@ class FakeBot(Bot):
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
-        self.users: Dict[UserID, User] = {}
+        self.users: Dict[str, User] = {}
         self.responses: Dict[str, Callable] = {}
         self.config = config
         self.process_pool_executor = ProcessPoolExecutor()
@@ -62,7 +61,9 @@ class FakeBot(Bot):
         return decorator
 
     def add_channel(self, id: str, name: str):
-        self.channels.append(PublicChannel(id=id, name=name))
+        channel = PublicChannel(id=id, name=name)
+        self.channels.append(channel)
+        return channel
 
     def add_private_channel(self, id: str, name: str):
         self.groups.append(PrivateChannel(id=id, name=name))
@@ -70,7 +71,7 @@ class FakeBot(Bot):
     def add_dm(self, id: str, user: str):
         self.ims.append(DirectMessageChannel(id=id, user=user))
 
-    def add_user(self, id: UserID, name: str):
+    def add_user(self, id: str, name: str):
         self.users[id] = User(id=id, name=name)
         return self.users[id]
 
