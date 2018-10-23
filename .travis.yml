@@ -7,28 +7,25 @@ services:
 - postgresql
 addons:
   postgresql: "9.6"
-cache:
-  directories:
-  - $HOME/.cache/pip
-  - $HOME/.cache/pipenv
 before_install:
 - source ./ci/docker_login.sh
 - docker pull item4/yui:latest
+- curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+- export PATH="$HOME/.poetry/bin:$PATH"
 install:
-- pip install --upgrade pip setuptools wheel pipenv
-- pipenv install --dev
+- poetry install -E travis-ci
 before_script:
 - psql -c 'create database yui_test;' -U postgres
 - psql -c 'show timezone;' -U postgres
 - date
 - "python -c 'from yui.util import now; print(now(), now().tzinfo);'"
 script:
-- pipenv run pytest --database-url=postgresql://localhost/yui_test --cov yui tests
-- pipenv run flake8
-- pipenv run mypy yui
+- pytest --database-url=postgresql://localhost/yui_test --cov yui tests
+- flake8
+- mypy yui
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .
 after_success:
-- pipenv run codecov
+- codecov
 - source ./ci/docker_push.sh
 notifications:
   slack:

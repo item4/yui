@@ -15,6 +15,7 @@ YUI
 
 YUI is Multi-purpose Slack Bot.
 
+
 Who do use YUI?
 ---------------
 
@@ -30,18 +31,31 @@ Requirements
 - Git
 - Slack bot permission for bot account
 - Python 3.7 or higher
-- Pipenv
+- Poetry_
+
+
+.. _Poetry: https://poetry.eustace.io/
 
 
 Installation
 ------------
+
+If you did not have Poetry, Install it by below command.
+
+.. code-block:: bash
+
+   $ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+   # or see https://poetry.eustace.io/docs/#installation for details
+
+
+You can install yui by poetry.
 
 .. code-block:: bash
 
    $ git clone https://github.com/item4/yui.git
    $ cd yui
    $ mkdir log
-   $ pipenv install
+   $ poetry install --no-dev
 
 
 Configuration
@@ -57,8 +71,8 @@ TOKEN
 
 PREFIX
   string. Prefix for command.
-  for example, if you set PREFIX to '=' and you want to run help command,
-  you must type ``=help``
+  for example, if you set PREFIX to ``'='`` and you want to run ``help``
+  command, you must type ``=help``
 
 RECEIVE_TIMEOUT
   integer. timeout seconds for receiving data from Slask WebSocket.
@@ -87,7 +101,8 @@ CHANNELS
      general = '_general'
      do_not_use_gif = ['dev', '_notice']
 
-  This config setting make you use `yui.command.C` and `yui.command.Cs` like this.
+  This config setting make you use ``yui.command.C`` and ``yui.command.Cs``
+  like this.
 
   .. code-block:: python3
 
@@ -121,8 +136,9 @@ OWNER_ID
 
 NAVER_CLIENT_ID
   string. ID for using Naver API.
-  Yui use it for searching book.
-  You might visit `Naver developer page`_
+  If you want to use ``yui.apps.compute.translate`` or
+  ``yui.apps.search.book``, you must need this setting.(You can get this value
+  from `Naver developer page`_)
 
 NAVER_CLIENT_SECRET
   string. SECRET Key for using Naver API.
@@ -207,7 +223,15 @@ Run
 
 .. code-block:: bash
 
-   $ pipenv run yui run -c yui.config.toml
+   $ yui run -c yui.config.toml
+
+
+If you do not want to write ``-c`` option everytime, you can put it into envvar.
+
+.. code-block:: bash
+
+   $ export YUI_CONFIG_FILE_PATH="yui.config.toml"
+   $ yui run
 
 
 CLI for Database
@@ -301,7 +325,7 @@ Contribute to YUI
 -----------------
 
 YUI must keep PEP-8 and some rules.
-So you must install lint deps by ``pipenv install --dev`` and install pre-commit hook by below commands.
+So you must run ``poetry install`` first and install pre-commit hook by below commands.
 
 .. code-block:: bash
 
@@ -312,4 +336,5 @@ So you must install lint deps by ``pipenv install --dev`` and install pre-commit
 License
 -------
 
-AGPLv3 or higher
+Currently, YUI is under AGPLv3 or higher.
+But I have a plan to make slack bot framework from code of yui and switch it to MIT.

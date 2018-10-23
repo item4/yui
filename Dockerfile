@@ -2,18 +2,21 @@ FROM python:3.7-alpine
 
 MAINTAINER item4
 
-RUN apk update && apk add build-base libffi-dev libxml2-dev libxslt-dev tzdata postgresql-dev
+ENV HOME="/"
+ENV PATH="${HOME}/.poetry/bin:${PATH}"
+
+RUN apk update && apk add build-base libffi-dev libxml2-dev libxslt-dev tzdata postgresql-dev curl
 RUN cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 RUN echo "Asia/Seoul" > /etc/timezone
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install pipenv
+RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
-COPY ./Pipfile ./Pipfile.lock ./setup.py /yui/
+
+COPY ./pyproject.toml ./poetry.lock /yui/
 
 WORKDIR /yui
 
 RUN mkdir /yui/data
-RUN pipenv install
+RUN poetry install --no-dev
 
 COPY . /yui
 
