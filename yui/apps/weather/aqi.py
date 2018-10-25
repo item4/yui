@@ -2,6 +2,8 @@ import datetime
 from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
+from fake_useragent import UserAgent
+
 import tossi
 
 import tzlocal
@@ -17,16 +19,34 @@ box.assert_config_required('GOOGLE_API_KEY', str)
 box.assert_config_required('AQI_API_TOKEN', str)
 
 
+LABELS = {
+    'pm25': 'PM2.5',
+    'pm10': 'PM10',
+    'o3': '오존',
+    'no2': '이산화 질소',
+    'so2': '이산화 황',
+    'co': '일산화 탄소',
+}
+
+
+class Field(NamedTuple):
+
+    current: int
+    min: int
+    max: int
+
+
 class AQIRecord(NamedTuple):
 
+    name: str
     aqi: int
-    pm25: Optional[int]  # PM2.5
-    pm10: Optional[int]  # PM10
-    o3: Optional[float]  # 오존(Ozone)
-    no2: Optional[float]  # 이산화 질소 (Nitrogen Dioxide)
-    so2: Optional[float]  # 이산화 황 (Sulphur Dioxide)
-    co: Optional[float]  # 일산화 탄소 (Carbon Monoxide)
     time: int
+    pm25: Optional[Field] = None  # PM2.5
+    pm10: Optional[Field] = None  # PM10
+    o3: Optional[Field] = None  # 오존(Ozone)
+    no2: Optional[Field] = None  # 이산화 질소 (Nitrogen Dioxide)
+    so2: Optional[Field] = None  # 이산화 황 (Sulphur Dioxide)
+    co: Optional[Field] = None  # 일산화 탄소 (Carbon Monoxide)
 
 
 async def get_geometric_info_by_address(
@@ -57,20 +77,35 @@ async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
     async with client_session() as session:
         async with session.get(url) as res:
-            data = await res.json(loads=ujson.loads)
+            d1 = await res.json(loads=ujson.loads)
     try:
-        return AQIRecord(
-            aqi=data['data']['aqi'],
-            pm10=data['data']['iaqi'].get('pm10', {'v': None})['v'],
-            pm25=data['data']['iaqi'].get('pm25', {'v': None})['v'],
-            o3=data['data']['iaqi'].get('o3', {'v': None})['v'],
-            no2=data['data']['iaqi'].get('no2', {'v': None})['v'],
-            so2=data['data']['iaqi'].get('so2', {'v': None})['v'],
-            co=data['data']['iaqi'].get('co', {'v': None})['v'],
-            time=data['data']['time']['v'],
-        )
-    except TypeError:
+        idx = d1['data']['idx']
+    except (KeyError, TypeError):
         return None
+
+    url = f'https://api.waqi.info/api/feed/@{idx}/obs.en.json'
+    headers = {
+        'User-Agent': UserAgent().chrome,
+    }
+    async with client_session() as session:
+        async with session.get(url, headers=headers) as res:
+            d2 = await res.json(loads=ujson.loads)
+
+    if d2['rxs']['obs'][0]['status'] != 'ok':
+        return None
+
+    data = d2['rxs']['obs'][0]['msg']
+
+    return AQIRecord(
+        name=data['i18n']['name']['ko'],
+        aqi=data['aqi'],
+        time=data['time']['utc']['v'],
+        **{
+            x['p']: Field(*x['v'])
+            for x in data['iaqi']
+            if x['p'] in ['pm25', 'pm10', 'o3', 'no2', 'so2', 'co']
+        },
+    )
 
 
 def get_aqi_description(aqi: int) -> str:
@@ -137,21 +172,16 @@ async def aqi(bot, event: Message, address: str):
     ftime = time.strftime('%Y년 %m월 %d일 %H시')
     j = tossi.pick(full_address, '를')
     text = (
-        f'{ftime} 계측 자료에요. {full_address}{j} 기준으로 AQI에 정보를 요청했어요!\n\n'
+        f'{result.name}의 {ftime} 계측 자료에요.'
+        f' {full_address}{j} 기준으로 AQI에 정보를 요청했어요!\n\n'
         f'* 종합 AQI: {result.aqi} - {get_aqi_description(result.aqi)}\n'
     )
-    if result.pm25:
-        text += f'* PM2.5: {result.pm25}\n'
-    if result.pm10:
-        text += f'* PM10: {result.pm10}\n'
-    if result.o3:
-        text += f'* 오존: {result.o3}\n'
-    if result.no2:
-        text += f'* 이산화 질소: {result.no2}\n'
-    if result.so2:
-        text += f'* 이산화 황: {result.so2}\n'
-    if result.co:
-        text += f'* 일산화 탄소: {result.co}\n'
+
+    for key, name in LABELS.items():
+        if hasattr(result, key):
+            f: Field = getattr(result, key)
+            text += f'* {name}: {f.current} (최소 {f.min} / 최대 {f.max})\n'
+
     text = text.strip()
     await bot.say(
         event.channel,

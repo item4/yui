@@ -18,15 +18,15 @@ from yui.event import create_event
 from ...util import FakeBot
 
 result_pattern_re = re.compile(
-    r'\d{4}년 \d{2}월 \d{2}일 \d{2}시 계측 자료에요. '
+    r'.+?의 \d{4}년 \d{2}월 \d{2}일 \d{2}시 계측 자료에요. '
     r'.+?를 기준으로 AQI에 정보를 요청했어요!\n\n'
     r'\* 종합 AQI: \d+(?:\.\d+)? - (?:좋음|보통|민감군 영향|나쁨|매우 나쁨|위험)\(.+?\)\n'
-    r'\* PM2\.5: \d+(?:\.\d+)?\n'
-    r'\* PM10: \d+(?:\.\d+)?\n'
-    r'\* 오존: \d+(?:\.\d+)?\n'
-    r'\* 이산화 질소: \d+(?:\.\d+)?\n'
-    r'\* 이산화 황: \d+(?:\.\d+)?\n'
-    r'\* 일산화 탄소: \d+(?:\.\d+)?'
+    r'\* PM2\.5: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
+    r'\* PM10: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
+    r'\* 오존: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
+    r'\* 이산화 질소: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
+    r'\* 이산화 황: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
+    r'\* 일산화 탄소: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)'
 )
 
 
@@ -83,10 +83,15 @@ async def test_get_aqi(fx_aqi_api_token):
 
 
 @pytest.mark.asyncio
-async def test_get_aqi_none(response_mock):
+async def test_get_aqi_wrong_idx(response_mock):
     response_mock.get(
         'https://api.waqi.info/feed/geo:123;456/?token=asdf',
-        body='null',
+        body=ujson.dumps({'data': {'idx': 'wrong'}}),
+        headers={'Content-Type': 'application/json'},
+    )
+    response_mock.get(
+        'https://api.waqi.info/api/feed/@wrong/obs.en.json',
+        body=ujson.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
 
@@ -148,7 +153,7 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 
 
 @pytest.mark.asyncio
-async def test_aqi_none(fx_config, response_mock):
+async def test_aqi_error1(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
             'address': '부천',
@@ -176,6 +181,65 @@ async def test_aqi_none(fx_config, response_mock):
     response_mock.get(
         'https://api.waqi.info/feed/geo:37.5034138;126.7660309/?token=asdf',
         body='null',
+        headers={'Content-Type': 'application/json'},
+    )
+
+    fx_config.AQI_API_TOKEN = 'asdf'
+    fx_config.GOOGLE_API_KEY = 'qwer'
+
+    bot = FakeBot(fx_config)
+    bot.add_channel('C1', 'general')
+
+    event = create_event({
+        'type': 'message',
+        'channel': 'C1',
+        'ts': '1234.5678',
+    })
+
+    await aqi(bot, event, '부천')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
+    )
+
+
+@pytest.mark.asyncio
+async def test_aqi_error2(fx_config, response_mock):
+    response_mock.get(
+        'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+            'address': '부천',
+            'key': 'qwer',
+        }),
+        body=ujson.dumps({
+            'results': [
+                {
+                    'address_components': [
+                        {
+                            'long_name': '부천',
+                        },
+                    ],
+                    'geometry': {
+                        'location': {
+                            'lat': 37.5034138,
+                            'lng': 126.7660309,
+                        },
+                    },
+                },
+            ],
+        }),
+        headers={'Content-Type': 'application/json'},
+    )
+    response_mock.get(
+        'https://api.waqi.info/feed/geo:37.5034138;126.7660309/?token=asdf',
+        body=ujson.dumps({'data': {'idx': '5511'}}),
+        headers={'Content-Type': 'application/json'},
+    )
+    response_mock.get(
+        'https://api.waqi.info/api/feed/@5511/obs.en.json',
+        body=ujson.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
 
