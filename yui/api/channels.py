@@ -14,11 +14,11 @@ class Channels(Endpoint):
     async def history(
         self,
         channel: Union[PublicChannel, PublicChannelID],
-        count: Optional[int]=None,
-        inclusive: Optional[bool]=None,
-        latest: Optional[Ts]=None,
-        oldest: Optional[Ts]=None,
-        unreads: Optional[bool]=None,
+        count: Optional[int] = None,
+        inclusive: Optional[bool] = None,
+        latest: Optional[Ts] = None,
+        oldest: Optional[Ts] = None,
+        unreads: Optional[bool] = None,
     ):
         """https://api.slack.com/methods/channels.history"""
 
@@ -51,7 +51,7 @@ class Channels(Endpoint):
     async def info(
         self,
         channel: Union[PublicChannel, PublicChannelID],
-        include_locale: bool=False,
+        include_locale: bool = False,
     ):
         """https://api.slack.com/methods/channels.info"""
 
@@ -70,10 +70,10 @@ class Channels(Endpoint):
 
     async def list(
         self,
-        cursor: Optional[str]=None,
-        exclude_archived: bool=True,
-        exclude_members: bool=True,
-        limit: int=0,
+        cursor: Optional[str] = None,
+        exclude_archived: bool = True,
+        exclude_members: bool = True,
+        limit: int = 0,
     ):
         """https://api.slack.com/methods/channels.list"""
 

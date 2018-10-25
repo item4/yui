@@ -50,9 +50,9 @@ class APICallError(Exception):
         self,
         message: str,
         *,
-        status_code: int=None,
-        result: Dict[str, Any]=None,
-        headers: Any=None,
+        status_code: int = None,
+        result: Dict[str, Any] = None,
+        headers: Any = None,
     ) -> None:
         super(APICallError, self).__init__(message)
 
@@ -71,7 +71,7 @@ class Bot:
         config: Config,
         *,
         orm_base=None,
-        using_box: Box=None
+        using_box: Box = None,
     ) -> None:
         """Initialize"""
 
@@ -213,9 +213,9 @@ class Bot:
     async def call(
         self,
         method: str,
-        data: Dict[str, str]=None,
+        data: Dict[str, str] = None,
         *,
-        token: str=None,
+        token: str = None,
     ) -> Dict[str, Any]:
         """Call API methods."""
 

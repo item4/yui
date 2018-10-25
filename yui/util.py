@@ -75,7 +75,7 @@ def strip_tags(text: str) -> str:
     return fromstring(text).text_content()
 
 
-def now(tzname: str='Asia/Seoul') -> datetime.datetime:
+def now(tzname: str = 'Asia/Seoul') -> datetime.datetime:
     """Helper to make current datetime."""
 
     return datetime.datetime.now(tz=get_timezone(tzname))

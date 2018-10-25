@@ -102,7 +102,7 @@ def make_sub_list(data: List[Sub]) -> List[Attachment]:
     return result
 
 
-async def get_json(*args, timeout: float=0.5, **kwargs):
+async def get_json(*args, timeout: float = 0.5, **kwargs):
     weight = 1
     while True:
         async with async_timeout.timeout(timeout):
@@ -125,7 +125,7 @@ async def get_json(*args, timeout: float=0.5, **kwargs):
                     return []
 
 
-async def get_weekly_list(url, week, timeout: float=0.5):
+async def get_weekly_list(url, week, timeout: float = 0.5):
     weight = 1
     while True:
         res = await get_json('{}?w={}'.format(url, week), timeout=timeout)
@@ -167,7 +167,7 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def search_on_air(bot, event: Message, title: str, timeout: float=0.5):
+async def search_on_air(bot, event: Message, title: str, timeout: float = 0.5):
 
     ohli_list_url = 'http://ohli.moe/anitime/list'
     anissia_list_url = 'http://www.anissia.net/anitime/list'

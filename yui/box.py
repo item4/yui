@@ -44,7 +44,7 @@ __all__ = (
 )
 
 
-SPACE_RE = re.compile('\s+')
+SPACE_RE = re.compile(r'\s+')
 
 KWARGS_DICT = Dict[str, Any]
 
@@ -410,15 +410,15 @@ class Handler(BaseHandler):
         subtype: Optional[str],
         callback,
         *,
-        name: Optional[str]=None,
-        aliases: Optional[List[str]]=None,
-        short_help: Optional[str]=None,
-        help: Optional[str]=None,
-        use_shlex: bool=False,
-        is_command: bool=False,
+        name: Optional[str] = None,
+        aliases: Optional[List[str]] = None,
+        short_help: Optional[str] = None,
+        help: Optional[str] = None,
+        use_shlex: bool = False,
+        is_command: bool = False,
         channel_validator: Optional[
             Callable[[Any, Event], Awaitable[bool]]
-        ]=None
+        ] = None,
     ) -> None:
         """Initialize"""
         self.type = type
@@ -594,15 +594,15 @@ class Box:
     def command(
         self,
         name: str,
-        aliases: Optional[List[str]]=None,
+        aliases: Optional[List[str]] = None,
         *,
-        subtype: Optional[str]=None,
-        short_help: Optional[str]=None,
-        help: Optional[str]=None,
-        use_shlex: bool=True,
+        subtype: Optional[str] = None,
+        short_help: Optional[str] = None,
+        help: Optional[str] = None,
+        use_shlex: bool = True,
         channels: Optional[
             Callable[[Any, Event], Awaitable[bool]]
-        ]=None
+        ] = None,
     ):
         """Shortcut decorator for make command easily."""
 
@@ -651,10 +651,10 @@ class Box:
         self,
         type_: Union[str, Type[Event]],
         *,
-        subtype: Optional[str]=None,
+        subtype: Optional[str] = None,
         channels: Optional[
             Callable[[Any, Event], Awaitable[bool]]
-        ]=None
+        ] = None,
     ):
         """Decorator for make handler."""
 

@@ -24,7 +24,7 @@ DATE_FORMAT_RE = re.compile(
 
 
 def str_to_date(
-    fallback: Optional[Callable[[], datetime.date]]=None
+    fallback: Optional[Callable[[], datetime.date]] = None,
 ) -> Callable[[str], Any]:
     """Helper to make date object from given string."""
 
@@ -94,7 +94,11 @@ def get_user(text: str) -> FromUserID:
             raise ValueError('Given user was not found')
 
 
-def enum_getitem(cls, *, fallback: Optional[str]=None) -> Callable[[str], Any]:
+def enum_getitem(
+    cls,
+    *,
+    fallback: Optional[str] = None,
+) -> Callable[[str], Any]:
     """
     Helper to transform item to enum object by name from given enum
 
@@ -129,9 +133,9 @@ def enum_getitem(cls, *, fallback: Optional[str]=None) -> Callable[[str], Any]:
 def choice(
     items: Sequence[str],
     *,
-    fallback: Optional[str]=None,
-    case_insensitive: bool=False,
-    case: Optional['str']=None,
+    fallback: Optional[str] = None,
+    case_insensitive: bool = False,
+    case: Optional[str] = None,
 ) -> Callable[[str], str]:
     """
     Helper to constraint value to in items or raise error.
@@ -178,7 +182,12 @@ def choice(
     return callback
 
 
-def value_range(start: T, end: T, *, autofix: bool=False) -> Callable[[T], T]:
+def value_range(
+    start: T,
+    end: T,
+    *,
+    autofix: bool = False,
+) -> Callable[[T], T]:
     """
     Helper to constraint value to in range or raise error.
 

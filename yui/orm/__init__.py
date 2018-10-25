@@ -49,7 +49,7 @@ def subprocess_session_manager(
 
 def get_database_engine(
     config: Config,
-    poolclass: Optional[Type[Pool]]=None,
+    poolclass: Optional[Type[Pool]] = None,
 ) -> Engine:
     try:
         return config.DATABASE_ENGINE
@@ -64,7 +64,7 @@ def get_database_engine(
 def _get_database_engine(
     url: str,
     echo: bool,
-    poolclass: Optional[Type[Pool]]=None,
+    poolclass: Optional[Type[Pool]] = None,
 ) -> Engine:
     return create_engine(
         url,

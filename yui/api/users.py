@@ -28,10 +28,10 @@ class Users(Endpoint):
 
     async def list(
         self,
-        curser: Optional[str]=None,
-        include_locale: Optional[bool]=None,
-        limit: int=0,
-        presence: Optional[bool]=None,
+        curser: Optional[str] = None,
+        include_locale: Optional[bool] = None,
+        limit: int = 0,
+        presence: Optional[bool] = None,
     ):
         params = {}
 

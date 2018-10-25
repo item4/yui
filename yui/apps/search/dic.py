@@ -42,7 +42,7 @@ DICS: Dict[str, str] = {
     '루마니아어': 'ro',
     '러시아어': 'ru',
 }
-BLANK_RE = re.compile('^\s+', re.MULTILINE)
+BLANK_RE = re.compile(r'^\s+', re.MULTILINE)
 
 
 def fix_url(url: str) -> str:

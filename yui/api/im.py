@@ -11,8 +11,8 @@ class Im(Endpoint):
 
     async def list(
         self,
-        cursor: Optional[str]=None,
-        limit: Optional[int]=None,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
     ):
         """https://api.slack.com/methods/im.list"""
 

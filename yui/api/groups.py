@@ -14,7 +14,7 @@ class Groups(Endpoint):
     async def info(
         self,
         channel: Union[PrivateChannel, PrivateChannelID],
-        include_locale: bool=False,
+        include_locale: bool = False,
     ):
         """https://api.slack.com/methods/groups.info"""
 
@@ -33,8 +33,8 @@ class Groups(Endpoint):
 
     async def list(
         self,
-        exclude_archived: bool=True,
-        exclude_members: bool=True,
+        exclude_archived: bool = True,
+        exclude_members: bool = True,
     ):
         """https://api.slack.com/methods/groups.list"""
 

@@ -57,8 +57,8 @@ async def body(
     channel: Channel,
     expr: str,
     help: str,
-    num_to_decimal: bool=True,
-    ts: str=None
+    num_to_decimal: bool = True,
+    ts: str = None
 ):
     expr_is_multiline = '\n' in expr
     if not expr:
@@ -1018,7 +1018,7 @@ class Validator(ast.NodeVisitor):
 def calculate(
     expr: str,
     *,
-    replace_num_to_decimal: bool=True
+    replace_num_to_decimal: bool = True
 ):
     node = ast.parse(expr, filename='<ast>', mode='exec')
     local: Dict[str, Any] = {}

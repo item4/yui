@@ -163,7 +163,7 @@ class FromChannelID(FromID):
     """.from_id"""
 
     @classmethod
-    def from_id(cls, value: Union[str, Dict], raise_error: bool=False):
+    def from_id(cls, value: Union[str, Dict], raise_error: bool = False):
         if isinstance(value, str):
             if value.startswith('C'):
                 for c in cls._bot.channels:
@@ -296,7 +296,7 @@ class ChannelsFromConfig:
 class FromUserID(FromID):
 
     @classmethod
-    def from_id(cls, value: Union[str, Dict], raise_error: bool=False):
+    def from_id(cls, value: Union[str, Dict], raise_error: bool = False):
         if isinstance(value, str):
             value = typing_cast(UserID, value)
             if value.startswith('U') and value in cls._bot.users:

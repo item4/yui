@@ -10,9 +10,9 @@ async def get_event_days(
     *,
     api_key: str,
     year: str,
-    month: str=None,
-    day: str=None,
-    type: str=None,
+    month: str = None,
+    day: str = None,
+    type: str = None,
 ) -> Dict[str, Any]:
     url = 'https://apis.sktelecom.com/v1/eventday/days'
     params = {

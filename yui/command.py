@@ -111,7 +111,7 @@ def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
     return channel_names, dm, fetch_error
 
 
-def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
+def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None)\
         -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to allow to use handler."""
 
@@ -155,7 +155,7 @@ def only(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None)\
     return callback
 
 
-def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None) \
+def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None) \
         -> Callable[[Any, Event], Awaitable[bool]]:
     """Mark channel to deny to use handler."""
 
@@ -201,16 +201,16 @@ def not_(*channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str]=None) \
 
 def argument(
     name: str,
-    dest: Optional[str]=None,
-    nargs: int=1,
-    transform_func: Optional[Callable]=None,
-    type_: Optional[Type]=None,
-    container_cls: Optional[Type]=None,
-    concat: Optional[bool]=False,
-    type_error: str='{name}: invalid type of argument value({e})',
-    count_error: str=('{name}: incorrect argument value count.'
-                      ' expected {expected}, {given} given.'),
-    transform_error: str='{name}: fail to transform argument value ({e})'
+    dest: Optional[str] = None,
+    nargs: int = 1,
+    transform_func: Optional[Callable] = None,
+    type_: Optional[Type] = None,
+    container_cls: Optional[Type] = None,
+    concat: Optional[bool] = False,
+    type_error: str = '{name}: invalid type of argument value({e})',
+    count_error: str = ('{name}: incorrect argument value count.'
+                        ' expected {expected}, {given} given.'),
+    transform_error: str = '{name}: fail to transform argument value ({e})'
 ) -> Callable:
     """
     Add argument to command.
@@ -288,20 +288,20 @@ def argument(
 
 def option(
     *args: str,
-    default: Optional[Any]=None,
-    dest: Optional[str]=None,
-    is_flag: bool=False,
-    nargs: int=1,
-    multiple: bool=False,
-    container_cls: Optional[Type]=None,
-    required: bool=False,
-    transform_func: Optional[Callable]=None,
-    type_: Optional[Type]=None,
-    value: Optional[Any]=None,
-    type_error: str='{name}: invalid type of option value({e})',
-    count_error: str=('{name}: incorrect option value count.'
-                      ' expected {expected}, {given} given.'),
-    transform_error: str='{name}: fail to transform option value ({e})'
+    default: Optional[Any] = None,
+    dest: Optional[str] = None,
+    is_flag: bool = False,
+    nargs: int = 1,
+    multiple: bool = False,
+    container_cls: Optional[Type] = None,
+    required: bool = False,
+    transform_func: Optional[Callable] = None,
+    type_: Optional[Type] = None,
+    value: Optional[Any] = None,
+    type_error: str = '{name}: invalid type of option value({e})',
+    count_error: str = ('{name}: incorrect option value count.'
+                        ' expected {expected}, {given} given.'),
+    transform_error: str = '{name}: fail to transform option value ({e})',
 ) -> Callable:
     """
     Add option parameter to command.

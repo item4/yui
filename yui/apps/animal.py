@@ -187,7 +187,7 @@ async def dog(bot, event: Message, timeout: float):
 
 @box.command('fox', ['여우'])
 @static_vars(last_call={})
-async def fox(bot, event: Message, timeout: float=1.5):
+async def fox(bot, event: Message, timeout: float = 1.5):
     """
     여우 짤을 수급합니다.
 

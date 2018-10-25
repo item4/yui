@@ -17,9 +17,9 @@ class Chat(Endpoint):
         self,
         channel: Union[FromID, ChannelID],
         ts: Ts,
-        as_user: Optional[bool]=None,
+        as_user: Optional[bool] = None,
         *,
-        token: Optional[str]=None,
+        token: Optional[str] = None,
     ):
         """https://api.slack.com/methods/chat.delete"""
 
@@ -41,21 +41,21 @@ class Chat(Endpoint):
     async def postMessage(
         self,
         channel: Union[FromID, ChannelID],
-        text: Optional[str]=None,
+        text: Optional[str] = None,
         parse=None,
-        link_names: Optional[bool]=None,
-        attachments: Optional[List[Attachment]]=None,
-        unfurl_links: Optional[bool]=None,
-        unfurl_media: Optional[bool]=None,
-        username: Optional[str]=None,
-        as_user: Optional[bool]=None,
-        icon_url: Optional[str]=None,
-        icon_emoji: Optional[str]=None,
-        thread_ts: Optional[Ts]=None,
-        reply_broadcast: Optional[bool]=None,
-        response_type: Optional[str]=None,
-        replace_original: Optional[bool]=None,
-        delete_original: Optional[bool]=None,
+        link_names: Optional[bool] = None,
+        attachments: Optional[List[Attachment]] = None,
+        unfurl_links: Optional[bool] = None,
+        unfurl_media: Optional[bool] = None,
+        username: Optional[str] = None,
+        as_user: Optional[bool] = None,
+        icon_url: Optional[str] = None,
+        icon_emoji: Optional[str] = None,
+        thread_ts: Optional[Ts] = None,
+        reply_broadcast: Optional[bool] = None,
+        response_type: Optional[str] = None,
+        replace_original: Optional[bool] = None,
+        delete_original: Optional[bool] = None,
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 

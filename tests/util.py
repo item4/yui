@@ -25,7 +25,7 @@ class Call(NamedTuple):
 class FakeBot(Bot):
     """Fake bot for test"""
 
-    def __init__(self, config: Config=None) -> None:
+    def __init__(self, config: Config = None) -> None:
         if config is None:
             config = Config()
 
@@ -45,9 +45,9 @@ class FakeBot(Bot):
     async def call(
         self,
         method: str,
-        data: Dict[str, str]=None,
+        data: Dict[str, str] = None,
         *,
-        token: Optional[str]=None,
+        token: Optional[str] = None,
     ):
         self.call_queue.append(Call(method, data, token))
         callback = self.responses.get(method)

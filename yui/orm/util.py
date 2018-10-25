@@ -14,7 +14,7 @@ from .type import TimezoneType
 __all__ = 'insert_datetime_field',
 
 
-def insert_datetime_field(name, locals_, nullable: bool=True):
+def insert_datetime_field(name, locals_, nullable: bool = True):
     datetime_key = f'{name}_datetime'
     timezone_key = f'{name}_timezone'
     locals_[datetime_key] = Column(
