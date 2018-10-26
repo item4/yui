@@ -50,7 +50,7 @@ async def get_holiday_name(
         type='h',
     )
 
-    if data['results']:
+    if data.get('results'):
         return data['results'][0]['name']
     return None
 

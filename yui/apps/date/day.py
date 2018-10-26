@@ -76,7 +76,7 @@ async def day(bot, event: Message, raw: str):
 
     data = await get_event_days(**params)
 
-    if data['results']:
+    if data.get('results'):
         result = []
         for record in data['results']:
             type = record['type']\
