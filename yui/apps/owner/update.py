@@ -17,6 +17,7 @@ FLAG_MAP = {
     'nice': '5cb85c',
     'update': '5cb85c',
     'patch': '5cb85c',
+    'fix': '5cb85c',
     'danger': 'd9534f',
     'del': 'd9534f',
     'delete': 'd9534f',
