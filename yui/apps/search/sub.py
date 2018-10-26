@@ -167,7 +167,7 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def search_on_air(bot, event: Message, title: str, timeout: float = 0.5):
+async def search_on_air(bot, event: Message, title: str, timeout: float = 1.0):
 
     ohli_list_url = 'http://ohli.moe/anitime/list'
     anissia_list_url = 'http://www.anissia.net/anitime/list'
@@ -229,7 +229,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 0.5):
         result: List[Sub] = []
 
         o_subs = await get_json(
-            'http://ohli.moe/cap/{}'.format(o_ani['i'])
+            'http://ohli.moe/cap/{}'.format(o_ani['i']),
+            timeout=timeout,
         )
 
         for sub in o_subs:
@@ -268,8 +269,9 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 0.5):
 
                 a_subs = await get_json(
                     'http://www.anissia.net/anitime/cap?i={}'.format(
-                        a_ani['i']
-                    )
+                        a_ani['i'],
+                    ),
+                    timeout=timeout,
                 )
 
                 for sub in a_subs:
@@ -335,12 +337,18 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 0.5):
         )
 
 
-async def search_finished(bot, event: Message, title: str):
+async def search_finished(
+    bot,
+    event: Message,
+    title: str,
+    timeout: float = 1.0,
+):
 
     data = await get_json(
         'http://ohli.moe/timetable/search?{}'.format(
-            urllib.parse.urlencode({'query': title.encode()})
-        )
+            urllib.parse.urlencode({'query': title.encode()}),
+        ),
+        timeout=timeout,
     )
 
     if data:
@@ -354,7 +362,7 @@ async def search_finished(bot, event: Message, title: str):
         )
         for ani in data:
             subs = await get_json(
-                'http://ohli.moe/cap/{}'.format(ani['i']))
+                'http://ohli.moe/cap/{}'.format(ani['i']), timeout=timeout)
             result: List[Sub] = []
 
             for sub in subs:
