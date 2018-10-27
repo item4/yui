@@ -85,9 +85,24 @@ async def aws(bot, event: Message, sess: Session, keyword: str):
     if pressure:
         res += ' / 해면기압: {}'.format(pressure)
 
-    await bot.say(
-        event.channel,
-        res
+    if record.is_raining:
+        if record.temperature < 0:
+            emoji = ':snowflake:'
+        else:
+            emoji = ':umbrella_with_rain_drops:'
+    elif record.is_raining is None:
+        emoji = ':thinking_face:'
+    else:
+        if record.observed_at.hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
+            emoji = ':crescent_moon:'
+        else:
+            emoji = ':sunny:'
+
+    await bot.api.chat.postMessage(
+        channel=event.channel,
+        text=res,
+        username=f'{record.name} 날씨',
+        icon_emoji=emoji,
     )
 
 

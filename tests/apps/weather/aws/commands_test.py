@@ -3,14 +3,14 @@ import pytest
 from yui.apps.weather.aws.commands import aws, search_aws_zone
 from yui.apps.weather.aws.models import AWS
 from yui.event import create_event
-from yui.utils.datetime import now
+from yui.utils.datetime import datetime
 
 from ....util import FakeBot
 
 
 @pytest.mark.asyncio
 async def test_aws(fx_sess):
-    dt = now()
+    dt = datetime(2018, 10, 24, 0)
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')
@@ -49,6 +49,7 @@ async def test_aws(fx_sess):
     with fx_sess.begin():
         fx_sess.add(record)
 
+    # rain
     await aws(bot, event, fx_sess, '인천')
 
     said = bot.call_queue.pop(0)
@@ -61,7 +62,50 @@ async def test_aws(fx_sess):
     ).format(
         dt.strftime('%Y년 %m월 %d일 %H시 %M분')
     )
+    assert said.data['username'] == '인천 날씨'
+    assert said.data['icon_emoji'] == ':umbrella_with_rain_drops:'
 
+    # snow
+    record.temperature = -10
+    with fx_sess.begin():
+        fx_sess.add(record)
+
+    await aws(bot, event, fx_sess, '인천')
+
+    said = bot.call_queue.pop(0)
+    assert said.data['icon_emoji'] == ':snowflake:'
+
+    # moon
+    record.is_raining = False
+    with fx_sess.begin():
+        fx_sess.add(record)
+
+    await aws(bot, event, fx_sess, '인천')
+
+    said = bot.call_queue.pop(0)
+    assert said.data['icon_emoji'] == ':crescent_moon:'
+
+    # sun
+    record.observed_at = datetime(2018, 10, 24, 12)
+    with fx_sess.begin():
+        fx_sess.add(record)
+
+    await aws(bot, event, fx_sess, '인천')
+
+    said = bot.call_queue.pop(0)
+    assert said.data['icon_emoji'] == ':sunny:'
+
+    # we don't know
+    record.is_raining = None
+    with fx_sess.begin():
+        fx_sess.add(record)
+
+    await aws(bot, event, fx_sess, '인천')
+
+    said = bot.call_queue.pop(0)
+    assert said.data['icon_emoji'] == ':thinking_face:'
+
+    # db error
     record2 = AWS()
     record2.name = '인천'
     record2.height = 1234
@@ -96,7 +140,7 @@ async def test_aws(fx_sess):
 
 @pytest.mark.asyncio
 async def test_search_aws_zone(fx_sess):
-    dt = now()
+    dt = datetime(2018, 10, 24, 0)
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')
