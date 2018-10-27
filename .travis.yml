@@ -22,7 +22,7 @@ before_script:
 - psql -c 'create database yui_test;' -U postgres
 - psql -c 'show timezone;' -U postgres
 - date
-- "python -c 'from yui.util import now; print(now(), now().tzinfo);'"
+- "python -c 'from yui.utils.datetime import now; print(now(), now().tzinfo);'"
 script:
 - pytest --database-url=postgresql://localhost/yui_test --cov yui tests
 - flake8
