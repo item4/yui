@@ -2,7 +2,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String, Text
 
 from ....orm import Base
-from ....orm.util import insert_datetime_field
+from ....orm.utils import insert_datetime_field
 
 
 class Memo(Base):

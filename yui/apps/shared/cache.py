@@ -3,7 +3,7 @@ from sqlalchemy.types import Integer, String
 
 from ...orm import Base
 from ...orm.type import JSONType
-from ...orm.util import insert_datetime_field
+from ...orm.utils import insert_datetime_field
 
 
 class JSONCache(Base):

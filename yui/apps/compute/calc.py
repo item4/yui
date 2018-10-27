@@ -17,7 +17,7 @@ from async_timeout import timeout
 from ...bot import Bot
 from ...box import box
 from ...event import Message
-from ...type import Channel
+from ...types.namespace.linked import Channel
 
 TIMEOUT = 1
 LENGTH_LIMIT = 300

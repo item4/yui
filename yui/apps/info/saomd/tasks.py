@@ -193,7 +193,7 @@ def process(
     return attachments
 
 
-@box.crontab('*/1 * * * *')
+@box.cron('*/1 * * * *')
 async def watch_notice(bot: Bot, engine_config: EngineConfig):
     async def watch(server: Server):
         html = ''

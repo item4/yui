@@ -12,7 +12,7 @@ from ...browser import new_page
 from ...command import argument, option
 from ...event import Message
 from ...transform import choice
-from ...util import b64_redirect
+from ...utils.url import b64_redirect
 
 
 CATEGORIES = {

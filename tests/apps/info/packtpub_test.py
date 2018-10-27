@@ -89,7 +89,7 @@ async def test_no_packtpub_dotd(response_mock):
 
 @pytest.mark.asyncio
 async def test_auto_packtpub_dotd(fx_config):
-    assert auto_packtpub_dotd._crontab.spec == '5 9 * * *'
+    assert auto_packtpub_dotd.cron.spec == '5 9 * * *'
 
     fx_config.CHANNELS = {
         'general': 'general',

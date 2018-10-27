@@ -4,19 +4,19 @@ import math
 from sympy.functions.combinatorial.numbers import harmonic
 
 
-from ...box import CommandMappingHandler, CommandMappingUnit, box
+from ...box import box, route
 from ...command import argument
 from ...event import Message
 from ...transform import value_range
 
 
-class Gacha(CommandMappingHandler):
+class Gacha(route.RouteApp):
 
     def __init__(self) -> None:
         self.name = '가챠'
-        self.command_map = [
-            CommandMappingUnit(name='수집', callback=self.collect),
-            CommandMappingUnit(name='collect', callback=self.collect),
+        self.route_list = [
+            route.Route(name='수집', callback=self.collect),
+            route.Route(name='collect', callback=self.collect),
         ]
 
     def get_short_help(self, prefix: str):

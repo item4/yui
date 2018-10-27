@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, NamedTuple, Optional
 from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.config import Config
-from yui.type import (
+from yui.types.namespace.linked import (
     BotLinkedNamespace,
     DirectMessageChannel,
     PrivateChannel,

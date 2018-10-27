@@ -1,7 +1,6 @@
 import asyncio
 import functools
 import importlib
-import inspect
 import logging
 import logging.config
 import traceback
@@ -17,20 +16,20 @@ import async_timeout
 import ujson
 
 from .api import SlackAPI
-from .box import Box, Crontab, box
+from .box import Box, box
+from .box.tasks import CronTask
 from .config import Config
 from .event import create_event
 from .orm import Base, EngineConfig, get_database_engine, make_session
 from .session import client_session
-from .type import (
+from .types.base import ChannelID, UserID
+from .types.namespace.linked import (
     BotLinkedNamespace,
     Channel,
-    ChannelID,
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
     User,
-    UserID,
 )
 
 
@@ -114,19 +113,19 @@ class Bot:
 
         if self.config.REGISTER_CRONTAB:
             logger.info('register crontab')
-            self.register_crontab()
+            self.register_tasks()
 
-    def register_crontab(self):
+    def register_tasks(self):
         """Register cronjob to bot from box."""
 
         logger = logging.getLogger(
-            f'{__name__}.Bot.register_crontab'
+            f'{__name__}.Bot.register_tasks'
         )
 
-        def register(c: Crontab):
+        def register(c: CronTask):
             logger.info(f'register {c}')
             lock = asyncio.Lock()
-            func_params = inspect.signature(c.func).parameters
+            func_params = c.handler.params
             kw: Dict[str, Any] = {}
             if 'bot' in func_params:
                 kw['bot'] = self
@@ -151,7 +150,7 @@ class Bot:
 
                     logger.debug(f'hit and start to run {c}')
                     try:
-                        await c.func(**kw)
+                        await c.handler(**kw)
                     except:  # noqa: E722
                         logger.error(f'Error: {traceback.format_exc()}')
                         await self.say(
@@ -167,7 +166,7 @@ class Bot:
             c.start = task.start
             c.stop = task.stop
 
-        for c in self.box.crontabs:
+        for c in self.box.tasks:
             register(c)
 
     def run(self):
@@ -305,7 +304,7 @@ class Bot:
 
             logger.info(event)
 
-            for handler in self.box.handlers:
+            for handler in self.box.apps:
                 result = await handle(handler, event)
                 if not result:
                     break

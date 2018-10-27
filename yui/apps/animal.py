@@ -14,8 +14,8 @@ from ..box import box
 from ..command import option
 from ..event import Message
 from ..session import client_session
-from ..type import DirectMessageChannel
-from ..util import now, static_vars
+from ..types.namespace.linked import DirectMessageChannel
+from ..utils.datetime import now
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
 DM_COOLTIME = datetime.timedelta(minutes=3)
@@ -91,7 +91,6 @@ async def get_fox_image_url(timeout: float) -> str:
 
 @box.command('cat', ['냥', '야옹', '냐옹'])
 @option('--timeout', default=1.5)
-@static_vars(last_call={})
 async def cat(bot, event: Message, timeout: float):
     """
     냥냥이 짤을 수급합니다.
@@ -138,7 +137,6 @@ async def cat(bot, event: Message, timeout: float):
 
 @box.command('dog', ['멍'])
 @option('--timeout', default=1.5)
-@static_vars(last_call={})
 async def dog(bot, event: Message, timeout: float):
     """
     멍멍이 짤을 수급합니다.
@@ -186,7 +184,6 @@ async def dog(bot, event: Message, timeout: float):
 
 
 @box.command('fox', ['여우'])
-@static_vars(last_call={})
 async def fox(bot, event: Message, timeout: float = 1.5):
     """
     여우 짤을 수급합니다.

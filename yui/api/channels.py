@@ -2,7 +2,8 @@ from typing import Optional, Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..type import PublicChannel, PublicChannelID, Ts
+from ..types.base import PublicChannelID, Ts
+from ..types.namespace.linked import PublicChannel
 
 __all__ = 'Channels',
 

@@ -2,7 +2,8 @@ from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..type import PrivateChannel, PrivateChannelID
+from ..types.base import PrivateChannelID
+from ..types.namespace.linked import PrivateChannel
 
 __all__ = 'Groups',
 

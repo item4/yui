@@ -52,7 +52,7 @@ async def test_collect(fx_config):
         'channel': 'C1',
     })
 
-    await g.collect(bot, event, 30)
+    await g.collect(g, bot, event, 30)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'

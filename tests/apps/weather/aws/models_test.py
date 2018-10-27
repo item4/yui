@@ -3,7 +3,7 @@ import datetime
 import pytz
 
 from yui.apps.weather.aws.models import AWS
-from yui.util import now
+from yui.utils.datetime import now
 
 
 def test_aws_model_with_aware_dt(fx_sess):

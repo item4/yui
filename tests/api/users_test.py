@@ -1,7 +1,7 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.type import User
+from yui.types.namespace.linked import User
 
 from ..util import FakeBot
 

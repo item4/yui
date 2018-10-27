@@ -3,7 +3,7 @@ import pytest
 from yui.apps.weather.aws.commands import aws, search_aws_zone
 from yui.apps.weather.aws.models import AWS
 from yui.event import create_event
-from yui.util import now
+from yui.utils.datetime import now
 
 from ....util import FakeBot
 

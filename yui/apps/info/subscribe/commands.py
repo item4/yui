@@ -9,7 +9,7 @@ import pytz
 
 from .models import RSSFeedURL
 from ....api import Attachment
-from ....box import CommandMappingHandler, CommandMappingUnit, box
+from ....box import box, route
 from ....command import argument
 from ....event import Message
 from ....session import client_session
@@ -18,19 +18,19 @@ from ....transform import extract_url
 SPACE_RE = re.compile(r'\s{2,}')
 
 
-class RSS(CommandMappingHandler):
+class RSS(route.RouteApp):
 
     def __init__(self) -> None:
         self.name = 'rss'
-        self.command_map = [
-            CommandMappingUnit(name='add', callback=self.add),
-            CommandMappingUnit(name='추가', callback=self.add),
-            CommandMappingUnit(name='list', callback=self.list),
-            CommandMappingUnit(name='목록', callback=self.list),
-            CommandMappingUnit(name='del', callback=self.delete),
-            CommandMappingUnit(name='delete', callback=self.delete),
-            CommandMappingUnit(name='삭제', callback=self.delete),
-            CommandMappingUnit(name='제거', callback=self.delete),
+        self.route_list = [
+            route.Route(name='add', callback=self.add),
+            route.Route(name='추가', callback=self.add),
+            route.Route(name='list', callback=self.list),
+            route.Route(name='목록', callback=self.list),
+            route.Route(name='del', callback=self.delete),
+            route.Route(name='delete', callback=self.delete),
+            route.Route(name='삭제', callback=self.delete),
+            route.Route(name='제거', callback=self.delete),
         ]
 
     def get_short_help(self, prefix: str):
@@ -148,7 +148,7 @@ class RSS(CommandMappingHandler):
             sess.delete(feed)
 
 
-@box.crontab('*/1 * * * *')
+@box.cron('*/1 * * * *')
 async def crawl(bot, sess):
     feeds = sess.query(RSSFeedURL).all()
 

@@ -4,13 +4,13 @@ from .util import weekend_loading_percent
 from ...box import box
 from ...command import C
 from ...event import Message
-from ...util import now
+from ...utils.datetime import now
 
 box.assert_config_required('WEEKEND_LOADING_TIME', List[int])
 box.assert_channel_required('general')
 
 
-@box.crontab('0 * * * 1-5')
+@box.cron('0 * * * 1-5')
 async def auto_weekend_loading(bot):
     now_dt = now()
     if now_dt.hour in bot.config.WEEKEND_LOADING_TIME:
@@ -21,7 +21,7 @@ async def auto_weekend_loading(bot):
         )
 
 
-@box.crontab('0 0 * * 6')
+@box.cron('0 0 * * 6')
 async def auto_weekend_start(bot):
     await bot.say(
         C.general.get(),

@@ -8,14 +8,14 @@ import tossi
 from .util import get_holiday_name
 from ...box import box
 from ...command import C
-from ...util import now
+from ...utils.datetime import now
 
 box.assert_config_required('TDCPROJECT_KEY', str)
 box.assert_config_required('MONDAY_DOG_LIMIT', int)
 box.assert_channel_required('general')
 
 
-@box.crontab('0 0 * * 1')
+@box.cron('0 0 * * 1')
 async def monday_dog(bot):
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,

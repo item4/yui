@@ -11,7 +11,7 @@ from .type import (
     OptionField,
     OptionGroup,
 )
-from ..type import ChannelFromConfig, ChannelsFromConfig
+from ..types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
 
 __all__ = 'SlackEncoder', 'bool2str', 'remove_none'
 

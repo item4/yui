@@ -3,7 +3,7 @@ import re
 from decimal import Decimal
 from typing import Any, Callable, Optional, Sequence, TypeVar
 
-from .type import FromChannelID, FromUserID
+from .types.namespace.linked import FromChannelID, FromUserID
 
 __all__ = (
     'DATE_FORMAT_RE',

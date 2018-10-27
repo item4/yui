@@ -13,7 +13,7 @@ from yui.api.type import (
     OptionField,
     OptionGroup,
 )
-from yui.type import ChannelFromConfig, ChannelsFromConfig
+from yui.types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
 
 
 def test_bool2str():

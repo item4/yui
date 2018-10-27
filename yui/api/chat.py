@@ -4,7 +4,8 @@ from typing import Dict, List, Optional, Union
 from .encoder import SlackEncoder, bool2str
 from .endpoint import Endpoint
 from .type import Attachment
-from ..type import ChannelID, FromID, Ts
+from ..types.base import ChannelID, Ts
+from ..types.namespace.linked import FromID
 
 __all__ = 'Chat',
 

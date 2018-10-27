@@ -32,7 +32,7 @@ from ..event import (
     TeamMigrationStarted,
     UserChange,
 )
-from ..type import (
+from ..types.namespace.linked import (
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,

@@ -17,7 +17,8 @@ from ...command import argument, option
 from ...event import ChatterboxSystemStart, Message
 from ...session import client_session
 from ...transform import choice
-from ...util import fuzzy_korean_ratio, now
+from ...utils.datetime import now
+from ...utils.fuzz import fuzzy_korean_ratio
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ async def on_start(sess):
     return True
 
 
-@box.crontab('0 3 * * *')
+@box.cron('0 3 * * *')
 async def refresh_db(sess):
     logger.info('refresh subway')
     tasks = []

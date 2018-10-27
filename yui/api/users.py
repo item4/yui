@@ -2,7 +2,8 @@ from typing import Optional, Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..type import User, UserID
+from ..types.base import UserID
+from ..types.namespace.linked import User
 
 __all__ = 'Users',
 

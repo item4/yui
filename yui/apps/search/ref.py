@@ -14,7 +14,7 @@ from ...box import box
 from ...command import argument
 from ...event import ChatterboxSystemStart, Message
 from ...session import client_session
-from ...util import now
+from ...utils.datetime import now
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ async def on_start(bot, sess):
     return True
 
 
-@box.crontab('0 3 * * *')
+@box.cron('0 3 * * *')
 async def refresh(bot, sess):
     logger.info('refresh ref')
     tasks = [

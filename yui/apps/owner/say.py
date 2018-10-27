@@ -4,7 +4,7 @@ from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...transform import get_channel, get_user
-from ...type import Channel, FromID, User
+from ...types.namespace.linked import Channel, FromID, User
 
 box.assert_config_required('OWNER_ID', str)
 

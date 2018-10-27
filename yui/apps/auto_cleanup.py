@@ -13,7 +13,7 @@ box.assert_channels_required('auto_cleanup_targets')
 logger = logging.getLogger(__name__)
 
 
-@box.crontab('*/10 * * * *')
+@box.cron('*/10 * * * *')
 async def cleanup_channels(bot):
     try:
         channels = Cs.auto_cleanup_targets.get()

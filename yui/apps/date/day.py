@@ -9,7 +9,7 @@ from ...box import box
 from ...command import C
 from ...event import Message
 from ...transform import DATE_FORMAT_RE
-from ...util import now
+from ...utils.datetime import now
 
 box.assert_config_required('TDCPROJECT_KEY', str)
 box.assert_config_required('MONDAY_DOG_LIMIT', int)
@@ -19,7 +19,7 @@ YEAR_PATTERN = re.compile(r'^(\d{4})년$')
 YEAR_MONTH_PATTERN = re.compile(r'^(\d{4})년\s*(\d{1,2})월$')
 
 
-@box.crontab('0 0 * * 0,2,3,4,5,6')
+@box.cron('0 0 * * 0,2,3,4,5,6')
 async def holiday_message(bot):
     holiday = None
     today = now()

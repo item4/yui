@@ -2,7 +2,7 @@ import pytest
 
 from yui.api.encoder import bool2str
 from yui.api.type import Attachment, Field
-from yui.type import PublicChannel
+from yui.types.namespace.linked import PublicChannel
 
 from ..util import FakeBot
 

@@ -1,25 +1,29 @@
 from typing import Any, Dict, List, Optional, Union
 
-from .type import (
-    Bot,
-    Channel,
+from .types.base import (
     ChannelID,
     Comment,
     CommentID,
-    DirectMessageChannel,
-    DnDStatus,
-    File,
     FileID,
-    MessageMessage,
-    MessagePreviousMessage,
-    Namespace,
-    PrivateChannel,
-    PublicChannel,
-    Subteam,
     SubteamID,
     TeamID,
     Ts,
+)
+from .types.namespace.base import Namespace
+from .types.namespace.linked import (
+    Channel,
+    DirectMessageChannel,
+    PrivateChannel,
+    PublicChannel,
     User,
+)
+from .types.namespace.objects import (
+    BotObject,
+    DnDStatus,
+    File,
+    MessageMessage,
+    MessagePreviousMessage,
+    Subteam,
 )
 
 __all__ = (
@@ -116,14 +120,14 @@ class BotAdded(Event):
     """An bot user was added."""
 
     type: str = 'bot_added'
-    bot: Bot
+    bot: BotObject
 
 
 class BotChanged(Event):
     """An bot user was changed."""
 
     type: str = 'bot_changed'
-    bot: Bot
+    bot: BotObject
 
 
 class ChannelArchive(Event):

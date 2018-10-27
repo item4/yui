@@ -4,7 +4,7 @@ from .models import Memo
 from ....box import box
 from ....command import argument
 from ....event import Message
-from ....util import now
+from ....utils.datetime import now
 
 
 @box.command('기억')

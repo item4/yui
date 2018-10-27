@@ -3,7 +3,7 @@ import datetime
 import pytz
 
 from yui.apps.shared.cache import JSONCache
-from yui.util import now
+from yui.utils.datetime import now
 
 
 def test_json_cache_model_with_aware_dt(fx_sess):

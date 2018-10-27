@@ -7,7 +7,8 @@ from sqlalchemy.engine import Engine
 
 import toml
 
-from .type import Namespace, cast
+from .types.namespace.base import Namespace
+from .utils.cast import cast
 
 
 __all__ = 'Config', 'ConfigurationError', 'DEFAULT', 'error', 'load',

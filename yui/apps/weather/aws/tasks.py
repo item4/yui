@@ -9,8 +9,8 @@ from .models import AWS
 from ....bot import Bot
 from ....box import box
 from ....orm import EngineConfig, subprocess_session_manager
+from ....orm.utils import truncate_table
 from ....session import client_session
-from ....util import truncate_table
 
 
 def process(html: str, engine_config: EngineConfig):
@@ -125,7 +125,7 @@ def process(html: str, engine_config: EngineConfig):
             sess.add_all(records)
 
 
-@box.crontab('*/3 * * * *')
+@box.cron('*/3 * * * *')
 async def crawl(bot: Bot, engine_config: EngineConfig):
     """Crawl from Korea Meteorological Administration AWS."""
 

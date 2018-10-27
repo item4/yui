@@ -17,7 +17,7 @@ from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
-from ...util import fuzzy_korean_partial_ratio
+from ...utils.fuzz import fuzzy_korean_partial_ratio
 
 
 class Sub(NamedTuple):
