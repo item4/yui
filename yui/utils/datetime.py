@@ -10,4 +10,4 @@ def now(tzname: str = 'Asia/Seoul') -> dt.datetime:
 
 
 def datetime(*args, tzname: str = 'Asia/Seoul') -> dt.datetime:
-    return dt.datetime(*args).astimezone(get_timezone(tzname))
+    return get_timezone(tzname).localize(dt.datetime(*args))

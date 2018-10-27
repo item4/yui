@@ -24,7 +24,7 @@ before_script:
 - date
 - "python -c 'from yui.utils.datetime import now; print(now(), now().tzinfo);'"
 script:
-- pytest --database-url=postgresql://localhost/yui_test --cov yui tests
+- pytest --database-url=postgresql://localhost/yui_test -v --cov yui tests
 - flake8
 - mypy yui
 - docker build --cache-from item4/yui:latest --tag item4/yui:latest .

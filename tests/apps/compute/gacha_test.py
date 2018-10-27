@@ -9,7 +9,7 @@ from ...util import FakeBot
 def test_class():
     g = Gacha()
     assert g.name == '가챠'
-    assert g.command_map
+    assert g.route_list
 
 
 def test_get_short_help():

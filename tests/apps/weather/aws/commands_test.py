@@ -10,8 +10,6 @@ from ....util import FakeBot
 
 @pytest.mark.asyncio
 async def test_aws(fx_sess):
-    dt = datetime(2018, 10, 24, 0)
-
     bot = FakeBot()
     bot.add_channel('C1', 'general')
 
@@ -44,7 +42,7 @@ async def test_aws(fx_sess):
     record.humidity = 55
     record.pressure = 1234.56
     record.location = '인천광역시 중구 전동'
-    record.observed_at = dt
+    record.observed_at = datetime(2018, 10, 24, 0)
 
     with fx_sess.begin():
         fx_sess.add(record)
@@ -56,11 +54,9 @@ async def test_aws(fx_sess):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '[{}@인천/인천광역시 중구 전동]'
+        '[2018년 10월 24일 00시 00분@인천/인천광역시 중구 전동]'
         ' 강수: 예(15min: 111.111/일일: 555.555)'
         ' / 12.34℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
-    ).format(
-        dt.strftime('%Y년 %m월 %d일 %H시 %M분')
     )
     assert said.data['username'] == '인천 날씨'
     assert said.data['icon_emoji'] == ':umbrella_with_rain_drops:'
@@ -73,6 +69,14 @@ async def test_aws(fx_sess):
     await aws(bot, event, fx_sess, '인천')
 
     said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '[2018년 10월 24일 00시 00분@인천/인천광역시 중구 전동]'
+        ' 강수: 예(15min: 111.111/일일: 555.555)'
+        ' / -10.0℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
+    )
+    assert said.data['username'] == '인천 날씨'
     assert said.data['icon_emoji'] == ':snowflake:'
 
     # moon
@@ -83,6 +87,14 @@ async def test_aws(fx_sess):
     await aws(bot, event, fx_sess, '인천')
 
     said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '[2018년 10월 24일 00시 00분@인천/인천광역시 중구 전동]'
+        ' 강수: 아니오'
+        ' / -10.0℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
+    )
+    assert said.data['username'] == '인천 날씨'
     assert said.data['icon_emoji'] == ':crescent_moon:'
 
     # sun
@@ -93,6 +105,14 @@ async def test_aws(fx_sess):
     await aws(bot, event, fx_sess, '인천')
 
     said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '[2018년 10월 24일 12시 00분@인천/인천광역시 중구 전동]'
+        ' 강수: 아니오'
+        ' / -10.0℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
+    )
+    assert said.data['username'] == '인천 날씨'
     assert said.data['icon_emoji'] == ':sunny:'
 
     # we don't know
@@ -103,6 +123,14 @@ async def test_aws(fx_sess):
     await aws(bot, event, fx_sess, '인천')
 
     said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '[2018년 10월 24일 12시 00분@인천/인천광역시 중구 전동]'
+        ' 강수: 모름'
+        ' / -10.0℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 1234.56hPa'
+    )
+    assert said.data['username'] == '인천 날씨'
     assert said.data['icon_emoji'] == ':thinking_face:'
 
     # db error
@@ -123,7 +151,7 @@ async def test_aws(fx_sess):
     record2.humidity = 55
     record2.pressure = 1234.56
     record2.location = '인천광역시 중구 전동'
-    record2.observed_at = dt
+    record2.observed_at = datetime(2018, 10, 25)
 
     with fx_sess.begin():
         fx_sess.add(record2)
