@@ -1,6 +1,6 @@
 from typing import List
 
-from .util import weekend_loading_percent
+from .utils import weekend_loading_percent
 from ...box import box
 from ...command import C
 from ...event import Message

@@ -4,7 +4,7 @@ import os
 
 import pytest
 
-from yui.apps.date.util import (
+from yui.apps.date.utils import (
     get_event_days,
     get_holiday_name,
     weekend_loading_percent,

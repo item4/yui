@@ -10,6 +10,10 @@ from ...orm import EngineConfig, make_session
 if TYPE_CHECKING:
     from ...bot import Bot
 
+__all__ = (
+    'BaseApp',
+)
+
 
 class BaseApp:
     """Base class of App"""

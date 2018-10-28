@@ -16,6 +16,10 @@ from ...utils.format import bold
 if TYPE_CHECKING:
     from ...bot import Bot
 
+__all__ = (
+    'App',
+)
+
 
 class App(BaseApp):
     """Basic Handler"""

@@ -11,7 +11,13 @@ from .types.namespace.base import Namespace
 from .utils.cast import cast
 
 
-__all__ = 'Config', 'ConfigurationError', 'DEFAULT', 'error', 'load',
+__all__ = (
+    'Config',
+    'ConfigurationError',
+    'DEFAULT',
+    'error',
+    'load',
+)
 
 DEFAULT = {
     'DEBUG': False,

@@ -5,7 +5,7 @@ import aiohttp
 
 import tossi
 
-from .util import get_holiday_name
+from .utils import get_holiday_name
 from ...box import box
 from ...command import C
 from ...utils.datetime import now

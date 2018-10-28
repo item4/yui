@@ -4,6 +4,10 @@ from sqlalchemy.types import Boolean, Float, Integer, String
 from ....orm import Base
 from ....orm.utils import insert_datetime_field
 
+__all__ = (
+    'AWS',
+)
+
 
 class AWS(Base):
     """AWS Weather record."""

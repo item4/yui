@@ -7,6 +7,7 @@ from .types.namespace.linked import FromChannelID, FromUserID
 
 __all__ = (
     'DATE_FORMAT_RE',
+    'T',
     'choice',
     'enum_getitem',
     'extract_url',

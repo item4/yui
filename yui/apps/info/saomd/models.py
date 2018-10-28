@@ -8,6 +8,12 @@ from sqlalchemy_utils.types import ChoiceType
 
 from ....orm import Base
 
+__all__ = (
+    'Notice',
+    'SERVER_LABEL',
+    'Server',
+)
+
 
 @enum.unique
 class Server(enum.IntEnum):

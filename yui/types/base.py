@@ -3,9 +3,9 @@ from typing import NewType, Union
 __all__ = (
     'AppID',
     'BotID',
+    'ChannelID',
     'Comment',
     'CommentID',
-    'ChannelID',
     'DirectMessageChannelID',
     'FileID',
     'PrivateChannelID',
@@ -13,8 +13,8 @@ __all__ = (
     'SubteamID',
     'TeamID',
     'Ts',
-    'UserID',
     'UnixTimestamp',
+    'UserID',
 )
 
 #: :type:`type` User ID type. It must start with 'U'.

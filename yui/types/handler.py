@@ -22,8 +22,8 @@ __all__ = (
     'Argument',
     'DECORATOR_ARGS_TYPE',
     'DECORATOR_TYPE',
-    'HANDLER_CALL_TYPE',
     'HANDLER_CALL_RETURN_TYPE',
+    'HANDLER_CALL_TYPE',
     'Handler',
     'Option',
 )

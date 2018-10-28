@@ -1,6 +1,10 @@
 import base64
 from urllib.parse import urlencode
 
+__all__ = (
+    'b64_redirect',
+)
+
 
 def b64_redirect(url: str) -> str:
     """Redirect helper for non-http protocols."""

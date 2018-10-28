@@ -4,7 +4,7 @@ import aiohttp
 
 import tossi
 
-from .util import get_event_days, get_holiday_name
+from .utils import get_event_days, get_holiday_name
 from ...box import box
 from ...command import C
 from ...event import Message

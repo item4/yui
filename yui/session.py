@@ -6,7 +6,10 @@ from aiohttp_doh import ClientSession
 
 import ujson
 
-__all__ = 'client_session',
+__all__ = (
+    'YuiAsyncResolver',
+    'client_session',
+)
 
 
 class YuiAsyncResolver(AsyncResolver):

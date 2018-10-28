@@ -9,6 +9,22 @@ from ...exceptions import AllChannelsError, NoChannelsError
 if TYPE_CHECKING:
     from ...bot import Bot
 
+__all__ = (
+    'BotLinkedNamespace',
+    'Channel',
+    'ChannelFromConfig',
+    'ChannelsFromConfig',
+    'DirectMessageChannel',
+    'FromChannelID',
+    'FromID',
+    'FromUserID',
+    'PrivateChannel',
+    'PublicChannel',
+    'UnknownChannel',
+    'UnknownUser',
+    'User',
+)
+
 
 class BotLinkedNamespace(Namespace):
     """Bot-linked namespace."""

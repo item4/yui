@@ -8,6 +8,10 @@ from ..utils.handler import get_handler
 if TYPE_CHECKING:
     from ._box import Box
 
+__all__ = (
+    'CronTask',
+)
+
 
 class CronTask:
     """Cron Task"""

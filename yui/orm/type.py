@@ -14,6 +14,11 @@ from sqlalchemy_utils.types import TimezoneType as _TimezoneType
 
 import ujson
 
+__all__ = (
+    'JSONType',
+    'TimezoneType',
+)
+
 
 class JSONType(_JSONType):
     """JSONType with ujson"""

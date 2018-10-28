@@ -8,6 +8,10 @@ from ..event import Event
 from ..types.handler import DECORATOR_ARGS_TYPE, DECORATOR_TYPE, Handler
 from ..utils.handler import get_handler
 
+__all__ = (
+    'Box',
+)
+
 
 class Box:
     """Box, collection of apps and tasks"""

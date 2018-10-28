@@ -33,7 +33,12 @@ from .types.namespace.linked import (
 )
 
 
-__all__ = 'APICallError', 'Bot', 'BotReconnect'
+__all__ = (
+    'APICallError',
+    'Bot',
+    'BotReconnect',
+    'R',
+)
 
 R = TypeVar('R')
 
