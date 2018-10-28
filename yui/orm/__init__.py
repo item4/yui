@@ -30,4 +30,3 @@ __all__ = (
     'subprocess_session_manager',
     'truncate_table',
 )
-
