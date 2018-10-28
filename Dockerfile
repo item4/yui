@@ -10,7 +10,7 @@ RUN cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 RUN echo "Asia/Seoul" > /etc/timezone
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
-
+RUN pip install --upgrade pip setuptools wheel
 COPY ./pyproject.toml ./poetry.lock /yui/
 
 WORKDIR /yui
