@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
 if git diff --cached --name-only | grep "\.py$" > /dev/null; then
-    pipenv run flake8
+    poetry run flake8 yui tests
+    poetry run python lint.py
 fi
