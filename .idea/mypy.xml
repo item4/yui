@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="MypyConfigService">
-    <option name="customMypyPath" value="$USER_HOME$/.virtualenvs/yui/bin/mypy" />
-    <option name="mypyConfigFilePath" value="$PROJECT_DIR$/mypy.ini" />
-  </component>
-</project>
