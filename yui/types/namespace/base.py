@@ -1,7 +1,5 @@
 from types import SimpleNamespace
 
-__all__ = 'Namespace',
-
 
 class Namespace(SimpleNamespace):
     """Typed Namespace."""

@@ -11,28 +11,6 @@ import click
 from .bot import Bot
 from .config import ConfigurationError, load
 
-__all__ = (
-    'Config',
-    'branches',
-    'current',
-    'downgrade',
-    'edit',
-    'error',
-    'heads',
-    'history',
-    'init_db',
-    'load_config',
-    'main',
-    'merge',
-    'migrate',
-    'revision',
-    'run',
-    'show',
-    'stamp',
-    'upgrade',
-    'yui',
-)
-
 
 class Config(AlembicConfig):
     def get_template_directory(self):

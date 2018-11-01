@@ -7,8 +7,6 @@ from .type import Attachment
 from ..types.base import ChannelID, Ts
 from ..types.namespace.linked import FromID
 
-__all__ = 'Chat',
-
 
 class Chat(Endpoint):
 

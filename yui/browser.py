@@ -6,10 +6,6 @@ from pyppeteer.launcher import connect
 
 import ujson
 
-__all__ = (
-    'new_page',
-)
-
 
 @async_contextmanager
 async def new_page(bot):

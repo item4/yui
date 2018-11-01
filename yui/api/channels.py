@@ -5,8 +5,6 @@ from .endpoint import Endpoint
 from ..types.base import PublicChannelID, Ts
 from ..types.namespace.linked import PublicChannel
 
-__all__ = 'Channels',
-
 
 class Channels(Endpoint):
 

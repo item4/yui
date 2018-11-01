@@ -5,8 +5,6 @@ from .endpoint import Endpoint
 from ..types.base import PrivateChannelID
 from ..types.namespace.linked import PrivateChannel
 
-__all__ = 'Groups',
-
 
 class Groups(Endpoint):
 

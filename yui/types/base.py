@@ -1,22 +1,5 @@
 from typing import NewType, Union
 
-__all__ = (
-    'AppID',
-    'BotID',
-    'ChannelID',
-    'Comment',
-    'CommentID',
-    'DirectMessageChannelID',
-    'FileID',
-    'PrivateChannelID',
-    'PublicChannelID',
-    'SubteamID',
-    'TeamID',
-    'Ts',
-    'UnixTimestamp',
-    'UserID',
-)
-
 #: :type:`type` User ID type. It must start with 'U'.
 UserID = NewType('UserID', str)
 

@@ -1,7 +1,5 @@
 from ..types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
 
-__all__ = 'C', 'Cs'
-
 
 class _C:
     """Magic class for create channel from config"""

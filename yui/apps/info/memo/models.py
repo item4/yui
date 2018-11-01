@@ -4,10 +4,6 @@ from sqlalchemy.types import Integer, String, Text
 from ....orm import Base
 from ....orm.utils import insert_datetime_field
 
-__all__ = (
-    'Memo',
-)
-
 
 class Memo(Base):
     """Memo"""

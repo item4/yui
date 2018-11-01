@@ -1,7 +1,5 @@
 from typing import Any, Dict
 
-__all__ = 'Endpoint',
-
 
 class Endpoint:
     """Slack API endpoint."""

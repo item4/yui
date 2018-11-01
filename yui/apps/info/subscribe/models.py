@@ -4,10 +4,6 @@ from sqlalchemy.types import Integer, String
 from ....orm import Base
 from ....orm.utils import insert_datetime_field
 
-__all__ = (
-    'RSSFeedURL',
-)
-
 
 class RSSFeedURL(Base):
     """RSS Feed URL to subscribe"""

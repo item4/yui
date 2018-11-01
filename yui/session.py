@@ -6,11 +6,6 @@ from aiohttp_doh import ClientSession
 
 import ujson
 
-__all__ = (
-    'YuiAsyncResolver',
-    'client_session',
-)
-
 
 class YuiAsyncResolver(AsyncResolver):
     """DNS resolver with aiodns but forced AF_INET family."""

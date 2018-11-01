@@ -11,14 +11,6 @@ from .types.namespace.base import Namespace
 from .utils.cast import cast
 
 
-__all__ = (
-    'Config',
-    'ConfigurationError',
-    'DEFAULT',
-    'error',
-    'load',
-)
-
 DEFAULT = {
     'DEBUG': False,
     'RECEIVE_TIMEOUT': 300,  # 60 * 5 seconds

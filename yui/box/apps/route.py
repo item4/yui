@@ -14,11 +14,6 @@ from ...utils.handler import get_handler
 if TYPE_CHECKING:
     from ...bot import Bot
 
-__all__ = (
-    'Route',
-    'RouteApp',
-)
-
 
 class Route:
 

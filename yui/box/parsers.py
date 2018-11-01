@@ -5,11 +5,6 @@ from .utils import is_container
 from ..types.handler import Handler
 from ..utils.cast import cast
 
-__all__ = (
-    'KWARGS_DICT',
-    'parse_option_and_arguments',
-)
-
 KWARGS_DICT = Dict[str, Any]
 
 

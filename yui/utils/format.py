@@ -1,13 +1,3 @@
-__all__ = (
-    'bold',
-    'code',
-    'italics',
-    'preformatted',
-    'quote',
-    'strike',
-)
-
-
 def bold(text: str) -> str:
     """Make text to bold."""
 

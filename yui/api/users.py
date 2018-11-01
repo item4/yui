@@ -5,8 +5,6 @@ from .endpoint import Endpoint
 from ..types.base import UserID
 from ..types.namespace.linked import User
 
-__all__ = 'Users',
-
 
 class Users(Endpoint):
 

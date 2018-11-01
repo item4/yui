@@ -2,8 +2,6 @@ from typing import Optional
 
 from .endpoint import Endpoint
 
-__all__ = 'Im',
-
 
 class Im(Endpoint):
 

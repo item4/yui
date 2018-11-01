@@ -1,8 +1,6 @@
 from ..box import box
 from ..event import Message
 
-__all__ = 'ping',
-
 
 @box.command('ping', ['핑'])
 async def ping(bot, event: Message):
