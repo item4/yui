@@ -9,10 +9,6 @@ YUI
    :target: https://codecov.io/gh/item4/yui
    :alt: Code Coverage Status
 
-.. image:: https://requires.io/github/item4/yui/requirements.svg?branch=master
-   :target: https://requires.io/github/item4/yui/requirements/?branch=master
-   :alt: Requirements Status
-
 YUI is Multi-purpose Slack Bot.
 
 
