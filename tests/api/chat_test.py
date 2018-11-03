@@ -2,20 +2,18 @@ import pytest
 
 from yui.api.encoder import bool2str
 from yui.api.type import Attachment, Field
-from yui.types.channel import PublicChannel
 
 from ..util import FakeBot
 
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_delete():
+    bot = FakeBot()
+    channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
-    channel = PublicChannel(id='C4567', name='test', creator='U0', last_read=0)
 
     ts = '1234.56'
     alternative_token = '1234567890'
-
-    bot = FakeBot()
 
     await bot.api.chat.delete(channel_id, ts, False)
 
@@ -42,8 +40,9 @@ async def test_slack_api_chat_delete():
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_post_message():
+    bot = FakeBot()
+    channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
-    channel = PublicChannel(id='C4567', name='test', creator='U0', last_read=0)
     attachments = [Attachment(
         fallback='fallback val',
         title='title val',

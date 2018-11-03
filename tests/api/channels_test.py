@@ -1,17 +1,15 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.types.channel import PublicChannel
 
 from ..util import FakeBot
 
 
 @pytest.mark.asyncio
 async def test_slack_api_channels_history():
-    channel_id = 'C1234'
-    channel = PublicChannel(id='C4567', name='test', creator='U0', last_read=0)
-
     bot = FakeBot()
+    channel = bot.add_channel('C4567', 'test')
+    channel_id = 'C1234'
 
     await bot.api.channels.history(
         channel_id,
@@ -53,10 +51,9 @@ async def test_slack_api_channels_history():
 
 @pytest.mark.asyncio
 async def test_slack_api_channels_info():
-    channel_id = 'C1234'
-    channel = PublicChannel(id='C4567', name='test', creator='U0', last_read=0)
-
     bot = FakeBot()
+    channel = bot.add_channel('C4567', 'test')
+    channel_id = 'C1234'
 
     await bot.api.channels.info(channel_id)
     call = bot.call_queue.pop()
@@ -88,7 +85,7 @@ async def test_slack_api_channels_list():
         cursor,
         exclude_archived,
         exclude_members,
-        limit
+        limit,
     )
     call = bot.call_queue.pop()
     assert call.method == 'channels.list'

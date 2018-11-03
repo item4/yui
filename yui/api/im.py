@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, Union
 
+from .encoder import bool2str
 from .endpoint import Endpoint
+from ..types.user import User
 
 
 class Im(Endpoint):
@@ -21,3 +23,26 @@ class Im(Endpoint):
             params['limit'] = str(limit)
 
         return await self._call('list', params)
+
+    async def open(
+        self,
+        user: Union[User, str],
+        include_locale: Optional[bool] = None,
+        return_im: Optional[bool] = None,
+    ):
+        """https://api.slack.com/methods/im.open"""
+
+        if isinstance(user, str):
+            user_id = user
+        else:
+            user_id = user.id
+
+        params = {
+            'user': user_id,
+        }
+        if include_locale is not None:
+            params['include_locale'] = bool2str(include_locale)
+        if return_im is not None:
+            params['return_im'] = bool2str(return_im)
+
+        return await self._call('open', params)

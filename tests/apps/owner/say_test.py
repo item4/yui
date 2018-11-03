@@ -14,6 +14,15 @@ async def test_say_command(fx_config):
     bot.add_user('U1', 'kirito')
     poh = bot.add_user('U2', 'PoH')
 
+    @bot.response('im.open')
+    def im_open(data):
+        return {
+            'ok': True,
+            'channel': {
+                'id': data['user'].replace('U', 'D'),
+            },
+        }
+
     text = '안녕하세요! 하고 유이인 척 하기'
 
     event = bot.create_message('C1', 'U1')
@@ -34,9 +43,12 @@ async def test_say_command(fx_config):
 
     await say(bot, event, None, poh, text)
 
+    imopen = bot.call_queue.pop(0)
+    assert imopen.method == 'im.open'
+    assert imopen.data['user'] == 'U2'
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'U2'
+    assert said.data['channel'] == 'D2'
     assert said.data['text'] == text
 
     await say(bot, event, test, poh, text)

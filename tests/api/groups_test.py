@@ -1,17 +1,15 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.types.channel import PrivateChannel
 
 from ..util import FakeBot
 
 
 @pytest.mark.asyncio
 async def test_slack_api_groups_info():
-    group_id = 'G1'
-    group = PrivateChannel(id='G2', name='secret', creator='U0', last_read=0)
-
     bot = FakeBot()
+    group = bot.add_private_channel('G2', 'secret')
+    group_id = 'G1'
 
     await bot.api.groups.info(group_id)
     call = bot.call_queue.pop()
