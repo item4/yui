@@ -13,7 +13,6 @@ from yui.api.type import (
     OptionField,
     OptionGroup,
 )
-from yui.types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
 
 
 def test_bool2str():
@@ -137,9 +136,3 @@ def test_slack_encoder_class():
 
     with pytest.raises(TypeError):
         encode(Dummy())
-
-    with pytest.raises(TypeError):
-        encode(ChannelFromConfig('general'))
-
-    with pytest.raises(TypeError):
-        encode(ChannelsFromConfig('commons'))

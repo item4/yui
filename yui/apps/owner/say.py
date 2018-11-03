@@ -4,7 +4,8 @@ from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...transform import get_channel, get_user
-from ...types.namespace.linked import Channel, FromID, User
+from ...types.channel import Channel
+from ...types.user import User
 
 box.assert_config_required('OWNER_ID', str)
 
@@ -31,7 +32,7 @@ async def say(
 
     """
 
-    target: FromID = event.channel
+    target: Channel = event.channel
     if event.user.id == bot.config.OWNER_ID:
         if channel and user:
             text = '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'

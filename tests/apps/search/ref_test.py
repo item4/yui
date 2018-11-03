@@ -8,7 +8,6 @@ from yui.apps.search.ref import (
     html,
     python,
 )
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -17,10 +16,8 @@ from ...util import FakeBot
 async def test_css_command(fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
 
     await css(bot, event, fx_sess, 'font-family')
     said = bot.call_queue.pop()
@@ -52,10 +49,8 @@ async def test_css_command(fx_sess):
 async def test_html_command(fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
 
     await html(bot, event, fx_sess, 'section')
     said = bot.call_queue.pop()
@@ -87,10 +82,8 @@ async def test_html_command(fx_sess):
 async def test_python_command(fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
 
     await python(bot, event, fx_sess, 'builtin function')
     said = bot.call_queue.pop()

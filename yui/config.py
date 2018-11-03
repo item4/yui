@@ -1,14 +1,15 @@
 import copy
 import pathlib
 import sys
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
+
+import attr
 
 from sqlalchemy.engine import Engine
 
 import toml
 
-from .types.namespace.base import Namespace
-from .utils.cast import cast
+from .types.namespace import namespace
 
 
 DEFAULT = {
@@ -63,7 +64,8 @@ class ConfigurationError(Exception):
     pass
 
 
-class Config(Namespace):
+@namespace
+class Config:
 
     TOKEN: str
     RECEIVE_TIMEOUT: int
@@ -75,37 +77,23 @@ class Config(Namespace):
     LOGGING: Dict[str, Any]
     REGISTER_CRONTAB: bool
     CHANNELS: Dict[str, Any]
-    WEBSOCKETDEBUGGERURL: str
-    DATABASE_ENGINE: Engine
+    WEBSOCKETDEBUGGERURL: Optional[str] = None
+    DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
 
-    def __init__(self, **kwargs) -> None:
-        kw = copy.deepcopy(DEFAULT)
-        kw.update(kwargs)
-        super(Config, self).__init__(**kw)
-
-    def check_and_cast(self, fields: Dict):
-        annotations = self.__annotations__
-        annotations.update(fields)
-        for key, type in annotations.items():
+    def check(
+        self,
+        configs: Dict[str, Any],
+        single_channels: Set[str],
+        multiple_channels: Set[str],
+    ):
+        for key in configs.keys():
             try:
-                value = getattr(self, key)
+                getattr(self, key)
             except AttributeError:
                 raise ConfigurationError(
                     f'Required config key was not defined: {key}'
                 )
-            else:
-                try:
-                    setattr(self, key, cast(type, value))
-                except ValueError:
-                    raise ConfigurationError(
-                        f'Type of config value is wrong: {key}'
-                    )
 
-    def check_channel(
-        self,
-        single_channels: Set[str],
-        multiple_channels: Set[str],
-    ):
         for key in single_channels:
             try:
                 value = self.CHANNELS[key]
@@ -118,6 +106,7 @@ class Config(Namespace):
                     raise ConfigurationError(
                         f'Channel config has wrong type: {key}'
                     )
+
         for key in multiple_channels:
             try:
                 value = self.CHANNELS[key]
@@ -155,6 +144,13 @@ def load(path: pathlib.Path) -> Config:
     if not path.match('*.config.toml'):
         error('File suffix must be *.config.toml')
 
-    config = Config(**toml.load(path.open()))
+    config_dict = copy.deepcopy(DEFAULT)
+    config_dict.update(toml.load(path.open()))
+
+    try:
+        config = Config(**config_dict)  # type: ignore
+    except TypeError as e:
+        error(str(e))
+        raise
 
     return config

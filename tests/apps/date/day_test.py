@@ -3,7 +3,6 @@ import os
 import pytest
 
 from yui.apps.date.day import day
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -21,11 +20,8 @@ async def test_day_command(fx_config, fx_tdcproject_key):
     fx_config.TDCPROJECT_KEY = fx_tdcproject_key
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     # Nobody know infomation of random day.
     # So we test just work or not work.

@@ -1,8 +1,5 @@
-import inspect
 from typing import Any, List, TypeVar, Union
 
-from ..types.namespace.base import Namespace
-from ..types.namespace.linked import FromID
 
 NoneType = type(None)
 UnionType = type(Union)
@@ -160,24 +157,6 @@ class DictCaster(BaseCaster):
             return dict(value)
 
 
-class FromIDCaster(BaseCaster):
-
-    def check(self, t, value):
-        return inspect.isclass(t) and issubclass(t, FromID)
-
-    def cast(self, caster_box, t, value):
-        return t.from_id(value)
-
-
-class NamespaceCaster(BaseCaster):
-
-    def check(self, t, value):
-        return inspect.isclass(t) and issubclass(t, Namespace)
-
-    def cast(self, caster_box, t, value):
-        return t(**value)
-
-
 class NoHandleCaster(BaseCaster):
 
     def check(self, t, value):
@@ -197,6 +176,15 @@ class NoneTypeCaster(BaseCaster):
 
     def cast(self, caster_box, t, value):
         return None
+
+
+class AttrCaster(BaseCaster):
+
+    def check(self, t, value):
+        return hasattr(t, '__attrs_attrs__')
+
+    def cast(self, caster_box, t, value):
+        return t(**value)
 
 
 class CasterBox:
@@ -235,6 +223,5 @@ cast = CasterBox([
     SetCaster(),
     ListCaster(),
     DictCaster(),
-    FromIDCaster(),
-    NamespaceCaster(),
+    AttrCaster(),
 ])

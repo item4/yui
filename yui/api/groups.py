@@ -3,7 +3,7 @@ from typing import Union
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import PrivateChannelID
-from ..types.namespace.linked import PrivateChannel
+from ..types.channel import PrivateChannel
 
 
 class Groups(Endpoint):

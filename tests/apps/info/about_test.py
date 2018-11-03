@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.info.about import MESSAGE, about
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -10,11 +9,8 @@ from ...util import FakeBot
 async def test_about_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.56',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1', '1234.56')
 
     await about(bot, event)
 

@@ -3,7 +3,12 @@ import re
 from decimal import Decimal
 from typing import Any, Callable, Optional, Sequence, TypeVar
 
-from .types.namespace.linked import FromChannelID, FromUserID
+from .types.namespace import (
+    channel_id_convert,
+    name_convert,
+    user_id_convert,
+    user_name_convert,
+)
 
 T = TypeVar('T', int, float, Decimal)
 
@@ -51,7 +56,7 @@ def extract_url(text: str) -> str:
     return _extract(text)
 
 
-def get_channel(text: str) -> FromChannelID:
+def get_channel(text: str):
     """Helper to get Channel from given text."""
 
     result = _extract(text)
@@ -59,15 +64,15 @@ def get_channel(text: str) -> FromChannelID:
     if result.startswith('#'):
         result = result[1:]
     try:
-        return FromChannelID.from_id(result, raise_error=True)
+        return channel_id_convert(result)
     except KeyError:
         try:
-            return FromChannelID.from_name(result)
+            return name_convert(result)
         except KeyError:
             raise ValueError('Given channel was not found')
 
 
-def get_user(text: str) -> FromUserID:
+def get_user(text: str):
     """Helper to get User from given text."""
 
     result = _extract(text)
@@ -75,10 +80,10 @@ def get_user(text: str) -> FromUserID:
     if result.startswith('@'):
         result = result[1:]
     try:
-        return FromUserID.from_id(result, raise_error=True)
+        return user_id_convert(result)
     except KeyError:
         try:
-            return FromUserID.from_name(result)
+            return user_name_convert(result)
         except KeyError:
             raise ValueError('Given user was not found')
 

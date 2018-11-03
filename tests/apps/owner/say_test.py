@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.owner.say import say
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -17,11 +16,7 @@ async def test_say_command(fx_config):
 
     text = '안녕하세요! 하고 유이인 척 하기'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await say(bot, event, None, None, text)
 
@@ -53,11 +48,7 @@ async def test_say_command(fx_config):
         '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
     )
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U2',
-    })
+    event = bot.create_message('C1', 'U2')
 
     await say(bot, event, None, None, '죽어라!')
 

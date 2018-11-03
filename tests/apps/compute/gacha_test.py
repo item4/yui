@@ -3,7 +3,6 @@ from decimal import Decimal
 import pytest
 
 from yui.apps.compute.gacha import Gacha, to_percent
-from yui.event import Message, create_event
 
 from ...util import FakeBot
 
@@ -28,12 +27,10 @@ def test_get_full_help():
 async def test_fallback(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
     g = Gacha()
 
-    event: Message = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await g.fallback(bot, event)
 
@@ -47,12 +44,10 @@ async def test_fallback(fx_config):
 async def test_collect(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
     g = Gacha()
 
-    event: Message = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await g.collect(g, bot, event, 30)
 
@@ -70,12 +65,10 @@ async def test_collect(fx_config):
 async def test_challenge(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
     g = Gacha()
 
-    event: Message = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await g.challenge(g, bot, event, -1, '0.05')
 

@@ -25,10 +25,15 @@ def get_database_engine(
     poolclass: Optional[Type[Pool]] = None,
 ) -> Engine:
     try:
-        return config.DATABASE_ENGINE
+        engine = config.DATABASE_ENGINE
     except AttributeError:
         url = config.DATABASE_URL
         echo = config.DATABASE_ECHO
         engine = create_database_engine(url, echo, poolclass)
+    else:
+        if engine is None:
+            url = config.DATABASE_URL
+            echo = config.DATABASE_ECHO
+            engine = create_database_engine(url, echo, poolclass)
 
-        return engine
+    return engine

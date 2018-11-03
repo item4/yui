@@ -5,7 +5,8 @@ from .encoder import SlackEncoder, bool2str
 from .endpoint import Endpoint
 from .type import Attachment
 from ..types.base import ChannelID, Ts
-from ..types.namespace.linked import FromID
+from ..types.channel import Channel
+from ..types.user import User
 
 
 class Chat(Endpoint):
@@ -14,7 +15,7 @@ class Chat(Endpoint):
 
     async def delete(
         self,
-        channel: Union[FromID, ChannelID],
+        channel: Union[Channel, ChannelID],
         ts: Ts,
         as_user: Optional[bool] = None,
         *,
@@ -22,7 +23,7 @@ class Chat(Endpoint):
     ):
         """https://api.slack.com/methods/chat.delete"""
 
-        if isinstance(channel, FromID):
+        if isinstance(channel, Channel):
             channel_id = channel.id
         else:
             channel_id = channel
@@ -39,7 +40,7 @@ class Chat(Endpoint):
 
     async def postMessage(
         self,
-        channel: Union[FromID, ChannelID],
+        channel: Union[Channel, User, ChannelID],
         text: Optional[str] = None,
         parse=None,
         link_names: Optional[bool] = None,
@@ -58,7 +59,7 @@ class Chat(Endpoint):
     ):
         """https://api.slack.com/methods/chat.postMessage"""
 
-        if isinstance(channel, FromID):
+        if isinstance(channel, (Channel, User)):
             channel_id = channel.id
         else:
             channel_id = channel

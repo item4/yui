@@ -3,7 +3,6 @@ import datetime
 import pytest
 
 from yui.apps.date.age import age
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -12,10 +11,8 @@ from ...util import FakeBot
 async def test_age_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
     kirito_birthday = datetime.date(2008, 10, 7)
     leeseha_birthday = datetime.date(2003, 6, 3)
 

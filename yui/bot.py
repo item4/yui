@@ -22,15 +22,15 @@ from .config import Config
 from .event import create_event
 from .orm import Base, EngineConfig, get_database_engine, make_session
 from .session import client_session
-from .types.base import ChannelID, UserID
-from .types.namespace.linked import (
-    BotLinkedNamespace,
+from .types.base import ChannelID
+from .types.channel import (
     Channel,
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
-    User,
 )
+from .types.namespace import Namespace
+from .types.user import User
 
 
 R = TypeVar('R')
@@ -78,7 +78,7 @@ class Bot:
 
         logger.info('start')
 
-        BotLinkedNamespace._bot = self
+        Namespace._bot = self
 
         self.process_pool_executor = ProcessPoolExecutor()
         self.thread_pool_executor = ThreadPoolExecutor()
@@ -100,11 +100,11 @@ class Bot:
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
-        self.users: Dict[UserID, User] = {}
+        self.users: List[User] = []
         self.restart = False
 
-        self.config.check_and_cast(self.box.config_required)
-        self.config.check_channel(
+        self.config.check(
+            self.box.config_required,
             self.box.channel_required,
             self.box.channels_required,
         )

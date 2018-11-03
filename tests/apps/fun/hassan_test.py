@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.fun.hassan import hassan
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -11,12 +10,7 @@ async def test_hassan_handler():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'hunj')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-        'text': '똑바로 서라 유이',
-    })
+    event = bot.create_message('C1', 'U1', text='똑바로 서라 유이')
 
     assert not await hassan(bot, event)
 
@@ -25,12 +19,7 @@ async def test_hassan_handler():
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '저한테 왜 그러세요 @hunj님?'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-        'text': '아무말 대잔치',
-    })
+    event = bot.create_message('C1', 'U1', text='아무말 대잔치')
 
     assert await hassan(bot, event)
 

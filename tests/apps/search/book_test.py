@@ -6,7 +6,6 @@ import pytest
 import ujson
 
 from yui.apps.search.book import book
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -39,12 +38,9 @@ async def test_book(fx_config, fx_naver_client_id, fx_naver_client_secret):
     fx_config.NAVER_CLIENT_SECRET = fx_naver_client_secret
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678',
-    })
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     await book(bot, event, '소드 아트 온라인')
 

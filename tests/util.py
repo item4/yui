@@ -1,25 +1,29 @@
 import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from typing import Callable, Dict, List, NamedTuple, Optional
+from typing import Callable, Dict, List, Optional, Union
+
+import attr
 
 from yui.api import SlackAPI
 from yui.bot import Bot
-from yui.config import Config
-from yui.types.namespace.linked import (
-    BotLinkedNamespace,
+from yui.config import Config, DEFAULT
+from yui.event import Message
+from yui.types.channel import (
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
-    User,
 )
+from yui.types.namespace import Namespace
+from yui.types.user import User
 
 
-class Call(NamedTuple):
+@attr.dataclass(slots=True)
+class Call:
     """API Call from bot"""
 
     method: str
-    data: Dict[str, str]
-    token: Optional[str]
+    data: Optional[Dict[str, str]]
+    token: Optional[str] = None
 
 
 class FakeBot(Bot):
@@ -27,16 +31,16 @@ class FakeBot(Bot):
 
     def __init__(self, config: Config = None) -> None:
         if config is None:
-            config = Config()
+            config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={})
 
-        BotLinkedNamespace._bot = self
+        Namespace._bot = self
         self.loop = asyncio.get_event_loop()
         self.call_queue: List[Call] = []
         self.api = SlackAPI(self)
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
-        self.users: Dict[str, User] = {}
+        self.users: List[User] = [User(id='U0', team_id='T0', name='system')]
         self.responses: Dict[str, Callable] = {}
         self.config = config
         self.process_pool_executor = ProcessPoolExecutor()
@@ -45,7 +49,7 @@ class FakeBot(Bot):
     async def call(
         self,
         method: str,
-        data: Dict[str, str] = None,
+        data: Optional[Dict[str, str]] = None,
         *,
         token: Optional[str] = None,
     ):
@@ -60,20 +64,80 @@ class FakeBot(Bot):
             return func
         return decorator
 
-    def add_channel(self, id: str, name: str):
-        channel = PublicChannel(id=id, name=name)
+    def add_channel(
+        self,
+        id: str,
+        name: str,
+        creator: str = 'U0',
+        last_read: int = 0,
+    ):
+        channel = PublicChannel(
+            id=id,
+            name=name,
+            creator=creator,
+            last_read=last_read,
+        )
         self.channels.append(channel)
         return channel
 
-    def add_private_channel(self, id: str, name: str):
-        self.groups.append(PrivateChannel(id=id, name=name))
+    def add_private_channel(
+        self,
+        id: str,
+        name: str,
+        creator: str = 'U0',
+        last_read: int = 0,
+    ):
+        channel = PrivateChannel(
+            id=id,
+            name=name,
+            creator=creator,
+            last_read=last_read,
+        )
+        self.groups.append(channel)
+        return channel
 
-    def add_dm(self, id: str, user: str):
-        self.ims.append(DirectMessageChannel(id=id, user=user))
+    def add_dm(self, id: str, user: Union[User, str], last_read: int = 0):
+        if isinstance(user, User):
+            user_id = user.id
+        else:
+            user_id = user
+        dm = DirectMessageChannel(id=id, user=user_id, last_read=last_read)
+        self.ims.append(dm)
+        return dm
 
-    def add_user(self, id: str, name: str):
-        self.users[id] = User(id=id, name=name)
-        return self.users[id]
+    def add_user(self, id: str, name: str, team_id: str = 'T0'):
+        user = User(id=id, name=name, team_id=team_id)
+        self.users.append(user)
+        return user
+
+    def create_message(
+        self,
+        channel: Union[
+            PublicChannel,
+            PrivateChannel,
+            DirectMessageChannel,
+            str,
+        ],
+        user: Union[User, str],
+        ts: str = '',
+        event_ts: str = '',
+        **kwargs,
+    ) -> Message:
+        if isinstance(channel, str):
+            channel_id = channel
+        else:
+            channel_id = channel.id
+        if isinstance(user, str):
+            user_id = user
+        else:
+            user_id = user.id
+        return Message(
+            channel=channel_id,
+            user=user_id,
+            ts=ts,
+            event_ts=event_ts,
+            **kwargs,
+        )
 
 
 class FakeImportLib:

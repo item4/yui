@@ -3,7 +3,6 @@ import datetime
 import pytest
 
 from yui.apps.date.dday import dday
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -12,10 +11,8 @@ from ...util import FakeBot
 async def test_dday_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
     jan = datetime.date(2000, 1, 1)
     feb = datetime.date(2000, 2, 1)
 

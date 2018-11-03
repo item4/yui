@@ -3,7 +3,7 @@ from typing import Optional, Union
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import UserID
-from ..types.namespace.linked import User
+from ..types.user import User
 
 
 class Users(Endpoint):

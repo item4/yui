@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.owner.quit import quit
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -14,11 +13,7 @@ async def test_quit_command(fx_config):
     bot.add_user('U1', 'kirito')
     bot.add_user('U2', 'PoH')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     with pytest.raises(SystemExit):
         await quit(bot, event)
@@ -28,11 +23,7 @@ async def test_quit_command(fx_config):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '안녕히 주무세요!'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U2',
-    })
+    event = bot.create_message('C1', 'U2')
 
     await quit(bot, event)
 

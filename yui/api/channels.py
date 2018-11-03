@@ -3,7 +3,7 @@ from typing import Optional, Union
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import PublicChannelID, Ts
-from ..types.namespace.linked import PublicChannel
+from ..types.channel import PublicChannel
 
 
 class Channels(Endpoint):

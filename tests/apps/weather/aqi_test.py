@@ -13,7 +13,6 @@ from yui.apps.weather.aqi import (
     get_aqi_description,
     get_geometric_info_by_address,
 )
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -122,12 +121,9 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678',
-    })
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     await aqi(bot, event, '부천')
 
@@ -189,12 +185,9 @@ async def test_aqi_error1(fx_config, response_mock):
 
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678',
-    })
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     await aqi(bot, event, '부천')
 
@@ -248,12 +241,9 @@ async def test_aqi_error2(fx_config, response_mock):
 
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678',
-    })
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     await aqi(bot, event, '부천')
 

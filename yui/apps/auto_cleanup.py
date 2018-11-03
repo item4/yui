@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 @box.cron('*/10 * * * *')
 async def cleanup_channels(bot):
     try:
-        channels = Cs.auto_cleanup_targets.get()
+        channels = Cs.auto_cleanup_targets.gets()
     except KeyError:
         return
 

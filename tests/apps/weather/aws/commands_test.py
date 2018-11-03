@@ -2,7 +2,6 @@ import pytest
 
 from yui.apps.weather.aws.commands import aws, search_aws_zone
 from yui.apps.weather.aws.models import AWS
-from yui.event import create_event
 from yui.utils.datetime import datetime
 
 from ....util import FakeBot
@@ -12,11 +11,9 @@ from ....util import FakeBot
 async def test_aws(fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await aws(bot, event, fx_sess, '인천')
 
@@ -172,12 +169,9 @@ async def test_search_aws_zone(fx_sess):
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'ts': '1234.5678'
-    })
+    event = bot.create_message('C1', 'U1', '1234.5678')
 
     await search_aws_zone(bot, event, fx_sess, 'name', '인')
 

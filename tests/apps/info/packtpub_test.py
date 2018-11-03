@@ -9,7 +9,6 @@ from yui.apps.info.packtpub import (
     packtpub_dotd,
     parse_packtpub_dotd,
 )
-from yui.event import create_event
 from yui.session import client_session
 
 from ...util import FakeBot
@@ -52,11 +51,9 @@ async def test_no_parse_packtpub_dotd():
 async def test_packtpub_dotd():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await packtpub_dotd(bot, event)
 
@@ -73,11 +70,9 @@ async def test_no_packtpub_dotd(response_mock):
 
     bot = FakeBot()
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await packtpub_dotd(bot, event)
 

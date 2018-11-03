@@ -11,7 +11,6 @@ from .type import (
     OptionField,
     OptionGroup,
 )
-from ..types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
 
 
 def bool2str(value: bool) -> str:
@@ -91,6 +90,4 @@ class SlackEncoder(json.JSONEncoder):
                 'footer_icon': o.footer_icon,
                 'ts': o.ts,
             })
-        elif isinstance(o, (ChannelFromConfig, ChannelsFromConfig)):
-            raise TypeError('can not encode this type')
         return json.JSONEncoder.default(self, o)

@@ -1,7 +1,7 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.types.namespace.linked import User
+from yui.types.user import User
 
 from ..util import FakeBot
 
@@ -18,7 +18,7 @@ async def test_slack_api_users_info():
     assert call.method == 'users.info'
     assert call.data == {'user': user_id}
 
-    user = User(id=user_id, name='item4')
+    user = User(id=user_id, name='item4', team_id='T0')
 
     await bot.api.users.info(user)
 

@@ -32,12 +32,12 @@ from ..event import (
     TeamMigrationStarted,
     UserChange,
 )
-from ..types.namespace.linked import (
+from ..types.channel import (
     DirectMessageChannel,
     PrivateChannel,
     PublicChannel,
-    User,
 )
+from ..types.user import User
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ async def on_start(bot):
         bot.users.clear()
         result = await retry(bot.api.users.list, presence=False)
         for u in result['members']:
-            bot.users[u['id']] = User(**u)
+            bot.users.append(User(**u))
 
     await asyncio.wait(
         (

@@ -1,28 +1,41 @@
-from ..types.namespace.linked import ChannelFromConfig, ChannelsFromConfig
+from ..exceptions import AllChannelsError, NoChannelsError
+from ..types.namespace import Namespace, name_convert
 
 
-class _C:
-    """Magic class for create channel from config"""
+class HelperMeta(type):
 
-    def __getattr__(self, key: str) -> ChannelFromConfig:
-        return ChannelFromConfig(key)
+    def __getattr__(cls, key):
+        return cls(key)
 
-    def __getitem__(self, key: str) -> ChannelFromConfig:
-        return ChannelFromConfig(key)
-
-
-class _Cs:
-    """Magic class for create channels from config"""
-
-    def __getattr__(self, key: str) -> ChannelsFromConfig:
-        return ChannelsFromConfig(key)
-
-    def __getitem__(self, key: str) -> ChannelsFromConfig:
-        return ChannelsFromConfig(key)
+    def __getitem__(cls, key):
+        return cls(key)
 
 
-# Magic instance for create channel from config
-C = _C()
+class C(metaclass=HelperMeta):
+    """Magic class for lazy access channel alias in config"""
 
-# Magic instance for create channels from config
-Cs = _Cs()
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def get(self):
+        channel_name = Namespace._bot.config.CHANNELS[self.key]
+        if isinstance(channel_name, str):
+            return name_convert(channel_name)
+        raise ValueError(f'{self.key} in CHANNELS is not str.')
+
+
+class Cs(metaclass=HelperMeta):
+    """Magic class for lazy access channel list alias in config"""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def gets(self):
+        channels = Namespace._bot.config.CHANNELS[self.key]
+        if not channels:
+            raise NoChannelsError()
+        if channels == ['*'] or channels == '*':
+            raise AllChannelsError()
+        if isinstance(channels, list):
+            return [name_convert(x) for x in channels]
+        raise ValueError(f'{self.key} in CHANNELS is not list.')

@@ -1,3 +1,4 @@
+import copy
 import os
 import pathlib
 
@@ -9,7 +10,7 @@ from sqlalchemy.exc import ProgrammingError
 
 from yui.bot import Bot
 from yui.box import Box
-from yui.config import Config
+from yui.config import Config, DEFAULT
 from yui.orm import Base, make_session
 
 
@@ -97,14 +98,16 @@ def fx_sess(fx_engine):
 
 
 def gen_config():
-    config = Config(
+    cfg = copy.deepcopy(DEFAULT)
+    cfg.update(dict(
         DEBUG=True,
         DATABASE_URL='sqlite:///',
         TOKEN='asdf1234',
         REGISTER_CRONTAB=False,
         CHANNELS={},
         WEBSOCKETDEBUGGERURL='',
-    )
+    ))
+    config = Config(**cfg)
     config.LOGGING['loggers']['yui']['handlers'] = ['console']
     del config.LOGGING['handlers']['file']
     return config

@@ -3,7 +3,6 @@ import pytest
 import ujson
 
 from yui.apps.owner.update import FLAG_MAP, update
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -17,11 +16,7 @@ async def test_update_command(fx_config):
     bot.add_user('U1', 'kirito')
     bot.add_user('U2', 'PoH')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await update(bot, event, """
 TITLE=패치
@@ -111,11 +106,7 @@ TITLE=타이틀만 있음
         ),
     ]
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U2',
-    })
+    event = bot.create_message('C1', 'U2')
 
     await update(bot, event, '')
 

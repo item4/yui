@@ -10,14 +10,10 @@ from typing import (
     Union,
 )
 
-from ..event import Event
+from .helpers import C, Cs
+from ..event import Message
 from ..exceptions import AllChannelsError, NoChannelsError
-from ..types.namespace.linked import (
-    ChannelFromConfig,
-    ChannelsFromConfig,
-    PrivateChannel,
-    PublicChannel,
-)
+from ..types.channel import PrivateChannel, PublicChannel
 
 
 class DM:
@@ -28,12 +24,12 @@ ACCEPTABLE_CHANNEL_TYPES = Union[
     Type[DM],
     PrivateChannel,
     PublicChannel,
-    ChannelFromConfig,
-    ChannelsFromConfig,
+    C,
+    Cs,
     str,
 ]
 
-VALIDATOR_TYPE = Callable[[Any, Event], Awaitable[bool]]
+VALIDATOR_TYPE = Callable[[Any, Message], Awaitable[bool]]
 
 
 def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
@@ -44,15 +40,15 @@ def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
     for channel in channels:
         if isinstance(channel, (PrivateChannel, PublicChannel)):
             channel_names.add(channel.name)
-        elif isinstance(channel, ChannelFromConfig):
+        elif isinstance(channel, C):
             try:
                 channel_names.add(channel.get().name)
             except KeyError:
                 fetch_error = True
-        elif isinstance(channel, ChannelsFromConfig):
+        elif isinstance(channel, Cs):
             try:
                 channel_names = channel_names.union(
-                    c.name for c in channel.get()
+                    c.name for c in channel.gets()
                 )
             except KeyError:
                 fetch_error = True
@@ -69,7 +65,7 @@ def only(
 ) -> VALIDATOR_TYPE:
     """Mark channel to allow to use handler."""
 
-    async def callback(bot, event: Event) -> bool:
+    async def callback(bot, event: Message) -> bool:
         try:
             channel_names, allow_dm, fetch_error = get_channel_names(channels)
         except AllChannelsError:
@@ -115,7 +111,7 @@ def not_(
 ) -> VALIDATOR_TYPE:
     """Mark channel to deny to use handler."""
 
-    async def callback(bot, event: Event) -> bool:
+    async def callback(bot, event: Message) -> bool:
         try:
             channel_names, deny_dm, fetch_error = get_channel_names(channels)
         except AllChannelsError:

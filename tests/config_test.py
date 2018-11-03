@@ -46,11 +46,9 @@ def test_load_empty(fx_tmpdir: pathlib.Path):
 
     file = fx_tmpdir / 'empty.config.toml'
     file.touch()
-    config = load(file)
 
-    assert not config.DEBUG
-    assert config.PREFIX == ''
-    assert config.APPS == []
+    with pytest.raises(SystemExit):
+        load(file)
 
 
 def test_load_fine(fx_tmpdir: pathlib.Path):
@@ -59,12 +57,21 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
     file = fx_tmpdir / 'yui.config.toml'
     with file.open('w') as f:
         f.write('''
+TOKEN = 'asdf'
 DEBUG = true
 PREFIX = '.'
 APPS = ['a', 'b']
+
+[CHANNELS]
+general = '_general'
+
         ''')
     config = load(file)
 
+    assert config.TOKEN == 'asdf'
     assert config.DEBUG
     assert config.PREFIX == '.'
     assert config.APPS == ['a', 'b']
+    assert config.CHANNELS == {
+        'general': '_general',
+    }

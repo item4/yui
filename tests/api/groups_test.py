@@ -1,7 +1,7 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.types.namespace.linked import PrivateChannel
+from yui.types.channel import PrivateChannel
 
 from ..util import FakeBot
 
@@ -9,7 +9,7 @@ from ..util import FakeBot
 @pytest.mark.asyncio
 async def test_slack_api_groups_info():
     group_id = 'G1'
-    group = PrivateChannel(id='G2', name='secret')
+    group = PrivateChannel(id='G2', name='secret', creator='U0', last_read=0)
 
     bot = FakeBot()
 

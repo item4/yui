@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.fun.relax import relax
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -10,10 +9,8 @@ from ...util import FakeBot
 async def test_relax_command():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    bot.add_user('U1', 'item4')
+    event = bot.create_message('C1', 'U1')
 
     await relax(bot, event)
 

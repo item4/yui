@@ -14,7 +14,7 @@ from ..box import box
 from ..command import option
 from ..event import Message
 from ..session import client_session
-from ..types.namespace.linked import DirectMessageChannel
+from ..types.channel import DirectMessageChannel
 from ..utils.datetime import now
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)

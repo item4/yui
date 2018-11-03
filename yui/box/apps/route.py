@@ -59,13 +59,12 @@ class RouteApp(BaseApp):
         root_call = ''
         args = ''
         handler = None
-        if hasattr(event, 'text'):
+        if event.text:
             try:
                 root_call, root_args = SPACE_RE.split(event.text, 1)
             except ValueError:
                 root_call = event.text
-        elif hasattr(event, 'message') and event.message and \
-                hasattr(event.message, 'text'):
+        elif event.message and event.message.text:
             try:
                 root_call, root_args = SPACE_RE.split(event.message.text, 1)
             except ValueError:

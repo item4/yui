@@ -1,7 +1,6 @@
 import pytest
 
 from yui.apps.compute.gamble import dice, parse_dice_syntax
-from yui.event import Message, create_event
 
 from ...util import FakeBot
 
@@ -48,12 +47,7 @@ async def test_dice_handler():
     bot = FakeBot()
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'user')
-    event: Message = create_event({
-        'type': 'message',
-        'channel': 'C1',
-        'user': 'U1',
-        'text': '주사위',
-    })
+    event = bot.create_message('C1', 'U1')
 
     assert not await dice(bot, event, '', seed=100)
 

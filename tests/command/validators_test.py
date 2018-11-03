@@ -2,8 +2,7 @@ import pytest
 
 from yui.command.helpers import C, Cs
 from yui.command.validators import DM, get_channel_names, not_, only
-from yui.event import create_event
-from yui.types.namespace.linked import Channel
+from yui.types.namespace import name_convert
 
 from ..util import FakeBot
 
@@ -15,6 +14,7 @@ def test_get_channel_names(fx_config):
     }
 
     bot = FakeBot(fx_config)
+    bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -25,7 +25,7 @@ def test_get_channel_names(fx_config):
     names, dm, fetch_error = get_channel_names([
         C.general,
         Cs.commons,
-        Channel.from_name('food'),
+        name_convert('food'),
         DM,
         'work',
     ])
@@ -51,6 +51,7 @@ async def test_only(fx_config):
         'no': None,
     }
     bot = FakeBot(fx_config)
+    bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -59,49 +60,49 @@ async def test_only(fx_config):
 
     callback = only('general', 'random')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = only('general', 'random', error='error!')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
@@ -109,74 +110,74 @@ async def test_only(fx_config):
 
     callback = only('general', 'random', DM)
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = only('general', 'random', DM, error='error!')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
     callback = only(C.bug)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = only(Cs.bug)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = only(Cs.all)
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = only(Cs.no)
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = only(Cs.no, error='error!')
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
@@ -193,6 +194,7 @@ async def test_not_(fx_config):
     }
 
     bot = FakeBot(fx_config)
+    bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
     bot.add_channel('C3', 'food')
@@ -201,125 +203,125 @@ async def test_not_(fx_config):
 
     callback = not_('general', 'random')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_('general', 'random', error='error!')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_('general', 'random', DM)
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_('general', 'random', DM, error='error!')
 
-    event = create_event(dict(type='message', channel='C1'))
+    event = bot.create_message('C1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='C2'))
+    event = bot.create_message('C2', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='C3'))
+    event = bot.create_message('C3', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
-    event = create_event(dict(type='message', channel='D1'))
+    event = bot.create_message('D1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_(C.bug)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_(Cs.bug)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_(Cs.all)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     assert not bot.call_queue
 
     callback = not_(Cs.all, error='error!')
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert not await callback(bot, event)
     say = bot.call_queue.pop()
     assert say.method == 'chat.postMessage'
     assert say.data['text'] == 'error!'
 
     callback = not_(Cs.no)
-    event = create_event(dict(type='message', channel='G1'))
+    event = bot.create_message('G1', 'U1')
     assert await callback(bot, event)
     assert not bot.call_queue

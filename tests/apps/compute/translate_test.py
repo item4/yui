@@ -3,7 +3,6 @@ import os
 import pytest
 
 from yui.apps.compute.translate import _translate, detect_language, translate
-from yui.event import create_event
 
 from ...util import FakeBot
 
@@ -56,11 +55,9 @@ async def test_private_translate_function(header):
 @pytest.mark.asyncio
 async def test_translate_command(bot):
     bot.add_channel('C1', 'general')
+    bot.add_user('U1', 'item4')
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     await translate(bot, event, None, 'ja', '안녕하세요. 제 이름은 유이에요.'*100)
     said = bot.call_queue.pop(0)

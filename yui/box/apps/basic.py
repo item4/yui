@@ -96,7 +96,7 @@ class App(BaseApp):
     async def _run(self, bot: Bot, event: Event):
         res: Optional[bool] = True
         validation = True
-        if self.channel_validator:
+        if self.channel_validator and isinstance(event, Message):
             validation = await self.channel_validator(self, event)
 
         if validation:
@@ -113,13 +113,12 @@ class App(BaseApp):
         res: Optional[bool] = True
         call = ''
         args = ''
-        if hasattr(event, 'text'):
+        if event.text:
             try:
                 call, args = SPACE_RE.split(event.text, 1)
             except ValueError:
                 call = event.text
-        elif hasattr(event, 'message') and event.message and \
-                hasattr(event.message, 'text'):
+        elif event.message and event.message.text:
             try:
                 call, args = SPACE_RE.split(event.message.text, 1)
             except ValueError:

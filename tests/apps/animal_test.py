@@ -16,7 +16,6 @@ from yui.apps.animal import (
     get_dog_image_url,
     get_fox_image_url,
 )
-from yui.event import create_event
 
 from ..util import FakeBot
 
@@ -232,10 +231,7 @@ async def test_cat_command(response_mock):
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = event = bot.create_message('C1', 'U1')
 
     assert cat.last_call.get('C1') is None
 
@@ -275,10 +271,7 @@ async def test_cat_command(response_mock):
     assert said.data['username'] == '냥짤의 요정'
     assert said.data['icon_url'] == 'https://i.imgur.com/hIBJUMI.jpg'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'D1',
-    })
+    event = event = bot.create_message('D1', 'U1')
 
     assert cat.last_call.get('D1') is None
 
@@ -355,10 +348,7 @@ async def test_dog_command(response_mock):
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     assert dog.last_call.get('C1') is None
 
@@ -398,10 +388,7 @@ async def test_dog_command(response_mock):
     assert said.data['username'] == '멍짤의 요정'
     assert said.data['icon_url'] == 'https://i.imgur.com/Q9FKplO.png'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'D1',
-    })
+    event = bot.create_message('D1', 'U1')
 
     assert dog.last_call.get('D1') is None
 
@@ -482,10 +469,7 @@ async def test_fox_command(response_mock):
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'C1',
-    })
+    event = bot.create_message('C1', 'U1')
 
     assert fox.last_call.get('C1') is None
 
@@ -525,10 +509,7 @@ async def test_fox_command(response_mock):
     assert said.data['username'] == '웹 브라우저의 요정'
     assert said.data['icon_url'] == 'https://i.imgur.com/xFpyvpZ.png'
 
-    event = create_event({
-        'type': 'message',
-        'channel': 'D1',
-    })
+    event = bot.create_message('D1', 'U1')
 
     assert fox.last_call.get('D1') is None
 
