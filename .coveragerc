@@ -4,3 +4,6 @@ exclude_lines =
     def __repr__
     raise NotImplementedError
     if TYPE_CHECKING:
+omit =
+    yui/migrations
+    yui/templates
