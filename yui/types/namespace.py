@@ -105,7 +105,11 @@ def channel_id_convert(value):
         raise KeyError('Bot did not know given ID.')
 
     from .channel import create_unknown_channel  # circular dependency
-    return create_unknown_channel(**value)
+    if isinstance(value, str):
+        kwargs = {'id': value}
+    else:
+        kwargs = value
+    return create_unknown_channel(**kwargs)
 
 
 def user_id_convert(value):
@@ -129,7 +133,11 @@ def user_id_convert(value):
     if raise_error:
         raise KeyError('Bot did not know given ID.')
 
-    return create_unknown_user(**value)
+    if isinstance(value, str):
+        kwargs = {'id': value}
+    else:
+        kwargs = value
+    return create_unknown_user(**kwargs)
 
 
 def id_convert(value):
