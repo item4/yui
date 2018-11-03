@@ -1,16 +1,15 @@
 import inspect
 import math
+import re
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 
 from scipy.stats import nbinom
 
 from sympy.functions.combinatorial.numbers import harmonic
 
-
 from ...box import box, route
 from ...command import argument, option
 from ...event import Message
-from ...transform import value_range
 
 SUCCESSES_MIN = 1
 SUCCESSES_MAX = 10000
@@ -24,6 +23,14 @@ CHANCES = [
     Decimal('0.99'),
 ]
 D001 = Decimal('0.01')
+COLLECT_QUERY1 = re.compile(
+    r'^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$'
+)
+COLLECT_QUERY2 = re.compile(
+    r'^(?:(?:총|전체)\s*)?'
+    r'(?P<total>\d+)\s*(?:종류?|개)?\s*중(?:에서?)?\s*'
+    r'(?P<n>\d+)\s*(?:종류?|개)?$'
+)
 
 
 def to_percent(v: Decimal, q=CHANCE_MIN) -> str:
@@ -49,22 +56,23 @@ class Gacha(route.RouteApp):
 
     def get_full_help(self, prefix: str):
         return inspect.cleandoc(f"""
-        *가챠 계산기*
+*가챠 계산기*
 
-        해로운 문명, 가챠에 관련된 계산을 도와줍니다.
+해로운 문명, 가챠에 관련된 계산을 도와줍니다.
 
-        `{prefix}가챠 수집 10` (총 10종류가 있는 요소를 구입하려면 몇 번 구입해야하는지 계산)
-        `{prefix}가챠 도전 5%` (5% 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
-        `{prefix}가챠 도전 0.1` (10%(`0.1`) 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
-        `{prefix}가챠 도전 --성공 10 3%`""" + """\
-        (3% 확률요소의 10회 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 수집 10` (총 10종을 모두 수집하려면 얼마나 구입해야하는지 계산)
+`{prefix}가챠 수집 10/20` (총 20종 중에 10종을 수집하려면 얼마나 구입해야하는지 계산)
+`{prefix}가챠 수집 전체 20종류중에 10종류` (위와 동일한 주문을 한국어 표현식으로도 가능합니다.)
+`{prefix}가챠 도전 5%` (5% 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 도전 0.1` (10%(`0.1`) 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 도전 --성공 10 3%` (3% 확률요소의 10회 성공을 위해 필요한 도전 횟수를 계산)
 
-        Aliases
+Aliases
 
-        - `수집`대신 `collect`를 사용할 수 있습니다.
-        - `도전`대신 `challenge`를 사용할 수 있습니다.
-        - `도전`에서 `--성공`대신 `--성공횟수`/`--successes`/`-s`를 사용할 수 있습니다.
-        """)
+- `수집`대신 `collect`를 사용할 수 있습니다.
+- `도전`대신 `challenge`를 사용할 수 있습니다.
+- `도전`에서 `--성공`대신 `--성공횟수`/`--successes`/`-s`를 사용할 수 있습니다.
+""")
 
     async def fallback(self, bot, event: Message):
         await bot.say(
@@ -133,16 +141,55 @@ class Gacha(route.RouteApp):
             f' 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}'
         )
 
-    @argument('n', type_=int, transform_func=value_range(1, 128),
-              transform_error='특전 종류는 1개 이상 128개 이하로 해주세요!')
-    async def collect(self, bot, event: Message, n: int):
+    @argument('query', nargs=-1, concat=True)
+    async def collect(self, bot, event: Message, query: str):
+        match = COLLECT_QUERY1.match(query)
+        if match:
+            n = int(match.group('n'))
+            total = int(match.group('total')) if match.group('total') else n
+        else:
+            match = COLLECT_QUERY2.match(query)
+            if match:
+                n = int(match.group('n'))
+                total = int(match.group('total'))
+            else:
+                await bot.say(
+                    event.channel,
+                    '요청을 해석하는데에 실패했어요!'
+                )
+                return
+        if total < 2 or total > 512:
+            await bot.say(
+                event.channel,
+                '정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)'
+            )
+            return
+        if n < 1 or n > 512:
+            await bot.say(
+                event.channel,
+                '정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)'
+            )
+            return
+        if total < n:
+            await bot.say(
+                event.channel,
+                '원하는 갯수가 전체 갯수보다 많을 수 없어요!'
+            )
+            return
+
         result = n * harmonic(n)
+        if total > n:
+            result /= n / total
+            text = '부분적으로'
+        else:
+            text = '모두'
 
         await bot.say(
             event.channel,
-            f'상품 1개 구입시 {n}종류의 특전 중 하나를 무작위로 100% 확률로 준다고 가정할 때'
-            f' {n}종류의 특전을 모두 모으려면, 평균적으로 {math.ceil(result)}'
-            f'(`{float(result):.2f}`)개의 상품을 구입해야 전체 수집에 성공할 수 있어요!'
+            f'상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%'
+            f'확률로 준다고 가정할 때 {n}종류의 특전을 {text} 모으려면, 평균적으로'
+            f' {math.ceil(result)}(`{float(result):.2f}`)개의 상품을'
+            ' 구입해야 수집에 성공할 수 있어요!'
         )
 
 

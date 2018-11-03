@@ -49,15 +49,79 @@ async def test_collect(fx_config):
 
     event = bot.create_message('C1', 'U1')
 
-    await g.collect(g, bot, event, 30)
+    await g.collect(g, bot, event, '아무말 대잔치')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '요청을 해석하는데에 실패했어요!'
+
+    await g.collect(g, bot, event, '0/3')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)'
+
+    await g.collect(g, bot, event, '3/1')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)'
+
+    await g.collect(g, bot, event, '10000/3')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)'
+
+    await g.collect(g, bot, event, '3/10000')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)'
+
+    await g.collect(g, bot, event, '3/2')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == '원하는 갯수가 전체 갯수보다 많을 수 없어요!'
+
+    await g.collect(g, bot, event, '30')
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '상품 1개 구입시 30종류의 특전 중 하나를 무작위로 100% 확률로 준다고 가정할 때 '
-        '30종류의 특전을 모두 모으려면, 평균적으로 120(`119.85`)개의 상품을 구입해야 '
-        '전체 수집에 성공할 수 있어요!'
+        '상품 1개 구입시 30종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때'
+        ' 30종류의 특전을 모두 모으려면, 평균적으로 120(`119.85`)개의 상품을 구입해야'
+        ' 수집에 성공할 수 있어요!'
+    )
+
+    await g.collect(g, bot, event, '30/40')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때'
+        ' 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의 상품을 구입해야'
+        ' 수집에 성공할 수 있어요!'
+    )
+
+    await g.collect(g, bot, event, '전체 40종류 중에 30종')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때'
+        ' 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의 상품을 구입해야'
+        ' 수집에 성공할 수 있어요!'
     )
 
 
