@@ -77,6 +77,6 @@ async def packtpub_dotd(bot, event: Message):
     await say_packtpub_dotd(bot, event.channel)
 
 
-@box.cron('5 9 * * *')
+@box.cron('5 11 * * *')
 async def auto_packtpub_dotd(bot):
     await say_packtpub_dotd(bot, C.general.get())
