@@ -64,6 +64,9 @@ LANGUAGE_MAP: Dict[Optional[str], Optional[str]] = {
     'id': 'id',
     '인도네시아': 'id',
     '인도네시아어': 'id',
+    'de': 'de',
+    '독일': 'de',
+    '독일어': 'de',
 }
 
 LANGUAGE_NAME: Dict[str, str] = {
@@ -79,6 +82,7 @@ LANGUAGE_NAME: Dict[str, str] = {
     'th': '태국어',
     'it': '이탈리아어',
     'id': '인도네시아어',
+    'de': '독일어',
 }
 
 AVAILABLE_COMBINATIONS: Set[Tuple[str, str]] = {
@@ -93,6 +97,7 @@ AVAILABLE_COMBINATIONS: Set[Tuple[str, str]] = {
     ('ko', 'th'),
     ('ko', 'it'),
     ('ko', 'id'),
+    ('ko', 'de'),
     ('zh-CN', 'zh-TW'),
     ('zh-CN', 'ja'),
     ('zh-TW', 'ja'),
