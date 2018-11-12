@@ -93,6 +93,9 @@ AVAILABLE_COMBINATIONS: Set[Tuple[str, str]] = {
     ('ko', 'th'),
     ('ko', 'it'),
     ('ko', 'id'),
+    ('zh-CN', 'zh-TW'),
+    ('zh-CN', 'ja'),
+    ('zh-TW', 'ja'),
     ('en', 'ja'),
     ('en', 'fr'),
 }
