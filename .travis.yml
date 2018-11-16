@@ -9,7 +9,7 @@ services:
 - docker
 - postgresql
 addons:
-  postgresql: "9.6"
+  postgresql: "10"
 before_install:
 - source ./ci/docker_login.sh
 - docker pull item4/yui:latest
