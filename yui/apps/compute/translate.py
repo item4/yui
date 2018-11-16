@@ -133,7 +133,7 @@ async def _translate(
             return result['message']['result']['translatedText']
 
 
-@box.command('번역', aliases=['번역기', 'translate', 'tr', 't'])
+@box.command('번역', aliases=['번역기', 'translate', 'tr', 't'], use_shlex=False)
 @option('--source', '-s')
 @option('--target', '-t', default='ko')
 @argument('text', nargs=-1, concat=True)
