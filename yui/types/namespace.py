@@ -1,6 +1,6 @@
 import inspect
 from functools import partial
-from typing import Dict, Iterable, List, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 import attr
 
@@ -157,20 +157,24 @@ def id_convert(value):
 
 def name_convert(value, type: str = None):
     bot = Namespace._bot
-    fields: List[Iterable] = []
-    if type is None:
-        fields.extend([
-            bot.channels,
-            bot.ims,
-            bot.groups,
-            bot.users,
-        ])
-    else:
-        fields.append(getattr(bot, type))
-    for field in fields:
-        for obj in field:
-            if obj.name == value:
-                return obj
+
+    if type is None or type == 'channel':
+        for c in bot.channels:
+            if c.name == value:
+                return c
+    if type is None or type == 'ims':
+        for d in bot.ims:
+            if d.user.name == value:
+                return d
+    if type is None or type == 'groups':
+        for g in bot.groups:
+            if g.name == value:
+                return g
+    if type is None or type == 'users':
+        for u in bot.users:
+            if u.name == value:
+                return u
+
     raise KeyError('Bot did not know given name.')
 
 
