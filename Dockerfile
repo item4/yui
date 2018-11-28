@@ -5,7 +5,6 @@ MAINTAINER item4
 ENV HOME="/"
 ENV PATH="${HOME}/.poetry/bin:${PATH}"
 ENV TZ="Asia/Seoul"
-ENV POETRY_VERSION=0.12.7
 
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
