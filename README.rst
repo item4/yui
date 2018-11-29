@@ -19,6 +19,7 @@ Who do use YUI?
 * 9xd
 * xnuk fan club
 * PyJog
+* SCVSoft
 
 
 Requirements
