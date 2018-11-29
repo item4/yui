@@ -47,8 +47,8 @@ async def test_detect_language(header):
 
 @pytest.mark.asyncio
 async def test_private_translate_function(header):
-    text = '안녕하세요. 제 이름은 유이에요.'
-    result = 'こんにちは。私の名前はユです。'
+    text = '안녕하세요. 제 이름은 YUI에요.'
+    result = 'こんにちは。私の名前はYUIです。'
     assert await _translate(header, 'ko', 'ja', text) == result
 
 
@@ -95,11 +95,11 @@ async def test_translate_command(bot):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '인도네시아어에서 태국어로의 번역은 현재 지원되지 않아요!'
 
-    await translate(bot, event, None, 'ja', '안녕하세요. 제 이름은 유이에요.')
+    await translate(bot, event, None, 'ja', '안녕하세요. 제 이름은 YUI에요.')
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '한국어 원문: 안녕하세요. 제 이름은 유이에요.\n'
-        '일본어 번역: こんにちは。私の名前はユです。'
+        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n'
+        '일본어 번역: こんにちは。私の名前はYUIです。'
     )
