@@ -69,14 +69,14 @@ class App(BaseApp):
         return bool(self.short_help)
 
     def get_short_help(self, prefix: str) -> str:
-        return f'`={self.name}`: {self.short_help}'
+        return f'`{prefix}{self.name}`: {self.short_help}'
 
     def get_full_help(self, prefix: str) -> str:
         aliases = '/'.join(
             f'`{prefix}{n}`' for n in self.names if self.name != n
         )
 
-        help = bold(f'={self.name}') + '\n'
+        help = bold(f'{prefix}{self.name}') + '\n'
         if aliases:
             help += f'(Aliases: {aliases})\n'
 
