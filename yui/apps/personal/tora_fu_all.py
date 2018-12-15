@@ -87,8 +87,8 @@ def process(
 @box.cron('0,20,40 * * * *')
 async def watch(bot, sess):
     url = (
-        'https://ec.toranoana.shop/tora/ec/cot/genre/GNRN00001186/all/all'
-        '/?indexSummaryResultType=1&indexLocalCode=004a'
+        'https://ec.toranoana.shop/joshi/ec/cot/genre/GNRN00001186/all/all'
+        '/?indexSummaryResultType=1&indexLocalCode=008c'
     )
     headers = {
         'Cookie': 'adflg=0',
