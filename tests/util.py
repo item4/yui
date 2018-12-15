@@ -31,7 +31,7 @@ class FakeBot(Bot):
 
     def __init__(self, config: Config = None) -> None:
         if config is None:
-            config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={})
+            config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={}, USERS={})
 
         Namespace._bot = self
         self.loop = asyncio.get_event_loop()

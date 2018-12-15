@@ -105,6 +105,7 @@ def gen_config():
         TOKEN='asdf1234',
         REGISTER_CRONTAB=False,
         CHANNELS={},
+        USERS={},
         WEBSOCKETDEBUGGERURL='',
     ))
     config = Config(**cfg)

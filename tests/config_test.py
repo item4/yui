@@ -65,6 +65,9 @@ APPS = ['a', 'b']
 [CHANNELS]
 general = '_general'
 
+[USERS]
+owner = 'U111'
+
         ''')
     config = load(file)
 

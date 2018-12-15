@@ -33,7 +33,7 @@ async def say(
     """
 
     target: Channel = event.channel
-    if event.user != U.owner.get():
+    if event.user == U.owner.get():
         if channel and user:
             text = '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
         else:
