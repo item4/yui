@@ -90,6 +90,7 @@ async def cleanup(bot, event: Message, count: int, loop: bool):
             )
             return
         count = 100
+        loop = False
 
         if event.channel.id in cleanup.last_call:
             last_call = cleanup.last_call[event.channel.id]
