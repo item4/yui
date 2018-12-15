@@ -79,6 +79,8 @@ async def cleanup(bot, event: Message, count: int):
         )
         return
 
+    now_dt = now()
+
     if event.user not in force_cleanup:
         if event.channel not in channels:
             await bot.say(
@@ -88,7 +90,6 @@ async def cleanup(bot, event: Message, count: int):
             return
         count = 100
 
-        now_dt = now()
         if event.channel.id in cleanup.last_call:
             last_call = cleanup.last_call[event.channel.id]
             if now_dt - last_call < COOLTIME:
@@ -124,3 +125,5 @@ async def cleanup(bot, event: Message, count: int):
         event.channel,
         f'본 채널에서 최근 {delete_count:,}개의 메시지를 삭제했어요!',
     )
+
+    cleanup.last_call[event.channel.id] = now_dt
