@@ -12,7 +12,6 @@ from ...transform import DATE_FORMAT_RE
 from ...utils.datetime import now
 
 box.assert_config_required('TDCPROJECT_KEY', str)
-box.assert_config_required('MONDAY_DOG_LIMIT', int)
 box.assert_channel_required('general')
 
 YEAR_PATTERN = re.compile(r'^(\d{4})년$')
