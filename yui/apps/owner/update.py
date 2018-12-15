@@ -2,12 +2,12 @@ from typing import Any, Dict, List
 
 from ...api import Attachment
 from ...box import box
-from ...command import C
+from ...command import C, U
 from ...event import Message
 from ...transform import extract_url
 
-box.assert_config_required('OWNER_ID', str)
 box.assert_channel_required('notice')
+box.assert_user_required('owner')
 
 FLAG_MAP = {
     'primary': '428bca',
@@ -57,7 +57,7 @@ async def update(bot, event: Message, raw: str):
 
     """
 
-    if event.user.id == bot.config.OWNER_ID:
+    if event.user == U.owner.get():
         lines = raw.splitlines()
         attachments: List[Attachment] = []
         kw: Dict[str, Any] = {}

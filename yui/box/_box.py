@@ -18,6 +18,8 @@ class Box:
         self.config_required: Dict[str, Any] = {}
         self.channel_required: Set[str] = set()
         self.channels_required: Set[str] = set()
+        self.user_required: Set[str] = set()
+        self.users_required: Set[str] = set()
         self.apps: List[BaseApp] = []
         self.tasks: List[CronTask] = []
 
@@ -40,6 +42,16 @@ class Box:
         """Mark required channels name in configuration."""
 
         self.channels_required.add(key)
+
+    def assert_user_required(self, key: str):
+        """Mark required user name in configuration."""
+
+        self.user_required.add(key)
+
+    def assert_users_required(self, key: str):
+        """Mark required users name in configuration."""
+
+        self.users_required.add(key)
 
     def command(
         self,

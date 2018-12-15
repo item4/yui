@@ -8,7 +8,7 @@ from .decorators import (
     argument,
     option,
 )
-from .helpers import C, Cs
+from .helpers import C, Cs, U, Us
 from .validators import (
     ACCEPTABLE_CHANNEL_TYPES,
     DM,

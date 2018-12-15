@@ -1,5 +1,5 @@
 from ..exceptions import AllChannelsError, NoChannelsError
-from ..types.namespace import Namespace, name_convert
+from ..types.namespace import Namespace, name_convert, user_id_convert
 
 
 class HelperMeta(type):
@@ -38,4 +38,34 @@ class Cs(metaclass=HelperMeta):
             raise AllChannelsError()
         if isinstance(channels, list):
             return [name_convert(x) for x in channels]
+        raise ValueError(f'{self.key} in CHANNELS is not list.')
+
+
+class U(metaclass=HelperMeta):
+    """Magic class for lazy access user alias in config"""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def get(self):
+        channel_name = Namespace._bot.config.USERS[self.key]
+        if isinstance(channel_name, str):
+            return user_id_convert(channel_name)
+        raise ValueError(f'{self.key} in CHANNELS is not str.')
+
+
+class Us(metaclass=HelperMeta):
+    """Magic class for lazy access user list alias in config"""
+
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+    def gets(self):
+        channels = Namespace._bot.config.USERS[self.key]
+        if not channels:
+            raise NoChannelsError()
+        if channels == ['*'] or channels == '*':
+            raise AllChannelsError()
+        if isinstance(channels, list):
+            return [user_id_convert(x) for x in channels]
         raise ValueError(f'{self.key} in CHANNELS is not list.')

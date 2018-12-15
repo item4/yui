@@ -107,6 +107,8 @@ class Bot:
             self.box.config_required,
             self.box.channel_required,
             self.box.channels_required,
+            self.box.user_required,
+            self.box.users_required,
         )
 
         if self.config.REGISTER_CRONTAB:
@@ -152,7 +154,7 @@ class Bot:
                     except:  # noqa: E722
                         logger.error(f'Error: {traceback.format_exc()}')
                         await self.say(
-                            self.config.OWNER_ID,
+                            self.config.USERS['owner'],
                             '*Traceback*\n```\n{}\n```\n'.format(
                                 traceback.format_exc(),
                             )
@@ -288,7 +290,7 @@ class Bot:
                     f'Traceback: {traceback.format_exc()}'
                 )
                 await self.say(
-                    self.config.OWNER_ID,
+                    self.config.USERS['owner'],
                     ('*Event*\n```\n{}\n```\n'
                      '*Traceback*\n```\n{}\n```\n').format(
                         event,

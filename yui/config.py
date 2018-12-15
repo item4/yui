@@ -77,6 +77,7 @@ class Config:
     LOGGING: Dict[str, Any]
     REGISTER_CRONTAB: bool
     CHANNELS: Dict[str, Any]
+    USERS: Dict[str, Any]
     WEBSOCKETDEBUGGERURL: Optional[str] = None
     DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
 
@@ -85,6 +86,8 @@ class Config:
         configs: Dict[str, Any],
         single_channels: Set[str],
         multiple_channels: Set[str],
+        single_users: Set[str],
+        multiple_users: Set[str],
     ):
         for key in configs.keys():
             try:
@@ -123,6 +126,36 @@ class Config:
                     continue
                 raise ConfigurationError(
                     f'Channel config has wrong type: {key}'
+                )
+        for key in single_users:
+            try:
+                value = self.USERS[key]
+            except KeyError:
+                raise ConfigurationError(
+                    f'Required user key was not defined: {key}'
+                )
+            else:
+                if not isinstance(value, str):
+                    raise ConfigurationError(
+                        f'Channel config has wrong type: {key}'
+                    )
+
+        for key in multiple_users:
+            try:
+                value = self.USERS[key]
+            except KeyError:
+                raise ConfigurationError(
+                    f'Required user key was not defined: {key}'
+                )
+            else:
+                if value != '*':
+                    if isinstance(value, list):
+                        if all(isinstance(x, str) for x in value):
+                            continue
+                else:
+                    continue
+                raise ConfigurationError(
+                    f'Channel user has wrong type: {key}'
                 )
 
 

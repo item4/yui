@@ -1,13 +1,13 @@
 from typing import Optional
 
 from ...box import box
-from ...command import argument, option
+from ...command import U, argument, option
 from ...event import Message
 from ...transform import get_channel, get_user
 from ...types.channel import Channel
 from ...types.user import User
 
-box.assert_config_required('OWNER_ID', str)
+box.assert_user_required('owner')
 
 
 @box.command('say', aliases=['말', '말해'])
@@ -33,7 +33,7 @@ async def say(
     """
 
     target: Channel = event.channel
-    if event.user.id == bot.config.OWNER_ID:
+    if event.user != U.owner.get():
         if channel and user:
             text = '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
         else:

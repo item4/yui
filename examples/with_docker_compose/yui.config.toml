@@ -57,8 +57,6 @@ APPS = [
     'yui.apps.weather.pongdang',
 ]
 
-OWNER_ID = 'U11111111'
-
 DATABASE_URL = 'postgresql://postgres:MYSECRET@db/dbname'
 DATABASE_ECHO = false
 
@@ -78,6 +76,9 @@ general = '_general'
 game = 'game'
 game_and_test = ['game', 'test']
 welcome = '_general'
+
+[USERS]
+owner = 'U11111111'
 
 [LOGGING]
 version = 1

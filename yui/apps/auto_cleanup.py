@@ -5,12 +5,13 @@ import time
 
 from ..bot import APICallError
 from ..box import box
-from ..command import Cs, option
+from ..command import Cs, Us, option
 from ..event import Message
 from ..utils.datetime import now
 
 box.assert_config_required('OWNER_USER_TOKEN', str)
 box.assert_channels_required('auto_cleanup_targets')
+box.assert_users_required('force_cleanup')
 
 COOLTIME = datetime.timedelta(minutes=5)
 
@@ -70,6 +71,7 @@ async def cleanup(bot, event: Message, count: int):
 
     try:
         channels = Cs.auto_cleanup_targets.gets()
+        force_cleanup = Us.force_cleanup.gets()
     except KeyError:
         await bot.say(
             event.channel,
@@ -77,7 +79,7 @@ async def cleanup(bot, event: Message, count: int):
         )
         return
 
-    if event.user.id != bot.config.OWNER_ID:
+    if event.user not in force_cleanup:
         if event.channel not in channels:
             await bot.say(
                 event.channel,

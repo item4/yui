@@ -7,7 +7,7 @@ from ...util import FakeBot
 
 @pytest.mark.asyncio
 async def test_quit_command(fx_config):
-    fx_config.OWNER_ID = 'U1'
+    fx_config.USERS['owner'] = 'U1'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')

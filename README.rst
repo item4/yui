@@ -121,15 +121,41 @@ CHANNELS
      game_and_test = ['game', 'test']
      welcome = '_general'
 
+
+USERS
+  dictionary of str. User IDs used in code.
+  it used for support same handler code with different server envrionment.
+
+  For example,
+
+  .. code-block:: toml
+
+     [CHANNELS]
+     owner = 'U1111'
+     force_cleanup = ['U1111', 'U2222']
+
+  This config setting make you use ``yui.command.U`` and ``yui.command.Us``
+  like this.
+
+  .. code-block:: python3
+
+     owner_user_object = U.owner.get()
+     force_cleanup_user_list = Us.force_cleanup.gets()
+
+  .. warning::
+
+     You must set `owner` value for receive error report and do admin actions.
+
+  .. danger::
+
+     USERS value consume ID of user, not name because name can be secret hole.
+
+
 DATABASE_URL
   string. URL to connect Database via SQLAlchemy.
 
 DATABASE_ECHO
   bool. If you set it to true, you can see raw SQL in log
-
-OWNER_ID
-  string. ID of owner.
-  You can get ID value from `this test page`_
 
 NAVER_CLIENT_ID
   string. ID for using Naver API.
