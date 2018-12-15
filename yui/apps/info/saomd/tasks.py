@@ -19,7 +19,7 @@ from ....command import C
 from ....orm import EngineConfig, subprocess_session_manager
 from ....session import client_session
 
-box.assert_channel_required('game')
+box.assert_channel_required('sao')
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +209,7 @@ async def watch_notice(bot: Bot, engine_config: EngineConfig):
         )
         if attachments:
             await bot.api.chat.postMessage(
-                channel=C.game.get(),
+                channel=C.sao.get(),
                 attachments=attachments,
                 as_user=True,
             )
