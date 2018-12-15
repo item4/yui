@@ -60,7 +60,8 @@ async def cleanup_channels(bot):
 
 @box.command('청소')
 @option('--count', '-c', default=100)
-async def cleanup(bot, event: Message, count: int):
+@option('--loop', '-l', is_flag=True, default=False, value=True)
+async def cleanup(bot, event: Message, count: int, loop: bool):
     """
     채널 청소
 
@@ -93,12 +94,10 @@ async def cleanup(bot, event: Message, count: int):
         if event.channel.id in cleanup.last_call:
             last_call = cleanup.last_call[event.channel.id]
             if now_dt - last_call < COOLTIME:
-                fine = last_call + COOLTIME
+                fine = (last_call + COOLTIME).strftime('%H시 %M분')
                 await bot.say(
-                    text=(
-                        "아직 쿨타임이에요! "
-                        f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해주세요!"
-                    )
+                    event.channel,
+                    f'아직 쿨타임이에요! {fine} 이후로 다시 시도해주세요!',
                 )
                 return
 
@@ -110,17 +109,27 @@ async def cleanup(bot, event: Message, count: int):
     )
 
     delete_count = 0
+    stop = False
     if history['ok']:
         for message in history['messages']:
-            try:
-                await bot.api.chat.delete(
-                    event.channel,
-                    message['ts'],
-                    token=bot.config.OWNER_USER_TOKEN,
-                )
-                delete_count += 1
-            except APICallError:
+            while True:
+                try:
+                    await bot.api.chat.delete(
+                        event.channel,
+                        message['ts'],
+                        token=bot.config.OWNER_USER_TOKEN,
+                    )
+                    delete_count += 1
+                    break
+                except APICallError:
+                    if loop:
+                        await asyncio.sleep(1)
+                    else:
+                        stop = True
+                        break
+            if stop:
                 break
+
     await bot.say(
         event.channel,
         f'본 채널에서 최근 {delete_count:,}개의 메시지를 삭제했어요!',
