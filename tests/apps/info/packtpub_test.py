@@ -20,13 +20,22 @@ book_result_pattern_re = re.compile(
 )
 
 
-@pytest.mark.asyncio
-async def test_parse_packtpub_dotd():
+async def fetch_obj_or_skip_test_if_no_dotd():
     async with client_session() as session:
         async with session.get(PACKTPUB_URL) as resp:
             html = await resp.text()
 
     result = parse_packtpub_dotd(html)
+
+    if result is None:
+        pytest.skip('dotd error')
+
+    return result
+
+
+@pytest.mark.asyncio
+async def test_parse_packtpub_dotd():
+    result = await fetch_obj_or_skip_test_if_no_dotd()
 
     assert isinstance(result, Attachment)
     assert result.fallback.endswith(PACKTPUB_URL)
@@ -46,6 +55,12 @@ async def test_no_parse_packtpub_dotd():
 
     assert result is None
 
+    html = '<!doctype html>\n<html><div class="dotd-title"></div></html>'
+
+    result = parse_packtpub_dotd(html)
+
+    assert result is None
+
 
 @pytest.mark.asyncio
 async def test_packtpub_dotd():
@@ -55,6 +70,7 @@ async def test_packtpub_dotd():
 
     event = bot.create_message('C1', 'U1')
 
+    await fetch_obj_or_skip_test_if_no_dotd()
     await packtpub_dotd(bot, event)
 
     said = bot.call_queue.pop(0)
@@ -92,6 +108,7 @@ async def test_auto_packtpub_dotd(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
 
+    await fetch_obj_or_skip_test_if_no_dotd()
     await auto_packtpub_dotd(bot)
 
     said = bot.call_queue.pop(0)

@@ -22,6 +22,8 @@ def parse_packtpub_dotd(html: str) -> Optional[Attachment]:
     if not title_els:
         return None
     title: str = title_els[0].text_content().strip()
+    if not title:
+        return None
     image_url = None
     if image_els:
         image_url = 'https://' + '/'.join(
