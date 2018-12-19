@@ -45,6 +45,7 @@ pytest-cov = "^2.6"
 aioresponses = "^0.4.2"
 flake8 = "^3.5"
 flake8-import-order = "^0.18.0"
+freezegun = "^0.3.11"
 
 [tool.poetry.extras]
 travis-ci = ["codecov"]

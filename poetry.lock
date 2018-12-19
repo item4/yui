@@ -257,6 +257,18 @@ pycodestyle = "*"
 setuptools = "*"
 
 [[package]]
+category = "dev"
+description = "Let your Python tests travel through time"
+name = "freezegun"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "0.3.11"
+
+[package.dependencies]
+python-dateutil = ">=1.0,<2.0 || >2.0"
+six = "*"
+
+[[package]]
 category = "main"
 description = "Fuzzy string matching in python"
 name = "fuzzywuzzy"
@@ -675,7 +687,7 @@ multidict = ">=4.0"
 travis-ci = ["codecov"]
 
 [metadata]
-content-hash = "b2e3521a9f48fd5000c7f950241dd38e9ac0d0d0b5d5fadd96d154451896d4b6"
+content-hash = "928b4a60869a83c0ca3bdc9564071d823c1602e450add6f73b323510fc678569"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -705,6 +717,7 @@ cssselect = ["066d8bc5229af09617e24b3ca4d52f1f9092d9e061931f4184cd572885c23204",
 fake-useragent = ["c104998b750eb097eefc28ae28e92d66397598d2cf41a31aa45d5559ef1adf35"]
 flake8 = ["6a35f5b8761f45c5513e3405f110a86bea57982c3b75b766ce7b65217abe1670", "c01f8a3963b3571a8e6bd7a4063359aff90749e160778e03817cd9b71c9e07d2"]
 flake8-import-order = ["9be5ca10d791d458eaa833dd6890ab2db37be80384707b0f76286ddd13c16cbf", "feca2fd0a17611b33b7fa84449939196c2c82764e262486d5c3e143ed77d387b"]
+freezegun = ["6cb82b276f83f2acce67f121dc2656f4df26c71e32238334eb071170b892a278", "e839b43bfbe8158b4d62bb97e6313d39f3586daf48e1314fb1083d2ef17700da"]
 fuzzywuzzy = ["5ac7c0b3f4658d2743aa17da53a55598144edbc5bee3c6863840636e6926f254", "6f49de47db00e1c71d40ad16da42284ac357936fa9b66bea1df63fed07122d62"]
 idna = ["c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407", "ea8b7f6188e6fa117537c3df7da9fc686d485087abf6ac197f9c46432f7e4a3c"]
 libearth = ["5d061ee45edd0fa3eb268c9ca8fb6515c4f6cb1b5cd301129bc9787cb60fe70a"]
