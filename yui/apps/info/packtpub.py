@@ -1,7 +1,7 @@
-from typing import Optional
-from urllib.parse import quote
+from datetime import timedelta
+from typing import List
 
-from lxml.html import fromstring
+import ujson
 
 from ...api import Attachment
 from ...bot import Bot
@@ -9,59 +9,56 @@ from ...box import box
 from ...command import C
 from ...event import Message
 from ...session import client_session
+from ...utils.datetime import now
 
 box.assert_channel_required('general')
 
 PACKTPUB_URL = 'https://www.packtpub.com/packt/offers/free-learning'
 
 
-def parse_packtpub_dotd(html: str) -> Optional[Attachment]:
-    h = fromstring(html)
-    title_els = h.cssselect('.dotd-title')
-    image_els = h.cssselect('.imagecache-dotd_main_image')
-    if not title_els:
-        return None
-    title: str = title_els[0].text_content().strip()
-    if not title:
-        return None
-    image_url = None
-    if image_els:
-        image_url = 'https://' + '/'.join(
-            map(
-                quote,
-                image_els[0].get('src').replace('https://', '').split('/')
-            )
-        )
-    return Attachment(
-        fallback=f'{title} - {PACKTPUB_URL}',
-        title=title,
-        title_link=PACKTPUB_URL,
-        text=f'오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}',
-        image_url=image_url,
-    )
-
-
 async def say_packtpub_dotd(bot: Bot, channel):
-    async with client_session() as session:
-        async with session.get(PACKTPUB_URL) as resp:
-            html = await resp.text()
-
-    attachment = await bot.run_in_other_process(
-        parse_packtpub_dotd,
-        html,
+    attachments: List[Attachment] = []
+    now_dt = now()
+    start = now_dt.strftime('%Y-%m-%d')
+    end = (now_dt + timedelta(days=1)).strftime('%Y-%m-%d')
+    list_endpoint = (
+        'https://services.packtpub.com/free-learning-v1/offers'
+        f'?dateFrom={start}T00:00:00.000Z&dateTo={end}T00:00:00.000Z'
     )
+    async with client_session() as session:
+        async with session.get(list_endpoint) as resp:
+            list_data = await resp.json(loads=ujson.loads)
 
-    if attachment is None:
-        await bot.say(
-            channel,
-            '오늘은 PACKT Book의 무료책이 없는 것 같아요'
+    for item in list_data['data']:
+        product_id = item['productId']
+        info_endpoint = (
+            f'https://static.packt-cdn.com/products/{product_id}/summary'
         )
-    else:
+        async with client_session() as session:
+            async with session.get(info_endpoint) as resp:
+                data = await resp.json(loads=ujson.loads)
+
+        title = data['title']
+        image_url = data['coverImage']
+        attachments.append(Attachment(
+            fallback=f'{title} - {PACKTPUB_URL}',
+            title=title,
+            title_link=PACKTPUB_URL,
+            text=f'오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}',
+            image_url=image_url,
+        ))
+
+    if attachments:
         await bot.api.chat.postMessage(
             channel=channel,
             text='오늘자 PACKT Book의 무료책이에요!',
-            attachments=[attachment],
+            attachments=attachments,
             as_user=True,
+        )
+    else:
+        await bot.say(
+            channel,
+            '오늘은 PACKT Book의 무료책이 없는 것 같아요'
         )
 
 
@@ -79,6 +76,6 @@ async def packtpub_dotd(bot, event: Message):
     await say_packtpub_dotd(bot, event.channel)
 
 
-@box.cron('5 11 * * *')
+@box.cron('5 9 * * *')
 async def auto_packtpub_dotd(bot):
     await say_packtpub_dotd(bot, C.general.get())
