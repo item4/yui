@@ -15,3 +15,7 @@ def datetime(*args, tzname: str = 'Asia/Seoul') -> dt.datetime:
 
 def fromtimestamp(timestamp: float, tzname: str = 'Asia/Seoul') -> dt.datetime:
     return get_timezone(tzname).localize(dt.datetime.fromtimestamp(timestamp))
+
+
+def fromisoformat(date_str: str, tzname: str = 'Asia/Seoul') -> dt.datetime:
+    return get_timezone(tzname).localize(dt.datetime.fromisoformat(date_str))
