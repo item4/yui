@@ -72,10 +72,11 @@ def process(html: str, last_id: Optional[int]) -> Tuple[List[Attachment], int]:
         _category = item.cssselect('.item_summary-category')[0].text_content()
         category = CATEGORY_TRANSLATE.get(_category, _category)
         title = item.cssselect('.item_summary-title')[0].text_content()
-        shop_el = item.cssselect('.item_summary-shop_name')[0]
-        author_link = shop_el[0].get('href')
-        author_name = shop_el[0][0].get('alt')
-        author_icon = shop_el[0][0].get('src')
+        shop_el = item.cssselect('.item_summary-shop_name-field a.nav')[0]
+        author_link = shop_el.get('href')
+        author_name = shop_el.cssselect(
+            'div.item_summary-shop_name')[0].text_content().strip()
+        author_icon = shop_el.cssselect('img')[0].get('src')
         price = item.cssselect('.item_summary .price')[0].text_content()
         fields: List[Field] = [
             Field(
