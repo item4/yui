@@ -48,15 +48,10 @@ async def say_start_monday(bot):
 async def say_start_work(bot):
     await bot.api.chat.postMessage(
         channel=C.general.get(),
-        attachments=[
-            Attachment(
-                fallback='https://i.imgur.com/TVMDCAH.jpg',
-                image_url='https://i.imgur.com/TVMDCAH.jpg',
-            ),
-        ],
+        text='한국인들은 세계 누구보다 출근을 사랑하면서 왜 본심을 숨기는 걸까?',
         as_user=False,
         icon_url='https://i.imgur.com/EGIUpE1.jpg',
-        username='노동자',
+        username='노동자 핫산',
     )
 
 

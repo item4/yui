@@ -49,9 +49,11 @@ async def test_work_start_normal(fx_config, fx_tdcproject_key):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['username'] == '노동자'
+    assert said.data['username'] == '노동자 핫산'
     assert said.data['as_user'] == '0'
-    assert said.data['attachments']
+    assert said.data['text'] == (
+        '한국인들은 세계 누구보다 출근을 사랑하면서 왜 본심을 숨기는 걸까?'
+    )
 
 
 @pytest.mark.asyncio
