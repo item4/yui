@@ -97,6 +97,8 @@ async def on_start(bot):
         return_when=asyncio.FIRST_EXCEPTION,
     )
 
+    bot.is_ready = True
+
     return True
 
 

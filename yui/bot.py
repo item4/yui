@@ -102,6 +102,7 @@ class Bot:
         self.groups: List[PrivateChannel] = []
         self.users: List[User] = []
         self.restart = False
+        self.is_ready = False
 
         self.config.check(
             self.box.config_required,
@@ -132,7 +133,7 @@ class Bot:
 
             @aiocron.crontab(c.spec, *c.args, **c.kwargs)
             async def task():
-                if lock.locked():
+                if lock.locked() or not self.is_ready:
                     return
                 async with lock:
                     if 'loop' in func_params:
@@ -335,6 +336,8 @@ class Bot:
             await self.queue.put(create_event({
                 'type': 'chatterbox_system_start',
             }))
+            while not self.is_ready:
+                await asyncio.sleep(0.01)
             try:
                 async with client_session() as session:
                     async with session.ws_connect(rtm['url']) as ws:
