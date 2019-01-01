@@ -14,9 +14,12 @@ PATTERN = re.compile(
 
 ICON_URL = 'https://i.imgur.com/bGVUlSp.jpg'
 IMAGES = {
-    'https://i.imgur.com/btkBRvc.png': 2,  # 루왁커피
-    'https://i.imgur.com/v3bu01T.png': 2,  # 스파게티
-    'https://i.imgur.com/ODOVLQA.png': 1,  # 지사제
+    'https://i.imgur.com/btkBRvc.png': 1,  # 루왁커피
+    'https://i.imgur.com/v3bu01T.png': 1,  # 스파게티
+    'https://i.imgur.com/UXyyFiM.png': 1,  # 갈아넣으면 된다더라
+    'https://i.imgur.com/zDm1KBL.png': 1,  # 피클
+    'https://i.imgur.com/ODOVLQA.png': .5,  # 지사제
+    'https://i.imgur.com/eu4SDBu.png': .5,  # DDLC Monika
 }
 
 
