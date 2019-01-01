@@ -7,7 +7,7 @@ from ...box import box
 from ...event import Message
 from ...utils.datetime import now
 
-COOLTIME = timedelta(minutes=15)
+COOLTIME = timedelta(minutes=5)
 PATTERN = re.compile(
     r'(?:고든|코드)?\s*램지님?\s*[제내저이]?\s*(?:코드|[PM]R|풀리퀘)좀?\s*리뷰',
 )
