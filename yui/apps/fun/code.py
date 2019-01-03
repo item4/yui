@@ -18,6 +18,7 @@ IMAGES = {
     'https://i.imgur.com/v3bu01T.png': 1,  # 스파게티
     'https://i.imgur.com/UXyyFiM.png': 1,  # 갈아넣으면 된다더라
     'https://i.imgur.com/zDm1KBL.png': 1,  # 피클
+    'https://i.imgur.com/XlYygAx.png': .3,  # Brilliant!
     'https://i.imgur.com/ODOVLQA.png': .5,  # 지사제
     'https://i.imgur.com/eu4SDBu.png': .5,  # DDLC Monika
 }
