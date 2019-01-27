@@ -1392,6 +1392,9 @@ class Evaluator:
     def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
         return self._run(node.value)[self._run(node.slice)]
 
+    def visit_try(self, node: _ast.Try):
+        raise BadSyntax('You can not use `try` syntax')
+
     def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 

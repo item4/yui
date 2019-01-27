@@ -524,6 +524,19 @@ def test_subscript():
     assert e.symbol_table['l'] == [11, 22, 44]
 
 
+def test_try():
+    e = Evaluator()
+    err = 'You can not use `try` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+try:
+    x = 1
+except:
+    pass
+''')
+    assert 'x' not in e.symbol_table
+
+
 def test_tuple():
     e = Evaluator()
     assert e.run('(1, 1, 2, 3, 3)') == (1, 1, 2, 3, 3)
