@@ -180,6 +180,29 @@ def test_continue():
     assert e.current_interrupt.__class__.__name__ == 'Continue'
 
 
+def test_delete():
+    e = Evaluator()
+    e.symbol_table['a'] = 0
+    e.symbol_table['b'] = 0
+    e.symbol_table['c'] = 0
+    e.run('del a, b, c')
+    assert 'a' not in e.symbol_table
+    assert 'b' not in e.symbol_table
+    assert 'c' not in e.symbol_table
+    e.symbol_table['l'] = [1, 2, 3, 4]
+    e.run('del l[0]')
+    assert e.symbol_table['l'] == [2, 3, 4]
+
+    err = 'This delete method is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('del l[2:3]')
+
+    e.symbol_table['dt'] = datetime.now()
+    err = 'This delete method is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('del dt.year')
+
+
 def test_dict():
     e = Evaluator()
     assert e.run('{1: 111, 2: 222}') == {1: 111, 2: 222}

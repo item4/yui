@@ -1208,6 +1208,22 @@ class Evaluator:
     def visit_classdef(self, node: _ast.ClassDef):
         raise BadSyntax('Defining new class via def syntax is not allowed')
 
+    def visit_delete(self, node: _ast.Delete):  # targets
+        for target in node.targets:
+            target_cls = target.__class__
+            if target_cls == _ast.Name:
+                del self.symbol_table[target.id]
+            elif target_cls == _ast.Subscript:
+                sym = self._run(target.value)
+                xslice = self._run(target.slice)
+                if isinstance(target.slice, _ast.Index):
+                    del sym[xslice]
+                else:
+                    raise BadSyntax('This delete method is not allowed')
+            else:
+                raise BadSyntax('This delete method is not allowed')
+        return
+
     def visit_dict(self, node: _ast.Dict):  # keys, values
         return {
             self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
