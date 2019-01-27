@@ -459,6 +459,13 @@ def test_raise():
         e.run('raise NameError')
 
 
+def test_return():
+    e = Evaluator()
+    err = 'You can not use `return` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('return True')
+
+
 def test_set():
     e = Evaluator()
     assert e.run('{1, 1, 2, 3, 3}') == {1, 2, 3}
