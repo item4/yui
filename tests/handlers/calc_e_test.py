@@ -452,6 +452,11 @@ def test_num():
     assert e.symbol_table['a'] == 123
 
 
+def test_pass():
+    e = Evaluator()
+    e.run('pass')
+
+
 def test_raise():
     e = Evaluator()
     err = 'You can not use `raise` syntax'
