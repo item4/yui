@@ -304,6 +304,13 @@ def test_generator_exp():
     assert 'x' not in e.symbol_table
 
 
+def test_global():
+    e = Evaluator()
+    err = 'You can not use `global` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('global x')
+
+
 def test_if():
     e = Evaluator()
     e.symbol_table['a'] = 1

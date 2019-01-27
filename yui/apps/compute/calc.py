@@ -1270,6 +1270,9 @@ class Evaluator:
     def visit_generatorexp(self, node: _ast.GeneratorExp):
         raise BadSyntax('Defining new generator expression is not allowed')
 
+    def visit_global(self, node: _ast.Global):
+        raise BadSyntax('You can not use `global` syntax')
+
     def visit_if(self, node: _ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
         for stmt in stmts:
