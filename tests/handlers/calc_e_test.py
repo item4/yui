@@ -1,4 +1,5 @@
-from datetime import datetime
+import math
+from datetime import date, datetime
 
 import pytest
 
@@ -85,6 +86,33 @@ async with x():
     assert e.symbol_table['r'] == 0
 
 
+def test_attribute():
+    e = Evaluator()
+    e.symbol_table['dt'] = datetime.now()
+    e.run('x = dt.year')
+    assert e.symbol_table['x'] == e.symbol_table['dt'].year
+
+    err = 'You can not access `test_test_test` attribute'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('y = dt.test_test_test')
+
+    assert 'y' not in e.symbol_table
+
+    err = "You can not access attributes of <class 'int'>"
+    with pytest.raises(BadSyntax, match=err):
+        e.run('z = x.asdf')
+
+    e.symbol_table['math'] = math
+    err = "You can not access `__module__` attribute"
+    with pytest.raises(BadSyntax, match=err):
+        e.run('math.__module__')
+
+    e.symbol_table['datetime'] = datetime
+    err = "You can not access `test_test` attribute"
+    with pytest.raises(BadSyntax, match=err):
+        e.run('datetime.test_test')
+
+
 def test_augassign():
     e = Evaluator()
     e.symbol_table['a'] = 0
@@ -147,6 +175,21 @@ def test_bytes():
     assert e.run('b"asdf"') == b'asdf'
     e.run('a = b"asdf"')
     assert e.symbol_table['a'] == b'asdf'
+
+
+def test_call():
+    e = Evaluator()
+    e.symbol_table['date'] = date
+    e.run('x = date(2019, 10, day=7)')
+    assert e.symbol_table['x'] == date(2019, 10, day=7)
+
+    e.symbol_table['math'] = math
+    e.run('y = math.sqrt(121)')
+    assert e.symbol_table['y'] == math.sqrt(121)
+
+    e.symbol_table['datetime'] = datetime
+    e.run('z = datetime.now().date()')
+    assert e.symbol_table['z'] == datetime.now().date()
 
 
 def test_classdef():

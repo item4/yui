@@ -1065,6 +1065,24 @@ class Evaluator:
     last_dump: str
 
     def __init__(self) -> None:
+        self.allowed_modules = {
+            math: {
+                'sqrt',
+            },
+        }
+        self.allowed_type = {
+            datetime.datetime: {
+                'now',
+            },
+        }
+        self.allowed_attributes = {
+            datetime.datetime: {
+                'year',
+                'month',
+                'day',
+                'date',
+            },
+        }
         self.symbol_table: Dict[str, Any] = {}
         self.current_interrupt: Optional[
             Union[_ast.Break, _ast.Continue]
@@ -1141,6 +1159,23 @@ class Evaluator:
     def visit_asyncwith(self, node: _ast.AsyncWith):
         raise BadSyntax('You can not use `async with` syntax')
 
+    def visit_attribute(self, node: _ast.Attribute):  # value, attr, ctx
+        value = self._run(node.value)
+        t = type(value)
+        if value in self.allowed_modules:
+            if node.attr in self.allowed_modules[value]:
+                return getattr(value, node.attr)
+            raise BadSyntax(f'You can not access `{node.attr}` attribute')
+        if value in self.allowed_type:
+            if node.attr in self.allowed_type[value]:
+                return getattr(value, node.attr)
+            raise BadSyntax(f'You can not access `{node.attr}` attribute')
+        if t in self.allowed_attributes:
+            if node.attr in self.allowed_attributes[t]:
+                return getattr(value, node.attr)
+            raise BadSyntax(f'You can not access `{node.attr}` attribute')
+        raise BadSyntax(f'You can not access attributes of {t}')
+
     def visit_augassign(self, node: _ast.AugAssign):  # target, op, value
         value = self._run(node.value)
         target = node.target
@@ -1188,6 +1223,12 @@ class Evaluator:
 
     def visit_break(self, node: _ast.Break):
         self.current_interrupt = node
+
+    def visit_call(self, node: _ast.Call):  # func, args, keywords
+        func = self._run(node.func)
+        args = [self._run(x) for x in node.args]
+        keywords = {x.arg: self._run(x.value) for x in node.keywords}
+        return func(*args, **keywords)
 
     def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
