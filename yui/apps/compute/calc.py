@@ -1407,6 +1407,12 @@ class Evaluator:
     def visit_with(self, node: _ast.With):
         raise BadSyntax('You can not use `with` syntax')
 
+    def visit_yield(self, node: _ast.Yield):
+        raise BadSyntax('You can not use `yield` syntax')
+
+    def visit_yieldfrom(self, node: _ast.YieldFrom):
+        raise BadSyntax('You can not use `yield from` syntax')
+
 
 def calculate(
     expr: str,

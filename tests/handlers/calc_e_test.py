@@ -561,3 +561,19 @@ with some:
     x = 1
 ''')
     assert 'x' not in e.symbol_table
+
+
+def test_yield():
+    e = Evaluator()
+    err = 'You can not use `yield` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('x = yield f()')
+    assert 'x' not in e.symbol_table
+
+
+def test_yield_from():
+    e = Evaluator()
+    err = 'You can not use `yield from` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('x = yield from f()')
+    assert 'x' not in e.symbol_table
