@@ -587,6 +587,46 @@ def test_unaryop():
     assert e.run('-100') == -100
 
 
+def test_while():
+    total = 0
+    i = 1
+    while total > 100:
+        total += i
+        i += i
+        if i % 10 == 0:
+            i += 1
+    else:
+        total = total + 10000
+    e = Evaluator()
+    e.run('''
+total = 0
+i = 1
+while total > 100:
+    total += i
+    i += i
+    if i % 10 == 0:
+        i += 1
+else:
+    total = total + 10000
+''')
+    assert e.symbol_table['total'] == total
+
+    r = 0
+    while True:
+        break
+    else:
+        r += 10
+
+    e.run('''
+r = 0
+while True:
+    break
+else:
+    r += 10
+''')
+    assert e.symbol_table['r'] == 0
+
+
 def test_with():
     e = Evaluator()
     err = 'You can not use `with` syntax'

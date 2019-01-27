@@ -1434,6 +1434,21 @@ class Evaluator:
             return op(self._run(node.operand))
         raise NotImplementedError
 
+    def visit_while(self, node: _ast.While):  # test, body, orelse
+        while self._run(node.test):
+            self.current_interrupt = None
+            for tnode in node.body:
+                self._run(tnode)
+                if self.current_interrupt is not None:
+                    break
+            if isinstance(self.current_interrupt, _ast.Break):
+                break
+        else:
+            for tnode in node.orelse:
+                self._run(tnode)
+
+        self.current_interrupt = None
+
     def visit_with(self, node: _ast.With):
         raise BadSyntax('You can not use `with` syntax')
 
