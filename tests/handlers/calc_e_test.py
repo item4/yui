@@ -72,6 +72,19 @@ async def abc():
     assert 'abc' not in e.symbol_table
 
 
+def test_asyncwith():
+    e = Evaluator()
+    e.symbol_table['r'] = 0
+    err = 'You can not use `async with` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+async with x():
+    r += 100
+
+''')
+    assert e.symbol_table['r'] == 0
+
+
 def test_augassign():
     e = Evaluator()
     e.symbol_table['a'] = 0
