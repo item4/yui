@@ -1132,6 +1132,9 @@ class Evaluator:
             self.assign(tnode, value)
         return
 
+    def visit_asyncfor(self, node: _ast.AsyncFunctionDef):
+        raise BadSyntax('You can not use `async for` loop syntax')
+
     def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
         raise BadSyntax('Defining new coroutine via def syntax is not allowed')
 

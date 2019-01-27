@@ -47,6 +47,19 @@ def test_assign():
         e.run('dt.year = 2000')
 
 
+def test_asyncfor():
+    e = Evaluator()
+    e.symbol_table['r'] = 0
+    err = 'You can not use `async for` loop syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+async for x in [1, 2, 3, 4]:
+    r += x
+
+''')
+    assert e.symbol_table['r'] == 0
+
+
 def test_asyncfunctiondef():
     e = Evaluator()
     err = 'Defining new coroutine via def syntax is not allowed'
