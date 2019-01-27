@@ -97,12 +97,9 @@ def channel_id_convert(value):
         }[id[0]]
     except KeyError:
         raise KeyError('Given Channel ID prefix was not expected.')
-    raise_error = bool(objs)
     for obj in objs:
         if obj.id == id:
             return obj
-    if raise_error:
-        raise KeyError('Bot did not know given ID.')
 
     from .channel import create_unknown_channel  # circular dependency
     if isinstance(value, str):
@@ -114,7 +111,6 @@ def channel_id_convert(value):
 
 def user_id_convert(value):
     bot = Namespace._bot
-    raise_error = bool(bot.users)
     if value is None:
         return value
     elif isinstance(value, str):
@@ -130,8 +126,6 @@ def user_id_convert(value):
     for obj in bot.users:
         if obj.id == id:
             return obj
-    if raise_error:
-        raise KeyError('Bot did not know given ID.')
 
     if isinstance(value, str):
         kwargs = {'id': value}
