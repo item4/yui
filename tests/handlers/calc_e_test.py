@@ -438,6 +438,13 @@ def test_nameconstant():
     assert e.symbol_table['z'] is None
 
 
+def test_nonlocal():
+    e = Evaluator()
+    err = 'You can not use `nonlocal` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('nonlocal x')
+
+
 def test_num():
     e = Evaluator()
     assert e.run('123') == 123

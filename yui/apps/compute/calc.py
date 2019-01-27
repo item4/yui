@@ -1340,6 +1340,9 @@ class Evaluator:
     def visit_nameconstant(self, node: _ast.NameConstant):  # value,
         return node.value
 
+    def visit_nonlocal(self, node: _ast.Nonlocal):
+        raise BadSyntax('You can not use `nonlocal` syntax')
+
     def visit_num(self, node: _ast.Num):  # n,
         return node.n
 
