@@ -989,14 +989,15 @@ class Evaluator:
         op_cls = node.op.__class__
 
         if target_cls == _ast.Name:
-            self.symbol_table[target.id] = BINOP_TABLE[op_cls](
-                self.symbol_table[target.id],
+            target_id = target.id  # type: ignore
+            self.symbol_table[target_id] = BINOP_TABLE[op_cls](
+                self.symbol_table[target_id],
                 value,
             )
         elif target_cls == _ast.Subscript:
-            sym = self._run(target.value)
-            xslice = self._run(target.slice)
-            if isinstance(target.slice, _ast.Index):
+            sym = self._run(target.value)  # type: ignore
+            xslice = self._run(target.slice)  # type: ignore
+            if isinstance(target.slice, _ast.Index):  # type: ignore
                 sym[xslice] = BINOP_TABLE[op_cls](
                     sym[xslice],
                     value,
@@ -1059,11 +1060,11 @@ class Evaluator:
         for target in node.targets:
             target_cls = target.__class__
             if target_cls == _ast.Name:
-                del self.symbol_table[target.id]
+                del self.symbol_table[target.id]  # type: ignore
             elif target_cls == _ast.Subscript:
-                sym = self._run(target.value)
-                xslice = self._run(target.slice)
-                if isinstance(target.slice, _ast.Index):
+                sym = self._run(target.value)  # type: ignore
+                xslice = self._run(target.slice)  # type: ignore
+                if isinstance(target.slice, _ast.Index):  # type: ignore
                     del sym[xslice]
                 else:
                     raise BadSyntax('This delete method is not allowed')
