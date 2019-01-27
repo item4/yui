@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 
 from yui.apps.compute.calc import BadSyntax, Evaluator
@@ -9,18 +11,6 @@ class GetItemSpy:
 
     def __getitem__(self, item):
         self.queue.append(item)
-
-
-def test_asyncfunctiondef():
-    e = Evaluator()
-    err = 'Defining new coroutine via def syntax is not allowed'
-    with pytest.raises(BadSyntax, match=err):
-        e.run('''
-async def abc():
-    pass
-
-''')
-    assert 'abc' not in e.symbol_table
 
 
 def test_assert():
@@ -40,6 +30,23 @@ def test_assign():
     e.run('x, y = 10, 20')
     assert e.symbol_table['x'] == 10
     assert e.symbol_table['y'] == 20
+
+    e.symbol_table['dt'] = datetime.now()
+    err = 'This assign method is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('dt.year = 2000')
+
+
+def test_asyncfunctiondef():
+    e = Evaluator()
+    err = 'Defining new coroutine via def syntax is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+async def abc():
+    pass
+
+''')
+    assert 'abc' not in e.symbol_table
 
 
 def test_binop():

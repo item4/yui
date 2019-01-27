@@ -1105,6 +1105,8 @@ class Evaluator:
                 sym[slice(xslice.start, xslice.stop)] = val
             elif isinstance(node.slice, _ast.ExtSlice):
                 sym[xslice] = val
+        else:
+            raise BadSyntax('This assign method is not allowed')
 
     def delete(self, node):
         cls = node.__class__
@@ -1121,14 +1123,14 @@ class Evaluator:
     def visit_assert(self, node: _ast.Assert):
         raise BadSyntax('You can not use assertion syntax')
 
-    def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
-        raise BadSyntax('Defining new coroutine via def syntax is not allowed')
-
     def visit_assign(self, node: _ast.Assign):  # targets, value
         value = self._run(node.value)
         for tnode in node.targets:
             self.assign(tnode, value)
         return
+
+    def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
+        raise BadSyntax('Defining new coroutine via def syntax is not allowed')
 
     def visit_binop(self, node: _ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
