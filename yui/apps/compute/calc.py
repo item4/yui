@@ -1166,6 +1166,9 @@ class Evaluator:
             raise BadSyntax('This assign method is not allowed')
         return
 
+    def visit_await(self, node: _ast.Await):
+        raise BadSyntax('You can not await anything')
+
     def visit_binop(self, node: _ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
 

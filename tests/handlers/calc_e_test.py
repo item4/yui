@@ -104,6 +104,14 @@ def test_augassign():
         e.run('dt.year += 2000')
 
 
+def test_await():
+    e = Evaluator()
+    err = 'You can not await anything'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('r = await x()')
+    assert 'r' not in e.symbol_table
+
+
 def test_binop():
     e = Evaluator()
     assert e.run('1 + 2') == 1 + 2
