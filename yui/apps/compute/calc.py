@@ -1267,6 +1267,9 @@ class Evaluator:
 
         self.current_interrupt = None
 
+    def visit_generatorexp(self, node: _ast.GeneratorExp):
+        raise BadSyntax('Defining new generator expression is not allowed')
+
     def visit_if(self, node: _ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
         for stmt in stmts:

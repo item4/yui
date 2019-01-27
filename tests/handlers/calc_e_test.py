@@ -295,6 +295,15 @@ else:
     assert e.symbol_table['total2'] == total2
 
 
+def test_generator_exp():
+    e = Evaluator()
+    e.symbol_table['r'] = [1, 2, 3]
+    err = 'Defining new generator expression is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('x = (i ** 2 for i in r)')
+    assert 'x' not in e.symbol_table
+
+
 def test_if():
     e = Evaluator()
     e.symbol_table['a'] = 1
