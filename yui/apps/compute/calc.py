@@ -1404,6 +1404,9 @@ class Evaluator:
             return op(self._run(node.operand))
         raise NotImplementedError
 
+    def visit_with(self, node: _ast.With):
+        raise BadSyntax('You can not use `with` syntax')
+
 
 def calculate(
     expr: str,

@@ -550,3 +550,14 @@ def test_unaryop():
     assert e.run('not 100') == (not 100)
     assert e.run('+100') == +100
     assert e.run('-100') == -100
+
+
+def test_with():
+    e = Evaluator()
+    err = 'You can not use `with` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('''
+with some:
+    x = 1
+''')
+    assert 'x' not in e.symbol_table
