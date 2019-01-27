@@ -1,6 +1,6 @@
 import pytest
 
-from yui.handlers.calc import BadSyntax, Evaluator
+from yui.apps.compute.calc import BadSyntax, Evaluator
 
 
 class GetItemSpy:
@@ -21,6 +21,16 @@ async def abc():
 
 ''')
     assert 'abc' not in e.symbol_table
+
+
+def test_assert():
+    e = Evaluator()
+    err = 'You can not use assertion syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('assert True')
+
+    with pytest.raises(BadSyntax, match=err):
+        e.run('assert False')
 
 
 def test_assign():

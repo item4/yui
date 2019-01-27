@@ -1118,6 +1118,9 @@ class Evaluator:
     def no_impl(self, node):
         raise NotImplementedError
 
+    def visit_assert(self, node: _ast.Assert):
+        raise BadSyntax('You can not use assertion syntax')
+
     def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
         raise BadSyntax('Defining new coroutine via def syntax is not allowed')
 
