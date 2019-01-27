@@ -3,18 +3,19 @@ import asyncio
 import datetime
 import decimal
 import functools
-import hashlib
+import html
 import itertools
 import math
 import operator
 import random
 import statistics
-from collections.abc import Iterable
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import _ast
 
 from async_timeout import timeout
+
+import ujson
 
 from ...bot import Bot
 from ...box import box
@@ -23,8 +24,6 @@ from ...types.channel import Channel
 
 TIMEOUT = 1
 LENGTH_LIMIT = 300
-
-BUILTIN_ITERABLE = str, bytes, list, tuple, set, frozenset, dict
 
 RESULT_TEMPLATE = {
     True: {
@@ -50,16 +49,12 @@ RESULT_TEMPLATE = {
 }
 
 
-def timeout_handler(signum, frame):
-    raise TimeoutError()
-
-
 async def body(
     bot: Bot,
     channel: Channel,
     expr: str,
     help: str,
-    num_to_decimal: bool = True,
+    decimal_mode: bool = True,
     ts: str = None
 ):
     expr_is_multiline = '\n' in expr
@@ -71,10 +66,10 @@ async def body(
     local = None
     try:
         async with timeout(TIMEOUT):
-            result, local = await bot.run_in_other_process(
+            result, local = await bot.run_in_other_thread(
                 calculate,
                 expr,
-                replace_num_to_decimal=num_to_decimal,
+                decimal_mode=decimal_mode,
             )
     except SyntaxError as e:
         await bot.say(
@@ -348,674 +343,6 @@ TYPE_LOAD = type(ast.Load())
 TYPE_DEL = type(ast.Del())
 TYPE_EXPR = type(ast.Expr())
 
-MATH_CONTEXT = {
-    'acos': math.acos,
-    'acosh': math.acosh,
-    'asin': math.asin,
-    'asinh': math.asinh,
-    'atan': math.atan,
-    'atan2': math.atan2,
-    'atanh': math.atanh,
-    'ceil': math.ceil,
-    'copysign': math.copysign,
-    'cos': math.cos,
-    'cosh': math.cosh,
-    'degrees': math.degrees,
-    'erf': math.erf,
-    'erfc': math.erfc,
-    'exp': math.exp,
-    'expm1': math.expm1,
-    'fabs': math.fabs,
-    'factorial': math.factorial,
-    'floor': math.floor,
-    'fmod': math.fmod,
-    'frexp': math.frexp,
-    'fsum': math.fsum,
-    'gamma': math.gamma,
-    'gcd': math.gcd,
-    'hypot': math.hypot,
-    'isclose': math.isclose,
-    'isfinite': math.isfinite,
-    'isinf': math.isinf,
-    'isnan': math.isnan,
-    'ldexp': math.ldexp,
-    'lgamma': math.lgamma,
-    'log': math.log,
-    'log1p': math.log1p,
-    'log10': math.log10,
-    'log2': math.log2,
-    'modf': math.modf,
-    'pow': math.pow,
-    'radians': math.radians,
-    'sin': math.sin,
-    'sinh': math.sinh,
-    'sqrt': math.sqrt,
-    'tan': math.tan,
-    'tanh': math.tanh,
-    'trunc': math.trunc,
-    'pi': math.pi,
-    'e': math.e,
-    'tau': math.tau,
-    'inf': math.inf,
-    'nan': math.nan,
-}
-
-FUNCTOOLS_CONTEXT = {
-    'reduce': functools.reduce,
-}
-
-GLOBAL_CONTEXT: Dict[str, Any] = {
-    # builtin constant
-    'True': True,
-    'False': False,
-    'None': None,
-    # builtin type
-    'bool': bool,
-    'bytes': bytes,
-    'complex': complex,
-    'dict': dict,
-    'float': float,
-    'frozenset': frozenset,
-    'int': int,
-    'list': list,
-    'set': set,
-    'str': str,
-    'tuple': tuple,
-    # builtin func
-    'abs': abs,
-    'all': all,
-    'any': any,
-    'ascii': ascii,
-    'bin': bin,
-    'chr': chr,
-    'divmod': divmod,
-    'enumerate': enumerate,
-    'filter': filter,
-    'hex': hex,
-    'isinstance': isinstance,
-    'issubclass': issubclass,
-    'len': len,
-    'map': map,
-    'max': max,
-    'min': min,
-    'oct': oct,
-    'ord': ord,
-    'pow': pow,
-    'range': range,
-    'repr': repr,
-    'reversed': reversed,
-    'round': round,
-    'sorted': sorted,
-    'zip': zip,
-    # decimal
-    'Decimal': Decimal,
-    # hash algorithm
-    'sha1': lambda *x: hashlib.sha1(*x).hexdigest(),
-    'sha224': lambda *x: hashlib.sha224(*x).hexdigest(),
-    'sha256': lambda *x: hashlib.sha256(*x).hexdigest(),
-    'sha384': lambda *x: hashlib.sha384(*x).hexdigest(),
-    'sha512': lambda *x: hashlib.sha512(*x).hexdigest(),
-    'sha3_224': lambda *x: hashlib.sha3_224(*x).hexdigest(),
-    'sha3_256': lambda *x: hashlib.sha3_256(*x).hexdigest(),
-    'sha3_384': lambda *x: hashlib.sha3_384(*x).hexdigest(),
-    'sha3_512': lambda *x: hashlib.sha3_512(*x).hexdigest(),
-    'md5': lambda *x: hashlib.md5(*x).hexdigest(),
-    # datetime
-    'date': datetime.date,
-    'time': datetime.time,
-    'datetime': datetime.datetime,
-    'timedelta': datetime.timedelta,
-    'tzinfo': datetime.tzinfo,
-    'timezone': datetime.timezone,
-    # module level injection
-    'functools': functools,
-    'itertools': itertools,
-    'math': math,
-    'operator': operator,
-    'random': random,
-    'statistics': statistics,
-}
-
-GLOBAL_CONTEXT.update(FUNCTOOLS_CONTEXT)
-GLOBAL_CONTEXT.update(MATH_CONTEXT)
-
-ALLOWED_STR_ATTRS = [
-    'capitalize',
-    'casefold',
-    'center',
-    'count',
-    'encode',
-    'endswith',
-    'expandtabs',
-    'find',
-    'format',
-    'format_map',
-    'index',
-    'isalnum',
-    'isalpha',
-    'isdecimal',
-    'isdigit',
-    'isidentifier',
-    'islower',
-    'isnumeric',
-    'isprintable',
-    'isspace',
-    'istitle',
-    'isupper',
-    'join',
-    'ljust',
-    'lower',
-    'lstrip',
-    'maketrans',
-    'partition',
-    'replace',
-    'rfind',
-    'rindex',
-    'rjust',
-    'rpartition',
-    'rsplit',
-    'rstrip',
-    'split',
-    'splitlines',
-    'swapcase',
-    'startswith',
-    'strip',
-    'title',
-    'translate',
-    'upper',
-    'zfill',
-]
-
-ALLOWED_BYTES_ATTRS = [
-    'fromhex',
-    'hex',
-    'count',
-    'decode',
-    'endswith',
-    'find',
-    'index',
-    'join',
-    'maketrans',
-    'partition',
-    'replace',
-    'rfind',
-    'rindex',
-    'rpartition',
-    'startswith',
-    'translate',
-    'center',
-    'ljust',
-    'lstrip',
-    'rjust',
-    'rsplit',
-    'rstrip',
-    'split',
-    'strip',
-    'capitalize',
-    'expandtabs',
-    'isalnum',
-    'isalpha',
-    'isdigit',
-    'islower',
-    'isspace',
-    'istitle',
-    'isupper',
-    'lower',
-    'splitlines',
-    'swapcase',
-    'title',
-    'upper',
-    'zfill',
-]
-
-ALLOWED_LIST_ATTRS = [
-    'index',
-    'count',
-    'append',
-    'clear',
-    'copy',
-    'extend',
-    'insert',
-    'pop',
-    'remove',
-    'reverse',
-    'sort',
-]
-
-ALLOWED_TUPLE_ATTRS = [
-    'index',
-    'count',
-    'append',
-    'clear',
-    'copy',
-    'extend',
-    'insert',
-    'pop',
-    'remove',
-    'reverse',
-]
-
-ALLOWED_SET_ATTRS = [
-    'isdisjoint',
-    'issubset',
-    'issuperset',
-    'union',
-    'intersection',
-    'difference',
-    'symmetric_difference',
-    'copy',
-    'update',
-    'intersection_update',
-    'difference_update',
-    'symmetric_difference_update',
-    'add',
-    'remove',
-    'discard',
-    'pop',
-    'clear',
-]
-
-ALLOWED_DICT_ATTRS = [
-    'copy',
-    'fromkeys',
-    'get',
-    'items',
-    'keys',
-    'pop',
-    'popitem',
-    'setdefault',
-    'update',
-    'values',
-]
-
-ALLOWED_HTML_ATTRS = [
-    'escape',
-    'unescape',
-]
-
-ALLOWED_JSON_ATTRS = [
-    'dumps',
-    'loads',
-]
-
-ALLOWED_OPERATOR_ATTRS = [
-    'lt',
-    'le',
-    'eq',
-    'ne',
-    'ge',
-    'gt',
-    'not_',
-    'truth',
-    'is_',
-    'is_not',
-    'add',
-    'and_',
-    'floordiv',
-    'index',
-    'inv',
-    'invert',
-    'lshift',
-    'mod',
-    'mul',
-    'matmul',
-    'neg',
-    'or_',
-    'pos',
-    'pow',
-    'rshift',
-    'sub',
-    'truediv',
-    'xor',
-    'concat',
-    'contains',
-    'countOf',
-    'delitem',
-    'getitem',
-    'indexOf',
-    'setitem',
-    'length_hint',
-    'itemgetter',
-]
-
-ALLOWED_RANDOM_ATTRS = [
-    'randrange',
-    'randint',
-    'choice',
-    'choices',
-    'shuffle',
-    'sample',
-    'random',
-    'uniform',
-    'triangular',
-    'betavariate',
-    'expovariate',
-    'gammavariate',
-    'gauss',
-    'lognormvariate',
-    'normalvariate',
-    'vonmisesvariate',
-    'paretovariate',
-    'weibullvariate',
-]
-
-ALLOWED_ITERTOOLS_ATTRS = [
-    'accumulate',
-    'chain',
-    'chain.from_iterable',
-    'compress',
-    'dropwhile',
-    'filterfalse',
-    'groupby',
-    'starmap',
-    'takewhile',
-    'tee',
-    'zip_longest',
-    'product',
-    'permutations',
-    'combinations',
-    'combinations_with_replacement',
-]
-
-ALLOWED_STATISTICS_ATTRS = [
-    'mean',
-    'harmonic_mean',
-    'median',
-    'median_low',
-    'median_high',
-    'median_grouped',
-    'mode',
-    'pstdev',
-    'pvariance',
-    'stdev',
-    'variance',
-]
-
-PROTECTED_IDS = [
-    '__name__', '__doc__', '__package__', '__loader__', '__spec__',
-    '__build_class__', '__import__', 'abs', 'all', 'any', 'ascii', 'bin',
-    'callable', 'chr', 'compile', 'delattr', 'dir', 'divmod', 'eval', 'exec',
-    'format', 'getattr', 'globals', 'hasattr', 'hash', 'hex', 'id', 'input',
-    'isinstance', 'issubclass', 'iter', 'len', 'locals', 'max', 'min', 'next',
-    'oct', 'ord', 'pow', 'print', 'repr', 'round', 'setattr', 'sorted', 'sum',
-    'vars', 'None', 'Ellipsis', 'NotImplemented', 'False', 'True', 'bool',
-    'memoryview', 'bytearray', 'bytes', 'classmethod', 'complex', 'dict',
-    'enumerate', 'filter', 'float', 'frozenset', 'property', 'int', 'list',
-    'map', 'object', 'range', 'reversed', 'set', 'slice', 'staticmethod',
-    'str', 'super', 'tuple', 'type', 'zip', '__debug__', 'BaseException',
-    'Exception', 'TypeError', 'StopAsyncIteration', 'StopIteration',
-    'GeneratorExit', 'SystemExit', 'KeyboardInterrupt', 'ImportError',
-    'ModuleNotFoundError', 'OSError', 'EnvironmentError', 'IOError',
-    'EOFError', 'RuntimeError', 'RecursionError', 'NotImplementedError',
-    'NameError', 'UnboundLocalError', 'AttributeError', 'SyntaxError',
-    'IndentationError', 'TabError', 'LookupError', 'IndexError', 'KeyError',
-    'ValueError', 'UnicodeError', 'UnicodeEncodeError', 'UnicodeDecodeError',
-    'UnicodeTranslateError', 'AssertionError', 'ArithmeticError',
-    'FloatingPointError', 'OverflowError', 'ZeroDivisionError', 'SystemError',
-    'ReferenceError', 'BufferError', 'MemoryError', 'Warning', 'UserWarning',
-    'DeprecationWarning', 'PendingDeprecationWarning', 'SyntaxWarning',
-    'RuntimeWarning', 'FutureWarning', 'ImportWarning', 'UnicodeWarning',
-    'BytesWarning', 'ResourceWarning', 'ConnectionError', 'BlockingIOError',
-    'BrokenPipeError', 'ChildProcessError', 'ConnectionAbortedError',
-    'ConnectionRefusedError', 'ConnectionResetError', 'FileExistsError',
-    'FileNotFoundError', 'IsADirectoryError', 'NotADirectoryError',
-    'InterruptedError', 'PermissionError', 'ProcessLookupError',
-    'TimeoutError', 'open', 'quit', 'exit', 'copyright', 'credits',
-    'license', 'help', '_'
-]
-
-ALLOWED_GLOBAL_ATTRS = list(set(
-    ALLOWED_DICT_ATTRS + ALLOWED_STR_ATTRS + ALLOWED_BYTES_ATTRS +
-    ALLOWED_LIST_ATTRS + ALLOWED_SET_ATTRS + ALLOWED_TUPLE_ATTRS +
-    ALLOWED_ITERTOOLS_ATTRS + ALLOWED_OPERATOR_ATTRS +
-    ALLOWED_RANDOM_ATTRS + ALLOWED_STATISTICS_ATTRS
-)) + [
-    # datetime
-    'min',
-    'max',
-    'resolution'
-    'days',
-    'seconds',
-    'microseconds',
-    'total_seconds',
-    'today',
-    'fromtimestamp',
-    'fromordinal',
-    'year',
-    'month',
-    'day',
-    'replace',
-    'timetuple',
-    'toordinal',
-    'weekday',
-    'isoweekday',
-    'isocalendar',
-    'isoformat',
-    'ctime',
-    'strftime',
-    'now',
-    'utcnow',
-    'utcfromtimestamp',
-    'combine',
-    'strptime',
-    'hour',
-    'minute',
-    'second',
-    'microsecond',
-    'tzinfo',
-    'fold',
-    'date',
-    'time',
-    'timetz',
-    'astimezone',
-    'utcoffset',
-    'dst',
-    'tzname',
-    'utctimetuple',
-    'timestamp',
-    'fromutc',
-]
-
-ALLOWED_ATTRS = [
-    '{}.{}'.format(g, a)
-    for g in GLOBAL_CONTEXT.keys()
-    for a in ALLOWED_GLOBAL_ATTRS
-] + [
-    'math.{}'.format(method) for method in MATH_CONTEXT.keys()
-] + [
-    'str.{}'.format(method) for method in ALLOWED_STR_ATTRS
-] + [
-    'bytes.{}'.format(method) for method in ALLOWED_BYTES_ATTRS
-] + [
-    'list.{}'.format(method) for method in ALLOWED_LIST_ATTRS
-] + [
-    'tuple.{}'.format(method) for method in ALLOWED_TUPLE_ATTRS
-] + [
-    'set.{}'.format(method) for method in ALLOWED_SET_ATTRS
-] + [
-    'dict.{}'.format(method) for method in ALLOWED_DICT_ATTRS
-] + [
-    'functools.{}'.format(method) for method in FUNCTOOLS_CONTEXT.keys()
-] + [
-    'itertools.{}'.format(method) for method in ALLOWED_ITERTOOLS_ATTRS
-] + [
-    'operator.{}'.format(method) for method in ALLOWED_OPERATOR_ATTRS
-] + [
-    'random.{}'.format(method) for method in ALLOWED_RANDOM_ATTRS
-] + [
-    'statistics.{}'.format(method) for method in ALLOWED_STATISTICS_ATTRS
-]
-
-
-def resolve_attr_id(node):
-    if isinstance(node, (ast.Attribute, ast.Subscript)):
-        value_id = None
-        if isinstance(node.value, (ast.Name, ast.Attribute, ast.Subscript)):
-            value_id = resolve_attr_id(node.value)
-        elif isinstance(node.value, ast.Call):
-            value_id = resolve_attr_id(node.value)
-        elif isinstance(node.value, ast.Str):
-            value_id = 'str'
-        elif isinstance(node.value, ast.Bytes):
-            value_id = 'bytes'
-        elif isinstance(node.value, (ast.List, ast.ListComp)):
-            value_id = 'list'
-        elif isinstance(node.value, ast.Tuple):
-            value_id = 'tuple'
-        elif isinstance(node.value, (ast.Set, ast.SetComp)):
-            value_id = 'set'
-        elif isinstance(node.value, (ast.Dict, ast.DictComp)):
-            value_id = 'dict'
-        else:
-            raise SyntaxError(
-                'unsupport type: {}'.format(ast.dump(node.value))
-            )
-
-        if isinstance(node, ast.Attribute):
-            return '{}.{}'.format(value_id, node.attr)
-        elif isinstance(node, ast.Subscript):
-            slice = None
-            if isinstance(node.slice.value, ast.Str):
-                slice = node.slice.value.s
-            elif isinstance(node.slice.value, ast.Num):
-                slice = node.slice.value.n
-            elif isinstance(node.slice.value, ast.Name):
-                slice = resolve_attr_id(node.slice.value)
-            return '{}[{}]'.format(value_id, slice)
-    elif isinstance(node, ast.Call):
-        return '{}()'.format(resolve_attr_id(node.func))
-    return node.id
-
-
-class Transformer(ast.NodeTransformer):
-
-    def visit_Num(self, node):  # noqa
-        """Replace Num node to Decimal instance."""
-
-        return ast.Call(
-            func=ast.Name(id='Decimal', ctx=ast.Load()),
-            args=[ast.Str(s=str(node.n))],
-            keywords=[]
-        )
-
-
-class ExtractNames(ast.NodeVisitor):
-
-    def __init__(self):
-        self.names = []
-
-    def visit_arg(self, node):
-        self.names.append(node.arg)
-
-    def visit_Name(self, node):  # noqa
-        if isinstance(node.ctx, (TYPE_STORE, TYPE_DEL)):
-            self.names.append(node.id)
-        self.generic_visit(node)
-
-
-class Validator(ast.NodeVisitor):
-
-    def __init__(self, names):
-        self.allowed_names = list(GLOBAL_CONTEXT.keys()) + names
-
-    def visit_Call(self, node):  # noqa
-        id = resolve_attr_id(node.func)
-        allowed = []
-
-        if isinstance(node.func, ast.Attribute):
-            allowed = ALLOWED_ATTRS
-        elif isinstance(node.func, ast.Name):
-            allowed = self.allowed_names
-
-        error = False
-        if id not in allowed:
-            error = True
-            if isinstance(node.func, ast.Attribute):
-                if isinstance(node.func.value, ast.Name):
-                    if node.func.attr in ALLOWED_GLOBAL_ATTRS:
-                        error = False
-
-        if error:
-            raise SyntaxError('call {} is not permitted.'.format(id))
-
-        self.generic_visit(node)
-
-    def visit_Name(self, node):  # noqa
-        if isinstance(node.ctx, (TYPE_STORE, TYPE_DEL)):
-            if node.id in PROTECTED_IDS:
-                raise SyntaxError('override builtins is not permitted.')
-        else:
-            if node.id not in self.allowed_names:
-                raise SyntaxError(
-                    'access to {} is not permitted.'.format(node.id))
-        self.generic_visit(node)
-
-    def visit_Attribute(self, node):  # noqa
-        id = resolve_attr_id(node)
-        if id not in ALLOWED_ATTRS:
-            if node.attr not in ALLOWED_GLOBAL_ATTRS:
-                raise SyntaxError(
-                    'access to {} attr is not permitted.'.format(id)
-                )
-        self.generic_visit(node)
-
-    def visit_FunctionDef(self, node):  # noqa
-        raise SyntaxError('func def is not permitted.')
-
-    def visit_AsyncFunctionDef(self, node):  # noqa
-        raise SyntaxError('async func def is not permitted.')
-
-    def visit_ClassDef(self, node):  # noqa
-        raise SyntaxError('class def is not permitted.')
-
-    def visit_Return(self, node):  # noqa
-        raise SyntaxError('return is not permitted.')
-
-    def visit_For(self, node):  # noqa
-        raise SyntaxError('for stmt is not permitted.')
-
-    def visit_AsyncFor(self, node):  # noqa
-        raise SyntaxError('async for stmt is not permitted.')
-
-    def visit_While(self, node):  # noqa
-        raise SyntaxError('while stmt is not permitted.')
-
-    def visit_With(self, node):  # noqa
-        raise SyntaxError('with stmt is not permitted.')
-
-    def visit_AsyncWith(self, node):  # noqa
-        raise SyntaxError('async with stmt is not permitted.')
-
-    def visit_Raise(self, node):  # noqa
-        raise SyntaxError('raise stmt is not permitted.')
-
-    def visit_Try(self, node):  # noqa
-        raise SyntaxError('try stmt is not permitted.')
-
-    def visit_Assert(self, node):  # noqa
-        raise SyntaxError('assert stmt is not permitted.')
-
-    def visit_Import(self, node):  # noqa
-        raise SyntaxError('import is not permitted.')
-
-    def visit_ImportFrom(self, node):  # noqa
-        raise SyntaxError('import is not permitted.')
-
-    def visit_Global(self, node):  # noqa
-        raise SyntaxError('global stmt is not permitted.')
-
-    def visit_Nonlocal(self, node):  # noqa
-        raise SyntaxError('nonlocal stmt is not permitted.')
-
-    def visit_Pass(self, node):  # noqa
-        raise SyntaxError('pass stmt is not permitted.')
-
-    def visit_Break(self, node):  # noqa
-        raise SyntaxError('break stmt is not permitted.')
-
-    def visit_Continue(self, node):  # noqa
-        raise SyntaxError('continue stmt is not permitted.')
-
 
 class BadSyntax(Exception):
     pass
@@ -1064,24 +391,500 @@ class Evaluator:
 
     last_dump: str
 
-    def __init__(self) -> None:
+    def __init__(self, decimal_mode: bool = False) -> None:
+        self.decimal_mode = decimal_mode
         self.allowed_modules = {
+            datetime: {
+                'date',
+                'datetime',
+                'time',
+                'timedelta',
+                'tzinfo',
+            },
+            functools: {
+                'reduce',
+            },
+            html: {
+                'escape',
+                'unescape',
+            },
+            itertools: {
+                'accumulate',
+                'chain',
+                'chain.from_iterable',
+                'compress',
+                'dropwhile',
+                'filterfalse',
+                'groupby',
+                'starmap',
+                'takewhile',
+                'tee',
+                'zip_longest',
+                'product',
+                'permutations',
+                'combinations',
+                'combinations_with_replacement',
+            },
             math: {
+                'acos',
+                'acosh',
+                'asin',
+                'asinh',
+                'atan',
+                'atan2',
+                'atanh',
+                'ceil',
+                'copysign',
+                'cos',
+                'cosh',
+                'degrees',
+                'erf',
+                'erfc',
+                'exp',
+                'expm1',
+                'fabs',
+                'factorial',
+                'floor',
+                'fmod',
+                'frexp',
+                'fsum',
+                'gamma',
+                'gcd',
+                'hypot',
+                'isclose',
+                'isfinite',
+                'isinf',
+                'isnan',
+                'ldexp',
+                'lgamma',
+                'log',
+                'log1p',
+                'log10',
+                'log2',
+                'modf',
+                'pow',
+                'radians',
+                'sin',
+                'sinh',
                 'sqrt',
+                'tan',
+                'tanh',
+                'trunc',
+                'pi',
+                'e',
+                'tau',
+                'inf',
+                'nan',
+            },
+            operator: {
+                'lt',
+                'le',
+                'eq',
+                'ne',
+                'ge',
+                'gt',
+                'not_',
+                'truth',
+                'is_',
+                'is_not',
+                'add',
+                'and_',
+                'floordiv',
+                'index',
+                'inv',
+                'invert',
+                'lshift',
+                'mod',
+                'mul',
+                'matmul',
+                'neg',
+                'or_',
+                'pos',
+                'pow',
+                'rshift',
+                'sub',
+                'truediv',
+                'xor',
+                'concat',
+                'contains',
+                'countOf',
+                'delitem',
+                'getitem',
+                'indexOf',
+                'setitem',
+                'length_hint',
+                'itemgetter',
+            },
+            random: {
+                'randrange',
+                'randint',
+                'choice',
+                'choices',
+                'shuffle',
+                'sample',
+                'random',
+                'uniform',
+                'triangular',
+                'betavariate',
+                'expovariate',
+                'gammavariate',
+                'gauss',
+                'lognormvariate',
+                'normalvariate',
+                'vonmisesvariate',
+                'paretovariate',
+                'weibullvariate',
+            },
+            statistics: {
+                'mean',
+                'harmonic_mean',
+                'median',
+                'median_low',
+                'median_high',
+                'median_grouped',
+                'mode',
+                'pstdev',
+                'pvariance',
+                'stdev',
+                'variance',
+            },
+            ujson: {
+                'dumps',
+                'loads',
             },
         }
-        self.allowed_type = {
+        self.allowed_class_properties = {
+            bytes: {
+                'fromhex',
+                'maketrans',
+            },
+            datetime.date: {
+                'today',
+                'fromtimestamp',
+                'fromordinal',
+                'fromisoformat',
+                'min',
+                'max',
+                'resolution',
+            },
             datetime.datetime: {
+                'today',
                 'now',
+                'utcnow'
+                'fromtimestamp',
+                'utcfromtimestamp',
+                'fromordinal',
+                'combine',
+                'fromisoformat',
+                'strptime',
+                'min',
+                'max',
+                'resolution',
+            },
+            datetime.time: {
+                'min',
+                'max',
+                'resolution',
+                'fromisoformat',
+            },
+            datetime.timedelta: {
+                'min',
+                'max',
+                'resolution',
+            },
+            datetime.timezone: {
+                'utc',
+            },
+            dict: {
+                'fromkeys',
+            },
+            float: {
+                'fromhex',
+            },
+            int: {
+                'from_bytes',
+            },
+            str: {
+                'maketrans',
             },
         }
-        self.allowed_attributes = {
-            datetime.datetime: {
+        self.allowed_instance_properties = {
+            bytes: {
+                'hex',
+                'count',
+                'decode',
+                'endswith',
+                'find',
+                'index',
+                'join',
+                'partition',
+                'replace',
+                'rfind',
+                'rindex',
+                'rpartition',
+                'startswith',
+                'translate',
+                'center',
+                'ljust',
+                'lstrip',
+                'rjust',
+                'rsplit',
+                'rstrip',
+                'split',
+                'strip',
+                'capitalize',
+                'expandtabs',
+                'isalnum',
+                'isalpha',
+                'isdigit',
+                'islower',
+                'isspace',
+                'istitle',
+                'isupper',
+                'lower',
+                'splitlines',
+                'swapcase',
+                'title',
+                'upper',
+                'zfill',
+            },
+            datetime.date: {
                 'year',
                 'month',
                 'day',
-                'date',
+                'replace',
+                'timetuple',
+                'toordinal',
+                'weekday',
+                'isoweekday',
+                'isocalendar',
+                'isoformat',
+                'ctime',
+                'strftime',
             },
+            datetime.datetime: {
+                'year',
+                'month',
+                'day'
+                'hour',
+                'minute',
+                'second',
+                'microsecond',
+                'tzinfo',
+                'fold',
+                'date',
+                'time',
+                'timetz',
+                'replace',
+                'astimezone',
+                'dst',
+                'tzname',
+                'timetuple',
+                'utctimetuple',
+                'toordinal',
+                'timestamp',
+                'weekday',
+                'isoweekday',
+                'isocalendar',
+                'isoformat',
+                'ctime',
+                'strftime',
+            },
+            datetime.time: {
+                'hour',
+                'minute',
+                'second',
+                'microsecond',
+                'tzinfo',
+                'fold',
+                'replace',
+                'isoformat',
+                'strftime',
+                'utcoffset',
+                'dst',
+                'tzname',
+            },
+            datetime.timedelta: {
+                'total_seconds',
+            },
+            datetime.timezone: {
+                'utcoffset',
+                'tzname',
+                'dst',
+                'fromutc',
+            },
+            datetime.tzinfo: {
+                'utcoffset',
+                'dst',
+                'tzname',
+                'fromutc',
+            },
+            dict: {
+                'copy',
+                'get',
+                'items',
+                'keys',
+                'pop',
+                'popitem',
+                'setdefault',
+                'update',
+                'values',
+            },
+            float: {
+                'as_integer_ratio',
+                'is_integer',
+                'hex',
+            },
+            int: {
+                'bit_length',
+                'to_bytes',
+            },
+            list: {
+                'index',
+                'count',
+                'append',
+                'clear',
+                'copy',
+                'extend',
+                'insert',
+                'pop',
+                'remove',
+                'reverse',
+                'sort',
+            },
+            range: {
+                'start',
+                'stop',
+                'step',
+            },
+            str: {
+                'capitalize',
+                'casefold',
+                'center',
+                'count',
+                'encode',
+                'endswith',
+                'expandtabs',
+                'find',
+                'format',
+                'format_map',
+                'index',
+                'isalnum',
+                'isalpha',
+                'isdecimal',
+                'isdigit',
+                'isidentifier',
+                'islower',
+                'isnumeric',
+                'isprintable',
+                'isspace',
+                'istitle',
+                'isupper',
+                'join',
+                'ljust',
+                'lower',
+                'lstrip',
+                'partition',
+                'replace',
+                'rfind',
+                'rindex',
+                'rjust',
+                'rpartition',
+                'rsplit',
+                'rstrip',
+                'split',
+                'splitlines',
+                'swapcase',
+                'startswith',
+                'strip',
+                'title',
+                'translate',
+                'upper',
+                'zfill',
+            },
+            set: {
+                'isdisjoint',
+                'issubset',
+                'issuperset',
+                'union',
+                'intersection',
+                'difference',
+                'symmetric_difference',
+                'copy',
+                'update',
+                'intersection_update',
+                'difference_update',
+                'symmetric_difference_update',
+                'add',
+                'remove',
+                'discard',
+                'pop',
+                'clear',
+            },
+            tuple: {
+                'index',
+                'count',
+                'append',
+                'clear',
+                'copy',
+                'extend',
+                'insert',
+                'pop',
+                'remove',
+                'reverse',
+            },
+        }
+        self.global_symbol_table: Dict[str, Any] = {
+            # builtin type
+            'bool': bool,
+            'bytes': bytes,
+            'complex': complex,
+            'dict': dict,
+            'float': float,
+            'frozenset': frozenset,
+            'int': int,
+            'list': list,
+            'set': set,
+            'str': str,
+            'tuple': tuple,
+            # builtin func
+            'abs': abs,
+            'all': all,
+            'any': any,
+            'ascii': ascii,
+            'bin': bin,
+            'chr': chr,
+            'divmod': divmod,
+            'enumerate': enumerate,
+            'filter': filter,
+            'hex': hex,
+            'isinstance': isinstance,
+            'issubclass': issubclass,
+            'len': len,
+            'map': map,
+            'max': max,
+            'min': min,
+            'oct': oct,
+            'ord': ord,
+            'pow': pow,
+            'range': range,
+            'repr': repr,
+            'reversed': reversed,
+            'round': round,
+            'sorted': sorted,
+            'zip': zip,
+            # additional type
+            'Decimal': Decimal,
+            # module level injection
+            'datetime': datetime,
+            'functools': functools,
+            'html': html,
+            'itertools': itertools,
+            'json': ujson,
+            'math': math,
+            'operator': operator,
+            'random': random,
+            'statistics': statistics,
         }
         self.symbol_table: Dict[str, Any] = {}
         self.current_interrupt: Optional[
@@ -1162,16 +965,19 @@ class Evaluator:
     def visit_attribute(self, node: _ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
         t = type(value)
-        if value in self.allowed_modules:
-            if node.attr in self.allowed_modules[value]:
-                return getattr(value, node.attr)
-            raise BadSyntax(f'You can not access `{node.attr}` attribute')
-        if value in self.allowed_type:
-            if node.attr in self.allowed_type[value]:
-                return getattr(value, node.attr)
-            raise BadSyntax(f'You can not access `{node.attr}` attribute')
-        if t in self.allowed_attributes:
-            if node.attr in self.allowed_attributes[t]:
+        try:
+            if value in self.allowed_modules:
+                if node.attr in self.allowed_modules[value]:
+                    return getattr(value, node.attr)
+                raise BadSyntax(f'You can not access `{node.attr}` attribute')
+            if value in self.allowed_class_properties:
+                if node.attr in self.allowed_class_properties[value]:
+                    return getattr(value, node.attr)
+                raise BadSyntax(f'You can not access `{node.attr}` attribute')
+        except TypeError:
+            pass
+        if t in self.allowed_instance_properties:
+            if node.attr in self.allowed_instance_properties[t]:
                 return getattr(value, node.attr)
             raise BadSyntax(f'You can not access `{node.attr}` attribute')
         raise BadSyntax(f'You can not access attributes of {t}')
@@ -1274,7 +1080,7 @@ class Evaluator:
         result: Dict[Any, Any] = {}
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
-            for val in self._run(current_gen.iter).items():
+            for val in self._run(current_gen.iter):
                 self.assign(current_gen.target, val)
                 add = True
                 for cond in current_gen.ifs:
@@ -1403,6 +1209,8 @@ class Evaluator:
         else:
             if node.id in self.symbol_table:
                 return self.symbol_table[node.id]
+            if node.id in self.global_symbol_table:
+                return self.global_symbol_table[node.id]
             raise NameError()
 
     def visit_nameconstant(self, node: _ast.NameConstant):  # value,
@@ -1412,6 +1220,8 @@ class Evaluator:
         raise BadSyntax('You can not use `nonlocal` syntax')
 
     def visit_num(self, node: _ast.Num):  # n,
+        if self.decimal_mode:
+            return Decimal(str(node.n))
         return node.n
 
     def visit_pass(self, node: _ast.Pass):
@@ -1503,42 +1313,9 @@ class Evaluator:
 def calculate(
     expr: str,
     *,
-    replace_num_to_decimal: bool = True
+    decimal_mode: bool = True
 ):
-    node = ast.parse(expr, filename='<ast>', mode='exec')
-    local: Dict[str, Any] = {}
+    e = Evaluator(decimal_mode=decimal_mode)
+    result = e.run(expr)
 
-    if replace_num_to_decimal:
-        Transformer().visit(node)
-        ast.fix_missing_locations(node)
-
-    en = ExtractNames()
-    en.visit(node)
-    names = en.names
-
-    if '__result__' in names:
-        raise SyntaxError('assign __result__ value is not allowed.')
-
-    Validator(names).visit(node)
-    last = node.body[-1]
-    expect_result = False
-    result = None
-    if isinstance(last, TYPE_EXPR):
-        expect_result = True
-        node.body[-1] = ast.Assign(
-            targets=[ast.Name(id='__result__', ctx=ast.Store())],
-            value=last.value
-        )
-        ast.fix_missing_locations(node)
-
-    exec(compile(node, filename='<ast>', mode='exec'), GLOBAL_CONTEXT, local)
-
-    if expect_result:
-        result = local['__result__']
-        del local['__result__']
-
-    if isinstance(result, Iterable) and \
-       not isinstance(result, BUILTIN_ITERABLE):
-        result = list(result)
-
-    return result, local
+    return result, e.symbol_table
