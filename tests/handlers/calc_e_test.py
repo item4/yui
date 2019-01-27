@@ -49,6 +49,25 @@ async def abc():
     assert 'abc' not in e.symbol_table
 
 
+def test_augassign():
+    e = Evaluator()
+    e.symbol_table['a'] = 0
+    e.run('a += 1')
+    assert e.symbol_table['a'] == 1
+    e.symbol_table['l'] = [1, 2, 3, 4]
+    e.run('l[0] -= 1')
+    assert e.symbol_table['l'] == [0, 2, 3, 4]
+
+    err = 'This assign method is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('l[2:3] += 20')
+
+    e.symbol_table['dt'] = datetime.now()
+    err = 'This assign method is not allowed'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('dt.year += 2000')
+
+
 def test_binop():
     e = Evaluator()
     assert e.run('1 + 2') == 1 + 2

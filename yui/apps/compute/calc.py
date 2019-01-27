@@ -1132,6 +1132,31 @@ class Evaluator:
     def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
         raise BadSyntax('Defining new coroutine via def syntax is not allowed')
 
+    def visit_augassign(self, node: _ast.AugAssign):  # target, op, value
+        value = self._run(node.value)
+        target = node.target
+        target_cls = target.__class__
+        op_cls = node.op.__class__
+
+        if target_cls == _ast.Name:
+            self.symbol_table[target.id] = BINOP_TABLE[op_cls](
+                self.symbol_table[target.id],
+                value,
+            )
+        elif target_cls == _ast.Subscript:
+            sym = self._run(target.value)
+            xslice = self._run(target.slice)
+            if isinstance(target.slice, _ast.Index):
+                sym[xslice] = BINOP_TABLE[op_cls](
+                    sym[xslice],
+                    value,
+                )
+            else:
+                raise BadSyntax('This assign method is not allowed')
+        else:
+            raise BadSyntax('This assign method is not allowed')
+        return
+
     def visit_binop(self, node: _ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
 
