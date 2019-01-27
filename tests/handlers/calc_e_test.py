@@ -318,6 +318,13 @@ else:
     assert e.symbol_table['total2'] == total2
 
 
+def test_formattedvalue():
+    e = Evaluator()
+    e.symbol_table['before'] = 123456
+    e.run('after = f"change {before} to {before:,}!"')
+    assert e.symbol_table['after'] == 'change 123456 to 123,456!'
+
+
 def test_generator_exp():
     e = Evaluator()
     e.symbol_table['r'] = [1, 2, 3]

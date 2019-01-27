@@ -1283,6 +1283,14 @@ class Evaluator:
 
         self.current_interrupt = None
 
+    def visit_formattedvalue(self, node: _ast.FormattedValue):
+        # value, conversion, format_spec
+        value = self._run(node.value)
+        format_spec = self._run(node.format_spec)
+        if format_spec is None:
+            format_spec = ''
+        return format(value, format_spec)
+
     def visit_generatorexp(self, node: _ast.GeneratorExp):
         raise BadSyntax('Defining new generator expression is not allowed')
 
@@ -1306,6 +1314,9 @@ class Evaluator:
 
     def visit_index(self, node: _ast.Index):  # value,
         return self._run(node.value)
+
+    def visit_joinedstr(self, node: _ast.JoinedStr):  # values,
+        return ''.join(self._run(x) for x in node.values)
 
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax('Defining new function via lambda'
