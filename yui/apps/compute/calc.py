@@ -1346,6 +1346,9 @@ class Evaluator:
     def visit_num(self, node: _ast.Num):  # n,
         return node.n
 
+    def visit_raise(self, node: _ast.Raise):
+        raise BadSyntax('You can not use `raise` syntax')
+
     def visit_set(self, node: _ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
 

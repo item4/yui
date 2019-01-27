@@ -452,6 +452,13 @@ def test_num():
     assert e.symbol_table['a'] == 123
 
 
+def test_raise():
+    e = Evaluator()
+    err = 'You can not use `raise` syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('raise NameError')
+
+
 def test_set():
     e = Evaluator()
     assert e.run('{1, 1, 2, 3, 3}') == {1, 2, 3}
