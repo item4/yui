@@ -1120,6 +1120,9 @@ class Evaluator:
     def no_impl(self, node):
         raise NotImplementedError
 
+    def visit_annassign(self, node: _ast.AnnAssign):
+        raise BadSyntax('You can not use annotation syntax')
+
     def visit_assert(self, node: _ast.Assert):
         raise BadSyntax('You can not use assertion syntax')
 

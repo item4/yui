@@ -13,6 +13,16 @@ class GetItemSpy:
         self.queue.append(item)
 
 
+def test_annassign():
+    e = Evaluator()
+
+    err = 'You can not use annotation syntax'
+    with pytest.raises(BadSyntax, match=err):
+        e.run('a: int = 10')
+
+    assert 'a' not in e.symbol_table
+
+
 def test_assert():
     e = Evaluator()
     err = 'You can not use assertion syntax'
