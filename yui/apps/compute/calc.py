@@ -20,50 +20,24 @@ import ujson
 from ...bot import Bot
 from ...box import box
 from ...event import Message
-from ...types.channel import Channel
 
 TIMEOUT = 1
-LENGTH_LIMIT = 300
-
-RESULT_TEMPLATE = {
-    True: {
-        True: {
-            True: '*Expr*\n```{expr}```\n*Result*: Empty string',
-            False: '*Expr*\n```{expr}```\n*Result*\n```{result}{more}```',
-        },
-        False: {
-            True: '*Expr*\n```{expr}```\n*Result*: Empty string',
-            False: '*Expr*\n```{expr}```\n*Result*: `{result}{more}`',
-        }
-    },
-    False: {
-        True: {
-            True: '*Expr*: `{expr}`\n*Result*: Empty string',
-            False: '*Expr*: `{expr}`\n*Result*\n```{result}{more}```',
-        },
-        False: {
-            True: '`{expr}` == Empty string',
-            False: '`{expr}` == `{result}{more}`',
-        }
-    },
-}
 
 
 async def body(
     bot: Bot,
-    channel: Channel,
+    event: Message,
     expr: str,
     help: str,
     decimal_mode: bool = True,
-    ts: str = None
 ):
+    expr = expr.strip()
     expr_is_multiline = '\n' in expr
+    ts = event.message.ts if hasattr(event, 'message') else None
     if not expr:
-        await bot.say(channel, help)
+        await bot.say(event.channel, help)
         return
 
-    result = None
-    local = None
     try:
         async with timeout(TIMEOUT):
             result, local = await bot.run_in_other_thread(
@@ -71,45 +45,31 @@ async def body(
                 expr,
                 decimal_mode=decimal_mode,
             )
-    except SyntaxError as e:
+    except (SyntaxError, BadSyntax) as e:
         await bot.say(
-            channel,
-            '에러가 발생했어요! {}'.format(e),
+            event.channel,
+            '입력해주신 수식에 문법 오류가 있어요! {}'.format(e),
             thread_ts=ts,
         )
         return
     except ZeroDivisionError:
-        if expr_is_multiline:
-            await bot.say(
-                channel,
-                '주어진 식은 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!',
-                thread_ts=ts,
-            )
-        else:
-            await bot.say(
-                channel,
-                '`{}` 는 0으로 나누게 되어요. 0으로 나누는 건 안 돼요!'.format(expr),
-                thread_ts=ts,
-            )
+        await bot.say(
+            event.channel,
+            '입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!',
+            thread_ts=ts,
+        )
         return
     except asyncio.TimeoutError:
-        if expr_is_multiline:
-            await bot.say(
-                channel,
-                '주어진 식은 실행하기엔 너무 오래 걸려요!',
-                thread_ts=ts,
-            )
-        else:
-            await bot.say(
-                channel,
-                '`{}` 는 실행하기엔 너무 오래 걸려요!'.format(expr),
-                thread_ts=ts,
-            )
+        await bot.say(
+            event.channel,
+            '입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!',
+            thread_ts=ts,
+        )
         return
     except Exception as e:
         await bot.say(
-            channel,
-            '에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e),
+            event.channel,
+            '예기치 않은 에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e),
             thread_ts=ts,
         )
         return
@@ -117,65 +77,46 @@ async def body(
     if result is not None:
         result_string = str(result)
 
-        if result_string.count('\n') > 30:
-            await bot.say(
-                channel,
-                '계산 결과에 개행이 너무 많이 들어있어요!',
-                thread_ts=ts
+        if expr_is_multiline or '\n' in result_string:
+            r = (
+                f'```\n{result_string}\n```'
+                if result_string.strip() else '_Empty_'
             )
+            text = (
+                f'*Input*\n```\n{expr}\n```\n'
+                f'*Output*\n{r}'
+            )
+            if ts is None:
+                ts = event.ts
         else:
-            await bot.say(
-                channel,
-                RESULT_TEMPLATE[
-                    expr_is_multiline
-                ][
-                    '\n' in result_string
-                ][
-                    result_string.strip() == ''
-                ].format(
-                    expr=expr,
-                    result=result_string[:300],
-                    more='⋯' if len(result_string) > LENGTH_LIMIT else '',
-                ),
-                thread_ts=ts
+            r = (
+                f'`{result_string}`'
+                if result_string.strip() else '_Empty_'
             )
+            text = f'`{expr}` == {r}'
+        await bot.say(
+            event.channel,
+            text,
+            thread_ts=ts,
+        )
     elif local:
         r = '\n'.join(
-            '{} = {}'.format(key, value)
+            '{} = {}'.format(key, repr(value))
             for key, value in local.items()
         )
-        if r.count('\n') > 30:
-            await bot.say(
-                channel,
-                '계산 결과에 개행이 너무 많이 들어있어요!',
-                thread_ts=ts
-            )
-        else:
-            if expr_is_multiline:
-                await bot.say(
-                    channel,
-                    '*Expr*\n```{}```\n*Local*\n```{}```'.format(expr, r),
-                    thread_ts=ts,
-                )
-            else:
-                await bot.say(
-                    channel,
-                    '*Expr*: `{}`\n*Local*\n```{}```'.format(expr, r),
-                    thread_ts=ts,
-                )
+        if ts is None:
+            ts = event.ts
+        await bot.say(
+            event.channel,
+            f'*Input*\n```\n{expr}\n```\n*Local State*\n```\n{r}\n```',
+            thread_ts=ts,
+        )
     else:
-        if expr_is_multiline:
-            await bot.say(
-                channel,
-                '*Expr*\n```{}```\n*Local*: Empty'.format(expr),
-                thread_ts=ts,
-            )
-        else:
-            await bot.say(
-                channel,
-                '*Expr*: `{}`\n*Local*: Empty'.format(expr),
-                thread_ts=ts,
-            )
+        await bot.say(
+            event.channel,
+            '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!',
+            thread_ts=ts,
+        )
 
 
 @box.command('=', ['calc'])
@@ -191,7 +132,7 @@ async def calc_decimal(bot, event: Message, raw: str):
 
     await body(
         bot,
-        event.channel,
+        event,
         raw,
         '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
         True,
@@ -203,11 +144,10 @@ async def calc_decimal_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
-            event.channel,
+            event,
             raw,
             '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
             True,
-            event.message.ts,
         )
 
 
@@ -224,7 +164,7 @@ async def calc_num(bot, event: Message, raw: str):
 
     await body(
         bot,
-        event.channel,
+        event,
         raw,
         '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
         False,
@@ -236,11 +176,10 @@ async def calc_num_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
-            event.channel,
+            event,
             raw,
             '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
             False,
-            event.message.ts,
         )
 
 
