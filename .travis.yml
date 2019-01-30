@@ -5,6 +5,7 @@ sudo: false
 cache:
   directories:
   - $HOME/.cache/pip
+  - $HOME/.cache/pypoetry
 services:
 - docker
 - postgresql
