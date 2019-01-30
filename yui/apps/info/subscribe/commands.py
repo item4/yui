@@ -152,7 +152,7 @@ class RSS(route.RouteApp):
 async def crawl(bot, sess):
     feeds = sess.query(RSSFeedURL).all()
 
-    for feed in feeds:  # type: RssFeedSub
+    for feed in feeds:  # type: RSSFeedURL
         data = ''
         async with client_session() as session:
             try:
