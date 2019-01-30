@@ -33,7 +33,7 @@ async def body(
 ):
     expr = expr.strip()
     expr_is_multiline = '\n' in expr
-    ts = event.message.ts if hasattr(event, 'message') else None
+    ts = None if event.message is None else event.message.ts
     if not expr:
         await bot.say(event.channel, help)
         return
