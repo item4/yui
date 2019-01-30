@@ -211,8 +211,8 @@ def test_compare():
     assert e.run('3 >= 2') == (3 >= 2)
     assert e.run('"A" in "America"') == ('A' in 'America')
     assert e.run('"E" not in "America"') == ('E' not in 'America')
-    assert e.run('1 is 2') == (1 is 2)
-    assert e.run('1 is not 2') == (1 is not 2)
+    assert e.run('1 is 2') == (1 is 2)  # noqa
+    assert e.run('1 is not 2') == (1 is not 2)  # noqa
     assert e.run('3 < 2') == (3 < 2)
     assert e.run('3 <= 2') == (3 <= 2)
 
