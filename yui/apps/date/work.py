@@ -1,12 +1,11 @@
 import aiohttp
 
-from .utils import get_holiday_name
+from .utils import get_holiday_names
 from ...api import Attachment
 from ...box import box
 from ...command import C
 from ...utils.datetime import now
 
-box.assert_config_required('TDCPROJECT_KEY', str)
 box.assert_channel_required('general')
 
 
@@ -68,15 +67,15 @@ async def say_knife(bot, hour: int):
 
 @box.cron('0 9 * * 1-5')
 async def work_start(bot):
-    holiday = None
+    holidays = None
     today = now()
     try:
-        holiday = await get_holiday_name(bot.config.TDCPROJECT_KEY, today)
+        holidays = await get_holiday_names(today)
     except aiohttp.client_exceptions.ClientOSError:
         pass
 
-    if holiday:
-        await say_raccoon_man(bot, holiday)
+    if holidays:
+        await say_raccoon_man(bot, holidays[0])
     else:
         if today.isoweekday() == 1:
             await say_start_monday(bot)
@@ -86,15 +85,15 @@ async def work_start(bot):
 
 @box.cron('0 18,19 * * 1-5')
 async def work_end(bot):
-    holiday = None
+    holidays = None
     today = now()
     hour = today.hour - 12
     try:
-        holiday = await get_holiday_name(bot.config.TDCPROJECT_KEY, today)
+        holidays = await get_holiday_names(today)
     except aiohttp.client_exceptions.ClientOSError:
         pass
 
-    if holiday:
-        await say_happy_cat(bot, holiday, hour)
+    if holidays:
+        await say_happy_cat(bot, holidays[0], hour)
     else:
         await say_knife(bot, hour)

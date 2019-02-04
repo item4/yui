@@ -5,12 +5,11 @@ import aiohttp
 
 import tossi
 
-from .utils import get_holiday_name
+from .utils import get_holiday_names
 from ...box import box
 from ...command import C
 from ...utils.datetime import now
 
-box.assert_config_required('TDCPROJECT_KEY', str)
 box.assert_channel_required('general')
 
 
@@ -30,18 +29,20 @@ async def monday_dog(bot):
         icon_url=icon,
     )
     today = now()
-    holiday = None
+    holidays = None
     try:
-        holiday = await get_holiday_name(bot.config.TDCPROJECT_KEY, today)
+        holidays = await get_holiday_names(today)
     except aiohttp.client_exceptions.ClientOSError:
         pass
 
-    if holiday:
+    if holidays:
         says = [
-            '월' * random.randint(5, 15) + '…' + ''.join(
-                random.choice(['?', '!']) for x in range(random.randint(3, 10))
+            '월' * random.randint(3, 10) + '…' + ''.join(
+                random.choice(['?', '!']) for x in range(random.randint(2, 4))
             ),
-            '(하지만 {} 쉬는 날이었다고 한다)'.format(tossi.postfix(holiday, '(이)라'))
+            '(하지만 {} 쉬는 날이었다고 한다)'.format(
+                tossi.postfix(holidays[0], '(이)라'),
+            )
         ]
         for say in says:
             await monday_dog_say(text=say)

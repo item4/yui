@@ -1,5 +1,3 @@
-import os
-
 from freezegun import freeze_time
 
 import pytest
@@ -10,18 +8,9 @@ from yui.utils.datetime import datetime
 from ...util import FakeBot
 
 
-@pytest.fixture()
-def fx_tdcproject_key():
-    key = os.getenv('TDCPROJECT_KEY')
-    if not key:
-        pytest.skip('Can not test this without TDCPROJECT_KEY envvar')
-    return key
-
-
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 9))
-async def test_work_start_monday(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_start_monday(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -38,8 +27,7 @@ async def test_work_start_monday(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 10, 9))
-async def test_work_start_normal(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_start_normal(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -58,8 +46,7 @@ async def test_work_start_normal(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 9))
-async def test_work_start_holiday(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_start_holiday(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -78,8 +65,7 @@ async def test_work_start_holiday(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 18))
-async def test_work_end_18_normal(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_end_18_normal(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -98,8 +84,7 @@ async def test_work_end_18_normal(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 18))
-async def test_work_end_18_holiday(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_end_18_holiday(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -118,8 +103,7 @@ async def test_work_end_18_holiday(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 19))
-async def test_work_end_19_normal(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_end_19_normal(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
@@ -138,8 +122,7 @@ async def test_work_end_19_normal(fx_config, fx_tdcproject_key):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 19))
-async def test_work_end_19_holiday(fx_config, fx_tdcproject_key):
-    fx_config.TDCPROJECT_KEY = fx_tdcproject_key
+async def test_work_end_19_holiday(fx_config):
     fx_config.CHANNELS['general'] = 'general'
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
