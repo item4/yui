@@ -1,14 +1,14 @@
 import asyncio
-from typing import Coroutine
+from typing import Any, Coroutine
 
 from ..api.type import APIResponse
 
 
-async def retry(coro: Coroutine[..., ..., APIResponse]) -> APIResponse:
+async def retry(coro: Coroutine[Any, Any, APIResponse]) -> APIResponse:
     sleep = 1
     while True:
         resp = await coro
-        if resp.body['ok']:
+        if isinstance(resp.body, dict) and resp.body['ok']:
             return resp
         if sleep > 16:
             return resp
