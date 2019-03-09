@@ -167,7 +167,7 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def search_on_air(bot, event: Message, title: str, timeout: float = 1.0):
+async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
     ohli_list_url = 'http://ohli.moe/anitime/list'
     anissia_list_url = 'http://www.anissia.net/anitime/list'
@@ -341,7 +341,7 @@ async def search_finished(
     bot,
     event: Message,
     title: str,
-    timeout: float = 1.0,
+    timeout: float = 2.5,
 ):
 
     data = await get_json(
