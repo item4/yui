@@ -2,6 +2,7 @@ from typing import Optional, Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
+from .type import APIResponse
 from ..types.base import PublicChannelID, Ts
 from ..types.channel import PublicChannel
 
@@ -18,7 +19,7 @@ class Channels(Endpoint):
         latest: Optional[Ts] = None,
         oldest: Optional[Ts] = None,
         unreads: Optional[bool] = None,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/channels.history"""
 
         if isinstance(channel, PublicChannel):
@@ -51,7 +52,7 @@ class Channels(Endpoint):
         self,
         channel: Union[PublicChannel, PublicChannelID],
         include_locale: bool = False,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/channels.info"""
 
         if isinstance(channel, PublicChannel):
@@ -73,7 +74,7 @@ class Channels(Endpoint):
         exclude_archived: bool = True,
         exclude_members: bool = True,
         limit: int = 0,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/channels.list"""
 
         params = {

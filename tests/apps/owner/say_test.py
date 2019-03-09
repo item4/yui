@@ -1,5 +1,6 @@
 import pytest
 
+from yui.api.type import APIResponse
 from yui.apps.owner.say import say
 
 from ...util import FakeBot
@@ -16,12 +17,16 @@ async def test_say_command(fx_config):
 
     @bot.response('im.open')
     def im_open(data):
-        return {
-            'ok': True,
-            'channel': {
-                'id': data['user'].replace('U', 'D'),
+        return APIResponse(
+            body={
+                'ok': True,
+                'channel': {
+                    'id': data['user'].replace('U', 'D'),
+                },
             },
-        }
+            status=200,
+            headers={},
+        )
 
     text = '안녕하세요! 하고 유이인 척 하기'
 

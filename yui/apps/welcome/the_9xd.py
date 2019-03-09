@@ -17,7 +17,7 @@ async def welcome_9xd(bot, event: TeamJoin):
         f'9XD Slack에는 여러가지 채널들이 있으니 제가 남기는 thread의 설명을 읽어주세요!\n'
         f'그럼 즐거운 Slack 이용이 되셨으면 좋겠습니다! 잘 부탁드려요!'
     )
-    if chat['ok']:
+    if chat.body['ok']:
         await bot.say(
             channel,
             f'9XD Slack에는 다음과 같은 채널들이 있으니 참가해보셔도 좋을 것 같아요!\n\n'
@@ -37,5 +37,5 @@ async def welcome_9xd(bot, event: TeamJoin):
             f'- 언어별 채널 - #cplusplus, #dotnet, #fp, #go, #java, #js, '
             f'#kotlin, #php, #python, #ruby, #rust\n\n'
             f'이외에도 더 많은 채널들이 있어요. 채널 목록을 참조해주세요!',
-            thread_ts=chat['ts'],
+            thread_ts=chat.body['ts'],
         )

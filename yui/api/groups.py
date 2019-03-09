@@ -2,6 +2,7 @@ from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
+from .type import APIResponse
 from ..types.base import PrivateChannelID
 from ..types.channel import PrivateChannel
 
@@ -14,7 +15,7 @@ class Groups(Endpoint):
         self,
         channel: Union[PrivateChannel, PrivateChannelID],
         include_locale: bool = False,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/groups.info"""
 
         if isinstance(channel, PrivateChannel):
@@ -34,7 +35,7 @@ class Groups(Endpoint):
         self,
         exclude_archived: bool = True,
         exclude_members: bool = True,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/groups.list"""
 
         return await self._call(

@@ -3,7 +3,6 @@ import datetime
 import logging
 import time
 
-from ..bot import APICallError
 from ..box import box
 from ..command import Cs, Us, option
 from ..event import Message
@@ -40,18 +39,15 @@ async def cleanup_channels(bot):
             unreads=True,
         )
 
-        if history['ok']:
-            logger.debug(f'channel history: {len(history["messages"])}')
-            for message in history['messages']:
-                try:
-                    r = await bot.api.chat.delete(
-                        channel,
-                        message['ts'],
-                        token=bot.config.OWNER_USER_TOKEN,
-                    )
-                    logger.debug(f'message {message["ts"]} delete: {r}')
-                except APICallError:
-                    logger.debug(f'message {message} fail to delete')
+        if history.body['ok']:
+            logger.debug(f'channel history: {len(history.body["messages"])}')
+            for message in history.body['messages']:
+                r = await bot.api.chat.delete(
+                    channel,
+                    message['ts'],
+                    token=bot.config.OWNER_USER_TOKEN,
+                )
+                if not r.body['ok']:
                     break
         logger.debug(f'channel {channel.name} end')
 
@@ -60,8 +56,7 @@ async def cleanup_channels(bot):
 
 @box.command('청소')
 @option('--count', '-c', default=100)
-@option('--loop', '-l', is_flag=True, default=False, value=True)
-async def cleanup(bot, event: Message, count: int, loop: bool):
+async def cleanup(bot, event: Message, count: int):
     """
     채널 청소
 
@@ -90,7 +85,6 @@ async def cleanup(bot, event: Message, count: int, loop: bool):
             )
             return
         count = 100
-        loop = False
 
         if event.channel.id in cleanup.last_call:
             last_call = cleanup.last_call[event.channel.id]
@@ -110,25 +104,16 @@ async def cleanup(bot, event: Message, count: int, loop: bool):
     )
 
     delete_count = 0
-    stop = False
-    if history['ok']:
-        for message in history['messages']:
-            while True:
-                try:
-                    await bot.api.chat.delete(
-                        event.channel,
-                        message['ts'],
-                        token=bot.config.OWNER_USER_TOKEN,
-                    )
-                    delete_count += 1
-                    break
-                except APICallError:
-                    if loop:
-                        await asyncio.sleep(1)
-                    else:
-                        stop = True
-                        break
-            if stop:
+    if history.body['ok']:
+        for message in history.body['messages']:
+            r = await bot.api.chat.delete(
+                event.channel,
+                message['ts'],
+                token=bot.config.OWNER_USER_TOKEN,
+            )
+            if r.body['ok']:
+                delete_count += 1
+            else:
                 break
 
     await bot.say(

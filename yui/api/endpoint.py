@@ -1,4 +1,6 @@
-from typing import Any, Dict
+from typing import Dict
+
+from .type import APIResponse
 
 
 class Endpoint:
@@ -15,5 +17,5 @@ class Endpoint:
         data: Dict[str, str],
         *,
         token=None,
-    ) -> Dict[str, Any]:
+    ) -> APIResponse:
         return await self.bot.call(f'{self.name}.{method}', data, token=token)

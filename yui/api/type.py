@@ -1,5 +1,5 @@
 import enum
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import attr
 
@@ -10,6 +10,14 @@ def call_or_none(c):
             return None
         return c(value)
     return converter
+
+
+@attr.dataclass(slots=True)
+class APIResponse:
+
+    body: Union[Dict[str, Any], str]
+    status: int
+    headers: Dict[str, Any]
 
 
 @attr.dataclass(slots=True)

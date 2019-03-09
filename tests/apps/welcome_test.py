@@ -1,5 +1,6 @@
 import pytest
 
+from yui.api.type import APIResponse
 from yui.apps.welcome.item4 import welcome_item4
 from yui.apps.welcome.the_9xd import welcome_9xd
 from yui.event import create_event
@@ -52,10 +53,14 @@ async def test_welcome_9xd_handler(fx_config):
 
     @bot.response('chat.postMessage')
     def team_join(data):
-        return {
-            'ok': True,
-            'ts': '1234.5678',
-        }
+        return APIResponse(
+            body={
+                'ok': True,
+                'ts': '1234.5678',
+            },
+            status=200,
+            headers={},
+        )
 
     await welcome_9xd(bot, event)
 

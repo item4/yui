@@ -4,8 +4,8 @@ import pytest
 
 import ujson
 
-from yui.api import SlackAPI
-from yui.bot import APICallError, Bot
+from yui.api import APIResponse, SlackAPI
+from yui.bot import Bot
 from yui.box import Box
 
 from .util import FakeImportLib
@@ -87,25 +87,36 @@ async def test_call(fx_config, response_mock):
     bot = Bot(fx_config, using_box=box)
 
     res = await bot.call('test11')
-    assert res['res'] == 'hello world!'
+    assert res == APIResponse(
+        body={'res': 'hello world!'},
+        status=200,
+        headers={'content-type': 'application/json'},
+    )
 
     res = await bot.call('test12', data={'extra': 'wow'})
-    assert res['res'] == 'hello world!'
-    assert res['data']['extra'] == 'wow'
+    assert res == APIResponse(
+        body={'res': 'hello world!', 'data': {'extra': 'wow'}},
+        status=200,
+        headers={'content-type': 'application/json'},
+    )
 
-    with pytest.raises(APICallError) as e:
-        await bot.call('test21')
-    assert str(e.value) == 'fail to call test21 with None'
-    assert e.value.status_code == 404
-    assert e.value.result == {'error': 'aaa'}
-    assert e.value.headers['Content-Type'] == 'application/json'
+    res = await bot.call('test21')
+    assert res == APIResponse(
+        body={'error': 'aaa'},
+        status=404,
+        headers={'content-type': 'application/json'},
+    )
 
-    with pytest.raises(APICallError) as e:
-        await bot.call('test22', data={'extra': 'wow'})
-    assert str(e.value) == "fail to call test22 with {'extra': 'wow'}"
-    assert e.value.status_code == 404
-    assert e.value.result == {'error': 'aaa'}
-    assert e.value.headers['Content-Type'] == 'application/json'
+    res = await bot.call('test22', data={'extra': 'wow'})
+    assert res == APIResponse(
+        body={'error': 'aaa'},
+        status=404,
+        headers={'content-type': 'application/json'},
+    )
 
     res = await bot.call('test3', token=token)
-    assert res['res'] == 'hello world!'
+    assert res == APIResponse(
+        body={'res': 'hello world!'},
+        status=200,
+        headers={'content-type': 'application/json'},
+    )

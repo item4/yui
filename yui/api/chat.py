@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 from .encoder import SlackEncoder, bool2str
 from .endpoint import Endpoint
-from .type import Attachment
+from .type import APIResponse, Attachment
 from ..types.base import ChannelID, Ts
 from ..types.channel import Channel
 from ..types.user import User
@@ -20,7 +20,7 @@ class Chat(Endpoint):
         as_user: Optional[bool] = None,
         *,
         token: Optional[str] = None,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/chat.delete"""
 
         if isinstance(channel, Channel):
@@ -56,7 +56,7 @@ class Chat(Endpoint):
         response_type: Optional[str] = None,
         replace_original: Optional[bool] = None,
         delete_original: Optional[bool] = None,
-    ):
+    ) -> APIResponse:
         """https://api.slack.com/methods/chat.postMessage"""
 
         if isinstance(channel, (Channel, User)):

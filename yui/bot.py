@@ -10,12 +10,14 @@ from typing import Any, Callable, Dict, List, TypeVar, Union
 import aiocron
 
 import aiohttp
+from aiohttp.client_exceptions import ClientConnectorError, ContentTypeError
 
 import async_timeout
 
 import ujson
 
 from .api import SlackAPI
+from .api.type import APIResponse
 from .box import Box, box
 from .box.tasks import CronTask
 from .config import Config
@@ -61,6 +63,7 @@ class APICallError(Exception):
 class Bot:
     """Yui."""
 
+    api: SlackAPI
     loop: asyncio.AbstractEventLoop
 
     def __init__(
@@ -216,7 +219,7 @@ class Bot:
         data: Dict[str, str] = None,
         *,
         token: str = None,
-    ) -> Dict[str, Any]:
+    ) -> APIResponse:
         """Call API methods."""
 
         async with client_session() as session:
@@ -229,27 +232,14 @@ class Bot:
                 ) as response:
                     try:
                         result = await response.json(loads=ujson.loads)
-                    except aiohttp.client_exceptions.ContentTypeError:
-                        raise APICallError(
-                            'fail to call {} with {}'.format(
-                                method, data
-                            ),
-                            status_code=response.status,
-                            result=await response.text(),
-                            headers=response.headers,
-                        )
-                    if response.status == 200:
-                        return result
-                    else:
-                        raise APICallError(
-                            'fail to call {} with {}'.format(
-                                method, data
-                            ),
-                            status_code=response.status,
-                            result=result,
-                            headers=response.headers,
-                        )
-            except aiohttp.client_exceptions.ClientConnectorError:
+                    except ContentTypeError:
+                        result = await response.text()
+                    return APIResponse(
+                        body=result,
+                        status=response.status,
+                        headers=response.headers,
+                    )
+            except ClientConnectorError:
                 raise APICallError('fail to call {} with {}'.format(
                     method, data
                 ))
@@ -259,7 +249,7 @@ class Bot:
         channel: Union[Channel, ChannelID],
         text: str,
         **kwargs
-    ) -> Dict[str, Any]:
+    ) -> APIResponse:
         """Shortcut for bot saying."""
 
         return await self.api.chat.postMessage(
@@ -326,7 +316,7 @@ class Bot:
                 sleep += 1
                 continue
 
-            if not rtm['ok']:
+            if not rtm.body['ok']:
                 await asyncio.sleep((sleep+1)*10)
                 sleep += 1
                 continue
@@ -340,7 +330,7 @@ class Bot:
                 await asyncio.sleep(0.01)
             try:
                 async with client_session() as session:
-                    async with session.ws_connect(rtm['url']) as ws:
+                    async with session.ws_connect(rtm.body['url']) as ws:
                         while True:
                             if self.restart:
                                 self.restart = False

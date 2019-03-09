@@ -2,7 +2,7 @@ import asyncio
 from typing import List, NamedTuple
 from urllib.parse import urlencode
 
-import aiohttp
+from aiohttp.client_exceptions import ClientConnectionError, ContentTypeError
 
 import ujson
 
@@ -87,7 +87,7 @@ async def query(domain: str, server: DNSServer) -> Result:
                     try:
                         data = await res.json(loads=ujson.loads)
                         data['error'] = False
-                    except aiohttp.client_exceptions.ContentTypeError:
+                    except ContentTypeError:
                         data = {
                             'A': '',
                             'error': True,
@@ -127,7 +127,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
         event.channel,
         f'`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
     )
-    if chat['ok']:
+    if chat.body['ok']:
         tasks = []
         if server_list:
             for ip in server_list:
@@ -146,7 +146,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
         for r in ok:
             try:
                 res = r.result()
-            except aiohttp.client_exceptions.ClientConnectionError:
+            except ClientConnectionError:
                 continue
             result.append(res)
 

@@ -42,7 +42,7 @@ async def say(
                 target = channel
             elif user:
                 resp = await bot.api.im.open(user)
-                target = resp['channel']['id']
+                target = resp.body['channel']['id']
     else:
         text = '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name)
 
