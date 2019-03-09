@@ -18,6 +18,7 @@ from ....box import box
 from ....command import C
 from ....orm import EngineConfig, subprocess_session_manager
 from ....session import client_session
+from ....utils.api import retry
 
 box.assert_channel_required('sao')
 
@@ -208,11 +209,11 @@ async def watch_notice(bot: Bot, engine_config: EngineConfig):
             engine_config,
         )
         if attachments:
-            await bot.api.chat.postMessage(
+            await retry(bot.api.chat.postMessage(
                 channel=C.sao.get(),
                 attachments=attachments,
                 as_user=True,
-            )
+            ))
 
     await asyncio.wait([
         watch(Server.japan),

@@ -9,6 +9,7 @@ from ...api import Attachment, Field
 from ...box import box
 from ...command import C
 from ...session import client_session
+from ...utils.api import retry
 from ...utils.datetime import now
 
 
@@ -110,9 +111,9 @@ async def watch(bot, sess):
         with sess.begin():
             sess.add(cache)
 
-        await bot.api.chat.postMessage(
+        await retry(bot.api.chat.postMessage(
             channel=C.sao.get(),
             as_user=True,
             text='토라노아나(남성/전연령)에 소드 아트 온라인 신간이 올라왔어요!',
             attachments=attachments,
-        )
+        ))

@@ -33,6 +33,7 @@ from .types.channel import (
 )
 from .types.namespace import Namespace
 from .types.user import User
+from .utils.api import retry
 
 
 R = TypeVar('R')
@@ -248,17 +249,22 @@ class Bot:
         self,
         channel: Union[Channel, ChannelID],
         text: str,
+        *,
+        retry_until_send: bool = False,
         **kwargs
     ) -> APIResponse:
         """Shortcut for bot saying."""
 
-        return await self.api.chat.postMessage(
+        coro = self.api.chat.postMessage(
             channel,
             text,
             as_user=True,
             link_names=True,
             **kwargs
         )
+        if retry_until_send:
+            return await retry(coro)
+        return await coro
 
     async def process(self):
         """Process messages."""
