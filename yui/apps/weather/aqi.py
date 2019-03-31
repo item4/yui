@@ -4,8 +4,6 @@ from urllib.parse import urlencode
 
 from fake_useragent import UserAgent
 
-import tossi
-
 import tzlocal
 
 import ujson
@@ -168,10 +166,8 @@ async def aqi(bot, event: Message, address: str):
     time -= tzlocal.get_localzone().utcoffset(time)
 
     ftime = time.strftime('%Y년 %m월 %d일 %H시')
-    j = tossi.pick(full_address, '를')
     text = (
-        f'{result.name}의 {ftime} 계측 자료에요.'
-        f' {full_address}{j} 기준으로 AQI에 정보를 요청했어요!\n\n'
+        f'{full_address} 기준으로 가장 근접한 관측소의 {ftime} 계측 자료에요.\n\n'
         f'* 종합 AQI: {result.aqi} - {get_aqi_description(result.aqi)}\n'
     )
 
