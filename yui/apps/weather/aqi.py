@@ -62,11 +62,8 @@ async def get_geometric_info_by_address(
     }) as session:
         async with session.get(url) as res:
             data = await res.json(loads=ujson.loads)
-    full_address = ' '.join(
-        x['long_name'] for x in reversed(
-            data['results'][0]['address_components']
-        )
-    )
+
+    full_address = data['results'][0]['formatted_address']
     lat = data['results'][0]['geometry']['location']['lat']
     lng = data['results'][0]['geometry']['location']['lng']
 
