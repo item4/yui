@@ -176,8 +176,8 @@ async def aqi(bot, event: Message, address: str):
     )
 
     for key, name in LABELS.items():
-        if hasattr(result, key):
-            f: Field = getattr(result, key)
+        f: Field = getattr(result, key)
+        if f:
             text += f'* {name}: {f.current} (최소 {f.min} / 최대 {f.max})\n'
 
     text = text.strip()
