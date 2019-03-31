@@ -56,7 +56,7 @@ SERVER_LIST_V6: List[DNSServer] = [
 
 async def is_ipv6_enabled() -> bool:
     try:
-        with client_session() as session:
+        async with client_session() as session:
             async with session.get('http://ipv6.icanhazip.com'):
                 return True
     except:  # noqa
