@@ -54,6 +54,7 @@ async def get_geometric_info_by_address(
     api_key: str,
 ) -> Tuple[str, float, float]:
     url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+        'region': 'kr',
         'address': address,
         'key': api_key,
     })
