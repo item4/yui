@@ -17,7 +17,7 @@ from yui.apps.weather.aqi import (
 from ...util import FakeBot
 
 result_pattern_re = re.compile(
-    r'.+? 기준으로 가장 근접한 관측소의\d{4}년 \d{2}월 \d{2}일 \d{2}시 계측 자료에요.\n\n'
+    r'.+? 기준으로 가장 근접한 관측소의 \d{4}년 \d{2}월 \d{2}일 \d{2}시 계측 자료에요.\n\n'
     r'\* 종합 AQI: \d+(?:\.\d+)? - (?:좋음|보통|민감군 영향|나쁨|매우 나쁨|위험)\(.+?\)\n'
     r'\* PM2\.5: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
     r'\* PM10: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)\n'
@@ -60,7 +60,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
         fx_google_api_key,
     )
 
-    assert full_address == '대한민국 서울특별시 서울특별시'
+    assert full_address == '대한민국 서울특별시'
     assert lat == 37.566535
     assert lng == 126.9779692
 
@@ -151,17 +151,14 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 async def test_aqi_error1(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+            'region': 'kr',
             'address': '부천',
             'key': 'qwer',
         }),
         body=ujson.dumps({
             'results': [
                 {
-                    'address_components': [
-                        {
-                            'long_name': '부천',
-                        },
-                    ],
+                    'formatted_address': '대한민국 경기도 부천시',
                     'geometry': {
                         'location': {
                             'lat': 37.5034138,
@@ -202,17 +199,14 @@ async def test_aqi_error1(fx_config, response_mock):
 async def test_aqi_error2(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
+            'region': 'kr',
             'address': '부천',
             'key': 'qwer',
         }),
         body=ujson.dumps({
             'results': [
                 {
-                    'address_components': [
-                        {
-                            'long_name': '부천',
-                        },
-                    ],
+                    'formatted_address': '대한민국 경기도 부천시',
                     'geometry': {
                         'location': {
                             'lat': 37.5034138,
