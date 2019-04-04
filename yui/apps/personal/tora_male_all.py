@@ -44,10 +44,9 @@ def process(
         )
         image_url = thumbnail_container[0][0].get('src').strip()
         title = item.cssselect('.product_title')[0].text_content().strip()
-        desc_els = item.cssselect('.product_desc p label')
-        category = desc_els[0].text_content().strip()
-        author_name = desc_els[1].text_content().strip()
-        remain = desc_els[-1].text_content().strip()[-1]
+        labels_els = item.cssselect('.product_labels')
+        remain = labels_els[-1].text_content().strip()[-1]
+        author_name = labels_els[0][0].text_content().strip()
         price = item.cssselect('.product_price')[0].text_content().strip()
         color = '3399ff'
 
@@ -55,11 +54,6 @@ def process(
             Field(
                 title='호랑이굴',
                 value='남성 성인',
-                short=True,
-            ),
-            Field(
-                title='카테고리',
-                value=category,
                 short=True,
             ),
             Field(

@@ -44,29 +44,23 @@ def process(
             thumbnail_container[0].get('href').strip()
         )
         title = item.cssselect('.product_title')[0].text_content().strip()
-        desc_els = item.cssselect('.product_desc p label')
-        category = desc_els[0].text_content().strip()
-        r = desc_els[1].text_content().strip()
-        remain = desc_els[-1].text_content().strip()[-1]
+        labels_els = item.cssselect('.product_labels')
+        remain = labels_els[-1].text_content().strip()[-1]
+        author_name = labels_els[0][0].text_content().strip()
         price = item.cssselect('.product_price')[0].text_content().strip()
-        if r == '18禁':
+        if any(
+                '18禁' in li.text_content().strip()
+                for li in item.cssselect('.product_tags li')
+        ):
             image_url = None
             color = 'ff0000'
-            category += ' (18禁)'
-            author_name = desc_els[2].text_content().strip()
         else:
             color = '3399ff'
-            author_name = desc_els[1].text_content().strip()
 
         fields: List[Field] = [
             Field(
                 title='호랑이굴',
                 value='남성 전체',
-                short=True,
-            ),
-            Field(
-                title='카테고리',
-                value=category,
                 short=True,
             ),
             Field(
