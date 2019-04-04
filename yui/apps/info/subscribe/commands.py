@@ -3,7 +3,9 @@ import re
 
 import aiohttp
 
-from libearth.parser.autodiscovery import get_format
+import dateutil.parser
+
+import feedparser
 
 import pytz
 
@@ -83,21 +85,21 @@ class RSS(route.RouteApp):
             )
             return
 
-        parser = get_format(data)
+        f = feedparser.parse(data)
 
-        if parser is None:
+        if f.bozo != 0:
             await bot.say(
                 event.channel,
                 f'`{url}`은 올바른 RSS 문서가 아니에요!'
             )
             return
 
-        f, _ = parser(data, url)
-
         feed = RSSFeedURL()
         feed.channel = event.channel.id
         feed.url = url
-        feed.updated_at = f.updated_at.astimezone(pytz.UTC)
+        feed.updated_at = max([
+                dateutil.parser.parse(entry.published) for entry in f.entries
+            ]).astimezone(pytz.UTC)
 
         with sess.begin():
             sess.add(feed)
@@ -172,33 +174,36 @@ async def crawl(bot, sess):
             )
             continue
 
-        parser = get_format(data)
+        f = feedparser.parse(data)
 
-        if parser is None:
+        if f.bozo != 0:
             await bot.say(
                 feed.channel,
                 f'*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!'
             )
             continue
-        f, _ = parser(data, feed.url)
 
+        last_updated = feed.updated_at
         attachments = []
 
         for entry in reversed(f.entries):
-            if feed.updated_at < entry.updated_at.astimezone(pytz.UTC):
+            t = dateutil.parser.parse(entry.published).astimezone(pytz.UTC)
+            if feed.updated_at < t:
                 attachments.append(Attachment(
                     fallback=(
                         'RSS Feed: '
-                        f'{str(f.title)} - '
+                        f'{str(f.feed.title)} - '
                         f'{str(entry.title)} - '
-                        f'{entry.links[0].uri}'
+                        f'{entry.links[0].href}'
                     ),
                     title=str(entry.title),
-                    title_link=entry.links[0].uri,
-                    text=('\n'.join(str(entry.content).split('\n')[:3]))[:100],
-                    author_name=str(f.title),
+                    title_link=entry.links[0].href,
+                    text=('\n'.join(str(entry.summary).split('\n')[:3]))[:100],
+                    author_name=str(f.feed.title),
                 ))
-                feed.updated_at = entry.updated_at.astimezone(pytz.UTC)
+                last_updated = t
+
+        feed.updated_at = last_updated
 
         if attachments:
             await bot.api.chat.postMessage(
