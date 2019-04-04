@@ -165,5 +165,5 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
                     for r in result
                 )
             ),
-            thread_ts=chat['ts'],
+            thread_ts=chat.body['ts'],
         )
