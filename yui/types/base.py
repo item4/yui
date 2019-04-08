@@ -1,4 +1,4 @@
-#: :type:`type` User ID type. It must start with 'U'.
+#: :type:`type` User ID type. It must start with 'U' or 'W'.
 UserID = str
 
 #: :type:`type` Public Channel ID type. It must start with 'C'.

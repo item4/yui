@@ -121,7 +121,7 @@ def user_id_convert(value):
         return id
 
     from .user import create_unknown_user  # circular dependency
-    if not id.startswith('U'):
+    if not (id.startswith('U') or id.startswith('W')):
         raise KeyError('Given ID value has unexpected prefix.')
     for obj in bot.users:
         if obj.id == id:
@@ -144,7 +144,7 @@ def id_convert(value):
     if id is None:
         return id
 
-    if id.startswith('U'):
+    if id.startswith('U') or id.startswith('W'):
         return user_id_convert(value)
     return channel_id_convert(value)
 
