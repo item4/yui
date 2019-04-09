@@ -37,12 +37,12 @@ def process(
         current.append(id)
         if id in first_page:
             continue
-        thumbnail_container = item.cssselect('.product_img')[0]
+        thumbnail_container = item.cssselect('.product_img a')[0]
         title_link = (
             'https://ec.toranoana.shop' +
-            thumbnail_container[0].get('href').strip()
+            thumbnail_container.get('href').strip()
         )
-        image_url = thumbnail_container[0][0].get('src').strip()
+        image_url = thumbnail_container[0].get('src').strip()
         title = item.cssselect('.product_title')[0].text_content().strip()
         labels_els = item.cssselect('.product_labels')
         remain = labels_els[-1].text_content().strip()[-1]
