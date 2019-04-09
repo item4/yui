@@ -1,5 +1,7 @@
 import datetime
 
+from dateutil.relativedelta import relativedelta
+
 from ...box import box
 from ...command import argument, option
 from ...event import Message
@@ -38,19 +40,14 @@ async def age(
         )
         return
 
-    year_age = today.year - birthday.year
+    global_age = relativedelta(today, birthday).years
+    year_age = relativedelta(today, datetime.date(birthday.year, 1, 1)).years
     korean_age = year_age + 1
 
-    global_age = today.year - birthday.year
-    cond1 = today.month < birthday.month
-    cond2 = today.month == birthday.month and today.day < birthday.day
-    if cond1 or cond2:
-        global_age -= 1
-
-    this_year_birthday = birthday.replace(today.year)
+    this_year_birthday = birthday + relativedelta(years=year_age)
     remain = this_year_birthday.toordinal() - today.toordinal()
     if remain < 1:
-        next_year_birthday = birthday.replace(today.year + 1)
+        next_year_birthday = birthday + relativedelta(years=year_age + 1)
         remain = next_year_birthday.toordinal() - today.toordinal()
 
     await bot.say(
