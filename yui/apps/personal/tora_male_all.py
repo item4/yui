@@ -42,7 +42,7 @@ def process(
             'https://ec.toranoana.shop' +
             thumbnail_container.get('href').strip()
         )
-        image_url = thumbnail_container[0].get('src').strip()
+        image_url = thumbnail_container[-1].get('src').strip()
         title = item.cssselect('.product_title')[0].text_content().strip()
         labels_els = item.cssselect('.product_labels')
         remain = labels_els[-1].text_content().strip()[-1]

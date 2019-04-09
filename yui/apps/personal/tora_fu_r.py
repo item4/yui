@@ -40,7 +40,7 @@ def process(
         if id in first_page:
             continue
         thumbnail_container = item.cssselect('.product_img a')[0]
-        image_url = thumbnail_container[0].get('src').strip()
+        image_url = thumbnail_container[-1].get('src').strip()
         title_link = (
             'https://ec.toranoana.jp' +
             thumbnail_container.get('href').strip()
