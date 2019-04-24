@@ -14,7 +14,7 @@ RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key ad
     postgresql\
     curl\
     && rm -rf /var/lib/apt/lists/*
-RUN pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip==19.0.3 setuptools wheel
 
 ENV HOME="/home/kazuto"
 
