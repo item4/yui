@@ -115,7 +115,7 @@ async def on_team_join(bot, event: TeamJoin):
 @box.on(UserChange)
 async def on_user_change(bot, event: UserChange):
     if not (event.user.id and event.user.team_id):
-        return False
+        return True
 
     logger.info('on user change start')
     res = await retry(bot.api.users.info, event.user)
