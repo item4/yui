@@ -87,6 +87,8 @@ async def on_start(bot):
         for u in result.body['members']:
             bot.users.append(User(**u))
 
+    bot.is_ready = False
+
     await asyncio.wait(
         (
             channel(),
