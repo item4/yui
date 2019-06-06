@@ -6,12 +6,13 @@ from pyppeteer.errors import TimeoutError
 
 import tzlocal
 
-from ...api import Action, Attachment
 from ...box import box
 from ...browser import new_page
 from ...command import argument, option
 from ...event import Message
 from ...transform import choice
+from ...types.slack.action import Action
+from ...types.slack.attachment import Attachment
 from ...utils.url import b64_redirect
 
 

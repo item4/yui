@@ -1,7 +1,7 @@
 import asyncio
 from typing import Any, Coroutine
 
-from ..api.type import APIResponse
+from ..types.slack.response import APIResponse
 
 
 async def retry(coro: Coroutine[Any, Any, APIResponse]) -> APIResponse:

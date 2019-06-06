@@ -1,6 +1,6 @@
 from typing import Dict
 
-from .type import APIResponse
+from ..types.slack.response import APIResponse
 
 
 class Endpoint:

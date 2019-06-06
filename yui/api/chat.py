@@ -1,11 +1,11 @@
-import json
 from typing import Dict, List, Optional, Union
 
-from .encoder import SlackEncoder, bool2str
+from .encoder import bool2str, to_json
 from .endpoint import Endpoint
-from .type import APIResponse, Attachment
 from ..types.base import ChannelID, Ts
 from ..types.channel import Channel
+from ..types.slack.attachment import Attachment
+from ..types.slack.response import APIResponse
 from ..types.user import User
 
 
@@ -81,11 +81,7 @@ class Chat(Endpoint):
             params['link_names'] = bool2str(link_names)
 
         if attachments is not None:
-            params['attachments'] = json.dumps(
-                attachments,
-                cls=SlackEncoder,
-                separators=(',', ':'),
-            )
+            params['attachments'] = to_json(attachments)
 
         if unfurl_links is not None:
             params['unfurl_links'] = bool2str(unfurl_links)

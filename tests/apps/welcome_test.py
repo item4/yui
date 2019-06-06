@@ -1,9 +1,9 @@
 import pytest
 
-from yui.api.type import APIResponse
 from yui.apps.welcome.item4 import welcome_item4
 from yui.apps.welcome.the_9xd import welcome_9xd
 from yui.event import create_event
+from yui.types.slack.response import APIResponse
 
 from ..util import FakeBot
 

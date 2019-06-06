@@ -5,11 +5,11 @@ import tossi
 
 import ujson
 
-from ...api import Attachment
 from ...box import box
 from ...command import argument
 from ...event import Message
 from ...session import client_session
+from ...types.slack.attachment import Attachment
 from ...utils.html import strip_tags
 
 box.assert_config_required('NAVER_CLIENT_ID', str)

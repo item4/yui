@@ -2,9 +2,9 @@ from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from .type import APIResponse
 from ..types.base import PrivateChannelID
 from ..types.channel import PrivateChannel
+from ..types.slack.response import APIResponse
 
 
 class Groups(Endpoint):

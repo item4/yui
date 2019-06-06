@@ -12,12 +12,12 @@ from .models import (
     SERVER_LABEL,
     Server,
 )
-from ....api import Attachment
 from ....bot import Bot
 from ....box import box
 from ....command import C
 from ....orm import EngineConfig, subprocess_session_manager
 from ....session import client_session
+from ....types.slack.attachment import Attachment
 from ....utils.api import retry
 
 box.assert_channel_required('sao')

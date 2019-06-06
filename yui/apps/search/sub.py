@@ -12,11 +12,11 @@ from fuzzywuzzy import fuzz
 
 import ujson
 
-from ...api import Attachment
 from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
+from ...types.slack.attachment import Attachment
 from ...utils.fuzz import fuzzy_korean_partial_ratio
 
 

@@ -4,13 +4,13 @@ from urllib.parse import urlencode
 
 from lxml.html import fromstring
 
-from ...api import Attachment
 from ...bot import Bot
 from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
 from ...transform import choice
+from ...types.slack.attachment import Attachment
 
 headers: Dict[str, str] = {
     'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'

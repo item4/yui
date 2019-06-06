@@ -10,12 +10,12 @@ import feedparser
 import pytz
 
 from .models import RSSFeedURL
-from ....api import Attachment
 from ....box import box, route
 from ....command import argument
 from ....event import Message
 from ....session import client_session
 from ....transform import extract_url
+from ....types.slack.attachment import Attachment
 
 SPACE_RE = re.compile(r'\s{2,}')
 

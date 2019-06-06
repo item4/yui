@@ -4,9 +4,10 @@ import pytest
 
 import ujson
 
-from yui.api import APIResponse, SlackAPI
+from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.box import Box
+from yui.types.slack.response import APIResponse
 
 from .util import FakeImportLib
 

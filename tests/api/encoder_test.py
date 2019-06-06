@@ -1,18 +1,13 @@
-import json
-
-import pytest
-
 import ujson
 
-from yui.api.encoder import SlackEncoder, bool2str, remove_none
-from yui.api.type import (
+from yui.api.encoder import bool2str, to_json
+from yui.types.slack.action import (
     Action,
-    Attachment,
     Confirmation,
-    Field,
     OptionField,
-    OptionGroup,
+    OptionFieldGroup,
 )
+from yui.types.slack.attachment import Attachment, Field
 
 
 def test_bool2str():
@@ -20,28 +15,19 @@ def test_bool2str():
     assert bool2str(False) == '0'
 
 
-def test_remove_none():
-    assert remove_none({None: 1, 2: None, False: 3, 4: False}) == {
-        None: 1,
-        False: 3,
-        4: False,
-    }
+def to_test_type(o):
+    return ujson.loads(to_json(o))
 
 
-def test_slack_encoder_class():
-    def encode(o):
-        return ujson.loads(
-            json.dumps(o, cls=SlackEncoder, separators=(',', ':'))
-        )
-
-    field = encode(Field('title val', 'value val', True))
+def test_to_json():
+    field = to_test_type(Field('title val', 'value val', True))
     assert field == {
         'title': 'title val',
         'value': 'value val',
         'short': '1',
     }
 
-    attachment = encode(Attachment(
+    attachment = to_test_type(Attachment(
         fallback='fallback val',
         title='title val',
         fields=[Field('field title1', 'field value1', False)],
@@ -66,7 +52,7 @@ def test_slack_encoder_class():
                 name='action2 name',
                 text='action2 text',
                 type='select',
-                option_groups=[OptionGroup(
+                option_groups=[OptionFieldGroup(
                     text='a2 og1 text',
                     options=[
                         OptionField(
@@ -130,9 +116,3 @@ def test_slack_encoder_class():
             }
         ],
     }
-
-    class Dummy:
-        pass
-
-    with pytest.raises(TypeError):
-        encode(Dummy())

@@ -1,5 +1,5 @@
 import enum
-from typing import Any, Dict, List, Optional, Union
+from typing import List, Optional, Union
 
 import attr
 
@@ -10,23 +10,6 @@ def call_or_none(c):
             return None
         return c(value)
     return converter
-
-
-@attr.dataclass(slots=True)
-class APIResponse:
-
-    body: Union[Dict[str, Any], str]
-    status: int
-    headers: Dict[str, Any]
-
-
-@attr.dataclass(slots=True)
-class Field:
-    """Field on Attachment"""
-
-    title: str
-    value: str
-    short: bool
 
 
 @attr.dataclass(slots=True)
@@ -49,7 +32,7 @@ class OptionField:
 
 
 @attr.dataclass(slots=True)
-class OptionGroup:
+class OptionFieldGroup:
     """Optional Option Group on Action"""
 
     text: str
@@ -98,7 +81,7 @@ class Action:
     confirm: Optional[Confirmation] = None
     min_query_length: Optional[int] = None
     options: Optional[List[OptionField]] = None
-    option_groups: Optional[List[OptionGroup]] = None
+    option_groups: Optional[List[OptionFieldGroup]] = None
     selected_options: Optional[List[OptionField]] = None
     value: Optional[str] = None
     url: Optional[str] = None
@@ -109,26 +92,3 @@ class Action:
 
         if self.options is not None and self.option_groups is not None:
             self.options = None
-
-
-@attr.dataclass(slots=True)
-class Attachment:
-    """Slack Attachment"""
-
-    fallback: Optional[str] = None
-    color: Optional[str] = None
-    pretext: Optional[str] = None
-    author_name: Optional[str] = None
-    author_link: Optional[str] = None
-    author_icon: Optional[str] = None
-    title: Optional[str] = None
-    title_link: Optional[str] = None
-    text: Optional[str] = None
-    fields: List[Field] = attr.Factory(list)
-    actions: Optional[List[Action]] = None
-    image_url: Optional[str] = None
-    thumb_url: Optional[str] = None
-    footer: Optional[str] = None
-    footer_icon: Optional[str] = None
-    ts: Optional[int] = None
-    callback_id: Optional[str] = None

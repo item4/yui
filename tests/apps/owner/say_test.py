@@ -1,7 +1,7 @@
 import pytest
 
-from yui.api.type import APIResponse
 from yui.apps.owner.say import say
+from yui.types.slack.response import APIResponse
 
 from ...util import FakeBot
 

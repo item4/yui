@@ -2,9 +2,9 @@ import random
 import re
 from datetime import timedelta
 
-from ...api import Attachment
 from ...box import box
 from ...event import Message
+from ...types.slack.attachment import Attachment
 from ...utils.datetime import now
 
 COOLTIME = timedelta(minutes=5)

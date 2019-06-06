@@ -17,7 +17,6 @@ import async_timeout
 import ujson
 
 from .api import SlackAPI
-from .api.type import APIResponse
 from .box import Box, box
 from .box.tasks import CronTask
 from .config import Config
@@ -32,6 +31,7 @@ from .types.channel import (
     PublicChannel,
 )
 from .types.namespace import Namespace
+from .types.slack.response import APIResponse
 from .types.user import User
 from .utils.api import retry
 

@@ -1,9 +1,9 @@
 import aiohttp
 
 from .utils import get_holiday_names
-from ...api import Attachment
 from ...box import box
 from ...command import C
+from ...types.slack.attachment import Attachment
 from ...utils.datetime import now
 
 box.assert_channel_required('general')

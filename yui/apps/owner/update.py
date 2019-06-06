@@ -1,10 +1,10 @@
 from typing import Any, Dict, List
 
-from ...api import Attachment
 from ...box import box
 from ...command import C, U
 from ...event import Message
 from ...transform import extract_url
+from ...types.slack.attachment import Attachment
 
 box.assert_channel_required('notice')
 box.assert_user_required('owner')

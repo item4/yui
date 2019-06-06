@@ -2,9 +2,9 @@ from typing import Optional, Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from .type import APIResponse
 from ..types.base import PublicChannelID, Ts
 from ..types.channel import PublicChannel
+from ..types.slack.response import APIResponse
 
 
 class Channels(Endpoint):

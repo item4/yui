@@ -3,12 +3,12 @@ from typing import List
 
 import ujson
 
-from ...api import Attachment
 from ...bot import Bot
 from ...box import box
 from ...command import C
 from ...event import Message
 from ...session import client_session
+from ...types.slack.attachment import Attachment
 from ...utils.datetime import now
 
 box.assert_channel_required('general')

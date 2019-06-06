@@ -1,7 +1,7 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.api.type import Attachment, Field
+from yui.types.slack.attachment import Attachment, Field
 
 from ..util import FakeBot
 
