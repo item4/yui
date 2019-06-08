@@ -16,7 +16,9 @@ MESSAGE = """
 유이의 저장소 주소는 https://github.com/item4/yui 입니다.
 AGPLv3 or later 라이선스 하에 누구나 사용하실 수 있고, 직접 유이 개발에도 참여하실 수 있어요.
 
-보아하니 <@item4>님은 issue와 pull request, fork와 star에 굶주려 있으신 것 같아요.
+유이에게 Issue와 Pull Request, Fork와 Star를 통해 기술적 도움을 주세요!
+Buy Me a Coffee 사이트를 통해 금전적 도움을 주시면 감사히 사용할게요!
+BMC 주소는 https://www.buymeacoffee.com/item4 입니다.
 유이에게 많은 사랑과 관심 부탁드려요!
 
 """
