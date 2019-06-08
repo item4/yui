@@ -356,3 +356,11 @@ License
 
 Currently, YUI is under AGPLv3 or higher.
 But I have a plan to make slack bot framework from code of yui and switch it to MIT.
+
+
+Become a Sponsor
+----------------
+
+.. image:: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
+   :target: https://www.buymeacoffee.com/item4
+   :alt: Buy Me A Coffee
