@@ -5,6 +5,7 @@ import logging
 import logging.config
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from datetime import timedelta
 from typing import Any, Callable, Dict, List, TypeVar, Union
 
 import aiocron
@@ -13,6 +14,8 @@ import aiohttp
 from aiohttp.client_exceptions import ClientConnectorError, ContentTypeError
 
 import async_timeout
+
+from dateutil.tz import tzoffset
 
 import ujson
 
@@ -37,6 +40,7 @@ from .utils.api import retry
 
 
 R = TypeVar('R')
+UTC9 = tzoffset('UTC9', timedelta(hours=9))
 
 
 class BotReconnect(Exception):
@@ -135,7 +139,7 @@ class Bot:
             if 'bot' in func_params:
                 kw['bot'] = self
 
-            @aiocron.crontab(c.spec, *c.args, **c.kwargs)
+            @aiocron.crontab(c.spec, tz=UTC9, *c.args, **c.kwargs)
             async def task():
                 if lock.locked() or not self.is_ready:
                     return
