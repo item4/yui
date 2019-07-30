@@ -1,6 +1,6 @@
 import datetime
 
-import pytz
+from dateutil.tz import UTC, gettz
 
 from yui.apps.info.memo.models import Memo
 from yui.utils.datetime import now
@@ -20,11 +20,11 @@ def test_memo_model_with_aware_dt(fx_sess):
 
     assert record.created_at == now_dt
     assert record.created_datetime == now_dt.replace(tzinfo=None)
-    assert record.created_timezone is pytz.timezone('Asia/Seoul')
+    assert record.created_timezone == gettz('Asia/Seoul')
 
 
 def test_memo_model_with_aware_utc_dt(fx_sess):
-    dt = datetime.datetime(2018, 10, 7, 1, 2, 3, tzinfo=pytz.UTC)
+    dt = datetime.datetime(2018, 10, 7, 1, 2, 3, tzinfo=UTC)
 
     record = Memo()
     record.keyword = 'test'
@@ -37,7 +37,7 @@ def test_memo_model_with_aware_utc_dt(fx_sess):
 
     assert record.created_at == dt
     assert record.created_datetime == datetime.datetime(2018, 10, 7, 1, 2, 3)
-    assert record.created_timezone is pytz.UTC
+    assert record.created_timezone == UTC
 
 
 def test_memo_model_with_naive_dt(fx_sess):

@@ -4,10 +4,10 @@ import re
 import aiohttp
 
 import dateutil.parser
+from dateutil.tz import UTC
 
 import feedparser
 
-import pytz
 
 from .models import RSSFeedURL
 from ....box import box, route
@@ -98,8 +98,9 @@ class RSS(route.RouteApp):
         feed.channel = event.channel.id
         feed.url = url
         feed.updated_at = max([
-                dateutil.parser.parse(entry.published) for entry in f.entries
-            ]).astimezone(pytz.UTC)
+            dateutil.parser.parse(entry.published).astimezone(UTC)
+            for entry in f.entries
+        ])
 
         with sess.begin():
             sess.add(feed)
@@ -187,7 +188,7 @@ async def crawl(bot, sess):
         attachments = []
 
         for entry in reversed(f.entries):
-            t = dateutil.parser.parse(entry.published).astimezone(pytz.UTC)
+            t = dateutil.parser.parse(entry.published).astimezone(UTC)
             if feed.updated_at < t:
                 attachments.append(Attachment(
                     fallback=(

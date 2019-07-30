@@ -1,5 +1,4 @@
-from pytz import UTC, timezone
-from pytz.tzinfo import BaseTzInfo
+from dateutil.tz import UTC, gettz, tzfile
 
 import six
 
@@ -33,22 +32,35 @@ class JSONType(_JSONType):
         return value
 
 
-class TimezoneType(_TimezoneType):
-    """TimezoneType with pytz correctly"""
+def _extract(x) -> str:
+    if x is UTC:
+        return 'UTC'
+    return x._filename
 
-    def __init__(self, backend='pytz'):
+
+class TimezoneType(_TimezoneType):
+    """TimezoneType"""
+
+    def __init__(self, backend='dateutil'):
         self.backend = backend
 
-        self.python_type = BaseTzInfo
-        self._to = timezone
-        self._from = six.text_type
+        self.python_type = tzfile
+        self._to = gettz
+        self._from = lambda x: x
 
     def _coerce(self, value):
-        if value is not None and not isinstance(value, self.python_type):
-            if value is UTC:
-                return UTC
-            obj = self._to(value)
-            if obj is None:
-                raise ValueError("unknown time zone '%s'" % value)
-            return obj
         return value
+
+    def process_bind_param(self, value, dialect):
+        if value == UTC:
+            return 'UTC'
+        if isinstance(value, tzfile):
+            return value._filename
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value == 'UTC':
+            return UTC
+        if value:
+            return gettz(value)
+        return None

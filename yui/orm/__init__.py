@@ -7,7 +7,6 @@ from .session import (
 )
 from .type import (
     JSONType,
-    TimezoneType,
 )
 from .utils import (
     TRUNCATE_QUERY,

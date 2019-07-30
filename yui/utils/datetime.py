@@ -1,21 +1,23 @@
 import datetime as dt
 
-from babel.dates import get_timezone
+from dateutil.tz import gettz
 
 
 def now(tzname: str = 'Asia/Seoul') -> dt.datetime:
     """Helper to make current datetime."""
 
-    return dt.datetime.now(tz=get_timezone(tzname))
+    return dt.datetime.now(gettz(tzname))
 
 
 def datetime(*args, tzname: str = 'Asia/Seoul') -> dt.datetime:
-    return get_timezone(tzname).localize(dt.datetime(*args))
+    return dt.datetime(*args).replace(tzinfo=gettz(tzname))
 
 
 def fromtimestamp(timestamp: float, tzname: str = 'Asia/Seoul') -> dt.datetime:
-    return get_timezone(tzname).localize(dt.datetime.fromtimestamp(timestamp))
+    return dt.datetime.fromtimestamp(timestamp, tz=gettz(tzname))
 
 
 def fromisoformat(date_str: str, tzname: str = 'Asia/Seoul') -> dt.datetime:
-    return get_timezone(tzname).localize(dt.datetime.fromisoformat(date_str))
+    return dt.datetime.fromisoformat(date_str).replace(
+        tzinfo=gettz(tzname),
+    )
