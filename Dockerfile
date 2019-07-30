@@ -3,7 +3,7 @@ FROM python:3.7
 MAINTAINER item4 <item4@localhost>
 
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add - \
-    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' \
+    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' \
     && apt-get update -q \
     && apt-get install --no-install-recommends -y \
     build-essential\
@@ -12,6 +12,7 @@ RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key ad
     libxslt-dev\
     tzdata\
     postgresql\
+    postgresql-contrib\
     curl\
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip==19.0.3 setuptools wheel
