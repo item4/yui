@@ -13,7 +13,7 @@ RUN apt-get update -q \
     postgresql-contrib\
     curl\
     && rm -rf /var/lib/apt/lists/*
-RUN pip install --upgrade pip==19.0.3 setuptools wheel
+RUN pip install --upgrade pip setuptools wheel
 
 ENV HOME="/home/kazuto"
 
