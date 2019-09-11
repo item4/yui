@@ -9,17 +9,7 @@ YUI
    :target: https://codecov.io/gh/item4/yui
    :alt: Code Coverage Status
 
-YUI is Multi-purpose Slack Bot.
-
-
-Who do use YUI?
----------------
-
-* item4(owner)'s private slack
-* 9xd
-* xnuk fan club
-* PyJog
-* SCVSoft
+YUI is Multi-purposed Slack Bot.
 
 
 Requirements
