@@ -2,6 +2,7 @@ import asyncio
 import datetime
 import logging
 import math
+import re
 from typing import Dict, Tuple
 from urllib.parse import urlencode
 
@@ -19,6 +20,8 @@ from ...session import client_session
 from ...transform import choice
 from ...utils.datetime import now
 from ...utils.fuzz import fuzzy_korean_ratio
+
+PARENTHESES = re.compile(r'\(.+?\)')
 
 logger = logging.getLogger(__name__)
 
@@ -111,8 +114,9 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
     find_end = None
     find_end_ratio = -1
     for x in data[0]['realInfo']:
-        start_ratio = fuzzy_korean_ratio(x['name'], start)
-        end_ratio = fuzzy_korean_ratio(x['name'], end)
+        name = PARENTHESES.sub(x['name'], '')
+        start_ratio = fuzzy_korean_ratio(name, start)
+        end_ratio = fuzzy_korean_ratio(name, end)
         if find_start_ratio < start_ratio:
             find_start = x
             find_start_ratio = start_ratio
