@@ -114,7 +114,7 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
     find_end = None
     find_end_ratio = -1
     for x in data[0]['realInfo']:
-        name = PARENTHESES.sub(x['name'], '')
+        name = PARENTHESES.sub('', x['name'])
         start_ratio = fuzzy_korean_ratio(name, start)
         end_ratio = fuzzy_korean_ratio(name, end)
         if find_start_ratio < start_ratio:
