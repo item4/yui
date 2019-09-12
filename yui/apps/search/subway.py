@@ -168,14 +168,13 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
         subway_paths = result['result']['subwayPaths']
 
         if subway_paths:
+            start_route = subway_paths[0]['path']['routes'][0]
+            end_route = subway_paths[-1]['path']['routes'][-1]
             text += '{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n'.format(
-                subway_paths[0]['path']['routes']['logicalLine']['name'],
-                subway_paths[0]['path']['routes']['stations'][0]['name'],
-                subway_paths[-1]['path']['routes']['logicalLine']['name'],
-                tossi.postfix(
-                    subway_paths[-1]['path']['routes']['stations'][0]['name'],
-                    '(으)로',
-                ),
+                start_route['logicalLine']['name'],
+                start_route['stations'][0]['name'],
+                end_route['logicalLine']['name'],
+                tossi.postfix(end_route['stations'][0]['name'], '(으)로'),
             )
             for subway_path in subway_paths:
                 routes = subway_path['path']['routes']
