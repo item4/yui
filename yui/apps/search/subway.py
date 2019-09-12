@@ -174,7 +174,7 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
                 start_route['logicalLine']['name'],
                 start_route['stations'][0]['name'],
                 end_route['logicalLine']['name'],
-                tossi.postfix(end_route['stations'][0]['name'], '(으)로'),
+                tossi.postfix(end_route['stations'][-1]['name'], '(으)로'),
             )
             for subway_path in subway_paths:
                 routes = subway_path['path']['routes']
