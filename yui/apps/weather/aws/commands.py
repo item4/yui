@@ -13,7 +13,11 @@ from ....utils.fuzz import fuzzy_korean_partial_ratio
 
 
 def shorten(input) -> str:
-    return str(Decimal(format(input, 'f'))).rstrip('0').rstrip('.')
+    decimal_string = str(Decimal(format(input, 'f'))) if input else '0'
+    return (
+        decimal_string.rstrip('0').rstrip('.')
+        if '.' in decimal_string else decimal_string
+    )
 
 
 @box.command('날씨', ['aws', 'weather'])
