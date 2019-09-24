@@ -60,7 +60,7 @@ async def aws(
                 )
 
     if records:
-        for ratio, record in sorted(records, key=lambda x: -x[0]):
+        for ratio, record in sorted(records, key=lambda x: -x[0])[:5]:
             rain = {
                 'Rain': '예(15min: {}/일일: {})'.format(
                     shorten(record['rain']['rain15']),
