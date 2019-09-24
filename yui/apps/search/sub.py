@@ -137,7 +137,7 @@ async def get_weekly_list(url, week, timeout: float = 0.5):
         weight += 1
 
 
-@box.command('sub', ['애니자막'])
+@box.command('sub', ['자막', '애니자막'])
 @option('--finished/--on-air', '--종영/--방영', '--완결/--방송', '--fin/--on',
         '-f/-o')
 @argument('title', nargs=-1, concat=True, count_error='애니 제목을 입력해주세요')
