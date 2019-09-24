@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Dict, List, Tuple
 
 from sqlalchemy.orm import Session
@@ -9,6 +10,10 @@ from ....command import argument
 from ....event import Message
 from ....utils.datetime import fromisoformat
 from ....utils.fuzz import fuzzy_korean_partial_ratio
+
+
+def shorten(input) -> str:
+    return str(Decimal(format(input, 'f'))).rstrip('0').rstrip('.')
 
 
 @box.command('날씨', ['aws', 'weather'])
@@ -54,8 +59,8 @@ async def aws(
         for ratio, record in sorted(records, key=lambda x: -x[0]):
             rain = {
                 'Rain': '예(15min: {}/일일: {})'.format(
-                    record['rain']['rain15'],
-                    record['rain']['rainday'],
+                    shorten(record['rain']['rain15']),
+                    shorten(record['rain']['rainday']),
                 ),
                 'Clear': '아니오',
                 'Unavailable': '확인 불가',
@@ -64,7 +69,7 @@ async def aws(
 
             temperature = None
             if record['temperature'] is not None:
-                temperature = '{}℃'.format(record['temperature'])
+                temperature = '{}℃'.format(shorten(record['temperature']))
 
             wind = None
             if record['wind1']['direction_text'] not in ('No', 'Unavailable'):
@@ -74,16 +79,16 @@ async def aws(
                     .replace('S', '남')
                     .replace('W', '서')
                     .replace('E', '동'),
-                    record['wind1']['velocity'],
+                    shorten(record['wind1']['velocity']),
                 )
 
             humidity = None
             if record['humidity'] is not None:
-                humidity = '{}%'.format(record['humidity'])
+                humidity = '{}%'.format(shorten(record['humidity']))
 
             atmospheric = None
             if record['atmospheric'] is not None:
-                atmospheric = '{}hPa'.format(record['atmospheric'])
+                atmospheric = '{}hPa'.format(shorten(record['atmospheric']))
 
             res = '[{}@{}/{}] 강수: {}'.format(
                 observed_at.strftime('%Y년 %m월 %d일 %H시 %M분'),
