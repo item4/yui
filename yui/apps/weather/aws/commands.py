@@ -35,6 +35,13 @@ async def aws(
 
     """
 
+    if len(keyword) < 2:
+        await bot.say(
+            event.channel,
+            '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!',
+        )
+        return
+
     try:
         cache = sess.query(JSONCache).filter_by(name='aws').one()
     except NoResultFound:

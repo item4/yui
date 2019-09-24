@@ -119,6 +119,17 @@ async def test_aws(fx_sess):
     with fx_sess.begin():
         fx_sess.add(cache)
 
+    # short keyword
+    await aws(bot, event, fx_sess, '1')
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!'
+    )
+    assert 'thread_ts' not in said.data
+
     # not found
     await aws(bot, event, fx_sess, '부천')
 
