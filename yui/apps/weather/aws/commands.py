@@ -1,32 +1,28 @@
+from typing import Dict, List, Tuple
+
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
 from ...shared.cache import JSONCache
 from ....box import box
-from ....command import argument, option
+from ....command import argument
 from ....event import Message
 from ....utils.datetime import fromisoformat
 from ....utils.fuzz import fuzzy_korean_partial_ratio
 
 
 @box.command('날씨', ['aws', 'weather'])
-@option('--fuzzy', '-f', is_flag=True, default=False)
-@option('--include-address', '-i', is_flag=True, default=False)
 @argument('keyword', nargs=-1, concat=True)
 async def aws(
     bot,
     event: Message,
     sess: Session,
-    fuzzy: bool,
-    include_address: bool,
     keyword: str,
 ):
     """
     지역의 현재 기상상태를 조회합니다.
 
     `{PREFIX}날씨 부천` (부천 관측소의 현재 기상상태를 출력)
-    `{PREFIX}날씨 -f 서울` (이름이 `서울`과 유사한 관측소들의 현재 기상상태를 출력)
-    `{PREFIX}날씨 -i 서울` (소재지 주소에 `서울`이 들어가는 관측소들의 현재 기상상태를 출력)
 
     """
 
@@ -39,26 +35,19 @@ async def aws(
         )
         return
 
-    records = []
+    records: List[Tuple[int, Dict]] = []
     observed_at = fromisoformat(cache.body['observed_at'].split('+', 1)[0])
 
     for record in cache.body['records']:
-        if fuzzy:
-            name_ratio = fuzzy_korean_partial_ratio(record['name'], keyword)
-            if name_ratio > 75 or (
-                include_address and keyword in record['address']
-            ):
-                records.append(
-                    (name_ratio, record)
-                )
+        if record['name'] == keyword:
+            records.append((10000, record))
         else:
-            if record['name'] == keyword:
+            name_ratio = fuzzy_korean_partial_ratio(record['name'], keyword)
+            address_score = 50 if keyword in record['address'] else 0
+            score = name_ratio + address_score
+            if score >= 90:
                 records.append(
-                    (100, record)
-                )
-            elif include_address and keyword in record['address']:
-                records.append(
-                    (90, record)
+                    (score, record)
                 )
 
     if records:
