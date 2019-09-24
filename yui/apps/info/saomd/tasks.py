@@ -46,6 +46,9 @@ def process(
 
     notice_ids: List[int] = []
 
+    if len(dls) < 5:
+        return attachments
+
     with subprocess_session_manager(engine_config) as sess:
         for dl in dls:
             onclick: str = dl.get('onclick')
