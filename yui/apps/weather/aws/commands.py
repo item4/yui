@@ -141,5 +141,5 @@ async def aws(
     else:
         await bot.say(
             event.channel,
-            '검색결과가 없어요!',
+            '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!',
         )

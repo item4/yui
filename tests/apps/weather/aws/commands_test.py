@@ -136,7 +136,9 @@ async def test_aws(fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '검색결과가 없어요!'
+    assert said.data['text'] == (
+        '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!'
+    )
     assert 'thread_ts' not in said.data
 
     # found 1
