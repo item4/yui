@@ -1,4 +1,4 @@
-import aiohttp
+from aiohttp import client_exceptions
 
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -20,8 +20,9 @@ def get_or_create_cache(name: str, sess) -> JSONCache:
 
 
 EXCEPTIONS = (
-    aiohttp.client_exceptions.ClientPayloadError,  # Bad HTTP Response
+    client_exceptions.ClientPayloadError,  # Bad HTTP Response
     ValueError,  # JSON Error
+    client_exceptions.ClientConnectorCertificateError,  # TLS expired
 )
 
 
