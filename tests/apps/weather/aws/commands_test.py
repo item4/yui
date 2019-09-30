@@ -1,3 +1,6 @@
+import copy
+import re
+
 import pytest
 
 from yui.apps.shared.cache import JSONCache
@@ -5,6 +8,8 @@ from yui.apps.weather.aws.commands import aws
 from yui.utils.datetime import now
 
 from ....util import FakeBot
+
+COOLTIME = re.compile(r'아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해주세요!')
 
 
 @pytest.mark.asyncio
@@ -186,3 +191,29 @@ async def test_aws(fx_sess):
     assert said.data['username'] == '강남2 날씨'
     assert said.data['icon_emoji'] == ':sunny:'
     assert said.data['thread_ts'] == '1234.56'
+
+    # hit cooltime
+    new_body = copy.deepcopy(cache.body)
+    for _ in range(5):
+        new_body['records'] += new_body['records']
+    cache.body = new_body
+    with fx_sess.begin():
+        fx_sess.add(cache)
+
+    await aws(bot, event, fx_sess, '강남')
+
+    assert len(bot.call_queue) > 5
+    bot.call_queue.clear()
+    assert aws.last_call['C1']
+
+    # block by cooltime
+    await aws(bot, event, fx_sess, '강남')
+
+    assert len(bot.call_queue) == 1
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert COOLTIME.match(said.data['text'])
+
+    assert 'thread_ts' not in said.data

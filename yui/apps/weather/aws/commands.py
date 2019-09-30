@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 from typing import Dict, List, Tuple
 
@@ -8,7 +9,7 @@ from ...shared.cache import JSONCache
 from ....box import box
 from ....command import argument
 from ....event import Message
-from ....utils.datetime import fromisoformat
+from ....utils.datetime import fromisoformat, now
 from ....utils.fuzz import fuzzy_korean_partial_ratio
 
 
@@ -34,6 +35,19 @@ async def aws(
     `{PREFIX}날씨 부천` (부천 관측소의 현재 기상상태를 출력)
 
     """
+
+    now_dt = now()
+    if event.channel.id in aws.last_call:
+        last_call = aws.last_call[event.channel.id]
+        cooltime = timedelta(minutes=2)
+        if last_call and now_dt - last_call < cooltime:
+            fine = last_call + cooltime
+            await bot.say(
+                event.channel,
+                '아직 쿨타임이에요! '
+                f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해주세요!"
+            )
+            return
 
     if len(keyword) < 2:
         await bot.say(
@@ -67,7 +81,7 @@ async def aws(
                 )
 
     if records:
-        for ratio, record in sorted(records, key=lambda x: -x[0])[:5]:
+        for ratio, record in sorted(records, key=lambda x: -x[0]):
             rain = {
                 'Rain': '예(15min: {}/일일: {})'.format(
                     shorten(record['rain']['rain15']),
@@ -138,6 +152,12 @@ async def aws(
                 icon_emoji=emoji,
                 thread_ts=event.ts if len(records) > 1 else None,
             )
+
+        if event.channel.id:
+            if len(records) > 5:
+                aws.last_call[event.channel.id] = now_dt
+            else:
+                aws.last_call[event.channel.id] = None
     else:
         await bot.say(
             event.channel,
