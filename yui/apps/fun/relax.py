@@ -1,13 +1,16 @@
 from ...box import box
+from ...command.helpers import U
 from ...event import Message
+
+box.assert_user_required('villain')
 
 
 @box.command('안심')
 async def relax(bot, event: Message):
-    """유이의 변절을 우려하는 분들을 위한 상태 점검 명령어"""
+    """세계를 지키는 수호자를 소환하는 명령어"""
 
     message = '유이에게 나쁜 것을 주입하려는 사악한'
-    jv = 'J.Valentine'
+    jv = f'<@{U.villain.get().id}>'
     if '스테이크' in event.text:
         message = '사람들에게 스테이크를 사주지 않는 편협한'
     elif '멸망' in event.text:
@@ -21,7 +24,7 @@ async def relax(bot, event: Message):
 
     await bot.api.chat.postMessage(
         channel=event.channel,
-        text=f'{message} {jv}은 이 너굴맨이 처리했으니 안심하라구!',
+        text=f'{message} {jv}! 악당은 방금 이 너굴맨이 처치했으니 안심하라구!',
         as_user=False,
         icon_url='https://i.imgur.com/dG6wXTX.jpg',
         username='너굴맨',
