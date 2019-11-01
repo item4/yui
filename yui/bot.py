@@ -5,13 +5,14 @@ import logging
 import logging.config
 import traceback
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, List, TypeVar, Union
 
 import aiocron
 
 import aiohttp
 from aiohttp.client_exceptions import ClientConnectorError, ContentTypeError
+from aiohttp.client_ws import ClientWebSocketResponse
 
 import async_timeout
 
@@ -188,7 +189,7 @@ class Bot:
             loop.run_until_complete(
                 asyncio.wait(
                     (
-                        self.receive(),
+                        self.connect(),
                         self.process(),
                     ),
                     return_when=asyncio.FIRST_EXCEPTION,
@@ -310,13 +311,65 @@ class Bot:
                 if not result:
                     break
 
-    async def receive(self):
-        """Receive stream from slack."""
+    async def ping(self, ws: ClientWebSocketResponse):
+        while not ws.closed:
+            await ws.send_json({
+                'id': datetime.now().toordinal(),
+                'type': 'ping',
+            }, dumps=ujson.dumps)
+            await asyncio.sleep(60)
 
-        logger = logging.getLogger(f'{__name__}.Bot.receive')
+    async def receive(self, ws: ClientWebSocketResponse):
         timeout = self.config.RECEIVE_TIMEOUT
+        logger = logging.getLogger(f'{__name__}.Bot.receive')
 
+        while not ws.closed:
+            if self.restart:
+                self.restart = False
+                await ws.close()
+                break
+
+            try:
+                async with async_timeout.timeout(timeout):
+                    msg: aiohttp.WSMessage = await ws.receive()
+            except asyncio.TimeoutError:
+                logger.error(f'receive timeout({timeout})')
+                await ws.close()
+                break
+
+            if msg == aiohttp.http.WS_CLOSED_MESSAGE:
+                break
+
+            if msg.type == aiohttp.WSMsgType.TEXT:
+                try:
+                    event = create_event(
+                        msg.json(loads=ujson.loads)
+                    )
+                except:  # noqa: F722
+                    logger.exception(msg.data)
+                else:
+                    await self.queue.put(event)
+            elif msg.type in (aiohttp.WSMsgType.CLOSE,
+                              aiohttp.WSMsgType.CLOSED,
+                              aiohttp.WSMsgType.CLOSING):
+                logger.info('websocket closed')
+                break
+            elif msg.type == aiohttp.WSMsgType.ERROR:
+                logger.error(msg.data)
+                break
+            else:
+                logger.error(
+                    'Type: %s / MSG: %s',
+                    msg.type,
+                    msg,
+                )
+                break
+
+    async def connect(self):
+        """Connect Slack RTM."""
+        logger = logging.getLogger(f'{__name__}.Bot.connect')
         sleep = 0
+
         while True:
             try:
                 rtm = await self.call('rtm.start')
@@ -341,47 +394,14 @@ class Bot:
             try:
                 async with client_session() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
-                        while True:
-                            if self.restart:
-                                self.restart = False
-                                await ws.close()
-                                break
+                        await asyncio.wait(
+                            (
+                                self.ping(ws),
+                                self.receive(ws),
+                            ),
+                            return_when=asyncio.FIRST_COMPLETED,
+                        )
 
-                            try:
-                                async with async_timeout.timeout(timeout):
-                                    msg: aiohttp.WSMessage = await ws.receive()
-                            except asyncio.TimeoutError:
-                                logger.error(f'receive timeout({timeout})')
-                                await ws.close()
-                                break
-
-                            if msg == aiohttp.http.WS_CLOSED_MESSAGE:
-                                break
-
-                            if msg.type == aiohttp.WSMsgType.TEXT:
-                                try:
-                                    event = create_event(
-                                        msg.json(loads=ujson.loads)
-                                    )
-                                except:  # noqa: F722
-                                    logger.exception(msg.data)
-                                else:
-                                    await self.queue.put(event)
-                            elif msg.type in (aiohttp.WSMsgType.CLOSE,
-                                              aiohttp.WSMsgType.CLOSED,
-                                              aiohttp.WSMsgType.CLOSING):
-                                logger.info('websocket closed')
-                                break
-                            elif msg.type == aiohttp.WSMsgType.ERROR:
-                                logger.error(msg.data)
-                                break
-                            else:
-                                logger.error(
-                                    'Type: %s / MSG: %s',
-                                    msg.type,
-                                    msg,
-                                )
-                                break
                 raise BotReconnect()
             except BotReconnect:
                 logger.info('BotReconnect raised. I will reconnect to rtm.')

@@ -494,6 +494,13 @@ class PinRemoved(Event):
 
 
 @event
+class Pong(BaseEvent):
+    """Ping-Pong"""
+
+    type: ClassVar[str] = 'pong'
+
+
+@event
 class PrefChange(Event):
     """You have updated your preferences."""
 
