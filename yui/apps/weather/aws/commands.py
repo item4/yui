@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from ...shared.cache import JSONCache
 from ....box import box
-from ....command import argument
+from ....command import argument, option
 from ....event import Message
 from ....utils.datetime import fromisoformat, now
 from ....utils.fuzz import fuzzy_korean_partial_ratio
@@ -21,12 +21,37 @@ def shorten(input) -> str:
     )
 
 
+def clothes_by_temperature(temperature: float) -> str:
+    if temperature <= 5:
+        return '패딩, 두꺼운 코트, 목도리, 기모제품'
+    elif temperature <= 9:
+        return '코트, 가죽재킷, 니트, 스카프, 두꺼운 바지'
+    elif temperature <= 11:
+        return (
+            '재킷, 트랜치코트, 니트, 면바지, 청바지, 검은색 스타킹'
+        )
+    elif temperature <= 16:
+        return (
+            '얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹'
+        )
+    elif temperature <= 19:
+        return '얇은 니트, 얇은 재킷, 가디건, 맨투맨, 면바지, 청바지'
+    elif temperature <= 22:
+        return '긴팔티, 얇은 가디건, 면바지, 청바지'
+    elif temperature <= 26:
+        return '반팔티, 얇은 셔츠, 반바지, 면바지'
+    else:
+        return '민소매티, 반바지, 반팔티, 치마'
+
+
 @box.command('날씨', ['aws', 'weather'])
+@option('--clothes', '-c', '--의상',  is_flag=True, default=False)
 @argument('keyword', nargs=-1, concat=True)
 async def aws(
     bot,
     event: Message,
     sess: Session,
+    clothes: bool,
     keyword: str,
 ):
     """
@@ -144,6 +169,10 @@ async def aws(
                     emoji = ':crescent_moon:'
                 else:
                     emoji = ':sunny:'
+
+            if clothes:
+                recommand = clothes_by_temperature(record['temperature'])
+                res += f'\n\n추천 의상: {recommand}'
 
             await bot.api.chat.postMessage(
                 channel=event.channel,

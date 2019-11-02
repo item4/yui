@@ -4,12 +4,26 @@ import re
 import pytest
 
 from yui.apps.shared.cache import JSONCache
-from yui.apps.weather.aws.commands import aws
+from yui.apps.weather.aws.commands import aws, clothes_by_temperature
 from yui.utils.datetime import now
 
 from ....util import FakeBot
 
 COOLTIME = re.compile(r'아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해주세요!')
+
+
+def test_clothes_by_temperature():
+    cases = [
+        clothes_by_temperature(5),
+        clothes_by_temperature(9),
+        clothes_by_temperature(11),
+        clothes_by_temperature(16),
+        clothes_by_temperature(19),
+        clothes_by_temperature(22),
+        clothes_by_temperature(26),
+        clothes_by_temperature(30),
+    ]
+    assert len(cases) == len(set(cases))
 
 
 @pytest.mark.asyncio
@@ -20,7 +34,7 @@ async def test_aws(fx_sess):
 
     event = bot.create_message('C1', 'U1', ts='1234.56')
 
-    await aws(bot, event, fx_sess, '서울')
+    await aws(bot, event, fx_sess, False, '서울')
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -90,7 +104,7 @@ async def test_aws(fx_sess):
                 "address": "서울특별시 강남구",
             },
             {
-                "id": 2,
+                "id": 3,
                 "name": "강남2",
                 "height": 1234,
                 "rain": {
@@ -125,7 +139,7 @@ async def test_aws(fx_sess):
         fx_sess.add(cache)
 
     # short keyword
-    await aws(bot, event, fx_sess, '1')
+    await aws(bot, event, fx_sess, False, '1')
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -136,7 +150,7 @@ async def test_aws(fx_sess):
     assert 'thread_ts' not in said.data
 
     # not found
-    await aws(bot, event, fx_sess, '부천')
+    await aws(bot, event, fx_sess, False, '부천')
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -147,7 +161,7 @@ async def test_aws(fx_sess):
     assert 'thread_ts' not in said.data
 
     # found 1
-    await aws(bot, event, fx_sess, '서울')
+    await aws(bot, event, fx_sess, False, '서울')
 
     assert len(bot.call_queue) == 1
 
@@ -163,8 +177,26 @@ async def test_aws(fx_sess):
     assert said.data['icon_emoji'] == ':umbrella_with_rain_drops:'
     assert 'thread_ts' not in said.data
 
+    # clothes
+    await aws(bot, event, fx_sess, True, '서울')
+
+    assert len(bot.call_queue) == 1
+
+    said = bot.call_queue.pop(0)
+    assert said.method == 'chat.postMessage'
+    assert said.data['channel'] == 'C1'
+    assert said.data['text'] == (
+        '[2018년 12월 30일 13시 16분@서울/서울특별시 가구]'
+        ' 강수: 예(15min: 15.1/일일: 1440.6)'
+        ' / 12.34℃ / 바람: 남남서 11.11㎧ / 습도: 55% / 해면기압: 2345.67hPa'
+        '\n\n추천 의상: 얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹'
+    )
+    assert said.data['username'] == '서울 날씨'
+    assert said.data['icon_emoji'] == ':umbrella_with_rain_drops:'
+    assert 'thread_ts' not in said.data
+
     # found 2+
-    await aws(bot, event, fx_sess, '강남')
+    await aws(bot, event, fx_sess, False, '강남')
 
     assert len(bot.call_queue) == 2
 
@@ -200,14 +232,14 @@ async def test_aws(fx_sess):
     with fx_sess.begin():
         fx_sess.add(cache)
 
-    await aws(bot, event, fx_sess, '강남')
+    await aws(bot, event, fx_sess, False, '강남')
 
     assert len(bot.call_queue) > 5
     bot.call_queue.clear()
     assert aws.last_call['C1']
 
     # block by cooltime
-    await aws(bot, event, fx_sess, '강남')
+    await aws(bot, event, fx_sess, False, '강남')
 
     assert len(bot.call_queue) == 1
 
