@@ -49,6 +49,7 @@ def process(
         labels_els = item.cssselect('.product_labels')
         remain = labels_els[1][0].text_content().strip()[0]
         author_name = labels_els[0][0].text_content().strip()
+        circle_name = labels_els[0][1].text_content().strip()
         price = item.cssselect('.product_price')[0].text_content().strip()
         if any(
             '18禁' in li.text_content().strip()
@@ -83,7 +84,7 @@ def process(
             color=color,
             fields=fields,
             image_url=image_url,
-            author_name=author_name,
+            author_name=f'{author_name} ({circle_name})',
         ))
 
     return attachments, current
