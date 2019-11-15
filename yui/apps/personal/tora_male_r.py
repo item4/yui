@@ -45,7 +45,7 @@ def process(
         )
         title = item.cssselect('.product_title')[0].text_content().strip()
         labels_els = item.cssselect('.product_labels')
-        remain = labels_els[-1].text_content().strip()[-1]
+        remain = labels_els[1][0].text_content().strip()[0]
         author_name = labels_els[0][0].text_content().strip()
         price = item.cssselect('.product_price')[0].text_content().strip()
         if any(
