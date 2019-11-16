@@ -35,8 +35,12 @@ def fetch_or_create_cache(name: str, sess) -> JSONCache:
     return ref
 
 
-def parse(html: str, selector: str, url_prefix: str) -> List[Tuple[str, str]]:
-    h = fromstring(html)
+def parse(
+    blob: bytes,
+    selector: str,
+    url_prefix: str,
+) -> List[Tuple[str, str]]:
+    h = fromstring(blob)
     a_tags = h.cssselect(selector)
 
     result = []
@@ -57,12 +61,12 @@ async def fetch_css_ref(bot: Bot, sess):
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
     async with client_session() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+        async with session.get(url) as resp:
+            blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
-        html,
+        blob,
         'a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]',
         'https://developer.mozilla.org',
     )
@@ -83,12 +87,12 @@ async def fetch_html_ref(bot: Bot, sess):
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
     async with client_session() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+        async with session.get(url) as resp:
+            blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
-        html,
+        blob,
         'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
         'https://developer.mozilla.org',
     )
@@ -102,8 +106,8 @@ async def fetch_html_ref(bot: Bot, sess):
     logger.info(f'fetch html ref end')
 
 
-def parse_python(html: str) -> List[Tuple[str, str, str]]:
-    h = fromstring(html)
+def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
+    h = fromstring(blob)
     a_tags = h.cssselect('a.reference.internal')
 
     result = []
@@ -134,12 +138,12 @@ async def fetch_python_ref(bot: Bot, sess):
 
     url = 'https://docs.python.org/3/library/'
     async with client_session() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+        async with session.get(url) as resp:
+            blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse_python,
-        html,
+        blob,
     )
 
     ref.body = body

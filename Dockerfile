@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.8
 
 MAINTAINER item4 <item4@localhost>
 
@@ -24,6 +24,7 @@ ENV PATH="${HOME}/.poetry/bin:${PATH}"
 ENV TZ="Asia/Seoul"
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+RUN cp -r "${HOME}/.poetry/lib/poetry/_vendor/py3.7" "${HOME}/.poetry/lib/poetry/_vendor/py3.8"
 
 COPY --chown=kazuto:kirigaya ./pyproject.toml ./poetry.lock ${HOME}/yui/
 

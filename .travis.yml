@@ -1,5 +1,5 @@
 language: python
-python: 3.7
+python: 3.8
 dist: xenial
 sudo: false
 cache:
@@ -17,6 +17,7 @@ before_install:
 - pip install --upgrade pip==19.0.3 setuptools wheel
 - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 - export PATH="$HOME/.poetry/bin:$PATH"
+- cp -r "$HOME/.poetry/lib/poetry/_vendor/py3.7" "$HOME/.poetry/lib/poetry/_vendor/py3.8"
 install:
 - poetry install -E travis-ci
 before_script:

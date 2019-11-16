@@ -1015,9 +1015,6 @@ class Evaluator:
             return functools.reduce(op, map(self._run, node.values), True)
         raise NotImplementedError
 
-    def visit_bytes(self, node: _ast.Bytes):  # s,
-        return node.s
-
     def visit_break(self, node: _ast.Break):
         self.current_interrupt = node
 
@@ -1039,6 +1036,11 @@ class Evaluator:
             else:
                 raise NotImplementedError
         return out
+
+    def visit_constant(self, node: _ast.Constant):  # value, kind
+        if self.decimal_mode and isinstance(node.value, (int, float)):
+            return Decimal(str(node.value))
+        return node.value
 
     def visit_continue(self, node: _ast.Continue):
         self.current_interrupt = node
@@ -1092,9 +1094,6 @@ class Evaluator:
                         result[key] = value
                 self.delete(current_gen.target)
         return result
-
-    def visit_ellipsis(self, node: _ast.Ellipsis):
-        return Ellipsis
 
     def visit_expr(self, node: _ast.Expr):  # value,
         return self._run(node.value)
@@ -1204,16 +1203,8 @@ class Evaluator:
                 return self.global_symbol_table[node.id]
             raise NameError()
 
-    def visit_nameconstant(self, node: _ast.NameConstant):  # value,
-        return node.value
-
     def visit_nonlocal(self, node: _ast.Nonlocal):
         raise BadSyntax('You can not use `nonlocal` syntax')
-
-    def visit_num(self, node: _ast.Num):  # n,
-        if self.decimal_mode:
-            return Decimal(str(node.n))
-        return node.n
 
     def visit_pass(self, node: _ast.Pass):
         return
@@ -1257,9 +1248,6 @@ class Evaluator:
             self._run(node.upper),
             self._run(node.step),
         )
-
-    def visit_str(self, node: _ast.Str):  # s,
-        return node.s
 
     def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
         return self._run(node.value)[self._run(node.slice)]
