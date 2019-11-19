@@ -1,7 +1,5 @@
 import asyncio
-import datetime
 import logging
-import math
 import re
 from typing import Dict, Tuple
 from urllib.parse import urlencode
@@ -29,9 +27,9 @@ headers: Dict[str, str] = {
     'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'
                    ' Gecko/20100101 Firefox/56.0')
 }
-TEMPLATE = '{}역에서 {} {}행 {}열차에 탑승해서 {} 정거장을 지나 {}역에서 내립니다.{}'
+TEMPLATE = '{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}'
 REGION_TABLE: Dict[str, Tuple[str, str]] = {
-    '수도권': ('1000', '6.8'),
+    '수도권': ('1000', '6.10'),
     '부산': ('7000', '4.7'),
     '대구': ('4000', '4.9'),
     '광주': ('5000', '4.0'),
@@ -48,18 +46,19 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
         db = JSONCache()
         db.name = name
 
-    metadata_url = 'http://map.naver.com/external/SubwayProvide.xml?{}'.format(
+    metadata_url = 'https://map.naver.com/v5/api/subway/provide?{}'.format(
         urlencode({
             'requestFile': 'metaData.json',
             'readPath': service_region,
             'version': api_version,
-
+            'language': 'ko',
+            'caller': 'NaverMapPcBetaWeb',
         })
     )
 
     async with client_session(headers=headers) as session:
-        async with session.get(metadata_url) as res:
-            db.body = await res.json(loads=ujson.loads)
+        async with session.get(metadata_url) as resp:
+            db.body = await resp.json(loads=ujson.loads)
 
     db.created_at = now()
 
@@ -104,11 +103,6 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
 
     data = db.body
 
-    timestamp_url = 'http://map.naver.com/pubtrans/getSubwayTimestamp.nhn'
-    async with client_session(headers=headers) as session:
-        async with session.get(timestamp_url) as res:
-            timestamp = ujson.loads(await res.text())
-
     find_start = None
     find_start_ratio = -1
     find_end = None
@@ -144,69 +138,69 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
             )
             return
 
-        ts = datetime.datetime.utcnow()
-        url = 'http://map.naver.com/pubtrans/searchSubwayPath.nhn?{}'.format(
+        url = 'https://map.naver.com/v5/api/subway/search?{}'.format(
             urlencode({
                 'serviceRegion': service_region,
-                'fromStationID': find_start['id'],
-                'toStationID': find_end['id'],
-                'dayType': timestamp['result']['dateType'],
-                'presetTime': '3',
-                'departureDateTime': ts.strftime('%Y%m%d%H%M%S00'),
-                'caller': 'naver_map',
-                'output': 'json',
-                'searchType': '1',
+                'start': find_start['id'],
+                'goal': find_end['id'],
+                'departureTime': now().strftime('%Y-%m-%dT%H:%M:%S'),
             })
         )
 
         async with client_session(headers=headers) as session:
-            async with session.get(url) as res:
-                result = ujson.loads(await res.text())
+            async with session.get(url) as resp:
+                result = await resp.json(loads=ujson.loads)
 
         text = ''
 
-        subway_paths = result['result']['subwayPaths']
+        paths = result['paths'][0]
 
-        if subway_paths:
-            start_route = subway_paths[0]['path']['routes'][0]
-            end_route = subway_paths[-1]['path']['routes'][-1]
+        if paths:
+            duration = paths['duration']
+            fare = paths['fare']
+            distance = paths['distance'] / 1000
+            steps = paths['legs'][0]['steps']
+            start_station_name = steps[0]['stations'][0]['displayName']
+            start_station_line = steps[0]['routes'][0]['name']
+            goal_station_name = steps[-1]['stations'][-1]['displayName']
+            goal_station_line = steps[-1]['routes'][0]['name']
+
             text += '{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n'.format(
-                start_route['logicalLine']['name'],
-                start_route['stations'][0]['name'],
-                end_route['logicalLine']['name'],
-                tossi.postfix(end_route['stations'][-1]['name'], '(으)로'),
+                start_station_line,
+                start_station_name,
+                goal_station_line,
+                tossi.postfix(goal_station_name, '(으)로'),
             )
-            for subway_path in subway_paths:
-                routes = subway_path['path']['routes']
-                text += '\n'.join(
-                    TEMPLATE.format(
-                        x['stations'][0]['name'],
-                        x['logicalLine']['name'],
-                        x['logicalLine']['direction'],
-                        '급행' if x['isExpress'] else '',
-                        len(list(filter(
-                            lambda s: s['isNonstop'] == 0, x['stations']
-                        )))-1,
-                        x['stations'][-1]['name'],
-                        ' (빠른환승 {}-{})'.format(
-                            x['transfer']['exitTrainNumber'],
-                            x['transfer']['exitDoorNumber'],
-                        ) if 'transfer' in x else '',
-                        ) for x in routes
+            for step in steps:
+                if step['type'] != 'SUBWAY':
+                    continue
+                routes = step['routes']
+                stations = step['stations']
+                platform = routes[0]['platform']
+                start_name = stations[0]['displayName']
+                line = routes[0]['longName']
+                direction = routes[0]['headsign']
+                station_count = sum(1 for r in stations if r['stop']) - 1
+                end_name = stations[-1]['displayName']
+                doors = platform['doors']
+                doors_list = ', '.join(doors) if doors else ''
+                guide = ''
+                if doors_list:
+                    guide = f" ({platform['type']['desc']}: {doors_list})"
+                text += TEMPLATE.format(
+                    start_name,
+                    line,
+                    direction,
+                    station_count,
+                    end_name,
+                    guide,
                 )
-                text += '\n\n'
+                text += '\n'
 
-            summary = subway_path['summary']
-            fare = list(filter(
-                lambda f: f['paymentMethod'] == 1,
-                subway_path['fareInfos']
-            ))[0]['fare']
-            text += ('소요시간: {:,}분 / 거리: {:,.2f}㎞'
-                     ' / 요금(카드 기준): {:,}원').format(
-                math.ceil(summary['overallTravelTimeInSecondOnAverage']/60),
-                summary['overallTravelDistanceInMeter']/1000,
-                fare,
-                )
+            text += (
+                f'\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞'
+                f' / 요금(카드 기준): {fare:,}원'
+            )
 
             await bot.say(
                 event.channel,
