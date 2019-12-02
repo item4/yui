@@ -33,9 +33,11 @@ from .fuzz import (
     KOREAN_ALPHABETS_MIDDLE_MAP,
     KOREAN_END,
     KOREAN_START,
-    fuzzy_korean_partial_ratio,
-    fuzzy_korean_ratio,
+    match,
     normalize_korean_nfc_to_nfd,
+    partial_ratio,
+    ratio,
+    token_sort_ratio,
 )
 from .handler import get_handler
 from .html import strip_tags

@@ -17,7 +17,7 @@ from ...event import ChatterboxSystemStart, Message
 from ...session import client_session
 from ...transform import choice
 from ...utils.datetime import now
-from ...utils.fuzz import fuzzy_korean_ratio
+from ...utils.fuzz import ratio
 
 PARENTHESES = re.compile(r'\(.+?\)')
 
@@ -109,8 +109,8 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
     find_end_ratio = -1
     for x in data[0]['realInfo']:
         name = PARENTHESES.sub('', x['name'])
-        start_ratio = fuzzy_korean_ratio(name, start)
-        end_ratio = fuzzy_korean_ratio(name, end)
+        start_ratio = ratio(name, start)
+        end_ratio = ratio(name, end)
         if find_start_ratio < start_ratio:
             find_start = x
             find_start_ratio = start_ratio

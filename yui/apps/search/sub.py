@@ -17,7 +17,7 @@ from ...command import argument, option
 from ...event import Message
 from ...session import client_session
 from ...types.slack.attachment import Attachment
-from ...utils.fuzz import fuzzy_korean_partial_ratio
+from ...utils.fuzz import match
 
 
 class Sub(NamedTuple):
@@ -217,7 +217,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
     for ani in o_data:
         ani['ratio'] = max(
-            fuzzy_korean_partial_ratio(
+            match(
                 title.lower(),
                 a['s'].lower(),
             ) for a in ani['n']
@@ -249,7 +249,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         if a_data:
             for ani in a_data:
                 ani['ratio'] = max(
-                    fuzzy_korean_partial_ratio(
+                    match(
                         alias['s'].lower(),
                         ani['s'].lower()
                     ) for alias in o_ani['n']

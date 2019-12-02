@@ -10,7 +10,7 @@ from ....box import box
 from ....command import argument, option
 from ....event import Message
 from ....utils.datetime import fromisoformat, now
-from ....utils.fuzz import fuzzy_korean_partial_ratio
+from ....utils.fuzz import match
 
 
 def shorten(input) -> str:
@@ -97,7 +97,7 @@ async def aws(
         if record['name'] == keyword:
             records.append((10000, record))
         else:
-            name_ratio = fuzzy_korean_partial_ratio(record['name'], keyword)
+            name_ratio = match(record['name'], keyword)
             address_score = 50 if keyword in record['address'] else 0
             score = name_ratio + address_score
             if score >= 90:

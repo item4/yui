@@ -47,8 +47,8 @@ def normalize_korean_nfc_to_nfd(value: str) -> str:
     )
 
 
-def fuzzy_korean_ratio(str1: str, str2: str) -> int:
-    """Fuzzy Search with Korean"""
+def ratio(str1: str, str2: str) -> int:
+    """Get fuzzy ratio with korean text"""
 
     return fuzz.ratio(
         normalize_korean_nfc_to_nfd(str1),
@@ -56,19 +56,29 @@ def fuzzy_korean_ratio(str1: str, str2: str) -> int:
     )
 
 
-def fuzzy_korean_partial_ratio(str1: str, str2: str) -> int:
-    """Fuzzy Search with partial Korean strings"""
+def partial_ratio(str1: str, str2: str) -> int:
+    """Get partial fuzzy ratio with korean text"""
 
-    nstr1 = normalize_korean_nfc_to_nfd(str1)
-    nstr2 = normalize_korean_nfc_to_nfd(str2)
+    return fuzz.partial_ratio(
+        normalize_korean_nfc_to_nfd(str1),
+        normalize_korean_nfc_to_nfd(str2),
+    )
 
-    len1 = len(nstr1)
-    len2 = len(nstr2)
 
-    ratio = fuzz.ratio(nstr1, nstr2)
-    if len1 * 1.2 < len2 or len2 * 1.2 < len1:
-        return int(
-            (fuzz.partial_ratio(nstr1, nstr2) * 2 + ratio) / 3
-        )
-    else:
-        return ratio
+def token_sort_ratio(str1: str, str2: str) -> int:
+    """Get token sorted fuzzy ratio with korean text"""
+
+    return fuzz.token_sort_ratio(
+        normalize_korean_nfc_to_nfd(str1),
+        normalize_korean_nfc_to_nfd(str2),
+    )
+
+
+def match(s1: str, s2: str) -> int:
+    """Get custom ratio for yui functions"""
+
+    rng = [len(s1), len(s2)]
+    tsr = token_sort_ratio(s1, s2)
+    r = ratio(s1, s2)
+    weight = 1 - (min(rng) / max(rng))
+    return max(0, min(100, int(r * (1 + weight * tsr / 100))))
