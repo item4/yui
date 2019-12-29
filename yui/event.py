@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Dict, List, Type, Union
+from typing import Any, ClassVar, Dict, List, Optional, Type, Union
 
 from .types.base import (
     ChannelID,
@@ -48,7 +48,7 @@ class Event(BaseEvent):
     """Event."""
 
     type: ClassVar[str]
-    subtype: ClassVar = None
+    subtype: Optional[str] = None
 
 
 _events: Dict[str, Type[BaseEvent]] = {}
@@ -468,6 +468,7 @@ class Message(Event):
     message: MessageMessage = OptionalField(MessageMessage)(repr=True)
     previous_message: MessagePreviousMessage = \
         OptionalField(MessagePreviousMessage)(repr=True)
+    subtype: Optional[str] = OptionalField(str)(repr=True)
 
 
 @event
