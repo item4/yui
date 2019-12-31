@@ -130,13 +130,6 @@ async def watch(bot, sess):
             restrict='전연령',
         ),
         Page(
-            url=('https://ec.toranoana.jp/'
-                 'tora_r/ec/cot/genre/GNRN00001186/all/all/'),
-            genre='소드 아트 온라인',
-            target='남성향',
-            restrict='성인',
-        ),
-        Page(
             url=('https://ec.toranoana.shop/'
                  'joshi/ec/cot/genre/GNRN00001186/all/all/'),
             genre='소드 아트 온라인',
