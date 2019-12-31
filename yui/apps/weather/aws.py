@@ -2,15 +2,23 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Dict, List, Tuple
 
-from sqlalchemy.orm import Session
-from sqlalchemy.orm.exc import NoResultFound
+from aiohttp import client_exceptions
 
-from ...shared.cache import JSONCache
-from ....box import box
-from ....command import argument, option
-from ....event import Message
-from ....utils.datetime import fromisoformat, now
-from ....utils.fuzz import match
+import ujson
+
+from ...box import box
+from ...command import argument, option
+from ...event import Message
+from ...session import client_session
+from ...utils.datetime import fromisoformat, now
+from ...utils.fuzz import ratio
+
+API_URL = 'https://item4.net/api/weather/'
+EXCEPTIONS = (
+    client_exceptions.ClientPayloadError,  # Bad HTTP Response
+    ValueError,  # JSON Error
+    client_exceptions.ClientConnectorCertificateError,  # TLS expired
+)
 
 
 def shorten(input) -> str:
@@ -45,19 +53,19 @@ def clothes_by_temperature(temperature: float) -> str:
 
 
 @box.command('날씨', ['aws', 'weather'])
-@option('--clothes', '-c', '--의상',  is_flag=True, default=False)
+@option('--fuzzy', '-f', is_flag=True, default=False)
 @argument('keyword', nargs=-1, concat=True)
 async def aws(
     bot,
     event: Message,
-    sess: Session,
-    clothes: bool,
+    fuzzy: bool,
     keyword: str,
 ):
     """
     지역의 현재 기상상태를 조회합니다.
 
     `{PREFIX}날씨 부천` (부천 관측소의 현재 기상상태를 출력)
+    `{PREFIX}날씨 --fuzzy 서울` (서울이라는 키워드와 유사한 장소의 기상상태를 출력)
 
     """
 
@@ -74,6 +82,8 @@ async def aws(
             )
             return
 
+    data = None
+
     if len(keyword) < 2:
         await bot.say(
             event.channel,
@@ -82,22 +92,28 @@ async def aws(
         return
 
     try:
-        cache = sess.query(JSONCache).filter_by(name='aws').one()
-    except NoResultFound:
+        async with client_session() as session:
+            async with session.get(API_URL) as resp:
+                data = await resp.json(loads=ujson.loads)
+    except EXCEPTIONS:
         await bot.say(
             event.channel,
-            '날씨 정보 검색 준비가 진행중이에요. 잠시만 기다려주세요!',
+            '날씨 API 접근 중 에러가 발생했어요!',
         )
         return
 
     records: List[Tuple[int, Dict]] = []
-    observed_at = fromisoformat(cache.body['observed_at'].split('+', 1)[0])
+    observed_at = fromisoformat(data['observed_at'].split('+', 1)[0])
 
-    for record in cache.body['records']:
+    for record in data['records']:
         if record['name'] == keyword:
+            if not fuzzy:
+                records.clear()
             records.append((10000, record))
+            if not fuzzy:
+                break
         else:
-            name_ratio = match(record['name'], keyword)
+            name_ratio = ratio(record['name'], keyword)
             address_score = 50 if keyword in record['address'] else 0
             score = name_ratio + address_score
             if score >= 90:
@@ -106,7 +122,7 @@ async def aws(
                 )
 
     if records:
-        for ratio, record in sorted(records, key=lambda x: -x[0]):
+        for score, record in sorted(records, key=lambda x: -x[0]):
             rain = {
                 'Rain': '예(15min: {}/일일: {})'.format(
                     shorten(record['rain']['rain15']),
@@ -170,9 +186,9 @@ async def aws(
                 else:
                     emoji = ':sunny:'
 
-            if clothes:
-                recommand = clothes_by_temperature(record['temperature'])
-                res += f'\n\n추천 의상: {recommand}'
+            if record['temperature']:
+                recommend = clothes_by_temperature(record['temperature'])
+                res += f'\n\n추천 의상: {recommend}'
 
             await bot.api.chat.postMessage(
                 channel=event.channel,
