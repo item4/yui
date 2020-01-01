@@ -7,6 +7,8 @@ from ....event import Message
 @box.on(Message)
 @box.on(Message, subtype='message_replied')
 @box.on(Message, subtype='bot_message')
+@box.on(Message, subtype='channel_join')
+@box.on(Message, subtype='channel_leave')
 async def make_log(bot, event: Message, sess):
     try:
         channels = Cs.auto_cleanup_targets.gets()
