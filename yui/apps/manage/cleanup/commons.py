@@ -1,4 +1,5 @@
 import asyncio
+import random
 from typing import Optional
 
 
@@ -34,7 +35,7 @@ async def cleanup_by_event_logs(
             deleted += ok
             with sess.begin():
                 sess.delete(log)
-        await asyncio.sleep(0.02)
+        await asyncio.sleep(random.uniform(0.02, 0.5))
 
     return deleted
 
@@ -63,6 +64,6 @@ async def cleanup_by_history(
             if not r.body['ok']:
                 break
             deleted += 1
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(random.uniform(0.02, 0.5))
 
     return deleted
