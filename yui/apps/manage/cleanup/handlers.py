@@ -13,7 +13,7 @@ async def make_log(bot, event: Message, sess):
     try:
         channels = Cs.auto_cleanup_targets.gets()
     except KeyError:
-        return
+        return True
 
     if event.channel in channels:
         log = EventLog(channel=event.channel.id, ts=event.ts)

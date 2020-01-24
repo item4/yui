@@ -47,7 +47,7 @@ async def cleanup_by_history(
     count: int = 100,
 ) -> int:
     deleted = 0
-    history = await bot.api.channels.history(
+    history = await bot.api.conversations.history(
         channel,
         count=count,
         latest=ts,

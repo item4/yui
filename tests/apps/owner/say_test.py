@@ -15,13 +15,13 @@ async def test_say_command(fx_config):
     bot.add_user('U1', 'kirito')
     poh = bot.add_user('U2', 'PoH')
 
-    @bot.response('im.open')
-    def im_open(data):
+    @bot.response('conversations.open')
+    def callback(data):
         return APIResponse(
             body={
                 'ok': True,
                 'channel': {
-                    'id': data['user'].replace('U', 'D'),
+                    'id': data['users'].split(',')[0].replace('U', 'D'),
                 },
             },
             status=200,
@@ -48,9 +48,9 @@ async def test_say_command(fx_config):
 
     await say(bot, event, None, poh, text)
 
-    imopen = bot.call_queue.pop(0)
-    assert imopen.method == 'im.open'
-    assert imopen.data['user'] == 'U2'
+    conversations_open = bot.call_queue.pop(0)
+    assert conversations_open.method == 'conversations.open'
+    assert conversations_open.data['users'] == 'U2'
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'D2'

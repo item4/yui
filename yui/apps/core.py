@@ -54,32 +54,38 @@ async def retry(callback, *args, **kwargs):
 
 @box.on(ChatterboxSystemStart)
 async def on_start(bot):
-    async def channel():
+    async def channels():
         cursor = None
         bot.channels.clear()
         while True:
-            result = await retry(bot.api.channels.list, cursor)
+            result = await bot.api.conversations.list(
+                cursor=cursor,
+                types='public_channel,private_channel,im',
+            )
             cursor = None
+            await asyncio.sleep(0.1)
             if 'response_metadata' in result.body:
                 cursor = result.body['response_metadata'].get('next_cursor')
             for c in result.body['channels']:
-                res = await retry(bot.api.channels.info, c['id'])
-                bot.channels.append(PublicChannel(**res.body['channel']))
+                resp = await bot.api.conversations.info(c['id'])
+                if not resp.body['ok']:
+                    continue
+                channel = resp.body['channel']
+                if channel.get('is_channel'):
+                    bot.channels.append(
+                        PublicChannel(**channel)
+                    )
+                elif channel.get('is_im'):
+                    bot.ims.append(
+                        DirectMessageChannel(**channel)
+                    )
+                elif channel.get('is_group'):
+                    bot.groups.append(
+                        PrivateChannel(**channel)
+                    )
+                await asyncio.sleep(0.1)
             if not cursor:
                 break
-
-    async def im():
-        bot.ims.clear()
-        result = await retry(bot.api.im.list)
-        for d in result.body['ims']:
-            bot.ims.append(DirectMessageChannel(**d))
-
-    async def groups():
-        bot.groups.clear()
-        result = await retry(bot.api.groups.list)
-        for g in result.body['groups']:
-            res = await retry(bot.api.groups.info, g['id'])
-            bot.groups.append(PrivateChannel(**res.body['group']))
 
     async def users():
         bot.users.clear()
@@ -91,9 +97,7 @@ async def on_start(bot):
 
     await asyncio.wait(
         (
-            channel(),
-            im(),
-            groups(),
+            channels(),
             users(),
         ),
         return_when=asyncio.FIRST_EXCEPTION,
@@ -144,11 +148,18 @@ async def public_channel_mutation_detected(bot):
     cursor = None
     new_channels = []
     while True:
-        result = await retry(bot.api.channels.list, cursor)
+        result = await bot.api.conversations.list(
+            cursor=cursor,
+            types='public_channel',
+        )
+        await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
         for c in result.body['channels']:
-            res = await retry(bot.api.channels.info, c['id'])
-            new_channels.append(PublicChannel(**res.body['channel']))
+            res = await bot.api.conversations.info(c['id'])
+            new_channels.append(
+                PublicChannel(**res.body['channel'])
+            )
+            await asyncio.sleep(0.1)
         if not cursor:
             break
 
@@ -169,13 +180,25 @@ async def public_channel_mutation_detected(bot):
 async def private_channel_mutation_detected(bot):
     logger.info('private_channel_mutation_detected start')
     new_groups = []
-    result = await retry(bot.api.groups.list)
-    for g in result.body['groups']:
-        res = await retry(bot.api.groups.info, g['id'])
-        new_groups.append(PrivateChannel(**res.body['group']))
+    cursor = None
+    while True:
+        result = await bot.api.conversations.list(
+            cursor=cursor,
+            types='private_channel',
+        )
+        await asyncio.sleep(0.1)
+        cursor = result.body.get('response_metadata', {}).get('next_cursor')
+        for c in result.body['channels']:
+            res = await bot.api.conversations.info(c['id'])
+            new_groups.append(
+                PrivateChannel(**res.body['channel'])
+            )
+            await asyncio.sleep(0.1)
+        if not cursor:
+            break
 
     bot.groups[:] = new_groups
-    logger.info('private_channel_mutation_detected start')
+    logger.info('private_channel_mutation_detected end')
     return True
 
 
@@ -187,9 +210,22 @@ async def private_channel_mutation_detected(bot):
 async def direct_message_channel_mutation_detected(bot):
     logger.info('direct_message_channel_mutation_detected start')
     new_ims = []
-    result = await retry(bot.api.im.list)
-    for d in result.body['ims']:
-        new_ims.append(DirectMessageChannel(**d))
+    cursor = None
+    while True:
+        result = await bot.api.conversations.list(
+            cursor=cursor,
+            types='im',
+        )
+        await asyncio.sleep(0.1)
+        cursor = result.body.get('response_metadata', {}).get('next_cursor')
+        for c in result.body['channels']:
+            res = await bot.api.conversations.info(c['id'])
+            new_ims.append(
+                DirectMessageChannel(**res.body['channel'])
+            )
+            await asyncio.sleep(0.1)
+        if not cursor:
+            break
 
     bot.ims[:] = new_ims
     logger.info('direct_message_channel_mutation_detected end')
