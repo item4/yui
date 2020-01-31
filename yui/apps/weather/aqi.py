@@ -6,12 +6,11 @@ from fake_useragent import UserAgent
 
 import tzlocal
 
-import ujson
-
 from ...box import box
 from ...command import argument
 from ...event import Message
 from ...session import client_session
+from ...utils import json
 
 box.assert_config_required('GOOGLE_API_KEY', str)
 box.assert_config_required('AQI_API_TOKEN', str)
@@ -60,7 +59,7 @@ async def get_geometric_info_by_address(
         'Accept-Language': 'ko-KR',
     }) as session:
         async with session.get(url) as res:
-            data = await res.json(loads=ujson.loads)
+            data = await res.json(loads=json.loads)
 
     full_address = data['results'][0]['formatted_address']
     lat = data['results'][0]['geometry']['location']['lat']
@@ -73,7 +72,7 @@ async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
     async with client_session() as session:
         async with session.get(url) as res:
-            d1 = await res.json(loads=ujson.loads)
+            d1 = await res.json(loads=json.loads)
     try:
         idx = d1['data']['idx']
     except (KeyError, TypeError):
@@ -85,7 +84,7 @@ async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
     }
     async with client_session() as session:
         async with session.get(url, headers=headers) as res:
-            d2 = await res.json(loads=ujson.loads)
+            d2 = await res.json(loads=json.loads)
 
     if d2['rxs']['obs'][0]['status'] != 'ok':
         return None

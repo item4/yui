@@ -4,8 +4,6 @@ from urllib.parse import urlencode
 
 import pytest
 
-import ujson
-
 from yui.apps.weather.aqi import (
     AQIRecord,
     aqi,
@@ -13,6 +11,7 @@ from yui.apps.weather.aqi import (
     get_aqi_description,
     get_geometric_info_by_address,
 )
+from yui.utils import json
 
 from ...util import FakeBot
 
@@ -84,12 +83,12 @@ async def test_get_aqi(fx_aqi_api_token):
 async def test_get_aqi_wrong_idx(response_mock):
     response_mock.get(
         'https://api.waqi.info/feed/geo:123;456/?token=asdf',
-        body=ujson.dumps({'data': {'idx': 'wrong'}}),
+        body=json.dumps({'data': {'idx': 'wrong'}}),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         'https://api.waqi.info/api/feed/@wrong/obs.en.json',
-        body=ujson.dumps({'rxs': {'obs': [{'status': '404'}]}}),
+        body=json.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
 
@@ -155,7 +154,7 @@ async def test_aqi_error1(fx_config, response_mock):
             'address': '부천',
             'key': 'qwer',
         }),
-        body=ujson.dumps({
+        body=json.dumps({
             'results': [
                 {
                     'formatted_address': '대한민국 경기도 부천시',
@@ -203,7 +202,7 @@ async def test_aqi_error2(fx_config, response_mock):
             'address': '부천',
             'key': 'qwer',
         }),
-        body=ujson.dumps({
+        body=json.dumps({
             'results': [
                 {
                     'formatted_address': '대한민국 경기도 부천시',
@@ -220,12 +219,12 @@ async def test_aqi_error2(fx_config, response_mock):
     )
     response_mock.get(
         'https://api.waqi.info/feed/geo:37.5034138;126.7660309/?token=asdf',
-        body=ujson.dumps({'data': {'idx': '5511'}}),
+        body=json.dumps({'data': {'idx': '5511'}}),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         'https://api.waqi.info/api/feed/@5511/obs.en.json',
-        body=ujson.dumps({'rxs': {'obs': [{'status': '404'}]}}),
+        body=json.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
 

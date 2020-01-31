@@ -411,6 +411,14 @@ python-versions = ">=3.5"
 version = "1.18.0"
 
 [[package]]
+category = "main"
+description = "Fast, correct Python JSON library supporting dataclasses and datetimes"
+name = "orjson"
+optional = false
+python-versions = ">=3.6"
+version = "2.2.0"
+
+[[package]]
 category = "dev"
 description = "Core utilities for Python packages"
 name = "packaging"
@@ -740,14 +748,6 @@ pytz = "*"
 
 [[package]]
 category = "main"
-description = "Ultra fast JSON encoder and decoder for Python"
-name = "ujson"
-optional = false
-python-versions = "*"
-version = "1.35"
-
-[[package]]
-category = "main"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
@@ -791,7 +791,7 @@ multidict = ">=4.0"
 travis-ci = ["codecov"]
 
 [metadata]
-content-hash = "bb3509f1a309c0f30370cdfbfb6d128bd4f4f86ace1a8c1f8376a701cb2fc795"
+content-hash = "a2d7648ce0c68f3381d83fb24f0c3159092d52e09a071e86fceb855046ced4cd"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1103,6 +1103,19 @@ numpy = [
     {file = "numpy-1.18.0-cp38-cp38-win_amd64.whl", hash = "sha256:712f0c32555132f4b641b918bdb1fd3c692909ae916a233ce7f50eac2de87e37"},
     {file = "numpy-1.18.0.zip", hash = "sha256:a9d72d9abaf65628f0f31bbb573b7d9304e43b1e6bbae43149c17737a42764c4"},
 ]
+orjson = [
+    {file = "orjson-2.2.0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:961d1a51fc8611f8019cfd1acb4cf1971f2f2fc4963cba6eddf73f35bebb08ab"},
+    {file = "orjson-2.2.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:4e90977f3d11b4c916a17b0d5129f1d45b258fdc6fe49980cfd4a03ec64e3017"},
+    {file = "orjson-2.2.0-cp36-none-win_amd64.whl", hash = "sha256:f549e39d76a9f770586c46ce79777ad2dadb5dc7356cc5f2c96e4e77ad5088a5"},
+    {file = "orjson-2.2.0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:dacdcf193b7c8a5519cf04c4c02379a7a1d913e6e27c546d0e632b108f2ef15c"},
+    {file = "orjson-2.2.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:a2b1a030d46a5fc64858bf16f1591e093c30a132d1ef5fc8ea7c15896addc34c"},
+    {file = "orjson-2.2.0-cp37-none-win_amd64.whl", hash = "sha256:c5614bab5a1338ae6ddb62eae56144cf81c3643d96b62b8f114b5314a34beae9"},
+    {file = "orjson-2.2.0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:188926d10b20fb09c8d3dea6b22dcd814b0eaf8df2e75981e8e1e04b60c33633"},
+    {file = "orjson-2.2.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:d76254105885ad2602287c9715a8ae1b314a5d5ad17a553505590a9d6d98e717"},
+    {file = "orjson-2.2.0-cp38-none-win_amd64.whl", hash = "sha256:300c33f162bf40a334a25914af775817c1d14bc7b990826a80d316dac6bc320a"},
+    {file = "orjson-2.2.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:5d7e23cb629ef548f540ca353d0327248e64eed0a8ec4a9151ab8a52f22f4e86"},
+    {file = "orjson-2.2.0.tar.gz", hash = "sha256:a2733f56ddeb8d8917c51687392847ca080a8d722ac829f6ac4a835a7e239b89"},
+]
 packaging = [
     {file = "packaging-19.2-py2.py3-none-any.whl", hash = "sha256:d9551545c6d761f3def1677baf08ab2a3ca17c56879e70fecba2fc4dde4ed108"},
     {file = "packaging-19.2.tar.gz", hash = "sha256:28b924174df7a2fa32c1953825ff29c61e2f5e082343165438812f00d3a7fc47"},
@@ -1281,9 +1294,6 @@ typing-extensions = [
 tzlocal = [
     {file = "tzlocal-2.0.0-py2.py3-none-any.whl", hash = "sha256:11c9f16e0a633b4b60e1eede97d8a46340d042e67b670b290ca526576e039048"},
     {file = "tzlocal-2.0.0.tar.gz", hash = "sha256:949b9dd5ba4be17190a80c0268167d7e6c92c62b30026cf9764caf3e308e5590"},
-]
-ujson = [
-    {file = "ujson-1.35.tar.gz", hash = "sha256:f66073e5506e91d204ab0c614a148d5aa938bdbf104751be66f8ad7a222f5f86"},
 ]
 urllib3 = [
     {file = "urllib3-1.25.7-py2.py3-none-any.whl", hash = "sha256:a8a318824cc77d1fd4b2bec2ded92646630d7fe8619497b142c84a9e6f5a7293"},

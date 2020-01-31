@@ -5,8 +5,6 @@ import aiohttp
 
 import pytest
 
-import ujson
-
 from yui.apps.animal import (
     APIServerError,
     cat,
@@ -16,6 +14,7 @@ from yui.apps.animal import (
     get_dog_image_url,
     get_fox_image_url,
 )
+from yui.utils import json
 
 from ..util import FakeBot
 
@@ -114,7 +113,7 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://dog.com/404.jpg',
         }),
@@ -122,7 +121,7 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://cannotresolve.com/200.jpg',
         }),
@@ -130,7 +129,7 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://timeout.com/200.jpg',
         }),
@@ -138,7 +137,7 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://dog.com/200.jpg',
         }),
@@ -321,7 +320,7 @@ async def test_dog_command(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://dog.com/200.jpg',
         }),
@@ -334,7 +333,7 @@ async def test_dog_command(response_mock):
     )
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
-        body=ujson.dumps({
+        body=json.dumps({
             'status': 'success',
             'message': 'http://dog.com/200.jpg',
         }),

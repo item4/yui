@@ -1,10 +1,9 @@
 import datetime
 
-import ujson
-
 from ...box import box
 from ...event import Message
 from ...session import client_session
+from ...utils import json
 
 
 @box.command('퐁당')
@@ -22,7 +21,7 @@ async def pongdang(bot, event: Message):
 
     async with client_session() as session:
         async with session.get(url) as resp:
-            data = ujson.loads(await resp.text())
+            data = json.loads(await resp.text())
 
     observed_at = datetime.datetime.strptime(data['time'], '%Y-%m-%d %H:%M:%S')
     temperature = float(data['temp'])

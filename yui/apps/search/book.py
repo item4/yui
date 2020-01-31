@@ -3,13 +3,12 @@ from typing import List
 
 import tossi
 
-import ujson
-
 from ...box import box
 from ...command import argument
 from ...event import Message
 from ...session import client_session
 from ...types.slack.attachment import Attachment
+from ...utils import json
 from ...utils.html import strip_tags
 
 box.assert_config_required('NAVER_CLIENT_ID', str)
@@ -39,7 +38,7 @@ async def book(bot, event: Message, keyword: str):
 
     async with client_session() as session:
         async with session.get(url, params=params, headers=headers) as resp:
-            data = await resp.json(loads=ujson.loads)
+            data = await resp.json(loads=json.loads)
 
     attachments: List[Attachment] = []
 

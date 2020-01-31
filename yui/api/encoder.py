@@ -2,7 +2,7 @@ import enum
 
 import attr
 
-import ujson
+from ..utils import json
 
 
 def bool2str(value: bool) -> str:
@@ -34,4 +34,4 @@ def encode(obj):
 
 
 def to_json(obj) -> str:
-    return ujson.dumps(encode(obj))
+    return json.dumps(encode(obj))

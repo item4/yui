@@ -45,7 +45,7 @@ def parse(
 
     result = []
     for a in a_tags:
-        name = a.text_content()
+        name = str(a.text_content())
         link = f"{url_prefix}{a.get('href')}"
         result.append((
             name,

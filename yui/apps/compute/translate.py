@@ -1,11 +1,10 @@
 from typing import Any, Dict, Optional, Set, Tuple
 
-import ujson
-
 from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
+from ...utils import json
 
 box.assert_config_required('NAVER_CLIENT_ID', str)
 box.assert_config_required('NAVER_CLIENT_SECRET', str)
@@ -111,7 +110,7 @@ async def detect_language(headers: Dict[str, str], text: str) -> str:
     url = 'https://openapi.naver.com/v1/papago/detectLangs'
     async with client_session(headers=headers) as session:
         async with session.post(url, data={'query': text}) as resp:
-            result: Dict[str, Any] = await resp.json(loads=ujson.loads)
+            result: Dict[str, Any] = await resp.json(loads=json.loads)
             return result['langCode']
 
 
@@ -129,7 +128,7 @@ async def _translate(
     }
     async with client_session(headers=headers) as session:
         async with session.post(url, data=data) as resp:
-            result: Dict[str, Any] = await resp.json(loads=ujson.loads)
+            result: Dict[str, Any] = await resp.json(loads=json.loads)
             return result['message']['result']['translatedText']
 
 

@@ -1,14 +1,13 @@
 from datetime import timedelta
 from typing import List
 
-import ujson
-
 from ...bot import Bot
 from ...box import box
 from ...command import C
 from ...event import Message
 from ...session import client_session
 from ...types.slack.attachment import Attachment
+from ...utils import json
 from ...utils.datetime import now
 
 box.assert_channel_required('general')
@@ -27,7 +26,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
     )
     async with client_session() as session:
         async with session.get(list_endpoint) as resp:
-            list_data = await resp.json(loads=ujson.loads)
+            list_data = await resp.json(loads=json.loads)
 
     for item in list_data['data']:
         product_id = item['productId']
@@ -36,7 +35,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
         )
         async with client_session() as session:
             async with session.get(info_endpoint) as resp:
-                data = await resp.json(loads=ujson.loads)
+                data = await resp.json(loads=json.loads)
 
         title = data['title']
         image_url = data['coverImage']

@@ -1,5 +1,3 @@
-import ujson
-
 from yui.api.encoder import bool2str, to_json
 from yui.types.slack.action import (
     Action,
@@ -8,6 +6,7 @@ from yui.types.slack.action import (
     OptionFieldGroup,
 )
 from yui.types.slack.attachment import Attachment, Field
+from yui.utils import json
 
 
 def test_bool2str():
@@ -16,7 +15,7 @@ def test_bool2str():
 
 
 def to_test_type(o):
-    return ujson.loads(to_json(o))
+    return json.loads(to_json(o))
 
 
 def test_to_json():

@@ -4,13 +4,12 @@ from urllib.parse import urlencode
 
 from aiohttp.client_exceptions import ClientConnectionError, ContentTypeError
 
-import ujson
-
 from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
 from ...transform import extract_url
+from ...utils import json
 
 
 class DNSServer(NamedTuple):
@@ -85,7 +84,7 @@ async def query(domain: str, server: DNSServer) -> Result:
             async with res:
                 if res.status == 200:
                     try:
-                        data = await res.json(loads=ujson.loads)
+                        data = await res.json(loads=json.loads)
                         data['error'] = False
                     except ContentTypeError:
                         data = {

@@ -18,8 +18,6 @@ import async_timeout
 
 from dateutil.tz import tzoffset
 
-import ujson
-
 from .api import SlackAPI
 from .box import Box, box
 from .box.tasks import CronTask
@@ -37,6 +35,7 @@ from .types.channel import (
 from .types.namespace import Namespace
 from .types.slack.response import APIResponse
 from .types.user import User
+from .utils import json
 from .utils.api import retry
 
 
@@ -237,7 +236,7 @@ class Bot:
                     data=form
                 ) as response:
                     try:
-                        result = await response.json(loads=ujson.loads)
+                        result = await response.json(loads=json.loads)
                     except ContentTypeError:
                         result = await response.text()
                     return APIResponse(
@@ -316,7 +315,7 @@ class Bot:
             await ws.send_json({
                 'id': datetime.now().toordinal(),
                 'type': 'ping',
-            }, dumps=ujson.dumps)
+            }, dumps=json.dumps)  # type: ignore
             await asyncio.sleep(60)
 
     async def receive(self, ws: ClientWebSocketResponse):
@@ -343,7 +342,7 @@ class Bot:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 try:
                     event = create_event(
-                        msg.json(loads=ujson.loads)
+                        msg.json(loads=json.loads)
                     )
                 except:  # noqa: F722
                     logger.exception(msg.data)

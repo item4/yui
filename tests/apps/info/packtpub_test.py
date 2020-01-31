@@ -2,13 +2,12 @@ from freezegun import freeze_time
 
 import pytest
 
-import ujson
-
 from yui.apps.info.packtpub import (
     PACKTPUB_URL,
     auto_packtpub_dotd,
     packtpub_dotd,
 )
+from yui.utils import json
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
@@ -20,7 +19,7 @@ async def test_no_packtpub_dotd(response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=ujson.dumps({
+        body=json.dumps({
             'data': [],
         }),
         headers={'Content-Type': 'application/json'},
@@ -49,14 +48,14 @@ async def test_packtpub_dotd(response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         '?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=ujson.dumps({
+        body=json.dumps({
             'data': [{'productId': product_id}],
         }),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         f'https://static.packt-cdn.com/products/{product_id}/summary',
-        body=ujson.dumps({
+        body=json.dumps({
             'title': title,
             'coverImage': image_url,
         }),
@@ -75,7 +74,7 @@ async def test_packtpub_dotd(response_mock):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
-    attachments = ujson.loads(said.data['attachments'])
+    attachments = json.loads(said.data['attachments'])
     assert len(attachments) == 1
     assert attachments[0]['fallback'] == f'{title} - {PACKTPUB_URL}'
     assert attachments[0]['title'] == title
@@ -96,14 +95,14 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=ujson.dumps({
+        body=json.dumps({
             'data': [{'productId': product_id}],
         }),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         f'https://static.packt-cdn.com/products/{product_id}/summary',
-        body=ujson.dumps({
+        body=json.dumps({
             'title': title,
             'coverImage': image_url,
         }),
@@ -122,7 +121,7 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
-    attachments = ujson.loads(said.data['attachments'])
+    attachments = json.loads(said.data['attachments'])
     assert len(attachments) == 1
     assert attachments[0]['fallback'] == f'{title} - {PACKTPUB_URL}'
     assert attachments[0]['title'] == title

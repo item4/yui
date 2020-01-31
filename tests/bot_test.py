@@ -2,12 +2,11 @@ import asyncio
 
 import pytest
 
-import ujson
-
 from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.box import Box
 from yui.types.slack.response import APIResponse
+from yui.utils import json
 
 from .util import FakeImportLib
 
@@ -41,7 +40,7 @@ async def test_call(fx_config, response_mock):
 
     response_mock.post(
         'https://slack.com/api/test11',
-        body=ujson.dumps({
+        body=json.dumps({
             'res': 'hello world!',
         }),
         headers={'content-type': 'application/json'},
@@ -49,7 +48,7 @@ async def test_call(fx_config, response_mock):
     )
     response_mock.post(
         'https://slack.com/api/test12',
-        body=ujson.dumps({
+        body=json.dumps({
             'res': 'hello world!',
             'data': {
                 'extra': 'wow',
@@ -61,7 +60,7 @@ async def test_call(fx_config, response_mock):
 
     response_mock.post(
         'https://slack.com/api/test21',
-        body=ujson.dumps({
+        body=json.dumps({
             'error': 'aaa',
         }),
         headers={'content-type': 'application/json'},
@@ -69,7 +68,7 @@ async def test_call(fx_config, response_mock):
     )
     response_mock.post(
         'https://slack.com/api/test22',
-        body=ujson.dumps({
+        body=json.dumps({
             'error': 'aaa',
         }),
         headers={'content-type': 'application/json'},
@@ -77,7 +76,7 @@ async def test_call(fx_config, response_mock):
     )
     response_mock.post(
         'https://slack.com/api/test3',
-        body=ujson.dumps({
+        body=json.dumps({
             'res': 'hello world!',
         }),
         headers={'content-type': 'application/json'},

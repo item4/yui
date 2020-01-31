@@ -8,14 +8,13 @@ from sqlalchemy.orm.exc import NoResultFound
 
 import tossi
 
-import ujson
-
 from ..shared.cache import JSONCache
 from ...box import box
 from ...command import argument, option
 from ...event import ChatterboxSystemStart, Message
 from ...session import client_session
 from ...transform import choice
+from ...utils import json
 from ...utils.datetime import now
 from ...utils.fuzz import ratio
 
@@ -58,7 +57,7 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
 
     async with client_session(headers=headers) as session:
         async with session.get(metadata_url) as resp:
-            db.body = await resp.json(loads=ujson.loads)
+            db.body = await resp.json(loads=json.loads)
 
     db.created_at = now()
 
@@ -149,7 +148,7 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
 
         async with client_session(headers=headers) as session:
             async with session.get(url) as resp:
-                result = await resp.json(loads=ujson.loads)
+                result = await resp.json(loads=json.loads)
 
         text = ''
 

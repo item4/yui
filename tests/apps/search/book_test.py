@@ -3,9 +3,8 @@ import re
 
 import pytest
 
-import ujson
-
 from yui.apps.search.book import book
+from yui.utils import json
 
 from ...util import FakeBot
 
@@ -50,7 +49,7 @@ async def test_book(fx_config, fx_naver_client_id, fx_naver_client_secret):
     match = book_result_pattern_re.match(said.data['text'])
     assert match
     assert match.group(1) == '소드 아트 온라인'
-    assert len(ujson.loads(said.data['attachments'])) == int(match.group(2))
+    assert len(json.loads(said.data['attachments'])) == int(match.group(2))
     assert said.data['thread_ts'] == '1234.5678'
 
     await book(

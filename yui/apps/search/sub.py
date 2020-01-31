@@ -10,13 +10,12 @@ import async_timeout
 
 from fuzzywuzzy import fuzz
 
-import ujson
-
 from ...box import box
 from ...command import argument, option
 from ...event import Message
 from ...session import client_session
 from ...types.slack.attachment import Attachment
+from ...utils import json
 from ...utils.fuzz import match
 
 
@@ -112,9 +111,9 @@ async def get_json(*args, timeout: float = 0.5, **kwargs):
                         if res.status != 200:
                             return []
                         try:
-                            return await res.json(loads=ujson.loads)
+                            return await res.json(loads=json.loads)
                         except aiohttp.client_exceptions.ClientResponseError:
-                            return ujson.loads(await res.text())
+                            return json.loads(await res.text())
                 except aiohttp.client_exceptions.ServerDisconnectedError:
                     if weight > 10:
                         raise

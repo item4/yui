@@ -8,13 +8,12 @@ import async_timeout
 
 from lxml import etree, html
 
-import ujson
-
 from ..box import box
 from ..command import option
 from ..event import Message
 from ..session import client_session
 from ..types.channel import DirectMessageChannel
+from ..utils import json
 from ..utils.datetime import now
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
@@ -60,7 +59,7 @@ async def get_dog_image_url(timeout: float) -> str:
                 async with session.get(api_url) as res:
                     if res.status != 200:
                         raise APIServerError
-                    data = await res.json(loads=ujson.loads)
+                    data = await res.json(loads=json.loads)
                     url = data['message']
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(0.1)

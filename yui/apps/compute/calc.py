@@ -15,11 +15,10 @@ import _ast
 
 from async_timeout import timeout
 
-import ujson
-
 from ...bot import Bot
 from ...box import box
 from ...event import Message
+from ...utils import json
 
 TIMEOUT = 1
 
@@ -487,7 +486,7 @@ class Evaluator:
                 'stdev',
                 'variance',
             },
-            ujson: {
+            json: {
                 'dumps',
                 'loads',
             },
@@ -870,7 +869,7 @@ class Evaluator:
             'functools': functools,
             'html': html,
             'itertools': itertools,
-            'json': ujson,
+            'json': json,
             'math': math,
             'operator': operator,
             'random': random,

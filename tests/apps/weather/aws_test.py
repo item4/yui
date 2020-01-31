@@ -4,9 +4,8 @@ from aiohttp import client_exceptions
 
 import pytest
 
-import ujson
-
 from yui.apps.weather.aws import API_URL, aws, clothes_by_temperature
+from yui.utils import json
 
 from ...util import FakeBot
 
@@ -35,7 +34,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 2
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T00:00:00+0900',
             'records': [
                 {
@@ -72,7 +71,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 3
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T00:00:00+0900',
             'records': [
                 {
@@ -137,7 +136,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 4
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T13:00:00+0900',
             'records': [
                 {
@@ -174,7 +173,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 5
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T13:00:00+0900',
             'records': [
                 {
@@ -211,7 +210,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 6
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T13:00:00+0900',
             'records': [
                 {
@@ -248,7 +247,7 @@ async def test_aws(response_mock):
     )
     response_mock.get(  # 7
         API_URL,
-        body=ujson.dumps({
+        body=json.dumps({
             'observed_at': '2019-12-31T13:00:00+0900',
             'records': [
                 {

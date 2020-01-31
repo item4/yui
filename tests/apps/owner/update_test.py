@@ -1,8 +1,7 @@
 import pytest
 
-import ujson
-
 from yui.apps.owner.update import FLAG_MAP, update
+from yui.utils import json
 
 from ...util import FakeBot
 
@@ -56,7 +55,7 @@ TITLE=타이틀만 있음
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '유이 업데이트 명령 테스트'
-    attachments = ujson.loads(said.data['attachments'])
+    attachments = json.loads(said.data['attachments'])
     assert attachments == [
         dict(
             fallback='[patch] 패치: 본문1 본문2 본문3',

@@ -1,9 +1,8 @@
 import datetime
 from typing import List
 
-import ujson
-
 from ...session import client_session
+from ...utils import json
 
 
 class APIDoesNotSupport(Exception):
@@ -17,7 +16,7 @@ async def get_holiday_names(dt: datetime.datetime) -> List[str]:
             '{}/{}'.format(url, dt.strftime('%Y/%m/%d'))
         ) as resp:
             if resp.status == 200:
-                return await resp.json(loads=ujson.loads)
+                return await resp.json(loads=json.loads)
     raise APIDoesNotSupport
 
 
