@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.pool import Pool
 
-from yui.config import Config
+from ..config import Config
 
 
 def create_database_engine(

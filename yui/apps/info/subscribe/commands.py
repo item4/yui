@@ -8,7 +8,6 @@ from dateutil.tz import UTC
 
 import feedparser
 
-
 from .models import RSSFeedURL
 from ....box import box, route
 from ....command import argument
