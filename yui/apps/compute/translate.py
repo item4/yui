@@ -175,6 +175,9 @@ async def translate(bot, event: Message, source, target, text: str):
     if source_code is None:
         source_code = await detect_language(headers, text)
 
+    if source_code == target_code == 'ko':
+        target_code = 'en'
+
     if source_code == 'error':
         await bot.say(
             event.channel,
