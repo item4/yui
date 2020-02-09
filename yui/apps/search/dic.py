@@ -11,6 +11,7 @@ from ...event import Message
 from ...session import client_session
 from ...transform import choice
 from ...types.slack.attachment import Attachment
+from ...utils.html import strip_tags
 
 headers: Dict[str, str] = {
     'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'
@@ -66,7 +67,7 @@ def parse(html: str) -> Tuple[Optional[str], List[Attachment]]:
         for word in words:
             w = word.cssselect('.txt_searchword')[0]
             attachments.append(Attachment(
-                title=w.text_content(),
+                title=strip_tags(w.text_content()),
                 title_link=fix_url(w.get('href')),
                 text=fix_blank(
                     word.cssselect('.list_search')[0].text_content()
