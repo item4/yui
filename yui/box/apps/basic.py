@@ -87,7 +87,8 @@ class App(BaseApp):
         return help
 
     async def run(self, bot: Bot, event: Event):
-        if event.type == self.type and event.subtype == self.subtype:
+        subtype = event.subtype == self.subtype or self.subtype == '*'
+        if event.type == self.type and subtype:
             if isinstance(event, Message):
                 return await self._run_message_event(bot, event)
             return await self._run(bot, event)

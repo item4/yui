@@ -72,7 +72,7 @@ class RouteApp(BaseApp):
 
         if root_call == bot.config.PREFIX + self.name:
             for c in self.route_list:
-                if c.subtype == event.subtype:
+                if c.subtype == event.subtype or c.subtype == '*':
                     if root_args is None:
                         if c.name is None:
                             handler = c.handler
