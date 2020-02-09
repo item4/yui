@@ -13,20 +13,14 @@ async def test_select_command():
     event = bot.create_message('C1', 'U1')
     seed = 1
 
-    await select(bot, event, ' ', 'cat dog', seed)
+    await select(bot, event, ' ', ['cat', 'dog'], seed)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '선택결과: cat'
 
-    await select(bot, event, '/', 'cat/dog', seed)
+    await select(bot, event, ' ', ['키리가야 카즈토', '유지오'], seed)
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '선택결과: cat'
-
-    await select(bot, event, ',', 'cat, dog', seed)
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '선택결과: cat'
+    assert said.data['text'] == '선택결과: 키리가야 유지오'
