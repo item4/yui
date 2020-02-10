@@ -1,4 +1,5 @@
 import datetime
+from hashlib import md5
 from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
@@ -68,19 +69,22 @@ async def get_geometric_info_by_address(
     return full_address, lat, lng
 
 
-async def get_aqi(lat: float, lng: float, token: str) -> Optional[AQIRecord]:
+async def get_aqi_idx(lat: float, lng: float, token: str) -> Optional[str]:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
     async with client_session() as session:
         async with session.get(url) as res:
             d1 = await res.json(loads=json.loads)
     try:
-        idx = d1['data']['idx']
+        return str(d1['data']['idx'])
     except (KeyError, TypeError):
         return None
 
+
+async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
     url = f'https://api.waqi.info/api/feed/@{idx}/obs.en.json'
     headers = {
         'User-Agent': UserAgent().chrome,
+        'accept-language': 'ko',
     }
     async with client_session() as session:
         async with session.get(url, headers=headers) as res:
@@ -140,19 +144,46 @@ async def aqi(bot, event: Message, address: str):
 
     """
 
-    try:
-        full_address, lat, lng = await get_geometric_info_by_address(
-            address,
-            bot.config.GOOGLE_API_KEY,
-        )
-    except IndexError:
-        await bot.say(
-            event.channel,
-            '해당 주소는 찾을 수 없어요!'
-        )
-        return
+    addr = md5(address.encode()).hexdigest()
 
-    result = await get_aqi(lat, lng, bot.config.AQI_API_TOKEN)
+    cached = await bot.cache.multi_get(
+        f'AQI_ADDRESS_{addr}_full_address',
+        f'AQI_ADDRESS_{addr}_lat',
+        f'AQI_ADDRESS_{addr}_lng',
+    )
+    if cached[0] and cached[1] and cached[2]:
+        full_address, lat, lng = cached
+    else:
+        try:
+            full_address, lat, lng = await get_geometric_info_by_address(
+                address,
+                bot.config.GOOGLE_API_KEY,
+            )
+            await bot.cache.set(
+                f'AQI_ADDRESS_{addr}_full_address',
+                full_address,
+            )
+            await bot.cache.set(
+                f'AQI_ADDRESS_{addr}_lat',
+                lat,
+            )
+            await bot.cache.set(
+                f'AQI_ADDRESS_{addr}_lng',
+                lng,
+            )
+        except IndexError:
+            await bot.say(
+                event.channel,
+                '해당 주소는 찾을 수 없어요!'
+            )
+            return
+
+    idx = await bot.cache.get(f'AQI_IDX_{lat}_{lng}')
+    if not idx:
+        idx = await get_aqi_idx(lat, lng, bot.config.AQI_API_TOKEN)
+        await bot.cache.set(f'AQI_IDX_{lat}_{lng}', idx)
+
+    result = await get_aqi_result(idx)
 
     if result is None:
         await bot.say(
