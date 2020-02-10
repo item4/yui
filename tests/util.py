@@ -2,10 +2,13 @@ import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from typing import Callable, Dict, List, Optional, Union
 
+import aiomcache
+
 import attr
 
 from yui.api import SlackAPI
 from yui.bot import Bot
+from yui.cache import Cache
 from yui.config import Config, DEFAULT
 from yui.event import Message
 from yui.types.channel import (
@@ -40,6 +43,11 @@ class FakeBot(Bot):
         self.channels: List[PublicChannel] = []
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
+        self.mc = aiomcache.Client(
+            host=config.CACHE['HOST'],
+            port=config.CACHE['PORT'],
+        )
+        self.cache = Cache(self.mc, 'YUI_TEST_')
         self.users: List[User] = [User(id='U0', team_id='T0', name='system')]
         self.responses: Dict[str, Callable] = {}
         self.config = config

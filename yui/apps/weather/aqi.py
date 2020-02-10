@@ -69,7 +69,7 @@ async def get_geometric_info_by_address(
     return full_address, lat, lng
 
 
-async def get_aqi_idx(lat: float, lng: float, token: str) -> Optional[str]:
+async def get_aqi_idx(lat: float, lng: float, token: str) -> str:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
     async with client_session() as session:
         async with session.get(url) as res:
@@ -77,7 +77,7 @@ async def get_aqi_idx(lat: float, lng: float, token: str) -> Optional[str]:
     try:
         return str(d1['data']['idx'])
     except (KeyError, TypeError):
-        return None
+        return 'wrong'
 
 
 async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
@@ -182,6 +182,13 @@ async def aqi(bot, event: Message, address: str):
     if not idx:
         idx = await get_aqi_idx(lat, lng, bot.config.AQI_API_TOKEN)
         await bot.cache.set(f'AQI_IDX_{lat}_{lng}', idx)
+
+    if idx == 'wrong':
+        await bot.say(
+            event.channel,
+            '해당 지역의 AQI 정보를 받아올 수 없어요!'
+        )
+        return
 
     result = await get_aqi_result(idx)
 
