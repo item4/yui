@@ -1,11 +1,11 @@
 from decimal import Decimal
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 import aiomcache
 
 from .utils import json
 
-DATA_TYPE = Union[str, bytes, bool, int, float, Decimal, Dict, List]
+DATA_TYPE = Optional[Union[str, bytes, bool, int, float, Decimal, Dict, List]]
 
 
 class Cache:
@@ -47,8 +47,8 @@ class Cache:
         return json.loads(data)
 
     async def multi_get(self, *keys: Union[str, bytes]) -> List[DATA_TYPE]:
-        keys = [self._key(k) for k in keys]
-        values = await self.mc.multi_get(*keys)
+        prefixed_keys = [self._key(k) for k in keys]
+        values = await self.mc.multi_get(*prefixed_keys)
         return [None if v is None else json.loads(v) for v in values]
 
     async def delete(self, key: Union[str, bytes]):
