@@ -9,6 +9,7 @@ cache:
 services:
 - docker
 - postgresql
+- memcached
 addons:
   postgresql: "10"
 before_install:

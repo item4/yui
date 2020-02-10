@@ -14,6 +14,8 @@ import aiohttp
 from aiohttp.client_exceptions import ClientConnectorError, ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 
+import aiomcache
+
 import async_timeout
 
 from dateutil.tz import tzoffset
@@ -21,6 +23,7 @@ from dateutil.tz import tzoffset
 from .api import SlackAPI
 from .box import Box, box
 from .box.tasks import CronTask
+from .cache import Cache
 from .config import Config
 from .event import create_event
 from .orm import Base, EngineConfig, get_database_engine, make_session
@@ -69,6 +72,7 @@ class Bot:
     """Yui."""
 
     api: SlackAPI
+    cache: Cache
     loop: asyncio.AbstractEventLoop
 
     def __init__(
@@ -93,6 +97,13 @@ class Bot:
 
         logger.info('connect to DB')
         config.DATABASE_ENGINE = get_database_engine(config)
+
+        logger.info('connect to memcache')
+        self.mc = aiomcache.Client(
+            host=config.CACHE['HOST'],
+            port=config.CACHE['PORT'],
+        )
+        self.cache = Cache(self.mc, config.CACHE.get('PREFIX', 'YUI_'))
 
         logger.info('import apps')
         for app_name in config.APPS:

@@ -57,6 +57,11 @@ DEFAULT = {
             },
         },
     },
+    'CACHE': {
+        'HOST': 'localhost',
+        'PORT': 11211,
+        'PREFIX': 'YUI_',
+    }
 }
 
 
@@ -78,6 +83,7 @@ class Config:
     REGISTER_CRONTAB: bool
     CHANNELS: Dict[str, Any]
     USERS: Dict[str, Any]
+    CACHE: Dict[str, Any]
     WEBSOCKETDEBUGGERURL: Optional[str] = None
     DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
 

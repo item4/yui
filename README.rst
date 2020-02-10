@@ -18,6 +18,8 @@ Requirements
 - Git
 - Slack bot permission for bot account
 - Python 3.8 or higher
+- PostgreSQL
+- memcached
 - Poetry_
 
 
@@ -180,6 +182,19 @@ WEBSOCKETDEBUGGERURL
   .. code-block:: bash
 
      docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN yukinying/chrome-headless-browser
+
+CACHE
+  complex dict. memcached config.
+  You can use default setting, But if you want to change some values, you can
+  override like below example.
+
+  .. code-block:: toml
+
+     [CACHE]
+     HOST = 'localhost'
+     PORT = 12345
+     PREFIX = 'CUSTOM_YUI_\'
+
 
 LOGGING
   complex dict. Python logging config.

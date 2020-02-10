@@ -32,6 +32,14 @@ yarl = ">=1.0,<2.0"
 speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
+category = "main"
+description = "Minimal pure python memcached client"
+name = "aiomcache"
+optional = false
+python-versions = ">=3.4.0"
+version = "0.6.0"
+
+[[package]]
 category = "dev"
 description = "Mock out requests made by ClientSession from aiohttp package"
 name = "aioresponses"
@@ -796,7 +804,7 @@ multidict = ">=4.0"
 travis-ci = ["codecov"]
 
 [metadata]
-content-hash = "a2d7648ce0c68f3381d83fb24f0c3159092d52e09a071e86fceb855046ced4cd"
+content-hash = "22cfc97130676ce4818d8718740cfbd0ba8a6283e3b02f2ad968d7c0cf549bf6"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -817,6 +825,10 @@ aiohttp = [
     {file = "aiohttp-3.6.2-cp37-cp37m-win_amd64.whl", hash = "sha256:32e5f3b7e511aa850829fbe5aa32eb455e5534eaa4b1ce93231d00e2f76e5654"},
     {file = "aiohttp-3.6.2-py3-none-any.whl", hash = "sha256:460bd4237d2dbecc3b5ed57e122992f60188afe46e7319116da5eb8a9dfedba4"},
     {file = "aiohttp-3.6.2.tar.gz", hash = "sha256:259ab809ff0727d0e834ac5e8a283dc5e3e0ecc30c4d80b3cd17a4139ce1f326"},
+]
+aiomcache = [
+    {file = "aiomcache-0.6.0-py3-none-any.whl", hash = "sha256:17d82e0586c8500a7a3dac0fdef67e2d0300c82d4acb1595a9925783b7c382b5"},
+    {file = "aiomcache-0.6.0.tar.gz", hash = "sha256:b38062efca87f2e6ac3b406bd816ca790900b03fef1c5c38fa61c18212c38825"},
 ]
 aioresponses = [
     {file = "aioresponses-0.6.2-py2.py3-none-any.whl", hash = "sha256:57354fdec291f07ae50f89da71504966542a57363d6a1ad3a6222520a7d1bd84"},
