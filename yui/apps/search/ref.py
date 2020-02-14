@@ -6,15 +6,11 @@ from fuzzywuzzy import fuzz
 
 from lxml.html import fromstring
 
-from sqlalchemy.orm.exc import NoResultFound
-
-from ..shared.cache import JSONCache
 from ...bot import Bot
 from ...box import box
 from ...command import argument
 from ...event import ChatterboxSystemStart, Message
 from ...session import client_session
-from ...utils.datetime import now
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +20,6 @@ REF_URLS: Dict[str, str] = {
     'css': 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference',
     'python': 'https://docs.python.org/3/library/',
 }
-
-
-def fetch_or_create_cache(name: str, sess) -> JSONCache:
-    try:
-        ref = sess.query(JSONCache).filter_by(name=name).one()
-    except NoResultFound:
-        ref = JSONCache()
-        ref.name = name
-    return ref
 
 
 def parse(
@@ -54,10 +41,8 @@ def parse(
     return result
 
 
-async def fetch_css_ref(bot: Bot, sess):
+async def fetch_css_ref(bot: Bot):
     logger.info(f'fetch css ref start')
-
-    ref = fetch_or_create_cache('css', sess)
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
     async with client_session() as session:
@@ -71,19 +56,13 @@ async def fetch_css_ref(bot: Bot, sess):
         'https://developer.mozilla.org',
     )
 
-    ref.body = body
-    ref.created_at = now()
-
-    with sess.begin():
-        sess.add(ref)
+    await bot.cache.set('REF_CSS', body)
 
     logger.info(f'fetch css ref end')
 
 
-async def fetch_html_ref(bot: Bot, sess):
+async def fetch_html_ref(bot: Bot):
     logger.info(f'fetch html ref start')
-
-    ref = fetch_or_create_cache('html', sess)
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
     async with client_session() as session:
@@ -96,12 +75,7 @@ async def fetch_html_ref(bot: Bot, sess):
         'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
         'https://developer.mozilla.org',
     )
-
-    ref.body = body
-    ref.created_at = now()
-
-    with sess.begin():
-        sess.add(ref)
+    await bot.cache.set('REF_HTML', body)
 
     logger.info(f'fetch html ref end')
 
@@ -131,10 +105,8 @@ def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
     return result
 
 
-async def fetch_python_ref(bot: Bot, sess):
+async def fetch_python_ref(bot: Bot):
     logger.info(f'fetch python ref start')
-
-    ref = fetch_or_create_cache('python', sess)
 
     url = 'https://docs.python.org/3/library/'
     async with client_session() as session:
@@ -146,41 +118,37 @@ async def fetch_python_ref(bot: Bot, sess):
         blob,
     )
 
-    ref.body = body
-    ref.created_at = now()
-
-    with sess.begin():
-        sess.add(ref)
+    await bot.cache.set('REF_PYTHON', body)
 
     logger.info(f'fetch python ref end')
 
 
 @box.on(ChatterboxSystemStart)
-async def on_start(bot, sess):
+async def on_start(bot):
     logger.info('on_start ref')
     tasks = [
-        fetch_css_ref(bot, sess),
-        fetch_html_ref(bot, sess),
-        fetch_python_ref(bot, sess),
+        fetch_css_ref(bot),
+        fetch_html_ref(bot),
+        fetch_python_ref(bot),
     ]
     await asyncio.wait(tasks)
     return True
 
 
 @box.cron('0 3 * * *')
-async def refresh(bot, sess):
+async def refresh(bot):
     logger.info('refresh ref')
     tasks = [
-        fetch_css_ref(bot, sess),
-        fetch_html_ref(bot, sess),
-        fetch_python_ref(bot, sess),
+        fetch_css_ref(bot),
+        fetch_html_ref(bot),
+        fetch_python_ref(bot),
     ]
     await asyncio.wait(tasks)
 
 
 @box.command('html', ['htm'])
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def html(bot, event: Message, sess, keyword: str):
+async def html(bot, event: Message, keyword: str):
     """
     HTML 레퍼런스 링크
 
@@ -188,9 +156,8 @@ async def html(bot, event: Message, sess, keyword: str):
 
     """
 
-    try:
-        ref = sess.query(JSONCache).filter_by(name='html').one()
-    except NoResultFound:
+    data = await bot.cache.get('REF_HTML')
+    if data is None:
         await bot.say(
             event.channel,
             '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
@@ -200,7 +167,7 @@ async def html(bot, event: Message, sess, keyword: str):
     name = None
     link = None
     ratio = -1
-    for _name, _link in ref.body:
+    for _name, _link in data:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
             name = _name
@@ -221,7 +188,7 @@ async def html(bot, event: Message, sess, keyword: str):
 
 @box.command('css')
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def css(bot, event: Message, sess, keyword: str):
+async def css(bot, event: Message, keyword: str):
     """
     CSS 레퍼런스 링크
 
@@ -229,9 +196,8 @@ async def css(bot, event: Message, sess, keyword: str):
 
     """
 
-    try:
-        ref = sess.query(JSONCache).filter_by(name='css').one()
-    except NoResultFound:
+    data = await bot.cache.get('REF_CSS')
+    if data is None:
         await bot.say(
             event.channel,
             '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
@@ -241,7 +207,7 @@ async def css(bot, event: Message, sess, keyword: str):
     name = None
     link = None
     ratio = -1
-    for _name, _link in ref.body:
+    for _name, _link in data:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
             name = _name
@@ -318,7 +284,7 @@ async def php(bot, event: Message, keyword: str):
 
 @box.command('python', ['py'])
 @argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
-async def python(bot, event: Message, sess, keyword: str):
+async def python(bot, event: Message, keyword: str):
     """
     Python library 레퍼런스 링크
 
@@ -326,9 +292,8 @@ async def python(bot, event: Message, sess, keyword: str):
 
     """
 
-    try:
-        ref = sess.query(JSONCache).filter_by(name='python').one()
-    except NoResultFound:
+    data = await bot.cache.get('REF_PYTHON')
+    if data is None:
         await bot.say(
             event.channel,
             '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
@@ -338,7 +303,7 @@ async def python(bot, event: Message, sess, keyword: str):
     name = None
     link = None
     ratio = -1
-    for code, _name, _link in ref.body:
+    for code, _name, _link in data:
         if code:
             _ratio = fuzz.ratio(keyword, code)
         else:
