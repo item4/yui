@@ -4,11 +4,10 @@ import re
 from typing import Dict, Tuple
 from urllib.parse import urlencode
 
-from sqlalchemy.orm.exc import NoResultFound
+from fake_useragent import UserAgent
 
 import tossi
 
-from ..shared.cache import JSONCache
 from ...box import box
 from ...command import argument, option
 from ...event import ChatterboxSystemStart, Message
@@ -23,8 +22,7 @@ PARENTHESES = re.compile(r'\(.+?\)')
 logger = logging.getLogger(__name__)
 
 headers: Dict[str, str] = {
-    'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'
-                   ' Gecko/20100101 Firefox/56.0')
+    'User-Agent': UserAgent().chrome,
 }
 TEMPLATE = '{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}'
 REGION_TABLE: Dict[str, Tuple[str, str]] = {
@@ -36,14 +34,9 @@ REGION_TABLE: Dict[str, Tuple[str, str]] = {
 }
 
 
-async def fetch_station_db(sess, service_region: str, api_version: str):
+async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f'subway-{service_region}-{api_version}'
     logger.info(f'fetch {name} start')
-    try:
-        db = sess.query(JSONCache).filter_by(name=name).one()
-    except NoResultFound:
-        db = JSONCache()
-        db.name = name
 
     metadata_url = 'https://map.naver.com/v5/api/subway/provide?{}'.format(
         urlencode({
@@ -57,50 +50,42 @@ async def fetch_station_db(sess, service_region: str, api_version: str):
 
     async with client_session(headers=headers) as session:
         async with session.get(metadata_url) as resp:
-            db.body = await resp.json(loads=json.loads)
+            data = await resp.json(loads=json.loads)
 
-    db.created_at = now()
-
-    with sess.begin():
-        sess.add(db)
+    await bot.cache.set(f'SUBWAY_{service_region}_{api_version}', data)
 
     logger.info(f'fetch {name} end')
 
 
 @box.on(ChatterboxSystemStart)
-async def on_start(sess):
+async def on_start(bot):
     logger.info('on_start subway')
     tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        tasks.append(fetch_station_db(sess, service_region, api_version))
+        tasks.append(fetch_station_db(bot, service_region, api_version))
     await asyncio.wait(tasks)
     return True
 
 
 @box.cron('0 3 * * *')
-async def refresh_db(sess):
+async def refresh_db(bot):
     logger.info('refresh subway')
     tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        tasks.append(fetch_station_db(sess, service_region, api_version))
+        tasks.append(fetch_station_db(bot, service_region, api_version))
     await asyncio.wait(tasks)
 
 
-async def body(bot, event: Message, sess, region: str, start: str, end: str):
+async def body(bot, event: Message, region: str, start: str, end: str):
     service_region, api_version = REGION_TABLE[region]
 
-    try:
-        db = sess.query(JSONCache).filter_by(
-            name=f'subway-{service_region}-{api_version}'
-        ).one()
-    except NoResultFound:
+    data = await bot.cache.get(f'SUBWAY_{service_region}_{api_version}')
+    if data is None:
         await bot.say(
             event.channel,
             '아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
         return
-
-    data = db.body
 
     find_start = None
     find_start_ratio = -1
@@ -213,7 +198,7 @@ async def body(bot, event: Message, sess, region: str, start: str, end: str):
         transform_error='지원되는 지역이 아니에요')
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def subway(bot, event: Message, sess, region: str, start: str, end: str):
+async def subway(bot, event: Message, region: str, start: str, end: str):
     """
     전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -222,13 +207,13 @@ async def subway(bot, event: Message, sess, region: str, start: str, end: str):
 
     """
 
-    await body(bot, event, sess, region, start, end)
+    await body(bot, event, region, start, end)
 
 
 @box.command('부산지하철', ['부산전철'])
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def busan_subway(bot, event: Message, sess, start: str, end: str):
+async def busan_subway(bot, event: Message, start: str, end: str):
     """
     부산 전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -237,13 +222,13 @@ async def busan_subway(bot, event: Message, sess, start: str, end: str):
 
     """
 
-    await body(bot, event, sess, '부산', start, end)
+    await body(bot, event, '부산', start, end)
 
 
 @box.command('대구지하철', ['대구전철'])
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def daegu_subway(bot, event: Message, sess, start: str, end: str):
+async def daegu_subway(bot, event: Message, start: str, end: str):
     """
     대구 전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -252,13 +237,13 @@ async def daegu_subway(bot, event: Message, sess, start: str, end: str):
 
     """
 
-    await body(bot, event, sess, '대구', start, end)
+    await body(bot, event, '대구', start, end)
 
 
 @box.command('광주지하철', ['광주전철'])
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def gwangju_subway(bot, event: Message, sess, start: str, end: str):
+async def gwangju_subway(bot, event: Message, start: str, end: str):
     """
     광주 전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -267,13 +252,13 @@ async def gwangju_subway(bot, event: Message, sess, start: str, end: str):
 
     """
 
-    await body(bot, event, sess, '광주', start, end)
+    await body(bot, event, '광주', start, end)
 
 
 @box.command('대전지하철', ['대전전철'])
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
-async def daejeon_subway(bot, event: Message, sess, start: str, end: str):
+async def daejeon_subway(bot, event: Message, start: str, end: str):
     """
     대전 전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
@@ -282,4 +267,4 @@ async def daejeon_subway(bot, event: Message, sess, start: str, end: str):
 
     """
 
-    await body(bot, event, sess, '대전', start, end)
+    await body(bot, event, '대전', start, end)
