@@ -1,5 +1,6 @@
 import os
 import re
+from hashlib import md5
 from urllib.parse import urlencode
 
 import pytest
@@ -25,6 +26,13 @@ result_pattern_re = re.compile(
     r'\* 일산화 탄소: \d+(?:\.\d+)? \(최소 \d+(?:\.\d+)? / 최대 \d+(?:\.\d+)?\)'
 )
 
+addr1 = '부천'
+addr1_md5 = md5(addr1.encode()).hexdigest()
+addr2 = '서울'
+addr2_md5 = md5(addr2.encode()).hexdigest()
+addr3 = '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒'
+addr3_md5 = md5(addr3.encode()).hexdigest()
+
 
 @pytest.fixture()
 def fx_aqi_api_token():
@@ -43,9 +51,20 @@ def fx_google_api_key():
 
 
 @pytest.mark.asyncio
-async def test_get_geometric_info_by_address(fx_google_api_key):
+async def test_get_geometric_info_by_address(fx_config, fx_google_api_key):
+    bot = FakeBot(fx_config)
+
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lng')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
     full_address, lat, lng = await get_geometric_info_by_address(
-        '부천',
+        addr1,
         fx_google_api_key,
     )
 
@@ -54,7 +73,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
     assert lng == 126.7660309
 
     full_address, lat, lng = await get_geometric_info_by_address(
-        '서울',
+        addr2,
         fx_google_api_key,
     )
 
@@ -64,9 +83,19 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
-            '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒',
+            addr3,
             fx_google_api_key,
         )
+
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lng')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
 
 
 @pytest.mark.asyncio
@@ -122,7 +151,15 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await aqi(bot, event, '부천')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
+
+    await aqi(bot, event, addr1)
 
     said = bot.call_queue.pop(0)
 
@@ -136,7 +173,7 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
     await aqi(
         bot,
         event,
-        '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒',
+        addr3,
     )
 
     said = bot.call_queue.pop(0)
@@ -144,13 +181,21 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
 
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
+
 
 @pytest.mark.asyncio
 async def test_aqi_error1(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
             'region': 'kr',
-            'address': '부천1',
+            'address': addr1,
             'key': 'qwer',
         }),
         body=json.dumps({
@@ -159,8 +204,8 @@ async def test_aqi_error1(fx_config, response_mock):
                     'formatted_address': '대한민국 경기도 부천시',
                     'geometry': {
                         'location': {
-                            'lat': 9937.5034138,
-                            'lng': 99126.7660309,
+                            'lat': 37.5034138,
+                            'lng': 126.7660309,
                         },
                     },
                 },
@@ -170,7 +215,7 @@ async def test_aqi_error1(fx_config, response_mock):
     )
     response_mock.get(
         'https://api.waqi.info/feed/geo:'
-        '9937.5034138;99126.7660309/?token=asdf',
+        '37.5034138;126.7660309/?token=asdf',
         body='null',
         headers={'Content-Type': 'application/json'},
     )
@@ -184,7 +229,12 @@ async def test_aqi_error1(fx_config, response_mock):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await aqi(bot, event, '부천1')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+
+    await aqi(bot, event, addr1)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -193,13 +243,18 @@ async def test_aqi_error1(fx_config, response_mock):
         '해당 지역의 AQI 정보를 받아올 수 없어요!'
     )
 
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+
 
 @pytest.mark.asyncio
 async def test_aqi_error2(fx_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
             'region': 'kr',
-            'address': '부천2',
+            'address': addr1,
             'key': 'qwer',
         }),
         body=json.dumps({
@@ -208,8 +263,8 @@ async def test_aqi_error2(fx_config, response_mock):
                     'formatted_address': '대한민국 경기도 부천시',
                     'geometry': {
                         'location': {
-                            'lat': 8837.5034138,
-                            'lng': 88126.7660309,
+                            'lat': 37.5034138,
+                            'lng': 126.7660309,
                         },
                     },
                 },
@@ -219,12 +274,12 @@ async def test_aqi_error2(fx_config, response_mock):
     )
     response_mock.get(
         'https://api.waqi.info/feed/geo:'
-        '8837.5034138;88126.7660309/?token=asdf',
-        body=json.dumps({'data': {'idx': '885511'}}),
+        '37.5034138;126.7660309/?token=asdf',
+        body=json.dumps({'data': {'idx': '5511'}}),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
-        'https://api.waqi.info/api/feed/@885511/obs.en.json',
+        'https://api.waqi.info/api/feed/@5511/obs.en.json',
         body=json.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
@@ -238,7 +293,12 @@ async def test_aqi_error2(fx_config, response_mock):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await aqi(bot, event, '부천2')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+
+    await aqi(bot, event, addr1)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
@@ -246,3 +306,8 @@ async def test_aqi_error2(fx_config, response_mock):
     assert said.data['text'] == (
         '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
     )
+
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
+    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
+    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
