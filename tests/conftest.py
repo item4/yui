@@ -107,6 +107,7 @@ def gen_config():
         CHANNELS={},
         USERS={},
         WEBSOCKETDEBUGGERURL='',
+        WEEKEND_LOADING_TIME=[0, 12]
     ))
     config = Config(**cfg)
     config.LOGGING['loggers']['yui']['handlers'] = ['console']

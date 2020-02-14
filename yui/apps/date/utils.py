@@ -31,4 +31,14 @@ def weekend_loading_percent(dt: datetime.datetime) -> float:
         microsecond=0,
     )
     delta = dt - monday
-    return delta.total_seconds() / (5*24*60*60) * 100
+    return delta.total_seconds() / (5 * 24 * 60 * 60) * 100
+
+
+def weekend_loading_box(percent: float) -> str:
+    total_block_count = 20
+    if percent >= 100:
+        return '[' + '■' * total_block_count + ']'
+
+    black_blocks = '■' * int(percent // 5)
+    white_blocks = '□' * (total_block_count - len(black_blocks))
+    return '[' + black_blocks + white_blocks + ']'

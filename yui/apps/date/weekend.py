@@ -1,6 +1,6 @@
 from typing import List
 
-from .utils import weekend_loading_percent
+from .utils import weekend_loading_percent, weekend_loading_box
 from ...box import box
 from ...command import C
 from ...event import Message
@@ -15,9 +15,10 @@ async def auto_weekend_loading(bot):
     now_dt = now()
     if now_dt.hour in bot.config.WEEKEND_LOADING_TIME:
         percent = weekend_loading_percent(now_dt)
+        blocks = weekend_loading_box(percent)
         await bot.say(
             C.general.get(),
-            f'주말로딩… {percent:.2f}%'
+            f'주말로딩… {blocks} {percent:.2f}%'
         )
 
 
@@ -42,6 +43,7 @@ async def weekend_loading(bot, event: Message):
 
     now_dt = now()
     percent = weekend_loading_percent(now_dt)
+    blocks = weekend_loading_box(percent)
     if percent == 100.0:
         await bot.say(
             event.channel,
@@ -50,5 +52,5 @@ async def weekend_loading(bot, event: Message):
     else:
         await bot.say(
             event.channel,
-            f'주말로딩… {percent:.2f}%'
+            f'주말로딩… {blocks} {percent:.2f}%'
         )
