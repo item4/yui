@@ -51,18 +51,7 @@ def fx_google_api_key():
 
 
 @pytest.mark.asyncio
-async def test_get_geometric_info_by_address(fx_config, fx_google_api_key):
-    bot = FakeBot(fx_config)
-
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lng')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
+async def test_get_geometric_info_by_address(fx_google_api_key):
     full_address, lat, lng = await get_geometric_info_by_address(
         addr1,
         fx_google_api_key,
@@ -86,17 +75,6 @@ async def test_get_geometric_info_by_address(fx_config, fx_google_api_key):
             addr3,
             fx_google_api_key,
         )
-
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr2_md5}_lng')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
-
 
 @pytest.mark.asyncio
 async def test_get_aqi_idx(fx_aqi_api_token):
