@@ -45,7 +45,7 @@ description = "Mock out requests made by ClientSession from aiohttp package"
 name = "aioresponses"
 optional = false
 python-versions = "*"
-version = "0.6.2"
+version = "0.6.3"
 
 [package.dependencies]
 aiohttp = ">=2.0.0,<4.0.0"
@@ -56,7 +56,7 @@ description = "A database migration tool for SQLAlchemy."
 name = "alembic"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.3"
+version = "1.4.0"
 
 [package.dependencies]
 Mako = "*"
@@ -424,11 +424,11 @@ version = "1.18.1"
 
 [[package]]
 category = "main"
-description = "Fast, correct Python JSON library supporting dataclasses and datetimes"
+description = "Fast, correct Python JSON library supporting dataclasses, datetimes, and numpy"
 name = "orjson"
 optional = false
 python-versions = ">=3.6"
-version = "2.2.0"
+version = "2.4.0"
 
 [[package]]
 category = "dev"
@@ -727,7 +727,7 @@ description = "Fast, Extensible Progress Meter"
 name = "tqdm"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "4.42.0"
+version = "4.42.1"
 
 [package.extras]
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
@@ -831,11 +831,11 @@ aiomcache = [
     {file = "aiomcache-0.6.0.tar.gz", hash = "sha256:b38062efca87f2e6ac3b406bd816ca790900b03fef1c5c38fa61c18212c38825"},
 ]
 aioresponses = [
-    {file = "aioresponses-0.6.2-py2.py3-none-any.whl", hash = "sha256:57354fdec291f07ae50f89da71504966542a57363d6a1ad3a6222520a7d1bd84"},
-    {file = "aioresponses-0.6.2.tar.gz", hash = "sha256:4606becb52dd8ea7f0aebdbfb8e24b1efb0ed22a3698d0708b233ad77b5f386b"},
+    {file = "aioresponses-0.6.3-py2.py3-none-any.whl", hash = "sha256:6ccc18d766adb0f3c814f674c50e48f73fb291d29a66a60a9fa088c3e8087d8e"},
+    {file = "aioresponses-0.6.3.tar.gz", hash = "sha256:7b636f2148444cf46b19c2a1ae077a6fdfd93f65cde13f6130481f907d2c811b"},
 ]
 alembic = [
-    {file = "alembic-1.3.3.tar.gz", hash = "sha256:d412982920653db6e5a44bfd13b1d0db5685cbaaccaf226195749c706e1e862a"},
+    {file = "alembic-1.4.0.tar.gz", hash = "sha256:2df2519a5b002f881517693b95626905a39c5faf4b5a1f94de4f1441095d1d26"},
 ]
 appdirs = [
     {file = "appdirs-1.4.3-py2.py3-none-any.whl", hash = "sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e"},
@@ -1122,17 +1122,17 @@ numpy = [
     {file = "numpy-1.18.1.zip", hash = "sha256:b6ff59cee96b454516e47e7721098e6ceebef435e3e21ac2d6c3b8b02628eb77"},
 ]
 orjson = [
-    {file = "orjson-2.2.0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:961d1a51fc8611f8019cfd1acb4cf1971f2f2fc4963cba6eddf73f35bebb08ab"},
-    {file = "orjson-2.2.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:4e90977f3d11b4c916a17b0d5129f1d45b258fdc6fe49980cfd4a03ec64e3017"},
-    {file = "orjson-2.2.0-cp36-none-win_amd64.whl", hash = "sha256:f549e39d76a9f770586c46ce79777ad2dadb5dc7356cc5f2c96e4e77ad5088a5"},
-    {file = "orjson-2.2.0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:dacdcf193b7c8a5519cf04c4c02379a7a1d913e6e27c546d0e632b108f2ef15c"},
-    {file = "orjson-2.2.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:a2b1a030d46a5fc64858bf16f1591e093c30a132d1ef5fc8ea7c15896addc34c"},
-    {file = "orjson-2.2.0-cp37-none-win_amd64.whl", hash = "sha256:c5614bab5a1338ae6ddb62eae56144cf81c3643d96b62b8f114b5314a34beae9"},
-    {file = "orjson-2.2.0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:188926d10b20fb09c8d3dea6b22dcd814b0eaf8df2e75981e8e1e04b60c33633"},
-    {file = "orjson-2.2.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:d76254105885ad2602287c9715a8ae1b314a5d5ad17a553505590a9d6d98e717"},
-    {file = "orjson-2.2.0-cp38-none-win_amd64.whl", hash = "sha256:300c33f162bf40a334a25914af775817c1d14bc7b990826a80d316dac6bc320a"},
-    {file = "orjson-2.2.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:5d7e23cb629ef548f540ca353d0327248e64eed0a8ec4a9151ab8a52f22f4e86"},
-    {file = "orjson-2.2.0.tar.gz", hash = "sha256:a2733f56ddeb8d8917c51687392847ca080a8d722ac829f6ac4a835a7e239b89"},
+    {file = "orjson-2.4.0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:48e2c20045d23ea88e3d972ab8e4df91e3b82d2534828a558c21d30ad23aa4a0"},
+    {file = "orjson-2.4.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:05191caef6c1291ded6f0685c994596f18a09e5b6b3dba5f1c9b13bae1b2c210"},
+    {file = "orjson-2.4.0-cp36-none-win_amd64.whl", hash = "sha256:cb8b7936b5e89833fe1819dece105513ea7dfefd1daa1f8955e3275388815db9"},
+    {file = "orjson-2.4.0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:f921a795f12051041199e57a95e705615de7ccb7f78fe93daf98f48067d287f5"},
+    {file = "orjson-2.4.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:7c8e26fc233d083023f6a56b9215a17e45eb33c48fd502168b7b12da8c7e814d"},
+    {file = "orjson-2.4.0-cp37-none-win_amd64.whl", hash = "sha256:d4ca0d7c4c9c27ac245551db8b7cbd2fce0fcb3876b26fae88a8447439fb1cc4"},
+    {file = "orjson-2.4.0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:f0c504f00c9e4008e900a67538324128cc7b7ed02298aa0619bdaa6ff9aa1e50"},
+    {file = "orjson-2.4.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:ea49a5e418854a73555a2f44a7e9d02f5941766a01514b047d67c89e76878147"},
+    {file = "orjson-2.4.0-cp38-none-win_amd64.whl", hash = "sha256:4efd729db432e5bbf07730e88d5fa4a4790dd3917ca554c649707370a6716648"},
+    {file = "orjson-2.4.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:f17feaa42b93dd18a3963e981a435131051ec85b4e56d2d4aa8b4ceaaedab29b"},
+    {file = "orjson-2.4.0.tar.gz", hash = "sha256:355b36a4d17e314db15e13bd356a3c5f07a3f6f6d8dbcd9b56a415d303c2d62b"},
 ]
 packaging = [
     {file = "packaging-20.1-py2.py3-none-any.whl", hash = "sha256:170748228214b70b672c581a3dd610ee51f733018650740e98c7df862a583f73"},
@@ -1279,8 +1279,8 @@ tossi = [
     {file = "tossi-0.3.1.tar.gz", hash = "sha256:28e123c742a9a6f785901aa6c991ccc7f2c408af6a48d42e0ab3efde4b620552"},
 ]
 tqdm = [
-    {file = "tqdm-4.42.0-py2.py3-none-any.whl", hash = "sha256:01464d5950e9a07a8e463c2767883d9616c099c6502f6c7ef4e2e11d3065bd35"},
-    {file = "tqdm-4.42.0.tar.gz", hash = "sha256:5865f5fef9d739864ff341ddaa69894173ebacedb1aaafcf014de56343d01d5c"},
+    {file = "tqdm-4.42.1-py2.py3-none-any.whl", hash = "sha256:fe231261cfcbc6f4a99165455f8f6b9ef4e1032a6e29bccf168b4bf42012f09c"},
+    {file = "tqdm-4.42.1.tar.gz", hash = "sha256:251ee8440dbda126b8dfa8a7c028eb3f13704898caaef7caa699b35e119301e2"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.1-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:73d785a950fc82dd2a25897d525d003f6378d1cb23ab305578394694202a58c3"},
