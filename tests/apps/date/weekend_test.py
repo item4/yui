@@ -25,7 +25,6 @@ async def test_weekend_start(fx_config):
     )
 
 
-
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 10, 12))
 async def test_weekend_half(fx_config):
@@ -41,4 +40,3 @@ async def test_weekend_half(fx_config):
     assert said.data['text'] == (
         '주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%'
     )
-
