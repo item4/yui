@@ -76,6 +76,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
             fx_google_api_key,
         )
 
+
 @pytest.mark.asyncio
 async def test_get_aqi_idx(fx_aqi_api_token):
     result = await get_aqi_idx(37.5034138, 126.9779692, fx_aqi_api_token)
@@ -129,43 +130,28 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
+    async with bot.begin():
+        await aqi(bot, event, addr1)
 
-    await aqi(bot, event, addr1)
+        said = bot.call_queue.pop(0)
 
-    said = bot.call_queue.pop(0)
+        if said.data['text'] == '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!':
+            pytest.skip('AQI Server problem')
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert result_pattern_re.match(said.data['text'])
+        assert said.data['thread_ts'] == '1234.5678'
 
-    if said.data['text'] == '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!':
-        pytest.skip('AQI Server problem')
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert result_pattern_re.match(said.data['text'])
-    assert said.data['thread_ts'] == '1234.5678'
+        await aqi(
+            bot,
+            event,
+            addr3,
+        )
 
-    await aqi(
-        bot,
-        event,
-        addr3,
-    )
-
-    said = bot.call_queue.pop(0)
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
-
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr3_md5}_lng')
+        said = bot.call_queue.pop(0)
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
 
 
 @pytest.mark.asyncio
@@ -207,24 +193,15 @@ async def test_aqi_error1(fx_config, response_mock):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+    async with bot.begin():
+        await aqi(bot, event, addr1)
 
-    await aqi(bot, event, addr1)
-
-    said = bot.call_queue.pop(0)
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '해당 지역의 AQI 정보를 받아올 수 없어요!'
-    )
-
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+        said = bot.call_queue.pop(0)
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            '해당 지역의 AQI 정보를 받아올 수 없어요!'
+        )
 
 
 @pytest.mark.asyncio
@@ -271,21 +248,12 @@ async def test_aqi_error2(fx_config, response_mock):
 
     event = bot.create_message('C1', 'U1', '1234.5678')
 
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+    async with bot.begin():
+        await aqi(bot, event, addr1)
 
-    await aqi(bot, event, addr1)
-
-    said = bot.call_queue.pop(0)
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
-    )
-
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_full_address')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lat')
-    await bot.cache.delete(f'AQI_ADDRESS_{addr1_md5}_lng')
-    await bot.cache.delete(f'AQI_IDX_37.5034138_126.7660309')
+        said = bot.call_queue.pop(0)
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
+        )

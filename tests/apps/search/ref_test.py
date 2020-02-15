@@ -19,34 +19,31 @@ async def test_css_command():
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')
 
-    await bot.cache.delete('REF_CSS')
+    async with bot.begin():
+        await css(bot, event, 'font-family')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
 
-    await css(bot, event, 'font-family')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
-    )
+        await fetch_css_ref(bot)
 
-    await fetch_css_ref(bot)
+        await css(bot, event, 'font-family')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            ':css: `font-family` - '
+            'https://developer.mozilla.org/en-US/docs/Web/CSS/font-family'
+        )
 
-    await css(bot, event, 'font-family')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':css: `font-family` - '
-        'https://developer.mozilla.org/en-US/docs/Web/CSS/font-family'
-    )
-
-    await css(bot, event, '쀍뗗')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '비슷한 CSS 관련 요소를 찾지 못하겠어요!'
-
-    await bot.cache.delete('REF_CSS')
+        await css(bot, event, '쀍뗗')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == '비슷한 CSS 관련 요소를 찾지 못하겠어요!'
 
 
 @pytest.mark.asyncio
@@ -56,33 +53,31 @@ async def test_html_command():
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')
 
-    await bot.cache.delete('REF_HTML')
-    await html(bot, event, 'section')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
-    )
+    async with bot.begin():
+        await html(bot, event, 'section')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
 
-    await fetch_html_ref(bot)
+        await fetch_html_ref(bot)
 
-    await html(bot, event, 'section')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':html: `<section>` - '
-        'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section'
-    )
+        await html(bot, event, 'section')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            ':html: `<section>` - '
+            'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section'
+        )
 
-    await html(bot, event, '쀍뗗')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '비슷한 HTML Element를 찾지 못하겠어요!'
-
-    await bot.cache.delete('REF_HTML')
+        await html(bot, event, '쀍뗗')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == '비슷한 HTML Element를 찾지 못하겠어요!'
 
 
 @pytest.mark.asyncio
@@ -92,39 +87,37 @@ async def test_python_command():
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')
 
-    await bot.cache.delete('REF_PYTHON')
-    await python(bot, event, 'builtin function')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-         '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
-    )
+    async with bot.begin():
+        await python(bot, event, 'builtin function')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+             '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+        )
 
-    await fetch_python_ref(bot)
+        await fetch_python_ref(bot)
 
-    await python(bot, event, 'builtin function')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':python: Built-in Functions - '
-        'https://docs.python.org/3/library/functions.html'
-    )
+        await python(bot, event, 'builtin function')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            ':python: Built-in Functions - '
+            'https://docs.python.org/3/library/functions.html'
+        )
 
-    await python(bot, event, 're')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        ':python: re — Regular expression operations - '
-        'https://docs.python.org/3/library/re.html'
-    )
+        await python(bot, event, 're')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == (
+            ':python: re — Regular expression operations - '
+            'https://docs.python.org/3/library/re.html'
+        )
 
-    await python(bot, event, '쀍뗗')
-    said = bot.call_queue.pop()
-    assert said.method == 'chat.postMessage'
-    assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '비슷한 Python library를 찾지 못하겠어요!'
-
-    await bot.cache.delete('REF_PYTHON')
+        await python(bot, event, '쀍뗗')
+        said = bot.call_queue.pop()
+        assert said.method == 'chat.postMessage'
+        assert said.data['channel'] == 'C1'
+        assert said.data['text'] == '비슷한 Python library를 찾지 못하겠어요!'

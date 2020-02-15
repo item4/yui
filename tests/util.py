@@ -1,5 +1,6 @@
 import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from contextlib import asynccontextmanager
 from typing import Callable, Dict, List, Optional, Union
 
 import aiomcache
@@ -8,7 +9,7 @@ import attr
 
 from yui.api import SlackAPI
 from yui.bot import Bot
-from yui.cache import Cache
+from yui.cache import Cache, DATA_TYPE
 from yui.config import Config, DEFAULT
 from yui.event import Message
 from yui.types.channel import (
@@ -29,6 +30,26 @@ class Call:
     token: Optional[str] = None
 
 
+class CacheMock(Cache):
+
+    def __init__(self, mc, prefix) -> None:
+        super(CacheMock, self).__init__(mc, prefix)
+        self.set_keys = []
+
+    async def set(
+        self,
+        key: Union[str, bytes],
+        value: DATA_TYPE,
+        exptime: int = 0,
+    ) -> bool:
+        self.set_keys.append(key)
+        return await super(CacheMock, self).set(key, value, exptime)
+
+    async def cleanup(self):
+        for key in self.set_keys:
+            await self.delete(key)
+
+
 class FakeBot(Bot):
     """Fake bot for test"""
 
@@ -47,7 +68,7 @@ class FakeBot(Bot):
             host=config.CACHE['HOST'],
             port=config.CACHE['PORT'],
         )
-        self.cache = Cache(self.mc, 'YUI_TEST_')
+        self.cache: CacheMock = CacheMock(self.mc, 'YUI_TEST_')
         self.users: List[User] = [User(id='U0', team_id='T0', name='system')]
         self.responses: Dict[str, Callable] = {}
         self.config = config
@@ -65,6 +86,13 @@ class FakeBot(Bot):
         callback = self.responses.get(method)
         if callback:
             return callback(data)
+
+    @asynccontextmanager
+    async def begin(self):
+        try:
+            yield
+        finally:
+            await self.cache.cleanup()
 
     def response(self, method: str):
         def decorator(func):
