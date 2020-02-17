@@ -2,7 +2,7 @@ from ...box import box
 from ...command.helpers import C
 
 
-@box.cron('0 */4 * * *')
+@box.cron('30 0,4,8,12,16,20 * * *')
 async def relax(bot):
     await bot.say(
         C.relax.get(),
