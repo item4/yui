@@ -14,5 +14,5 @@ async def relax(bot):
         '이러다가 나아질 것이므로 너무 신경쓰지 않으셔도 됩니다. '
         '괜찮아요. 편하게 받아들일 수 있게 될거에요.\n'
         '(본 메시지는 4시간 주기로 자동 전송됩니다)',
-        token=bot.CONFIG.OWNER_USER_TOKEN,
+        token=bot.config.OWNER_USER_TOKEN,
     )
