@@ -56,6 +56,8 @@ class Chat(Endpoint):
         response_type: Optional[str] = None,
         replace_original: Optional[bool] = None,
         delete_original: Optional[bool] = None,
+        *,
+        token: Optional[str] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postMessage"""
 
@@ -116,4 +118,4 @@ class Chat(Endpoint):
         if delete_original is not None:
             params['delete_original'] = bool2str(delete_original)
 
-        return await self._call('postMessage', params)
+        return await self._call('postMessage', params, token=token)
