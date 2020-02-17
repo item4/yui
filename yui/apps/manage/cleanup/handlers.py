@@ -11,6 +11,9 @@ async def make_log(bot, event: Message, sess):
     except KeyError:
         return True
 
+    if event.subtype == 'message_deleted':
+        return True
+
     if event.channel in channels:
         log = EventLog(channel=event.channel.id, ts=event.ts)
         with sess.begin():
