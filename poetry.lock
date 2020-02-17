@@ -367,7 +367,7 @@ python-versions = "*"
 version = "0.6.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
@@ -804,7 +804,7 @@ multidict = ">=4.0"
 travis-ci = ["codecov"]
 
 [metadata]
-content-hash = "22cfc97130676ce4818d8718740cfbd0ba8a6283e3b02f2ad968d7c0cf549bf6"
+content-hash = "550da7e158c2d770202d94a081dc7f7e4ea6dfe2666ded50dd02912994134f33"
 python-versions = "^3.8"
 
 [metadata.files]
