@@ -3,6 +3,7 @@ from typing import List, Optional
 import attr
 
 from .action import Action
+from .block import Block
 
 
 @attr.dataclass(slots=True)
@@ -27,6 +28,7 @@ class Attachment:
     title: Optional[str] = None
     title_link: Optional[str] = None
     text: Optional[str] = None
+    blocks: Optional[List[Block]] = None
     fields: List[Field] = attr.Factory(list)
     actions: Optional[List[Action]] = None
     image_url: Optional[str] = None

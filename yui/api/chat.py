@@ -5,6 +5,7 @@ from .endpoint import Endpoint
 from ..types.base import ChannelID, Ts
 from ..types.channel import Channel
 from ..types.slack.attachment import Attachment
+from ..types.slack.block import Block
 from ..types.slack.response import APIResponse
 from ..types.user import User
 
@@ -44,6 +45,7 @@ class Chat(Endpoint):
         text: Optional[str] = None,
         parse=None,
         link_names: Optional[bool] = None,
+        blocks: Optional[List[Block]] = None,
         attachments: Optional[List[Attachment]] = None,
         unfurl_links: Optional[bool] = None,
         unfurl_media: Optional[bool] = None,
@@ -70,8 +72,8 @@ class Chat(Endpoint):
             'channel': channel_id,
         }
 
-        if text is None and attachments is None:
-            raise TypeError('text or attachement is required.')
+        if text is None and blocks is None and attachments is None:
+            raise TypeError('text or attachement or blocks is required.')
 
         if text is not None:
             params['text'] = text
@@ -81,6 +83,9 @@ class Chat(Endpoint):
 
         if link_names is not None:
             params['link_names'] = link_names
+
+        if blocks is not None:
+            params['blocks'] = blocks
 
         if attachments is not None:
             params['attachments'] = attachments
