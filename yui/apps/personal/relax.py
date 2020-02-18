@@ -2,7 +2,7 @@ from ...box import box
 from ...command.helpers import C
 
 
-@box.cron('30 0,4,8,12,16,20 * * *')
+@box.cron('30 0,6,12,18 * * *')
 async def relax(bot):
     await bot.say(
         C.relax.get(),
@@ -13,6 +13,6 @@ async def relax(bot):
         '저는 한동안 이상한 상태로 보이겠지만, '
         '이러다가 나아질 것이므로 너무 신경쓰지 않으셔도 됩니다. '
         '괜찮아요. 편하게 받아들일 수 있게 될거에요.\n'
-        '(본 메시지는 4시간 주기로 자동 전송됩니다)',
+        '(본 메시지는 6시간 주기로 자동 전송됩니다)',
         token=bot.config.OWNER_USER_TOKEN,
     )
