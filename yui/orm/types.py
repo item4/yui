@@ -32,12 +32,6 @@ class JSONType(_JSONType):
         return value
 
 
-def _extract(x) -> str:
-    if x is UTC:
-        return 'UTC'
-    return x._filename
-
-
 class TimezoneType(_TimezoneType):
     """TimezoneType"""
 
@@ -55,7 +49,7 @@ class TimezoneType(_TimezoneType):
         if value == UTC:
             return 'UTC'
         if isinstance(value, tzfile):
-            return value._filename
+            return '/'.join(value._filename.split('/')[-2:])
         return value
 
     def process_result_value(self, value, dialect):

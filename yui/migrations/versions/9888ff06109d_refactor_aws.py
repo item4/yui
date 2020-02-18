@@ -10,7 +10,7 @@ from alembic import op
 
 import sqlalchemy as sa
 
-from yui.orm.type import TimezoneType
+from yui.orm.types import TimezoneType
 
 # revision identifiers, used by Alembic.
 revision = '9888ff06109d'
