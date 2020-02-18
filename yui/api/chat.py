@@ -1,6 +1,6 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
-from .encoder import bool2str, to_json
+from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import ChannelID, Ts
 from ..types.channel import Channel
@@ -66,7 +66,7 @@ class Chat(Endpoint):
         else:
             channel_id = channel
 
-        params: Dict[str, str] = {
+        params: Dict[str, Any] = {
             'channel': channel_id,
         }
 
@@ -80,22 +80,22 @@ class Chat(Endpoint):
             params['parse'] = parse
 
         if link_names is not None:
-            params['link_names'] = bool2str(link_names)
+            params['link_names'] = link_names
 
         if attachments is not None:
-            params['attachments'] = to_json(attachments)
+            params['attachments'] = attachments
 
         if unfurl_links is not None:
-            params['unfurl_links'] = bool2str(unfurl_links)
+            params['unfurl_links'] = unfurl_links
 
         if unfurl_media is not None:
-            params['unfurl_media'] = bool2str(unfurl_media)
+            params['unfurl_media'] = unfurl_media
 
         if username is not None:
             params['username'] = username
 
         if as_user is not None:
-            params['as_user'] = bool2str(as_user)
+            params['as_user'] = as_user
 
         if icon_url is not None:
             params['icon_url'] = icon_url
@@ -107,15 +107,20 @@ class Chat(Endpoint):
             params['thread_ts'] = thread_ts
 
         if reply_broadcast is not None:
-            params['reply_broadcast'] = bool2str(reply_broadcast)
+            params['reply_broadcast'] = reply_broadcast
 
         if response_type in ('in_channel', 'ephemeral'):
             params['response_type'] = response_type
 
         if replace_original is not None:
-            params['replace_original'] = bool2str(replace_original)
+            params['replace_original'] = replace_original
 
         if delete_original is not None:
-            params['delete_original'] = bool2str(delete_original)
+            params['delete_original'] = delete_original
 
-        return await self._call('postMessage', params, token=token)
+        return await self._call(
+            'postMessage',
+            params,
+            token=token,
+            json_mode=True,
+        )

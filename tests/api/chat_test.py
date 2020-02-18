@@ -69,8 +69,9 @@ async def test_slack_api_chat_post_message():
     assert call.data == {
         'channel': channel.id,
         'text': text,
-        'as_user': bool2str(True),
+        'as_user': True,
     }
+    assert call.json_mode
 
     await bot.api.chat.postMessage(channel=channel_id, attachments=attachments)
 
@@ -78,10 +79,21 @@ async def test_slack_api_chat_post_message():
     assert call.method == 'chat.postMessage'
     assert call.data == {
         'channel': channel_id,
-        'attachments': ('[{"fallback":"fallback val","title":"title val",'
-                        '"fields":[{"title":"field title1",'
-                        '"value":"field value1","short":"0"}]}]'),
+        'attachments': [
+            {
+                "fallback": "fallback val",
+                "title": "title val",
+                "fields": [
+                    {
+                        "title": "field title1",
+                        "value": "field value1",
+                        "short": False,
+                    },
+                ],
+            },
+        ],
     }
+    assert call.json_mode
 
     await bot.api.chat.postMessage(
         channel=channel,
@@ -108,19 +120,30 @@ async def test_slack_api_chat_post_message():
         'channel': channel.id,
         'text': text,
         'parse': parse,
-        'link_names': bool2str(True),
-        'attachments': ('[{"fallback":"fallback val","title":"title val",'
-                        '"fields":[{"title":"field title1",'
-                        '"value":"field value1","short":"0"}]}]'),
-        'unfurl_links': bool2str(False),
-        'unfurl_media': bool2str(True),
+        'link_names': True,
+        'attachments': [
+            {
+                "fallback": "fallback val",
+                "title": "title val",
+                "fields": [
+                    {
+                        "title": "field title1",
+                        "value": "field value1",
+                        "short": False,
+                    },
+                ],
+            },
+        ],
+        'unfurl_links': False,
+        'unfurl_media': True,
         'username': username,
-        'as_user': bool2str(False),
+        'as_user': False,
         'icon_url': icon_url,
         'icon_emoji': icon_emoji,
         'thread_ts': thread_ts,
-        'reply_broadcast': bool2str(True),
+        'reply_broadcast': True,
         'response_type': 'in_channel',
-        'replace_original': bool2str(False),
-        'delete_original': bool2str(True),
+        'replace_original': False,
+        'delete_original': True,
     }
+    assert call.json_mode

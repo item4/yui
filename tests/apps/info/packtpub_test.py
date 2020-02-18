@@ -74,7 +74,7 @@ async def test_packtpub_dotd(response_mock):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
-    attachments = json.loads(said.data['attachments'])
+    attachments = said.data['attachments']
     assert len(attachments) == 1
     assert attachments[0]['fallback'] == f'{title} - {PACKTPUB_URL}'
     assert attachments[0]['title'] == title
@@ -121,7 +121,7 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == '오늘자 PACKT Book의 무료책이에요!'
-    attachments = json.loads(said.data['attachments'])
+    attachments = said.data['attachments']
     assert len(attachments) == 1
     assert attachments[0]['fallback'] == f'{title} - {PACKTPUB_URL}'
     assert attachments[0]['title'] == title

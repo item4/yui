@@ -232,19 +232,32 @@ class Bot:
     async def call(
         self,
         method: str,
-        data: Dict[str, str] = None,
+        data: Dict[str, Any] = None,
         *,
         token: str = None,
+        json_mode: bool = False,
     ) -> APIResponse:
         """Call API methods."""
 
         async with client_session() as session:
-            form = aiohttp.FormData(data or {})
-            form.add_field('token', token or self.config.TOKEN)
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+            if json_mode:
+                payload = json.dumps(data)
+                headers['Content-Type'] = 'application/json'
+                headers['Authorization'] = 'Bearer {}'.format(
+                    token or self.config.TOKEN
+                )
+            else:
+                payload = aiohttp.FormData(data or {})
+                payload.add_field('token', token or self.config.TOKEN)
+
             try:
                 async with session.post(
                     'https://slack.com/api/{}'.format(method),
-                    data=form
+                    data=payload,
+                    headers=headers,
                 ) as response:
                     try:
                         result = await response.json(loads=json.loads)

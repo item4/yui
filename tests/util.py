@@ -1,7 +1,7 @@
 import asyncio
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import aiomcache
 
@@ -26,8 +26,9 @@ class Call:
     """API Call from bot"""
 
     method: str
-    data: Optional[Dict[str, str]]
+    data: Optional[Dict[str, Any]]
     token: Optional[str] = None
+    json_mode: bool = False
 
 
 class CacheMock(Cache):
@@ -78,11 +79,12 @@ class FakeBot(Bot):
     async def call(
         self,
         method: str,
-        data: Optional[Dict[str, str]] = None,
+        data: Optional[Dict[str, Any]] = None,
         *,
         token: Optional[str] = None,
+        json_mode: bool = False,
     ):
-        self.call_queue.append(Call(method, data, token))
+        self.call_queue.append(Call(method, data, token, json_mode))
         callback = self.responses.get(method)
         if callback:
             return callback(data)
