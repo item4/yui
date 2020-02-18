@@ -2,8 +2,8 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 
 from ...orm import Base
-from ...orm.type import JSONType
-from ...orm.utils import insert_datetime_field
+from ...orm.columns import DateTimeAtColumn, DateTimeColumn, TimezoneColumn
+from ...orm.types import JSONType
 
 
 class JSONCache(Base):
@@ -16,4 +16,8 @@ class JSONCache(Base):
 
     body = Column(JSONType)
 
-    insert_datetime_field('created', locals(), False)
+    created_datetime = DateTimeColumn(nullable=False)
+
+    created_timezone = TimezoneColumn()
+
+    created_at = DateTimeAtColumn('created')

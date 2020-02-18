@@ -2,7 +2,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String
 
 from ....orm import Base
-from ....orm.utils import insert_datetime_field
+from ....orm.columns import DateTimeAtColumn, DateTimeColumn, TimezoneColumn
 
 
 class RSSFeedURL(Base):
@@ -16,4 +16,8 @@ class RSSFeedURL(Base):
 
     channel = Column(String, nullable=False)
 
-    insert_datetime_field('updated', locals(), False)
+    updated_datetime = DateTimeColumn(nullable=False)
+
+    updated_timezone = TimezoneColumn()
+
+    updated_at = DateTimeAtColumn('updated')

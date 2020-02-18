@@ -2,7 +2,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.types import Integer, String, Text
 
 from ....orm import Base
-from ....orm.utils import insert_datetime_field
+from ....orm.columns import DateTimeAtColumn, DateTimeColumn, TimezoneColumn
 
 
 class Memo(Base):
@@ -18,4 +18,8 @@ class Memo(Base):
 
     author = Column(String, nullable=False)
 
-    insert_datetime_field('created', locals(), False)
+    created_datetime = DateTimeColumn(nullable=False)
+
+    created_timezone = TimezoneColumn()
+
+    created_at = DateTimeAtColumn('created')

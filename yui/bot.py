@@ -243,6 +243,7 @@ class Bot:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
+            payload: Union[str, aiohttp.FormData]
             if json_mode:
                 payload = json.dumps(data)
                 headers['Content-Type'] = 'application/json'
