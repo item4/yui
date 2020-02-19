@@ -43,22 +43,20 @@ class Chat(Endpoint):
         self,
         channel: Union[Channel, User, ChannelID],
         text: Optional[str] = None,
-        parse=None,
-        link_names: Optional[bool] = None,
-        blocks: Optional[List[Block]] = None,
+        *,
+        as_user: Optional[bool] = None,
         attachments: Optional[List[Attachment]] = None,
+        blocks: Optional[List[Block]] = None,
+        icon_emoji: Optional[str] = None,
+        icon_url: Optional[str] = None,
+        link_names: Optional[bool] = None,
+        mrkdwn: bool = True,
+        parse: Optional[str] = None,
+        reply_broadcast: Optional[bool] = None,
+        thread_ts: Optional[Ts] = None,
         unfurl_links: Optional[bool] = None,
         unfurl_media: Optional[bool] = None,
         username: Optional[str] = None,
-        as_user: Optional[bool] = None,
-        icon_url: Optional[str] = None,
-        icon_emoji: Optional[str] = None,
-        thread_ts: Optional[Ts] = None,
-        reply_broadcast: Optional[bool] = None,
-        response_type: Optional[str] = None,
-        replace_original: Optional[bool] = None,
-        delete_original: Optional[bool] = None,
-        *,
         token: Optional[str] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postMessage"""
@@ -78,17 +76,35 @@ class Chat(Endpoint):
         if text is not None:
             params['text'] = text
 
-        if parse is not None:
-            params['parse'] = parse
+        if as_user is not None:
+            params['as_user'] = as_user
 
-        if link_names is not None:
-            params['link_names'] = link_names
+        if attachments is not None:
+            params['attachments'] = attachments
 
         if blocks is not None:
             params['blocks'] = blocks
 
-        if attachments is not None:
-            params['attachments'] = attachments
+        if icon_emoji is not None:
+            params['icon_emoji'] = icon_emoji
+
+        if icon_url is not None:
+            params['icon_url'] = icon_url
+
+        if link_names is not None:
+            params['link_names'] = link_names
+
+        if mrkdwn is not None:
+            params['mrkdwn'] = mrkdwn
+
+        if parse is not None:
+            params['parse'] = parse
+
+        if reply_broadcast is not None:
+            params['reply_broadcast'] = reply_broadcast
+
+        if thread_ts is not None:
+            params['thread_ts'] = thread_ts
 
         if unfurl_links is not None:
             params['unfurl_links'] = unfurl_links
@@ -98,30 +114,6 @@ class Chat(Endpoint):
 
         if username is not None:
             params['username'] = username
-
-        if as_user is not None:
-            params['as_user'] = as_user
-
-        if icon_url is not None:
-            params['icon_url'] = icon_url
-
-        if icon_emoji is not None:
-            params['icon_emoji'] = icon_emoji
-
-        if thread_ts is not None:
-            params['thread_ts'] = thread_ts
-
-        if reply_broadcast is not None:
-            params['reply_broadcast'] = reply_broadcast
-
-        if response_type in ('in_channel', 'ephemeral'):
-            params['response_type'] = response_type
-
-        if replace_original is not None:
-            params['replace_original'] = replace_original
-
-        if delete_original is not None:
-            params['delete_original'] = delete_original
 
         return await self._call(
             'postMessage',
