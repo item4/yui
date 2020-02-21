@@ -365,3 +365,7 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
 
 
 main = yui
+
+
+if __name__ == '__main__':
+    yui()
