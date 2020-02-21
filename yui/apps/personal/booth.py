@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple
 
+import aiohttp
+
 from lxml.html import fromstring
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -7,7 +9,6 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..shared.cache import JSONCache
 from ...box import box
 from ...command import C
-from ...session import client_session
 from ...types.slack.attachment import Attachment, Field
 from ...utils.api import retry
 from ...utils.datetime import now
@@ -129,7 +130,7 @@ async def watch(bot, sess):
     headers = {
         'Cookie': 'adult=t',
     }
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as resp:
             html = await resp.text()
 

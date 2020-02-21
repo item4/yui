@@ -3,6 +3,7 @@ import datetime
 import functools
 
 import aiohttp
+import aiohttp.client_exceptions
 
 import async_timeout
 
@@ -11,7 +12,6 @@ from lxml import etree, html
 from ..box import box
 from ..command import option
 from ..event import Message
-from ..session import client_session
 from ..types.channel import DirectMessageChannel
 from ..utils import json
 from ..utils.datetime import now
@@ -26,7 +26,7 @@ class APIServerError(RuntimeError):
 
 async def get_cat_image_url(timeout: float) -> str:
     api_url = 'http://thecatapi.com/api/images/get'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         while True:
             try:
                 async with session.get(api_url, params={
@@ -53,7 +53,7 @@ async def get_cat_image_url(timeout: float) -> str:
 
 async def get_dog_image_url(timeout: float) -> str:
     api_url = 'https://dog.ceo/api/breeds/image/random'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         while True:
             try:
                 async with session.get(api_url) as res:
@@ -77,7 +77,7 @@ async def get_dog_image_url(timeout: float) -> str:
 async def get_fox_image_url(timeout: float) -> str:
     url = 'http://fox-info.net/fox-gallery'
     async with async_timeout.timeout(timeout=timeout):
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.text()
     h = html.fromstring(data)

@@ -2,6 +2,8 @@ import asyncio
 import logging
 from typing import Dict, List, Tuple
 
+import aiohttp
+
 from fuzzywuzzy import fuzz
 
 from lxml.html import fromstring
@@ -10,7 +12,6 @@ from ...bot import Bot
 from ...box import box
 from ...command import argument
 from ...event import ChatterboxSystemStart, Message
-from ...session import client_session
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ async def fetch_css_ref(bot: Bot):
     logger.info(f'fetch css ref start')
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
 
@@ -65,7 +66,7 @@ async def fetch_html_ref(bot: Bot):
     logger.info(f'fetch html ref start')
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
 
@@ -109,7 +110,7 @@ async def fetch_python_ref(bot: Bot):
     logger.info(f'fetch python ref start')
 
     url = 'https://docs.python.org/3/library/'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
 
@@ -262,7 +263,7 @@ async def php(bot, event: Message, keyword: str):
         f'http://php.net/{raw_path}',
     ]
 
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         for url in urls:
             async with session.get(url) as res:
                 async with res:

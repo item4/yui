@@ -2,12 +2,12 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Dict, List, Tuple
 
+import aiohttp
 from aiohttp import client_exceptions
 
 from ...box import box
 from ...command import argument, option
 from ...event import Message
-from ...session import client_session
 from ...utils import json
 from ...utils.datetime import fromisoformat, now
 from ...utils.fuzz import ratio
@@ -91,7 +91,7 @@ async def aws(
         return
 
     try:
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(API_URL) as resp:
                 data = await resp.json(loads=json.loads)
     except EXCEPTIONS:

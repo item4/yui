@@ -2,20 +2,22 @@ import re
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlencode
 
+import aiohttp
+
+from fake_useragent import FakeUserAgent
+
 from lxml.html import fromstring
 
 from ...bot import Bot
 from ...box import box
 from ...command import argument, option
 from ...event import Message
-from ...session import client_session
 from ...transform import choice
 from ...types.slack.attachment import Attachment
 from ...utils.html import strip_tags
 
 headers: Dict[str, str] = {
-    'User-Agent': ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:56.0)'
-                   ' Gecko/20100101 Firefox/56.0')
+    'User-Agent': FakeUserAgent().chrome,
 }
 DICS: Dict[str, str] = {
     '영어': 'eng',
@@ -105,7 +107,7 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
         })
     )
     html = ''
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             html = await res.text()
 

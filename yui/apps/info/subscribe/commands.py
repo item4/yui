@@ -2,6 +2,7 @@ import inspect
 import re
 
 import aiohttp
+import aiohttp.client_exceptions
 
 import dateutil.parser
 from dateutil.tz import UTC
@@ -12,7 +13,6 @@ from .models import RSSFeedURL
 from ....box import box, route
 from ....command import argument
 from ....event import Message
-from ....session import client_session
 from ....transform import extract_url
 from ....types.slack.attachment import Attachment
 
@@ -60,7 +60,7 @@ class RSS(route.RouteApp):
 
     @argument('url', nargs=-1, concat=True, transform_func=extract_url)
     async def add(self, bot, event: Message, sess, url: str):
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url) as res:
                     data: bytes = await res.read()
@@ -156,7 +156,7 @@ async def crawl(bot, sess):
 
     for feed in feeds:  # type: RSSFeedURL
         data = ''
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(feed.url) as res:
                     data = await res.read()

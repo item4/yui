@@ -1,11 +1,12 @@
 from datetime import timedelta
 from typing import List
 
+import aiohttp
+
 from ...bot import Bot
 from ...box import box
 from ...command import C
 from ...event import Message
-from ...session import client_session
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.datetime import now
@@ -24,7 +25,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
         'https://services.packtpub.com/free-learning-v1/offers'
         f'?dateFrom={start}T00:00:00.000Z&dateTo={end}T00:00:00.000Z'
     )
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(list_endpoint) as resp:
             list_data = await resp.json(loads=json.loads)
 
@@ -33,7 +34,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
         info_endpoint = (
             f'https://static.packt-cdn.com/products/{product_id}/summary'
         )
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(info_endpoint) as resp:
                 data = await resp.json(loads=json.loads)
 

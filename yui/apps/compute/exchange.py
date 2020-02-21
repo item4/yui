@@ -3,10 +3,11 @@ from decimal import Decimal
 from typing import Dict
 from urllib.parse import urlencode
 
+import aiohttp
+
 from ...box import box
 from ...command import argument
 from ...event import Message
-from ...session import client_session
 from ...utils import json
 
 QUERY_RE = re.compile(
@@ -45,7 +46,7 @@ async def get_exchange_rate(base: str, to: str) -> Dict:
         urlencode({'base': to, 'code': base})
     )
 
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             data = await res.json(loads=json.loads)
             if isinstance(data, list):

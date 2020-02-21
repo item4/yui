@@ -3,6 +3,8 @@ from hashlib import md5
 from typing import NamedTuple, Optional, Tuple
 from urllib.parse import urlencode
 
+import aiohttp
+
 from fake_useragent import UserAgent
 
 import tzlocal
@@ -10,7 +12,6 @@ import tzlocal
 from ...box import box
 from ...command import argument
 from ...event import Message
-from ...session import client_session
 from ...utils import json
 
 box.assert_config_required('GOOGLE_API_KEY', str)
@@ -56,7 +57,7 @@ async def get_geometric_info_by_address(
         'address': address,
         'key': api_key,
     })
-    async with client_session(headers={
+    async with aiohttp.ClientSession(headers={
         'Accept-Language': 'ko-KR',
     }) as session:
         async with session.get(url) as res:
@@ -71,7 +72,7 @@ async def get_geometric_info_by_address(
 
 async def get_aqi_idx(lat: float, lng: float, token: str) -> str:
     url = f'https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             d1 = await res.json(loads=json.loads)
     try:
@@ -86,7 +87,7 @@ async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
         'User-Agent': UserAgent().chrome,
         'accept-language': 'ko',
     }
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as res:
             d2 = await res.json(loads=json.loads)
 

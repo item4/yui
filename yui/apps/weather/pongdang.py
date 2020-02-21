@@ -1,8 +1,9 @@
 import datetime
 
+import aiohttp
+
 from ...box import box
 from ...event import Message
-from ...session import client_session
 from ...utils import json
 
 
@@ -19,7 +20,7 @@ async def pongdang(bot, event: Message):
 
     url = 'http://hangang.dkserver.wo.tc/'
 
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             data = json.loads(await resp.text())
 

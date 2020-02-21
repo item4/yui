@@ -1,7 +1,8 @@
 import datetime
 from typing import List
 
-from ...session import client_session
+import aiohttp
+
 from ...utils import json
 
 
@@ -11,7 +12,7 @@ class APIDoesNotSupport(Exception):
 
 async def get_holiday_names(dt: datetime.datetime) -> List[str]:
     url = 'https://item4.net/api/holiday'
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(
             '{}/{}'.format(url, dt.strftime('%Y/%m/%d'))
         ) as resp:

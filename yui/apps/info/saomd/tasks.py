@@ -3,6 +3,8 @@ import logging
 from typing import Dict, List
 from urllib.parse import parse_qs, urlparse
 
+import aiohttp
+
 from lxml.html import fromstring
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -16,7 +18,6 @@ from ....bot import Bot
 from ....box import box
 from ....command import C
 from ....orm import EngineConfig, subprocess_session_manager
-from ....session import client_session
 from ....types.slack.attachment import Attachment
 from ....utils.api import retry
 
@@ -201,7 +202,7 @@ def process(
 async def watch_notice(bot: Bot, engine_config: EngineConfig):
     async def watch(server: Server):
         html = ''
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(NOTICE_URLS[server]) as resp:
                 html = await resp.text()
 

@@ -2,12 +2,12 @@ import asyncio
 from typing import List, NamedTuple
 from urllib.parse import urlencode
 
+import aiohttp
 from aiohttp.client_exceptions import ClientConnectionError, ContentTypeError
 
 from ...box import box
 from ...command import argument, option
 from ...event import Message
-from ...session import client_session
 from ...transform import extract_url
 from ...utils import json
 
@@ -55,7 +55,7 @@ SERVER_LIST_V6: List[DNSServer] = [
 
 async def is_ipv6_enabled() -> bool:
     try:
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get('http://ipv6.icanhazip.com'):
                 return True
     except:  # noqa
@@ -79,7 +79,7 @@ async def query(domain: str, server: DNSServer) -> Result:
             'ip': server.ip,
         })
     )
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
             async with res:
                 if res.status == 200:

@@ -4,6 +4,8 @@ import re
 from typing import Dict, Tuple
 from urllib.parse import urlencode
 
+import aiohttp
+
 from fake_useragent import UserAgent
 
 import tossi
@@ -11,7 +13,6 @@ import tossi
 from ...box import box
 from ...command import argument, option
 from ...event import ChatterboxSystemStart, Message
-from ...session import client_session
 from ...transform import choice
 from ...utils import json
 from ...utils.datetime import now
@@ -48,7 +49,7 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
         })
     )
 
-    async with client_session(headers=headers) as session:
+    async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(metadata_url) as resp:
             data = await resp.json(loads=json.loads)
 
@@ -131,7 +132,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             })
         )
 
-        async with client_session(headers=headers) as session:
+        async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(url) as resp:
                 result = await resp.json(loads=json.loads)
 

@@ -27,7 +27,6 @@ from .cache import Cache
 from .config import Config
 from .event import create_event
 from .orm import Base, EngineConfig, get_database_engine, make_session
-from .session import client_session
 from .types.base import ChannelID
 from .types.channel import (
     Channel,
@@ -239,7 +238,7 @@ class Bot:
     ) -> APIResponse:
         """Call API methods."""
 
-        async with client_session() as session:
+        async with aiohttp.ClientSession() as session:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
@@ -416,7 +415,7 @@ class Bot:
             while not self.is_ready:
                 await asyncio.sleep(0.01)
             try:
-                async with client_session() as session:
+                async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
                         await asyncio.wait(
                             (

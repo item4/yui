@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, List, NamedTuple
 
 import aiohttp
+import aiohttp.client_exceptions
 
 import async_timeout
 
@@ -13,7 +14,6 @@ from fuzzywuzzy import fuzz
 from ...box import box
 from ...command import argument, option
 from ...event import Message
-from ...session import client_session
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.fuzz import match
@@ -105,7 +105,7 @@ async def get_json(*args, timeout: float = 0.5, **kwargs):
     weight = 1
     while True:
         async with async_timeout.timeout(timeout):
-            async with client_session() as session:
+            async with aiohttp.ClientSession() as session:
                 try:
                     async with session.get(*args, **kwargs) as res:
                         if res.status != 200:

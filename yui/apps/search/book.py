@@ -1,12 +1,13 @@
 from decimal import Decimal
 from typing import List
 
+import aiohttp
+
 import tossi
 
 from ...box import box
 from ...command import argument
 from ...event import Message
-from ...session import client_session
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.html import strip_tags
@@ -36,7 +37,7 @@ async def book(bot, event: Message, keyword: str):
         'X-Naver-Client-Secret': bot.config.NAVER_CLIENT_SECRET,
     }
 
-    async with client_session() as session:
+    async with aiohttp.ClientSession() as session:
         async with session.get(url, params=params, headers=headers) as resp:
             data = await resp.json(loads=json.loads)
 
