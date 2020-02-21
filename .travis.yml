@@ -18,7 +18,6 @@ before_install:
 - pip install --upgrade pip setuptools wheel
 - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 - export PATH="$HOME/.poetry/bin:$PATH"
-- cp -r "$HOME/.poetry/lib/poetry/_vendor/py3.7" "$HOME/.poetry/lib/poetry/_vendor/py3.8"
 install:
 - poetry install -E travis-ci
 before_script:
