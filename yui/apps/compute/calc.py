@@ -184,93 +184,93 @@ async def calc_num_on_change(bot, event: Message, raw: str):
 
 class Decimal(decimal.Decimal):
 
-    def __neg__(self):
+    def __neg__(self, context=None):
         return Decimal(super(Decimal, self).__neg__())
 
-    def __pos__(self):
+    def __pos__(self, context=None):
         return Decimal(super(Decimal, self).__pos__())
 
-    def __abs__(self):
+    def __abs__(self, round=True, context=None):
         return Decimal(super(Decimal, self).__abs__())
 
-    def __add__(self, other):
+    def __add__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__add__(other))
 
-    def __radd__(self, other):
+    def __radd__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__add__(self))
 
-    def __sub__(self, other):
+    def __sub__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__sub__(other))
 
-    def __rsub__(self, other):
+    def __rsub__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__sub__(self))
 
-    def __mul__(self, other):
+    def __mul__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__mul__(other))
 
-    def __rmul__(self, other):
+    def __rmul__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__mul__(self))
 
-    def __truediv__(self, other):
+    def __truediv__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__truediv__(other))
 
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__truediv__(self))
 
-    def __floordiv__(self, other):
+    def __floordiv__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__floordiv__(other))
 
-    def __rfloordiv__(self, other):
+    def __rfloordiv__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__floordiv__(self))
 
-    def __mod__(self, other):
+    def __mod__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, self).__mod__(other))
 
-    def __rmod__(self, other):
+    def __rmod__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__mod__(self))
 
-    def __divmod__(self, other):
+    def __divmod__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         quotient, remainder = super(Decimal, self).__divmod__(other)
         return Decimal(quotient), Decimal(remainder)
 
-    def __rdivmod__(self, other):
+    def __rdivmod__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         quotient, remainder = super(Decimal, other).__divmod__(self)
         return Decimal(quotient), Decimal(remainder)
 
-    def __pow__(self, power, modulo=None):
+    def __pow__(self, power, modulo=None, context=None):
         if isinstance(power, (int, float)):
             power = Decimal(power)
         return Decimal(super(Decimal, self).__pow__(power, modulo))
 
-    def __rpow__(self, other):
+    def __rpow__(self, other, context=None):
         if isinstance(other, (int, float)):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__pow__(self))
