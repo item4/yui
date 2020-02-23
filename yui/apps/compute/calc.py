@@ -901,7 +901,15 @@ class Evaluator:
         if cls == _ast.Name:
             self.symbol_table[node.id] = val
         elif cls in (_ast.Tuple, _ast.List):
-            if len(val) == len(node.elts):
+            try:
+                length = len(val)
+            except TypeError:
+                raise TypeError(
+                    'cannot unpack non-iterable {} object'.format(
+                        type(val).__name__,
+                    )
+                )
+            if length == len(node.elts):
                 for telem, tval in zip(node.elts, val):
                     self.assign(telem, tval)
             else:

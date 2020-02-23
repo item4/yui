@@ -69,6 +69,23 @@ def test_assign():
     with pytest.raises(BadSyntax, match=err):
         e.run('dt.year = 2000')
 
+    err = 'too many values to unpack'
+    with pytest.raises(ValueError, match=err):
+        e.run('year, month, day = 1,')
+
+    err = 'cannot unpack non-iterable int object'
+    with pytest.raises(TypeError, match=err):
+        e.run('year, month, day = 1')
+
+    e.run('arr = [1, 2, 3]')
+    assert e.symbol_table['arr'] == [1, 2, 3]
+
+    e.run('arr[1] = 5')
+    assert e.symbol_table['arr'] == [1, 5, 3]
+
+    e.run('arr[:] = [10, 20, 30]')
+    assert e.symbol_table['arr'] == [10, 20, 30]
+
 
 def test_asyncfor():
     e = Evaluator()
