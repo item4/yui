@@ -1,4 +1,9 @@
-from ..exceptions import AllChannelsError, NoChannelsError
+from ..exceptions import (
+    AllChannelsError,
+    AllUsersError,
+    NoChannelsError,
+    NoUsersError,
+)
 from ..types.namespace import Namespace, name_convert, user_id_convert
 
 
@@ -48,10 +53,10 @@ class U(metaclass=HelperMeta):
         self.key = key
 
     def get(self):
-        channel_name = Namespace._bot.config.USERS[self.key]
-        if isinstance(channel_name, str):
-            return user_id_convert(channel_name)
-        raise ValueError(f'{self.key} in CHANNELS is not str.')
+        user_name = Namespace._bot.config.USERS[self.key]
+        if isinstance(user_name, str):
+            return user_id_convert(user_name)
+        raise ValueError(f'{self.key} in USERS is not str.')
 
 
 class Us(metaclass=HelperMeta):
@@ -61,11 +66,11 @@ class Us(metaclass=HelperMeta):
         self.key = key
 
     def gets(self):
-        channels = Namespace._bot.config.USERS[self.key]
-        if not channels:
-            raise NoChannelsError()
-        if channels == ['*'] or channels == '*':
-            raise AllChannelsError()
-        if isinstance(channels, list):
-            return [user_id_convert(x) for x in channels]
-        raise ValueError(f'{self.key} in CHANNELS is not list.')
+        users = Namespace._bot.config.USERS[self.key]
+        if not users:
+            raise NoUsersError()
+        if users == ['*'] or users == '*':
+            raise AllUsersError()
+        if isinstance(users, list):
+            return [user_id_convert(x) for x in users]
+        raise ValueError(f'{self.key} in USERS is not list.')

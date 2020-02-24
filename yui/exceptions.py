@@ -4,3 +4,11 @@ class AllChannelsError(Exception):
 
 class NoChannelsError(Exception):
     pass
+
+
+class AllUsersError(Exception):
+    pass
+
+
+class NoUsersError(Exception):
+    pass
