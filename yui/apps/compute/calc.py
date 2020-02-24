@@ -9,6 +9,7 @@ import math
 import operator
 import random
 import statistics
+from collections import abc
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import _ast
@@ -21,6 +22,10 @@ from ...event import Message
 from ...utils import json
 
 TIMEOUT = 1
+
+
+class PLACEHOLDER:
+    pass
 
 
 async def body(
@@ -901,19 +906,22 @@ class Evaluator:
         if cls == _ast.Name:
             self.symbol_table[node.id] = val
         elif cls in (_ast.Tuple, _ast.List):
-            try:
-                length = len(val)
-            except TypeError:
+            if not isinstance(val, abc.Iterable):
                 raise TypeError(
                     'cannot unpack non-iterable {} object'.format(
                         type(val).__name__,
                     )
                 )
-            if length == len(node.elts):
-                for telem, tval in zip(node.elts, val):
-                    self.assign(telem, tval)
-            else:
-                raise ValueError('too many values to unpack')
+            for telem, tval in itertools.zip_longest(
+                node.elts,
+                val,
+                fillvalue=PLACEHOLDER,
+            ):
+                if telem == PLACEHOLDER:
+                    raise ValueError('not enough values to unpack')
+                if tval == PLACEHOLDER:
+                    raise ValueError('too many values to unpack')
+                self.assign(telem, tval)
         elif cls == _ast.Subscript:
             sym = self._run(node.value)
             xslice = self._run(node.slice)

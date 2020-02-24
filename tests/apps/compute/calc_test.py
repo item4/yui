@@ -73,6 +73,10 @@ def test_assign():
     with pytest.raises(ValueError, match=err):
         e.run('year, month, day = 1,')
 
+    err = 'not enough values to unpack'
+    with pytest.raises(ValueError, match=err):
+        e.run('id, name = 1, "kirito", "black"')
+
     err = 'cannot unpack non-iterable int object'
     with pytest.raises(TypeError, match=err):
         e.run('year, month, day = 1')
