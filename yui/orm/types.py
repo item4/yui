@@ -5,7 +5,7 @@ import six
 try:
     from sqlalchemy.dialects.postgresql import JSON  # noqa
     has_postgres_json = True
-except ImportError:
+except ImportError:  # pragma: no cover
     has_postgres_json = False
 
 from sqlalchemy_utils.types import JSONType as _JSONType
@@ -20,16 +20,16 @@ class JSONType(_JSONType):
     def process_bind_param(self, value, dialect):
         if dialect.name == 'postgresql' and has_postgres_json:
             return value
-        if value is not None:
+        if value is not None:  # pragma: no cover
             value = six.text_type(json.dumps(value))
-        return value
+        return value  # pragma: no cover
 
     def process_result_value(self, value, dialect):
         if dialect.name == 'postgresql':
             return value
-        if value is not None:
+        if value is not None:  # pragma: no cover
             value = json.loads(value)
-        return value
+        return value  # pragma: no cover
 
 
 class TimezoneType(_TimezoneType):
