@@ -94,13 +94,18 @@ class Config:
         multiple_channels: Set[str],
         single_users: Set[str],
         multiple_users: Set[str],
-    ):
-        for key in configs.keys():
+    ) -> bool:
+        for key, value in configs.items():
             try:
-                getattr(self, key)
+                config = getattr(self, key)
             except AttributeError:
                 raise ConfigurationError(
                     f'Required config key was not defined: {key}'
+                )
+            if not isinstance(config, value):
+                raise ConfigurationError(
+                    f'Config {key} must be {value.__name__},'
+                    f' not {config.__class__.__name__}'
                 )
 
         for key in single_channels:
@@ -124,12 +129,11 @@ class Config:
                     f'Required channel key was not defined: {key}'
                 )
             else:
-                if value != '*':
-                    if isinstance(value, list):
-                        if all(isinstance(x, str) for x in value):
-                            continue
-                else:
+                if value == '*':
                     continue
+                elif isinstance(value, list):
+                    if all(isinstance(x, str) for x in value):
+                        continue
                 raise ConfigurationError(
                     f'Channel config has wrong type: {key}'
                 )
@@ -143,7 +147,7 @@ class Config:
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
-                        f'Channel config has wrong type: {key}'
+                        f'User config has wrong type: {key}'
                     )
 
         for key in multiple_users:
@@ -154,15 +158,15 @@ class Config:
                     f'Required user key was not defined: {key}'
                 )
             else:
-                if value != '*':
-                    if isinstance(value, list):
-                        if all(isinstance(x, str) for x in value):
-                            continue
-                else:
+                if value == '*':
                     continue
+                elif isinstance(value, list):
+                    if all(isinstance(x, str) for x in value):
+                        continue
                 raise ConfigurationError(
-                    f'Channel user has wrong type: {key}'
+                    f'User config has wrong type: {key}'
                 )
+        return True
 
 
 def error(message: str, *args):
@@ -188,7 +192,7 @@ def load(path: pathlib.Path) -> Config:
 
     try:
         config = Config(**config_dict)  # type: ignore
-    except TypeError as e:
+    except TypeError as e:  # pragma: no cover
         error(str(e))
         raise
 

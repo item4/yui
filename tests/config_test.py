@@ -2,7 +2,7 @@ import pathlib
 
 import pytest
 
-from yui.config import error, load
+from yui.config import ConfigurationError, error, load
 
 
 def test_error():
@@ -78,3 +78,198 @@ owner = 'U111'
     assert config.CHANNELS == {
         'general': '_general',
     }
+
+
+def test_config_check(fx_config):
+    del fx_config.TOKEN
+
+    err = 'Required config key was not defined: TOKEN'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {'TOKEN': str},
+            set(),
+            set(),
+            set(),
+            set(),
+        )
+    fx_config.TOKEN = 1
+
+    err = 'Config TOKEN must be str, not int'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {'TOKEN': str},
+            set(),
+            set(),
+            set(),
+            set(),
+        )
+
+    fx_config.TOKEN = 'XXXX'
+    assert fx_config.check(
+        {'TOKEN': str},
+        set(),
+        set(),
+        set(),
+        set(),
+    )
+
+    fx_config.CHANNELS = {}
+    err = 'Required channel key was not defined: general'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            {'general'},
+            set(),
+            set(),
+            set(),
+        )
+
+    fx_config.CHANNELS = {'general': 1}
+    err = 'Channel config has wrong type: general'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            {'general'},
+            set(),
+            set(),
+            set(),
+        )
+
+    fx_config.CHANNELS = {'general': '_general'}
+    assert fx_config.check(
+        {},
+        {'general'},
+        set(),
+        set(),
+        set(),
+    )
+
+    err = 'Required channel key was not defined: test'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            {'test'},
+            set(),
+            set(),
+        )
+
+    fx_config.CHANNELS = {'test': 1}
+    err = 'Channel config has wrong type: test'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            {'test'},
+            set(),
+            set(),
+        )
+    fx_config.CHANNELS = {'test': [1]}
+    err = 'Channel config has wrong type: test'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            {'test'},
+            set(),
+            set(),
+        )
+
+    fx_config.CHANNELS = {'test': ['aaa', 'bbb']}
+    assert fx_config.check(
+        {},
+        set(),
+        {'test'},
+        set(),
+        set(),
+    )
+
+    fx_config.CHANNELS = {'test': '*'}
+    assert fx_config.check(
+        {},
+        set(),
+        {'test'},
+        set(),
+        set(),
+    )
+
+    fx_config.USERS = {}
+    err = 'Required user key was not defined: owner'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            set(),
+            {'owner'},
+            set(),
+        )
+
+    fx_config.USERS = {'owner': 1}
+    err = 'User config has wrong type: owner'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            set(),
+            {'owner'},
+            set(),
+        )
+
+    fx_config.USERS = {'owner': 'U1'}
+    assert fx_config.check(
+        {},
+        set(),
+        set(),
+        {'owner'},
+        set(),
+    )
+
+    err = 'Required user key was not defined: tester'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            set(),
+            set(),
+            {'tester'},
+        )
+
+    fx_config.USERS = {'tester': 1}
+    err = 'User config has wrong type: tester'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            set(),
+            set(),
+            {'tester'},
+        )
+
+    fx_config.USERS = {'tester': [1]}
+    err = 'User config has wrong type: tester'
+    with pytest.raises(ConfigurationError, match=err):
+        fx_config.check(
+            {},
+            set(),
+            set(),
+            set(),
+            {'tester'},
+        )
+
+    fx_config.USERS = {'tester': ['aaa', 'bbb']}
+    assert fx_config.check(
+        {},
+        set(),
+        set(),
+        set(),
+        {'tester'},
+    )
+
+    fx_config.USERS = {'tester': '*'}
+    assert fx_config.check(
+        {},
+        set(),
+        set(),
+        set(),
+        {'tester'},
+    )
