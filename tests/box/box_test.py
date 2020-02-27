@@ -57,3 +57,35 @@ def test_box_class():
 
     assert box.tasks[0].spec == '*/3 * * * *'
     assert box.tasks[0].handler == test4
+
+    @box.on('message')
+    async def test4():
+        pass
+
+    h4 = box.apps.pop()
+    assert isinstance(h4, App)
+    assert not h4.is_command
+    assert not h4.use_shlex
+    assert h4.handler == test4
+
+    box.assert_config_required('OWNER_TOKEN', str)
+    assert box.config_required['OWNER_TOKEN'] == str
+
+    box.assert_channel_required('game')
+    assert box.channel_required == {'game'}
+
+    box.assert_channels_required('test')
+    assert box.channels_required == {'test'}
+
+    box.assert_user_required('admin')
+    assert box.user_required == {'admin'}
+
+    box.assert_users_required('player')
+    assert box.users_required == {'player'}
+
+    class Test(App):
+        pass
+
+    testapp = Test(handler=test4, type='message', subtype=None)
+    box.register(testapp)
+    assert box.apps.pop() == testapp
