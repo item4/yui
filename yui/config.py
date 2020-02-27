@@ -97,16 +97,16 @@ class Config:
     ) -> bool:
         for key, value in configs.items():
             try:
-                config = getattr(self, key)
+                getattr(self, key)
             except AttributeError:
                 raise ConfigurationError(
                     f'Required config key was not defined: {key}'
                 )
-            if not isinstance(config, value):
-                raise ConfigurationError(
-                    f'Config {key} must be {value.__name__},'
-                    f' not {config.__class__.__name__}'
-                )
+            # if not isinstance(config, value):
+            #    raise ConfigurationError(
+            #        f'Config {key} must be {value.__name__},'
+            #        f' not {config.__class__.__name__}'
+            #    )
 
         for key in single_channels:
             try:
