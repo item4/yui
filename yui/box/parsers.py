@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Tuple
 
 from .utils import is_container
 from ..types.handler import Handler
-from ..utils.cast import cast
+from ..utils.cast import CastError, cast
 
 KWARGS_DICT = Dict[str, Any]
 
@@ -92,7 +92,7 @@ def parse_option_and_arguments(
                             )
                     else:
                         r = cast(option.type_, args[0])
-                except ValueError as e:
+                except (ValueError, CastError) as e:
                     raise SyntaxError(
                         option.type_error.format(name=option.name, e=e)
                     )
@@ -174,7 +174,7 @@ def parse_option_and_arguments(
                 r = cast(argument.type_, args)
             else:
                 r = cast(argument.type_, args[0])
-        except ValueError as e:
+        except (ValueError, CastError) as e:
             raise SyntaxError(
                 argument.type_error.format(
                     name=argument.name,

@@ -106,8 +106,10 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ("--container: invalid type of option value"
-                           "(could not convert string to float: 'a')")
+    assert e.value.msg == (
+        "--container: invalid type of option value"
+        "(Can not find matching caster)"
+    )
 
     chunks = shlex.split(
         '--required-option 1111 '
@@ -212,9 +214,8 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ("args: invalid type of argument value"
-                           "(invalid literal for int() with "
-                           "base 10: 'asdf')")
+    assert e.value.msg == (
+        "args: invalid type of argument value(Can not find matching caster)")
 
     @box.command('test-argument5')
     @argument('args', transform_func=str_to_date())
