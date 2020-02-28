@@ -10,6 +10,7 @@ from sqlalchemy.engine import Engine
 import toml
 
 from .types.namespace import namespace
+from .utils.cast import CastError, cast
 
 
 DEFAULT = {
@@ -97,16 +98,19 @@ class Config:
     ) -> bool:
         for key, value in configs.items():
             try:
-                getattr(self, key)
+                config = getattr(self, key)
             except AttributeError:
                 raise ConfigurationError(
                     f'Required config key was not defined: {key}'
                 )
-            # if not isinstance(config, value):
-            #    raise ConfigurationError(
-            #        f'Config {key} must be {value.__name__},'
-            #        f' not {config.__class__.__name__}'
-            #    )
+            try:
+                casted = cast(value, config)
+                if config != casted:
+                    raise CastError
+            except CastError:
+                raise ConfigurationError(
+                    f'Wrong config value type: {key}'
+                )
 
         for key in single_channels:
             try:

@@ -193,10 +193,7 @@ class CasterBox:
         self.caster_box = caster_box
 
     def __call__(self, t, value):
-        try:
-            return self.cast(t, value)
-        except CastError:
-            return t(value)
+        return self.cast(t, value)
 
     def sort(self, types, value):
         return [
