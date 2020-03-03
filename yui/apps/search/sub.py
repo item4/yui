@@ -67,8 +67,7 @@ def make_sub_list(data: Set[Sub]) -> List[Attachment]:
     result: List[Attachment] = []
 
     if data:
-        data = list(data)
-        for sub in data:
+        for sub in list(data):
             num = '완결' if sub.episode_num == 9999 else f'{sub.episode_num}화'
             name = sub.maker
             url = fix_url(sub.url)
