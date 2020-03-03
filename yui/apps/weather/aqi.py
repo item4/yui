@@ -1,9 +1,11 @@
 import datetime
 from hashlib import md5
-from typing import NamedTuple, Optional, Tuple
+from typing import Optional, Tuple
 from urllib.parse import urlencode
 
 import aiohttp
+
+import attr
 
 from fake_useragent import UserAgent
 
@@ -28,14 +30,16 @@ LABELS = {
 }
 
 
-class Field(NamedTuple):
+@attr.dataclass(slots=True)
+class Field:
 
     current: int
     min: int
     max: int
 
 
-class AQIRecord(NamedTuple):
+@attr.dataclass(slots=True)
+class AQIRecord:
 
     name: str
     aqi: int
