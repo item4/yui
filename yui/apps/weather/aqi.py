@@ -132,7 +132,7 @@ def get_aqi_description(aqi: int) -> str:
         return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
 
 
-@box.command('aqi', ['공기'])
+@box.command('aqi', ['공기', '먼지', '미세먼지'])
 @argument('address', nargs=-1, concat=True)
 async def aqi(bot, event: Message, address: str):
     """
