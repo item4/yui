@@ -2,12 +2,14 @@ import asyncio
 import math
 import urllib.parse
 from datetime import datetime
-from typing import Any, Dict, List, NamedTuple
+from typing import Any, Dict, List, Set
 
 import aiohttp
 import aiohttp.client_exceptions
 
 import async_timeout
+
+import attr
 
 from fuzzywuzzy import fuzz
 
@@ -19,7 +21,8 @@ from ...utils import json
 from ...utils.fuzz import match
 
 
-class Sub(NamedTuple):
+@attr.dataclass(frozen=True, hash=True, slots=True)
+class Sub:
 
     maker: str
     episode_num: float
@@ -60,10 +63,11 @@ def fix_url(url: str) -> str:
     return 'http://{}'.format(url)
 
 
-def make_sub_list(data: List[Sub]) -> List[Attachment]:
+def make_sub_list(data: Set[Sub]) -> List[Attachment]:
     result: List[Attachment] = []
 
     if data:
+        data = list(data)
         for sub in data:
             num = '완결' if sub.episode_num == 9999 else f'{sub.episode_num}화'
             name = sub.maker
@@ -101,41 +105,6 @@ def make_sub_list(data: List[Sub]) -> List[Attachment]:
     return result
 
 
-async def get_json(*args, timeout: float = 0.5, **kwargs):
-    weight = 1
-    while True:
-        async with async_timeout.timeout(timeout):
-            async with aiohttp.ClientSession() as session:
-                try:
-                    async with session.get(*args, **kwargs) as res:
-                        if res.status != 200:
-                            return []
-                        try:
-                            return await res.json(loads=json.loads)
-                        except aiohttp.client_exceptions.ClientResponseError:
-                            return json.loads(await res.text())
-                except aiohttp.client_exceptions.ServerDisconnectedError:
-                    if weight > 10:
-                        raise
-                    else:
-                        await asyncio.sleep(weight/10)
-                        weight += 1
-                except ValueError:
-                    return []
-
-
-async def get_weekly_list(url, week, timeout: float = 0.5):
-    weight = 1
-    while True:
-        res = await get_json('{}?w={}'.format(url, week), timeout=timeout)
-        if res:
-            for r in res:
-                r['week'] = week
-            return res
-        await asyncio.sleep(weight/10)
-        weight += 1
-
-
 @box.command('sub', ['자막', '애니자막'])
 @option('--finished/--on-air', '--종영/--방영', '--완결/--방송', '--fin/--on',
         '-f/-o')
@@ -166,82 +135,89 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
+async def get_ohli_now_json(timeout: float) -> List[List[Dict[str, Any]]]:
+    async with async_timeout.timeout(timeout):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                'https://ohli.moe/timetable/list/now'
+            ) as resp:
+                return json.loads(await resp.text())
+
+
+async def get_ohli_caption_list(i, timeout: float) -> Set[Sub]:
+    result: Set[Sub] = set()
+    async with async_timeout.timeout(timeout):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f'https://ohli.moe/timetable/cap?i={i}'
+            ) as resp:
+                data = await resp.json(loads=json.loads)
+
+    for sub in data:
+        episode_num = sub['s']
+        if int(math.ceil(episode_num)) == int(episode_num):
+            episode_num = int(episode_num)
+        result.add(Sub(
+            maker=sub['n'],
+            episode_num=episode_num,
+            url=sub['a'],
+            released_at=sub['d'],
+        ))
+
+    return result
+
+
+async def get_annissa_weekly_json(w, timeout: float) -> List[Dict[str, Any]]:
+    async with async_timeout.timeout(timeout):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                    f'https://www.anissia.net/anitime/list?w={w}'
+            ) as resp:
+                return json.loads(await resp.text())
+
+
+async def get_annissia_caption_list_json(i, timeout: float) -> List[Dict]:
+    async with async_timeout.timeout(timeout):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                f'https://www.anissia.net/anitime/cap?i={i}'
+            ) as resp:
+                return json.loads(await resp.text())
+
+
 async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
-    ohli_list_url = 'http://ohli.moe/anitime/list'
-    anissia_list_url = 'http://www.anissia.net/anitime/list'
-
-    ohli = []
-    anissia = []
-    for w in range(7+1):
-        ohli.append(get_weekly_list(ohli_list_url, w, timeout))
-        anissia.append(get_weekly_list(anissia_list_url, w, timeout))
-
-    o_responses, o_pending = await asyncio.wait(
-        ohli,
-        return_when=asyncio.FIRST_EXCEPTION,
-    )
+    try:
+        ohli_all = await get_ohli_now_json(timeout)
+    except asyncio.TimeoutError:
+        await bot.say(
+            event.channel,
+            'OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!',
+        )
+        return
 
     o_data: List[Dict[str, Any]] = []
-    a_data: List[Dict[str, Any]] = []
 
-    for response in o_responses:
-        try:
-            res = response.result()
-        except Exception as e:
-            await bot.say(
-                event.channel,
-                'Error: {}: {}'.format(e.__class__.__name__, e)
+    for w, weekday_list in enumerate(ohli_all):
+        for ani in weekday_list:
+            ani['week'] = w
+            ani['ratio'] = max(
+                match(
+                    title.lower(),
+                    a['s'].lower(),
+                ) for a in ani['n']
             )
-            for op in o_pending:  # type: asyncio.Future
-                op.cancel()
-            return
-        else:
-            o_data.extend(res)
-
-    a_responses, a_pending = await asyncio.wait(
-        anissia,
-        return_when=asyncio.FIRST_EXCEPTION,
-    )
-    for r in a_responses:
-        try:
-            res = r.result()
-        except Exception:
-            a_data.clear()
-            for ap in a_pending:  # type: asyncio.Future
-                ap.cancel()
-            break
-        else:
-            a_data.extend(res)
-
-    for ani in o_data:
-        ani['ratio'] = max(
-            match(
-                title.lower(),
-                a['s'].lower(),
-            ) for a in ani['n']
-        )
+            o_data.append(ani)
 
     o_ani = max(o_data, key=lambda x: x['ratio'])
 
     if o_ani['ratio'] > 10:
-        result: List[Sub] = []
+        try:
+            a_data = await get_annissa_weekly_json(o_ani['week'], timeout)
+        except asyncio.TimeoutError:
+            a_data = []
 
-        o_subs = await get_json(
-            'http://ohli.moe/cap/{}'.format(o_ani['i']),
-            timeout=timeout,
-        )
-
-        for sub in o_subs:
-            episode_num = sub['s']
-            if int(math.ceil(episode_num)) == int(episode_num):
-                episode_num = int(episode_num)
-            result.append(Sub(
-                maker=sub['n'],
-                episode_num=episode_num,
-                url=sub['a'],
-                released_at=sub['d'],
-            ))
+        captions = await get_ohli_caption_list(o_ani['i'], timeout)
 
         use_anissia = False
         a_ani = None
@@ -256,34 +232,29 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
                 if o_ani['t'] == ani['t']:
                     ani['ratio'] += 5
-                if o_ani['week'] == ani['week']:
-                    ani['ratio'] += 5
-                if fuzz.ratio(fix_url(ani['l']), o_ani['l']) > 94:
+                if fuzz.ratio(fix_url(ani['l']), o_ani['l']) > 90:
                     ani['ratio'] += 10
 
             a_ani = max(a_data, key=lambda x: x['ratio'])
 
-            if a_ani['ratio'] > 80:
+            if a_ani['ratio'] > 75:
                 use_anissia = True
 
-                a_subs = await get_json(
-                    'http://www.anissia.net/anitime/cap?i={}'.format(
+                try:
+                    a_subs = await get_annissia_caption_list_json(
                         a_ani['i'],
-                    ),
-                    timeout=timeout,
-                )
+                        timeout,
+                    )
+                except asyncio.TimeoutError:
+                    a_subs = []
+                    use_anissia = False
 
                 for sub in a_subs:
                     url = fix_url(encode_url(sub['a']))
-                    if o_subs and max(
-                        fuzz.ratio(url.lower(), o_sub['a'].lower())
-                        for o_sub in o_subs
-                    ) > 95:
-                        continue
                     episode_num = int(sub['s'])/10
                     if int(math.ceil(episode_num)) == int(episode_num):
                         episode_num = int(episode_num)
-                    result.append(Sub(
+                    captions.add(Sub(
                         maker=sub['n'],
                         episode_num=episode_num,
                         url=url,
@@ -320,7 +291,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
                 pretext=pretext,
             ),
         ]
-        attachments.extend(make_sub_list(result))
+        attachments.extend(make_sub_list(captions))
 
         await bot.api.chat.postMessage(
             channel=event.channel,
@@ -342,13 +313,20 @@ async def search_finished(
     title: str,
     timeout: float = 2.5,
 ):
-
-    data = await get_json(
-        'http://ohli.moe/timetable/search?{}'.format(
-            urllib.parse.urlencode({'query': title.encode()}),
-        ),
-        timeout=timeout,
-    )
+    try:
+        async with async_timeout.timeout(timeout):
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    'http://ohli.moe/timetable/search',
+                    params={'query': title},
+                ) as resp:
+                    data = await resp.json(loads=json.loads)
+    except asyncio.TimeoutError:
+        await bot.say(
+            event.channel,
+            'OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!'
+        )
+        return
 
     if data:
         await bot.say(
@@ -360,20 +338,10 @@ async def search_finished(
             thread_ts=event.event_ts,
         )
         for ani in data:
-            subs = await get_json(
-                'http://ohli.moe/cap/{}'.format(ani['i']), timeout=timeout)
-            result: List[Sub] = []
-
-            for sub in subs:
-                episode_num = sub['s']
-                if int(math.ceil(episode_num)) == int(episode_num):
-                    episode_num = int(episode_num)
-                result.append(Sub(
-                    maker=sub['n'],
-                    episode_num=episode_num,
-                    url=sub['a'],
-                    released_at=sub['d'],
-                ))
+            try:
+                captions = await get_ohli_caption_list(ani['i'], timeout)
+            except asyncio.TimeoutError:
+                captions = set()
 
             attachments: List[Attachment] = [
                 Attachment(
@@ -386,7 +354,7 @@ async def search_finished(
                     thumb_url=ani['img'] or None,
                 ),
             ]
-            attachments.extend(make_sub_list(result))
+            attachments.extend(make_sub_list(captions))
 
             await bot.api.chat.postMessage(
                 channel=event.channel,
