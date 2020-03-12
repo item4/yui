@@ -59,8 +59,7 @@ async def on_start(bot):
         bot.channels.clear()
         while True:
             result = await bot.api.conversations.list(
-                cursor=cursor,
-                types='public_channel,private_channel,im',
+                cursor=cursor, types='public_channel,private_channel,im',
             )
             cursor = None
             await asyncio.sleep(0.1)
@@ -72,17 +71,11 @@ async def on_start(bot):
                     continue
                 channel = resp.body['channel']
                 if channel.get('is_channel'):
-                    bot.channels.append(
-                        PublicChannel(**channel)
-                    )
+                    bot.channels.append(PublicChannel(**channel))
                 elif channel.get('is_im'):
-                    bot.ims.append(
-                        DirectMessageChannel(**channel)
-                    )
+                    bot.ims.append(DirectMessageChannel(**channel))
                 elif channel.get('is_group'):
-                    bot.groups.append(
-                        PrivateChannel(**channel)
-                    )
+                    bot.groups.append(PrivateChannel(**channel))
                 await asyncio.sleep(0.1)
             if not cursor:
                 break
@@ -96,11 +89,7 @@ async def on_start(bot):
     bot.is_ready = False
 
     await asyncio.wait(
-        (
-            channels(),
-            users(),
-        ),
-        return_when=asyncio.FIRST_EXCEPTION,
+        (channels(), users(),), return_when=asyncio.FIRST_EXCEPTION,
     )
 
     bot.is_ready = True
@@ -126,9 +115,9 @@ async def on_user_change(bot, event: UserChange):
     logger.info('on user change start')
     res = await retry(bot.api.users.info, event.user)
 
-    bot.users[:] = [
-        u for u in bot.users if u.id != event.user.id
-    ] + [User(**res.body['user'])]  # type: ignore
+    bot.users[:] = [u for u in bot.users if u.id != event.user.id] + [
+        User(**res.body['user'])  # type: ignore
+    ]
     logger.info('on user change end')
 
     return True
@@ -149,16 +138,13 @@ async def public_channel_mutation_detected(bot):
     new_channels = []
     while True:
         result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='public_channel',
+            cursor=cursor, types='public_channel',
         )
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
         for c in result.body['channels']:
             res = await bot.api.conversations.info(c['id'])
-            new_channels.append(
-                PublicChannel(**res.body['channel'])
-            )
+            new_channels.append(PublicChannel(**res.body['channel']))
             await asyncio.sleep(0.1)
         if not cursor:
             break
@@ -183,16 +169,13 @@ async def private_channel_mutation_detected(bot):
     cursor = None
     while True:
         result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='private_channel',
+            cursor=cursor, types='private_channel',
         )
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
         for c in result.body['channels']:
             res = await bot.api.conversations.info(c['id'])
-            new_groups.append(
-                PrivateChannel(**res.body['channel'])
-            )
+            new_groups.append(PrivateChannel(**res.body['channel']))
             await asyncio.sleep(0.1)
         if not cursor:
             break
@@ -212,17 +195,12 @@ async def direct_message_channel_mutation_detected(bot):
     new_ims = []
     cursor = None
     while True:
-        result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='im',
-        )
+        result = await bot.api.conversations.list(cursor=cursor, types='im',)
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
         for c in result.body['channels']:
             res = await bot.api.conversations.info(c['id'])
-            new_ims.append(
-                DirectMessageChannel(**res.body['channel'])
-            )
+            new_ims.append(DirectMessageChannel(**res.body['channel']))
             await asyncio.sleep(0.1)
         if not cursor:
             break

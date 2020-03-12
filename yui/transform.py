@@ -89,9 +89,7 @@ def get_user(text: str):
 
 
 def enum_getitem(
-    cls,
-    *,
-    fallback: Optional[str] = None,
+    cls, *, fallback: Optional[str] = None,
 ) -> Callable[[str], Any]:
     """
     Helper to transform item to enum object by name from given enum
@@ -177,10 +175,7 @@ def choice(
 
 
 def value_range(
-    start: T,
-    end: T,
-    *,
-    autofix: bool = False,
+    start: T, end: T, *, autofix: bool = False,
 ) -> Callable[[T], T]:
     """
     Helper to constraint value to in range or raise error.

@@ -40,13 +40,16 @@ async def say_packtpub_dotd(bot: Bot, channel):
 
         title = data['title']
         image_url = data['coverImage']
-        attachments.append(Attachment(
-            fallback=f'{title} - {PACKTPUB_URL}',
-            title=title,
-            title_link=PACKTPUB_URL,
-            text=f'오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}',
-            image_url=image_url,
-        ))
+        attachments.append(
+            Attachment(
+                fallback=f'{title} - {PACKTPUB_URL}',
+                title=title,
+                title_link=PACKTPUB_URL,
+                text='오늘의 Packt Book Deal of The Day:'
+                f' {title} - {PACKTPUB_URL}',
+                image_url=image_url,
+            )
+        )
 
     if attachments:
         await bot.api.chat.postMessage(
@@ -56,10 +59,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
             as_user=True,
         )
     else:
-        await bot.say(
-            channel,
-            '오늘은 PACKT Book의 무료책이 없는 것 같아요'
-        )
+        await bot.say(channel, '오늘은 PACKT Book의 무료책이 없는 것 같아요')
 
 
 @box.command('무료책', ['freebook'])

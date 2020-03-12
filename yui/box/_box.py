@@ -69,18 +69,20 @@ class Box:
         def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
             handler = get_handler(target)
 
-            self.apps.append(App(
-                'message',
-                subtype,
-                handler,
-                name=name,
-                aliases=aliases,
-                short_help=short_help,
-                help=help,
-                is_command=True,
-                use_shlex=use_shlex,
-                channel_validator=channels,
-            ))
+            self.apps.append(
+                App(
+                    'message',
+                    subtype,
+                    handler,
+                    name=name,
+                    aliases=aliases,
+                    short_help=short_help,
+                    help=help,
+                    is_command=True,
+                    use_shlex=use_shlex,
+                    channel_validator=channels,
+                )
+            )
 
             return handler
 
@@ -103,12 +105,9 @@ class Box:
         def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
             handler = get_handler(target)
 
-            self.apps.append(App(
-                event_type,
-                subtype,
-                handler,
-                channel_validator=channels,
-            ))
+            self.apps.append(
+                App(event_type, subtype, handler, channel_validator=channels,)
+            )
 
             return handler
 

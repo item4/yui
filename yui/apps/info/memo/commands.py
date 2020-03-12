@@ -32,9 +32,8 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
     await bot.say(
         event.channel,
         '{}{} 기억 레코드를 생성했어요!'.format(
-            format.code(keyword),
-            tossi.pick(keyword, '(으)로'),
-        )
+            format.code(keyword), tossi.pick(keyword, '(으)로'),
+        ),
     )
 
 
@@ -48,21 +47,24 @@ async def memo_show(bot, event: Message, sess, keyword: str):
 
     """
 
-    memos = sess.query(Memo).filter_by(keyword=keyword)\
-        .order_by(Memo.created_at.asc()).all()
+    memos = (
+        sess.query(Memo)
+        .filter_by(keyword=keyword)
+        .order_by(Memo.created_at.asc())
+        .all()
+    )
 
     if memos:
         await bot.say(
             event.channel,
-            f'{format.code(keyword)}: ' + ' | '.join(x.text for x in memos)
+            f'{format.code(keyword)}: ' + ' | '.join(x.text for x in memos),
         )
     else:
         await bot.say(
             event.channel,
             '{}{} 이름을 가진 기억 레코드가 없어요!'.format(
-                format.code(keyword),
-                tossi.pick(keyword, '(이)란'),
-            )
+                format.code(keyword), tossi.pick(keyword, '(이)란'),
+            ),
         )
 
 
@@ -79,6 +81,5 @@ async def memo_delete(bot, event: Message, sess, keyword: str):
     sess.query(Memo).filter_by(keyword=keyword).delete()
 
     await bot.say(
-        event.channel,
-        f'{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!'
+        event.channel, f'{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!'
     )

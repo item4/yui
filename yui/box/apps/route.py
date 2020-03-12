@@ -97,8 +97,7 @@ class RouteApp(BaseApp):
                     chunks = shlex.split(raw)
                 except ValueError:
                     await bot.say(
-                        event.channel,
-                        '*Error*: Can not parse this command'
+                        event.channel, '*Error*: Can not parse this command'
                     )
                     return False
             else:
@@ -106,17 +105,13 @@ class RouteApp(BaseApp):
 
             try:
                 kw, remain_chunks = parse_option_and_arguments(
-                    handler,
-                    chunks,
+                    handler, chunks,
                 )
             except SyntaxError as e:
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
                 return False
             with self.prepare_kwargs(
-                bot=bot,
-                event=event,
-                func_params=func_params,
-                **kw,
+                bot=bot, event=event, func_params=func_params, **kw,
             ) as kwargs:
                 return await handler(**kwargs)
         return True

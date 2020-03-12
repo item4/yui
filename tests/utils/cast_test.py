@@ -57,7 +57,7 @@ def test_cast():
         [
             {'id': 'item4', 'pw': 'supersecret'},
             {'id': 'item2', 'pw': 'weak', 'addresses': [1, 2]},
-        ]
+        ],
     )
     assert users[0].id == 'item4'
     assert users[0].pw == 'supersecret'

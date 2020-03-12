@@ -29,11 +29,7 @@ class PLACEHOLDER:
 
 
 async def body(
-    bot: Bot,
-    event: Message,
-    expr: str,
-    help: str,
-    decimal_mode: bool = True,
+    bot: Bot, event: Message, expr: str, help: str, decimal_mode: bool = True,
 ):
     expr = expr.strip()
     expr_is_multiline = '\n' in expr
@@ -45,15 +41,11 @@ async def body(
     try:
         async with timeout(TIMEOUT):
             result, local = await bot.run_in_other_thread(
-                calculate,
-                expr,
-                decimal_mode=decimal_mode,
+                calculate, expr, decimal_mode=decimal_mode,
             )
     except (SyntaxError, BadSyntax) as e:
         await bot.say(
-            event.channel,
-            '입력해주신 수식에 문법 오류가 있어요! {}'.format(e),
-            thread_ts=ts,
+            event.channel, '입력해주신 수식에 문법 오류가 있어요! {}'.format(e), thread_ts=ts,
         )
         return
     except ZeroDivisionError:
@@ -84,29 +76,21 @@ async def body(
         if expr_is_multiline or '\n' in result_string:
             r = (
                 f'```\n{result_string}\n```'
-                if result_string.strip() else '_Empty_'
+                if result_string.strip()
+                else '_Empty_'
             )
-            text = (
-                f'*Input*\n```\n{expr}\n```\n'
-                f'*Output*\n{r}'
-            )
+            text = f'*Input*\n```\n{expr}\n```\n' f'*Output*\n{r}'
             if ts is None:
                 ts = event.ts
         else:
-            r = (
-                f'`{result_string}`'
-                if result_string.strip() else '_Empty_'
-            )
+            r = f'`{result_string}`' if result_string.strip() else '_Empty_'
             text = f'`{expr}` == {r}'
         await bot.say(
-            event.channel,
-            text,
-            thread_ts=ts,
+            event.channel, text, thread_ts=ts,
         )
     elif local:
         r = '\n'.join(
-            '{} = {}'.format(key, repr(value))
-            for key, value in local.items()
+            '{} = {}'.format(key, repr(value)) for key, value in local.items()
         )
         if ts is None:
             ts = event.ts
@@ -117,9 +101,7 @@ async def body(
         )
     else:
         await bot.say(
-            event.channel,
-            '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!',
-            thread_ts=ts,
+            event.channel, '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!', thread_ts=ts,
         )
 
 
@@ -135,11 +117,7 @@ async def calc_decimal(bot, event: Message, raw: str):
     """
 
     await body(
-        bot,
-        event,
-        raw,
-        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
-        True,
+        bot, event, raw, '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX), True,
     )
 
 
@@ -188,7 +166,6 @@ async def calc_num_on_change(bot, event: Message, raw: str):
 
 
 class Decimal(decimal.Decimal):
-
     def __neg__(self, context=None):
         return Decimal(super(Decimal, self).__neg__())
 
@@ -337,20 +314,9 @@ class Evaluator:
     def __init__(self, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
-            datetime: {
-                'date',
-                'datetime',
-                'time',
-                'timedelta',
-                'tzinfo',
-            },
-            functools: {
-                'reduce',
-            },
-            html: {
-                'escape',
-                'unescape',
-            },
+            datetime: {'date', 'datetime', 'time', 'timedelta', 'tzinfo'},
+            functools: {'reduce'},
+            html: {'escape', 'unescape'},
             itertools: {
                 'accumulate',
                 'chain',
@@ -491,16 +457,10 @@ class Evaluator:
                 'stdev',
                 'variance',
             },
-            json: {
-                'dumps',
-                'loads',
-            },
+            json: {'dumps', 'loads'},
         }
         self.allowed_class_properties = {
-            bytes: {
-                'fromhex',
-                'maketrans',
-            },
+            bytes: {'fromhex', 'maketrans'},
             datetime.date: {
                 'today',
                 'fromtimestamp',
@@ -513,8 +473,7 @@ class Evaluator:
             datetime.datetime: {
                 'today',
                 'now',
-                'utcnow'
-                'fromtimestamp',
+                'utcnow' 'fromtimestamp',
                 'utcfromtimestamp',
                 'fromordinal',
                 'combine',
@@ -524,32 +483,13 @@ class Evaluator:
                 'max',
                 'resolution',
             },
-            datetime.time: {
-                'min',
-                'max',
-                'resolution',
-                'fromisoformat',
-            },
-            datetime.timedelta: {
-                'min',
-                'max',
-                'resolution',
-            },
-            datetime.timezone: {
-                'utc',
-            },
-            dict: {
-                'fromkeys',
-            },
-            float: {
-                'fromhex',
-            },
-            int: {
-                'from_bytes',
-            },
-            str: {
-                'maketrans',
-            },
+            datetime.time: {'min', 'max', 'resolution', 'fromisoformat'},
+            datetime.timedelta: {'min', 'max', 'resolution'},
+            datetime.timezone: {'utc'},
+            dict: {'fromkeys'},
+            float: {'fromhex'},
+            int: {'from_bytes'},
+            str: {'maketrans'},
         }
         self.allowed_instance_properties = {
             bytes: {
@@ -608,8 +548,7 @@ class Evaluator:
             datetime.datetime: {
                 'year',
                 'month',
-                'day'
-                'hour',
+                'day' 'hour',
                 'minute',
                 'second',
                 'microsecond',
@@ -647,21 +586,9 @@ class Evaluator:
                 'dst',
                 'tzname',
             },
-            datetime.timedelta: {
-                'total_seconds',
-            },
-            datetime.timezone: {
-                'utcoffset',
-                'tzname',
-                'dst',
-                'fromutc',
-            },
-            datetime.tzinfo: {
-                'utcoffset',
-                'dst',
-                'tzname',
-                'fromutc',
-            },
+            datetime.timedelta: {'total_seconds'},
+            datetime.timezone: {'utcoffset', 'tzname', 'dst', 'fromutc'},
+            datetime.tzinfo: {'utcoffset', 'dst', 'tzname', 'fromutc'},
             dict: {
                 'copy',
                 'get',
@@ -673,15 +600,8 @@ class Evaluator:
                 'update',
                 'values',
             },
-            float: {
-                'as_integer_ratio',
-                'is_integer',
-                'hex',
-            },
-            int: {
-                'bit_length',
-                'to_bytes',
-            },
+            float: {'as_integer_ratio', 'is_integer', 'hex'},
+            int: {'bit_length', 'to_bytes'},
             list: {
                 'index',
                 'count',
@@ -695,11 +615,7 @@ class Evaluator:
                 'reverse',
                 'sort',
             },
-            range: {
-                'start',
-                'stop',
-                'step',
-            },
+            range: {'start', 'stop', 'step'},
             str: {
                 'capitalize',
                 'casefold',
@@ -895,9 +811,7 @@ class Evaluator:
             return None
 
         return getattr(
-            self,
-            f'visit_{node.__class__.__name__.lower()}',
-            self.no_impl,
+            self, f'visit_{node.__class__.__name__.lower()}', self.no_impl,
         )(node)
 
     def assign(self, node, val):
@@ -913,9 +827,7 @@ class Evaluator:
                     )
                 )
             for telem, tval in itertools.zip_longest(
-                node.elts,
-                val,
-                fillvalue=PLACEHOLDER,
+                node.elts, val, fillvalue=PLACEHOLDER,
             ):
                 if telem == PLACEHOLDER:
                     raise ValueError('not enough values to unpack')
@@ -996,17 +908,13 @@ class Evaluator:
         if target_cls == _ast.Name:
             target_id = target.id  # type: ignore
             self.symbol_table[target_id] = BINOP_TABLE[op_cls](
-                self.symbol_table[target_id],
-                value,
+                self.symbol_table[target_id], value,
             )
         elif target_cls == _ast.Subscript:
             sym = self._run(target.value)  # type: ignore
             xslice = self._run(target.slice)  # type: ignore
             if isinstance(target.slice, _ast.Index):  # type: ignore
-                sym[xslice] = BINOP_TABLE[op_cls](
-                    sym[xslice],
-                    value,
-                )
+                sym[xslice] = BINOP_TABLE[op_cls](sym[xslice], value,)
             else:
                 raise BadSyntax('This assign method is not allowed')
         else:
@@ -1171,8 +1079,9 @@ class Evaluator:
         return ''.join(self._run(x) for x in node.values)
 
     def visit_lambda(self, node: _ast.Lambda):
-        raise BadSyntax('Defining new function via lambda'
-                        ' syntax is not allowed')
+        raise BadSyntax(
+            'Defining new function via lambda' ' syntax is not allowed'
+        )
 
     def visit_list(self, node: _ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]
@@ -1190,8 +1099,7 @@ class Evaluator:
                     if len(node.generators) > 1:
                         r = self.visit_listcomp(
                             _ast.ListComp(
-                                elt=node.elt,
-                                generators=node.generators[1:],
+                                elt=node.elt, generators=node.generators[1:],
                             )
                         )
                         result += r
@@ -1246,8 +1154,7 @@ class Evaluator:
                     if len(node.generators) > 1:
                         r = self.visit_setcomp(
                             _ast.SetComp(
-                                elt=node.elt,
-                                generators=node.generators[1:],
+                                elt=node.elt, generators=node.generators[1:],
                             )
                         )
                         result |= r
@@ -1259,9 +1166,7 @@ class Evaluator:
 
     def visit_slice(self, node: _ast.Slice):  # lower, upper, step
         return slice(
-            self._run(node.lower),
-            self._run(node.upper),
-            self._run(node.step),
+            self._run(node.lower), self._run(node.upper), self._run(node.step),
         )
 
     def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
@@ -1304,11 +1209,7 @@ class Evaluator:
         raise BadSyntax('You can not use `yield from` syntax')
 
 
-def calculate(
-    expr: str,
-    *,
-    decimal_mode: bool = True
-):
+def calculate(expr: str, *, decimal_mode: bool = True):
     e = Evaluator(decimal_mode=decimal_mode)
     result = e.run(expr)
 

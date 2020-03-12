@@ -123,10 +123,7 @@ async def detect_language(headers: Dict[str, str], text: str) -> str:
 
 
 async def _translate(
-    headers: Dict[str, str],
-    source: str,
-    target: str,
-    text: str,
+    headers: Dict[str, str], source: str, target: str, text: str,
 ) -> str:
     url = 'https://openapi.naver.com/v1/papago/n2mt'
     data = {
@@ -160,10 +157,7 @@ async def translate(bot, event: Message, source, target, text: str):
     """
 
     if len(text) > 500:
-        await bot.say(
-            event.channel,
-            '500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!'
-        )
+        await bot.say(event.channel, '500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!')
         return
 
     headers = {
@@ -180,30 +174,18 @@ async def translate(bot, event: Message, source, target, text: str):
         target_code = 'en'
 
     if source_code == 'error':
-        await bot.say(
-            event.channel,
-            '원문 언어가 올바르지 않아요!'
-        )
+        await bot.say(event.channel, '원문 언어가 올바르지 않아요!')
     elif source_code == 'unk':
-        await bot.say(
-            event.channel,
-            '원문 언어를 추론하는데에 실패했어요!'
-        )
+        await bot.say(event.channel, '원문 언어를 추론하는데에 실패했어요!')
     elif target_code is None or target_code == 'error':
-        await bot.say(
-            event.channel,
-            '결과값 언어가 올바르지 않아요!'
-        )
+        await bot.say(event.channel, '결과값 언어가 올바르지 않아요!')
     elif source_code == target_code:
-        await bot.say(
-            event.channel,
-            '원문 언어와 결과값 언어가 같아요!'
-        )
+        await bot.say(event.channel, '원문 언어와 결과값 언어가 같아요!')
     elif (source_code, target_code) not in AVAILABLE_COMBINATIONS:
         await bot.say(
             event.channel,
             f'{LANGUAGE_NAME[source_code]}에서 {LANGUAGE_NAME[target_code]}로의'
-            f' 번역은 현재 지원되지 않아요!'
+            f' 번역은 현재 지원되지 않아요!',
         )
     else:
         result = await _translate(headers, source_code, target_code, text)
@@ -211,5 +193,5 @@ async def translate(bot, event: Message, source, target, text: str):
         await bot.say(
             event.channel,
             f'{LANGUAGE_NAME[source_code]} 원문: {text}\n'
-            f'{LANGUAGE_NAME[target_code]} 번역: {result}'
+            f'{LANGUAGE_NAME[target_code]} 번역: {result}',
         )

@@ -11,8 +11,7 @@ from ...event import Message
 from ...utils import json
 
 QUERY_RE = re.compile(
-    r'^(\d+(?:\.\d+)?)\s*(\S+)(?:\s+(?:to|->|=)\s+(\S+))?$',
-    re.IGNORECASE
+    r'^(\d+(?:\.\d+)?)\s*(\S+)(?:\s+(?:to|->|=)\s+(\S+))?$', re.IGNORECASE
 )
 SHORTCUT_TABLE: Dict[str, str] = {
     '$': 'USD',
@@ -82,10 +81,7 @@ async def exchange(bot, event: Message, query: str):
             error = '지원되는 통화기호가 아니에요!'
 
         if error:
-            await bot.say(
-                event.channel,
-                error
-            )
+            await bot.say(event.channel, error)
             return
 
         if data:
@@ -96,15 +92,9 @@ async def exchange(bot, event: Message, query: str):
 
             await bot.say(
                 event.channel,
-                f'{quantity} {base} == {result:.2f} {to} ({date})'
+                f'{quantity} {base} == {result:.2f} {to} ({date})',
             )
         else:
-            await bot.say(
-                event.channel,
-                '알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!'
-            )
+            await bot.say(event.channel, '알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!')
     else:
-        await bot.say(
-            event.channel,
-            '주문을 이해하는데에 실패했어요!'
-        )
+        await bot.say(event.channel, '주문을 이해하는데에 실패했어요!')

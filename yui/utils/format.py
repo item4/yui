@@ -7,10 +7,7 @@ from ..types.user import User
 def escape(text: str) -> str:
     """Make escaped text."""
 
-    return text\
-        .replace('&', '&amp;')\
-        .replace('<', '&lt;')\
-        .replace('>', '&gt;')
+    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
 def bold(text: str) -> str:

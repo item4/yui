@@ -28,11 +28,19 @@ def test_parse_option_and_arguments():
     @option('--default-option', default='!!!')
     @option('--transform', type_=int, transform_func=value_range(1, 10))
     @option('--transform-non-type', transform_func=str_to_date())
-    @option('--transform-container', type_=int,
-            transform_func=value_range(1, 10),
-            container_cls=set, nargs=3)
-    @option('--transform-two', transform_func=str_to_date(),
-            container_cls=list, nargs=2)
+    @option(
+        '--transform-container',
+        type_=int,
+        transform_func=value_range(1, 10),
+        container_cls=set,
+        nargs=3,
+    )
+    @option(
+        '--transform-two',
+        transform_func=str_to_date(),
+        container_cls=list,
+        nargs=2,
+    )
     async def test_option(
         required_option: int,
         dest_changed_option: int,
@@ -86,58 +94,61 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ('--required-option: incorrect option value count.'
-                           ' expected 1, 0 given.')
-
-    chunks = shlex.split(
-        '--required-option 1111 '
-        '--container 55.55 '
+    assert e.value.msg == (
+        '--required-option: incorrect option value count.'
+        ' expected 1, 0 given.'
     )
+
+    chunks = shlex.split('--required-option 1111 ' '--container 55.55 ')
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ("--container: incorrect option value count."
-                           " expected 2, 1 given.")
+    assert e.value.msg == (
+        '--container: incorrect option value count.' ' expected 2, 1 given.'
+    )
+
+    chunks = shlex.split('--required-option 1111 ' '--container a b ')
+
+    with pytest.raises(SyntaxError) as e:
+        parse_option_and_arguments(app.handler, chunks)
+    assert e.value.msg == (
+        '--container: invalid type of option value'
+        '(Can not find matching caster)'
+    )
 
     chunks = shlex.split(
-        '--required-option 1111 '
-        '--container a b '
+        '--required-option 1111 ' '--transform-non-type 2017-10-99'
     )
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert e.value.msg == (
-        "--container: invalid type of option value"
-        "(Can not find matching caster)"
+        '--transform-non-type: fail to transform option '
+        'value (day is out of range for month)'
     )
 
     chunks = shlex.split(
-        '--required-option 1111 '
-        '--transform-non-type 2017-10-99'
+        '--required-option 1111 ' '--transform-two 2017-10-99 2017-10-00'
     )
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ("--transform-non-type: fail to transform option "
-                           "value (day is out of range for month)")
-
-    chunks = shlex.split(
-        '--required-option 1111 '
-        '--transform-two 2017-10-99 2017-10-00'
+    assert e.value.msg == (
+        '--transform-two: fail to transform option '
+        'value (day is out of range for month)'
     )
-
-    with pytest.raises(SyntaxError) as e:
-        parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ("--transform-two: fail to transform option "
-                           "value (day is out of range for month)")
 
     @box.command('test-argument1')
     @argument('non_type')
     @argument('transform_non_type', transform_func=str_to_date())
     @argument('container', nargs=3, container_cls=set, type_=float)
     @argument('container_with_typing', nargs=3)
-    @argument('container_with_transform', nargs=2, container_cls=list,
-              transform_func=str_to_date())
+    @argument(
+        'container_with_transform',
+        nargs=2,
+        container_cls=list,
+        transform_func=str_to_date(),
+    )
     async def test_argument1(
         non_type,
         transform_non_type: datetime.date,
@@ -149,11 +160,7 @@ def test_parse_option_and_arguments():
     app: App = box.apps.pop()
 
     chunks = shlex.split(
-        'hello '
-        '2017-10-07 '
-        '3.3 1.1 2.2 '
-        '1 2 3 '
-        '2017-10-07 2017-10-24 '
+        'hello ' '2017-10-07 ' '3.3 1.1 2.2 ' '1 2 3 ' '2017-10-07 2017-10-24 '
     )
 
     kw, remain_chunks = parse_option_and_arguments(app.handler, chunks)
@@ -178,8 +185,9 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ('args: incorrect argument value count.'
-                           ' expected >0, 0 given.')
+    assert e.value.msg == (
+        'args: incorrect argument value count.' ' expected >0, 0 given.'
+    )
 
     @box.command('test-argument3')
     @argument('args', nargs=2)
@@ -193,8 +201,9 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ('args: incorrect argument value count.'
-                           ' expected 2, 1 given.')
+    assert e.value.msg == (
+        'args: incorrect argument value count.' ' expected 2, 1 given.'
+    )
 
     chunks = shlex.split('1 2 hell o world')
 
@@ -215,7 +224,8 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert e.value.msg == (
-        "args: invalid type of argument value(Can not find matching caster)")
+        'args: invalid type of argument value(Can not find matching caster)'
+    )
 
     @box.command('test-argument5')
     @argument('args', transform_func=str_to_date())
@@ -228,8 +238,10 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ('args: fail to transform argument value '
-                           '(day is out of range for month)')
+    assert e.value.msg == (
+        'args: fail to transform argument value '
+        '(day is out of range for month)'
+    )
 
     @box.command('test-argument6')
     @argument('args', nargs=2, transform_func=str_to_date())
@@ -242,5 +254,7 @@ def test_parse_option_and_arguments():
 
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
-    assert e.value.msg == ('args: fail to transform argument value '
-                           '(day is out of range for month)')
+    assert e.value.msg == (
+        'args: fail to transform argument value '
+        '(day is out of range for month)'
+    )

@@ -15,7 +15,7 @@ async def welcome_9xd(bot, event: TeamJoin):
         f'제 도움이 필요하면 언제든지 `{bot.config.PREFIX}도움`을 입력해서 '
         f'도움말을 확인해주세요!\n'
         f'9XD Slack에는 여러가지 채널들이 있으니 제가 남기는 thread의 설명을 읽어주세요!\n'
-        f'그럼 즐거운 Slack 이용이 되셨으면 좋겠습니다! 잘 부탁드려요!'
+        f'그럼 즐거운 Slack 이용이 되셨으면 좋겠습니다! 잘 부탁드려요!',
     )
     if chat.body['ok']:
         await bot.say(

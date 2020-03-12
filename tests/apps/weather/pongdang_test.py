@@ -7,8 +7,7 @@ from yui.apps.weather.pongdang import pongdang
 from ...util import FakeBot
 
 RESPONSE_PATTERN = re.compile(
-    r'\d{4}년 \d{2}월 \d{2}일 \d{2}시 \d{2}분'
-    r' 기준 한강 수온은 \d+(?:\.\d+)?°C에요!'
+    r'\d{4}년 \d{2}월 \d{2}일 \d{2}시 \d{2}분' r' 기준 한강 수온은 \d+(?:\.\d+)?°C에요!'
 )
 
 

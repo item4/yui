@@ -16,7 +16,10 @@ async def test_update_command(fx_config):
 
     event = bot.create_message('C1', 'U1')
 
-    await update(bot, event, """
+    await update(
+        bot,
+        event,
+        """
 TITLE=패치
 FLAG=PATCH
 LINK=<https://item4.github.io>
@@ -49,7 +52,8 @@ PRETEXT=유이 업데이트 명령 테스트
 본문만 있음
 ---
 TITLE=타이틀만 있음
-""")
+""",
+    )
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
@@ -86,14 +90,8 @@ TITLE=타이틀만 있음
             color='123456',
             text='임의의 색상 지정',
         ),
-        dict(
-            fallback='본문만 있음',
-            text='본문만 있음',
-        ),
-        dict(
-            fallback='타이틀만 있음:',
-            title='타이틀만 있음',
-        ),
+        dict(fallback='본문만 있음', text='본문만 있음',),
+        dict(fallback='타이틀만 있음:', title='타이틀만 있음',),
     ]
 
     event = bot.create_message('C1', 'U2')

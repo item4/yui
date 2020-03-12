@@ -96,11 +96,13 @@ def test_asyncfor():
     e.symbol_table['r'] = 0
     err = 'You can not use `async for` loop syntax'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 async for x in [1, 2, 3, 4]:
     r += x
 
-''')
+'''
+        )
     assert e.symbol_table['r'] == 0
 
 
@@ -108,11 +110,13 @@ def test_asyncfunctiondef():
     e = Evaluator()
     err = 'Defining new coroutine via def syntax is not allowed'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 async def abc():
     pass
 
-''')
+'''
+        )
     assert 'abc' not in e.symbol_table
 
 
@@ -121,11 +125,13 @@ def test_asyncwith():
     e.symbol_table['r'] = 0
     err = 'You can not use `async with` syntax'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 async with x():
     r += 100
 
-''')
+'''
+        )
     assert e.symbol_table['r'] == 0
 
 
@@ -141,17 +147,17 @@ def test_attribute():
 
     assert 'y' not in e.symbol_table
 
-    err = "You can not access `asdf` attribute"
+    err = 'You can not access `asdf` attribute'
     with pytest.raises(BadSyntax, match=err):
         e.run('z = x.asdf')
 
     e.symbol_table['math'] = math
-    err = "You can not access `__module__` attribute"
+    err = 'You can not access `__module__` attribute'
     with pytest.raises(BadSyntax, match=err):
         e.run('math.__module__')
 
     e.symbol_table['datetime'] = datetime
-    err = "You can not access `test_test` attribute"
+    err = 'You can not access `test_test` attribute'
     with pytest.raises(BadSyntax, match=err):
         e.run('datetime.test_test')
 
@@ -239,11 +245,13 @@ def test_classdef():
     e = Evaluator()
     err = 'Defining new class via def syntax is not allowed'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 class ABCD:
     pass
 
-''')
+'''
+        )
     assert 'ABCD' not in e.symbol_table
 
 
@@ -352,11 +360,13 @@ def test_functiondef():
     e = Evaluator()
     err = 'Defining new function via def syntax is not allowed'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 def abc():
     pass
 
-''')
+'''
+        )
     assert 'abc' not in e.symbol_table
 
 
@@ -370,7 +380,8 @@ def test_for():
     else:
         total = total + 10000
     e = Evaluator()
-    e.run('''
+    e.run(
+        '''
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total = total + x
@@ -379,7 +390,8 @@ for x in [1, 2, 3, 4, 5, 6]:
     total = total * 2
 else:
     total = total + 10000
-''')
+'''
+    )
     assert e.symbol_table['total'] == total
 
     total2 = 0
@@ -391,7 +403,8 @@ else:
     else:
         total2 = total2 + 10000
 
-    e.run('''
+    e.run(
+        '''
 total2 = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 + x
@@ -400,7 +413,8 @@ for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 * 2
 else:
     total2 = total2 + 10000
-''')
+'''
+    )
     assert e.symbol_table['total2'] == total2
 
 
@@ -430,15 +444,18 @@ def test_global():
 def test_if():
     e = Evaluator()
     e.symbol_table['a'] = 1
-    e.run('''
+    e.run(
+        '''
 if a == 1:
     a = 2
     b = 3
-''')
+'''
+    )
     assert e.symbol_table['a'] == 2
     assert e.symbol_table['b'] == 3
 
-    e.run('''
+    e.run(
+        '''
 if a == 1:
     a = 2
     b = 3
@@ -447,13 +464,15 @@ else:
     a = 3
     b = 4
     c = 5
-''')
+'''
+    )
     assert e.symbol_table['a'] == 3
     assert e.symbol_table['b'] == 4
     assert e.symbol_table['c'] == 5
     assert 'z' not in e.symbol_table
 
-    e.run('''
+    e.run(
+        '''
 if a == 1:
     a = 2
     b = 3
@@ -467,7 +486,8 @@ else:
     b = 4
     c = 5
     y = 7
-''')
+'''
+    )
     assert e.symbol_table['a'] == 3
     assert e.symbol_table['b'] == 4
     assert e.symbol_table['c'] == 5
@@ -535,7 +555,7 @@ def test_listcomp():
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
     assert e.run('[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]') == (
-        [y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]
+        [y ** 2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
@@ -604,7 +624,7 @@ def test_setcomp():
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
     assert e.run('{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}') == (
-        {y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}
+        {y ** 2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
@@ -649,12 +669,14 @@ def test_try():
     e = Evaluator()
     err = 'You can not use `try` syntax'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 try:
     x = 1
 except:
     pass
-''')
+'''
+        )
     assert 'x' not in e.symbol_table
 
 
@@ -684,7 +706,8 @@ def test_while():
     else:
         total = total + 10000
     e = Evaluator()
-    e.run('''
+    e.run(
+        '''
 total = 0
 i = 1
 while total > 100:
@@ -694,7 +717,8 @@ while total > 100:
         i += 1
 else:
     total = total + 10000
-''')
+'''
+    )
     assert e.symbol_table['total'] == total
 
     r = 0
@@ -703,13 +727,15 @@ else:
     else:
         r += 10
 
-    e.run('''
+    e.run(
+        '''
 r = 0
 while True:
     break
 else:
     r += 10
-''')
+'''
+    )
     assert e.symbol_table['r'] == 0
 
 
@@ -717,10 +743,12 @@ def test_with():
     e = Evaluator()
     err = 'You can not use `with` syntax'
     with pytest.raises(BadSyntax, match=err):
-        e.run('''
+        e.run(
+            '''
 with some:
     x = 1
-''')
+'''
+        )
     assert 'x' not in e.symbol_table
 
 
@@ -741,17 +769,19 @@ def test_yield_from():
 
 
 @pytest.mark.parametrize(
-    ('expr, expected_decimal_result, expected_num_result,'
-     'expected_decimal_local, expected_num_local'),
+    (
+        'expr, expected_decimal_result, expected_num_result,'
+        'expected_decimal_local, expected_num_local'
+    ),
     [
         ('1', D('1'), 1, {}, {}),
         ('1+2', D('3'), 3, {}, {}),
         (
             '0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1',
             D('1'),
-            0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1+0.1,
+            0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1,
             {},
-            {}
+            {},
         ),
         ('1-2', D('-1'), -1, {}, {}),
         ('4*5', D('20'), 20, {}, {}),
@@ -770,7 +800,7 @@ def test_yield_from():
             [D('0'), D('10'), D('20')],
             [0, 10, 20],
             {},
-            {}
+            {},
         ),
         ('(1,2,3)', (D('1'), D('2'), D('3')), (1, 2, 3), {}, {}),
         ('{3,2,10}', {D('2'), D('3'), D('10')}, {2, 3, 10}, {}, {}),
@@ -781,7 +811,7 @@ def test_yield_from():
             {'k1': D('0'), 'k2': D('1'), 'k3': D('2')},
             {'k1': 0, 'k2': 1, 'k3': 2},
             {},
-            {}
+            {},
         ),
         ('3 in [1,2,3]', True, True, {}, {}),
         ('[1,2,3,12,3].count(3)', 2, 2, {}, {}),
@@ -794,23 +824,23 @@ def test_yield_from():
             D('2000'),
             2000,
             {'money': D('1000')},
-            {'money': 1000}
+            {'money': 1000},
         ),
         (
             'money = 1000; f"{money}원"',
             '1000원',
             '1000원',
             {'money': D('1000')},
-            {'money': 1000}
+            {'money': 1000},
         ),
         (
             'a = 11;\nif a > 10:\n    a += 100\na',
             D('111'),
             111,
             {'a': D(111)},
-            {'a': 111}
+            {'a': 111},
         ),
-    ]
+    ],
 )
 def test_calculate_fine(
     expr: str,
@@ -820,8 +850,7 @@ def test_calculate_fine(
     expected_num_local: dict,
 ):
 
-    decimal_result, decimal_local = calculate(
-        expr, decimal_mode=True)
+    decimal_result, decimal_local = calculate(expr, decimal_mode=True)
 
     num_result, num_local = calculate(expr, decimal_mode=False)
 

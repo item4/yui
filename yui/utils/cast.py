@@ -18,7 +18,6 @@ class CastError(Exception):
 
 
 class BaseCaster:
-
     def check(self, t, value):
         raise NotImplementedError
 
@@ -27,7 +26,6 @@ class BaseCaster:
 
 
 class BoolCaster(BaseCaster):
-
     def check(self, t, value):
         return t == bool
 
@@ -36,7 +34,6 @@ class BoolCaster(BaseCaster):
 
 
 class KnownTypesCaster(BaseCaster):
-
     def check(self, t, value):
         if t in KNOWN_TYPES and value is not None:
             try:
@@ -51,7 +48,6 @@ class KnownTypesCaster(BaseCaster):
 
 
 class TypeVarCaster(BaseCaster):
-
     def check(self, t, value):
         return isinstance(t, TypeVar)
 
@@ -69,7 +65,6 @@ class TypeVarCaster(BaseCaster):
 
 
 class NewTypeCaster(BaseCaster):
-
     def check(self, t, value):
         return hasattr(t, '__supertype__')
 
@@ -78,7 +73,6 @@ class NewTypeCaster(BaseCaster):
 
 
 class AnyCaster(BaseCaster):
-
     def check(self, t, value):
         return t == Any
 
@@ -87,7 +81,6 @@ class AnyCaster(BaseCaster):
 
 
 class UnionCaster(BaseCaster):
-
     def check(self, t, value):
         return getattr(t, '__origin__', None) == Union
 
@@ -102,7 +95,6 @@ class UnionCaster(BaseCaster):
 
 
 class TupleCaster(BaseCaster):
-
     def check(self, t, value):
         return getattr(t, '__origin__', None) == tuple
 
@@ -116,7 +108,6 @@ class TupleCaster(BaseCaster):
 
 
 class SetCaster(BaseCaster):
-
     def check(self, t, value):
         return getattr(t, '__origin__', None) == set
 
@@ -128,7 +119,6 @@ class SetCaster(BaseCaster):
 
 
 class ListCaster(BaseCaster):
-
     def check(self, t, value):
         return getattr(t, '__origin__', None) == list
 
@@ -140,17 +130,15 @@ class ListCaster(BaseCaster):
 
 
 class DictCaster(BaseCaster):
-
     def check(self, t, value):
         return getattr(t, '__origin__', None) == dict
 
     def cast(self, caster_box, t, value):
         if t.__args__:
             return {
-                caster_box.cast(
-                    t.__args__[0],
-                    k,
-                ): caster_box.cast(t.__args__[1], v)
+                caster_box.cast(t.__args__[0], k,): caster_box.cast(
+                    t.__args__[1], v
+                )
                 for k, v in value.items()
             }
         else:
@@ -158,7 +146,6 @@ class DictCaster(BaseCaster):
 
 
 class NoHandleCaster(BaseCaster):
-
     def check(self, t, value):
         try:
             return isinstance(value, t)
@@ -170,7 +157,6 @@ class NoHandleCaster(BaseCaster):
 
 
 class NoneTypeCaster(BaseCaster):
-
     def check(self, t, value):
         return t == NoneType  # type: ignore
 
@@ -179,7 +165,6 @@ class NoneTypeCaster(BaseCaster):
 
 
 class AttrCaster(BaseCaster):
-
     def check(self, t, value):
         return hasattr(t, '__attrs_attrs__')
 
@@ -188,7 +173,6 @@ class AttrCaster(BaseCaster):
 
 
 class CasterBox:
-
     def __init__(self, caster_box: List[BaseCaster]) -> None:
         self.caster_box = caster_box
 
@@ -196,10 +180,7 @@ class CasterBox:
         return self.cast(t, value)
 
     def sort(self, types, value):
-        return [
-            t for t in types for c in self.caster_box
-            if c.check(t, value)
-        ]
+        return [t for t in types for c in self.caster_box if c.check(t, value)]
 
     def cast(self, t, value):
         for caster_box in self.caster_box:
@@ -208,17 +189,19 @@ class CasterBox:
         raise CastError('Can not find matching caster')
 
 
-cast = CasterBox([
-    NoHandleCaster(),
-    BoolCaster(),
-    KnownTypesCaster(),
-    AnyCaster(),
-    TypeVarCaster(),
-    NewTypeCaster(),
-    UnionCaster(),
-    TupleCaster(),
-    SetCaster(),
-    ListCaster(),
-    DictCaster(),
-    AttrCaster(),
-])
+cast = CasterBox(
+    [
+        NoHandleCaster(),
+        BoolCaster(),
+        KnownTypesCaster(),
+        AnyCaster(),
+        TypeVarCaster(),
+        NewTypeCaster(),
+        UnionCaster(),
+        TupleCaster(),
+        SetCaster(),
+        ListCaster(),
+        DictCaster(),
+        AttrCaster(),
+    ]
+)

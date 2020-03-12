@@ -32,16 +32,12 @@ class Call:
 
 
 class CacheMock(Cache):
-
     def __init__(self, mc, prefix) -> None:
         super(CacheMock, self).__init__(mc, prefix)
         self.set_keys = []
 
     async def set(
-        self,
-        key: Union[str, bytes],
-        value: DATA_TYPE,
-        exptime: int = 0,
+        self, key: Union[str, bytes], value: DATA_TYPE, exptime: int = 0,
     ) -> bool:
         self.set_keys.append(key)
         return await super(CacheMock, self).set(key, value, exptime)
@@ -66,8 +62,7 @@ class FakeBot(Bot):
         self.ims: List[DirectMessageChannel] = []
         self.groups: List[PrivateChannel] = []
         self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'],
-            port=config.CACHE['PORT'],
+            host=config.CACHE['HOST'], port=config.CACHE['PORT'],
         )
         self.cache: CacheMock = CacheMock(self.mc, 'YUI_TEST_')
         self.users: List[User] = [User(id='U0', team_id='T0', name='system')]
@@ -100,36 +95,23 @@ class FakeBot(Bot):
         def decorator(func):
             self.responses[method] = func
             return func
+
         return decorator
 
     def add_channel(
-        self,
-        id: str,
-        name: str,
-        creator: str = 'U0',
-        last_read: int = 0,
+        self, id: str, name: str, creator: str = 'U0', last_read: int = 0,
     ):
         channel = PublicChannel(
-            id=id,
-            name=name,
-            creator=creator,
-            last_read=last_read,
+            id=id, name=name, creator=creator, last_read=last_read,
         )
         self.channels.append(channel)
         return channel
 
     def add_private_channel(
-        self,
-        id: str,
-        name: str,
-        creator: str = 'U0',
-        last_read: int = 0,
+        self, id: str, name: str, creator: str = 'U0', last_read: int = 0,
     ):
         channel = PrivateChannel(
-            id=id,
-            name=name,
-            creator=creator,
-            last_read=last_read,
+            id=id, name=name, creator=creator, last_read=last_read,
         )
         self.groups.append(channel)
         return channel
@@ -151,10 +133,7 @@ class FakeBot(Bot):
     def create_message(
         self,
         channel: Union[
-            PublicChannel,
-            PrivateChannel,
-            DirectMessageChannel,
-            str,
+            PublicChannel, PrivateChannel, DirectMessageChannel, str,
         ],
         user: Union[User, str],
         ts: str = '',

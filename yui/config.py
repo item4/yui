@@ -25,9 +25,7 @@ DEFAULT = {
         'version': 1,
         'disable_existing_loggers': False,
         'formatters': {
-            'brief': {
-                'format': '%(message)s',
-            },
+            'brief': {'format': '%(message)s'},
             'default': {
                 'format': '%(asctime)s %(levelname)s %(name)s %(message)s',
                 'datefmt': '%Y-%m-%d %H:%M:%S',
@@ -58,11 +56,7 @@ DEFAULT = {
             },
         },
     },
-    'CACHE': {
-        'HOST': 'localhost',
-        'PORT': 11211,
-        'PREFIX': 'YUI_',
-    }
+    'CACHE': {'HOST': 'localhost', 'PORT': 11211, 'PREFIX': 'YUI_'},
 }
 
 
@@ -108,9 +102,7 @@ class Config:
                 if config != casted:
                     raise CastError
             except CastError:
-                raise ConfigurationError(
-                    f'Wrong config value type: {key}'
-                )
+                raise ConfigurationError(f'Wrong config value type: {key}')
 
         for key in single_channels:
             try:
@@ -167,9 +159,7 @@ class Config:
                 elif isinstance(value, list):
                     if all(isinstance(x, str) for x in value):
                         continue
-                raise ConfigurationError(
-                    f'User config has wrong type: {key}'
-                )
+                raise ConfigurationError(f'User config has wrong type: {key}')
         return True
 
 

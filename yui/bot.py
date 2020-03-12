@@ -75,11 +75,7 @@ class Bot:
     loop: asyncio.AbstractEventLoop
 
     def __init__(
-        self,
-        config: Config,
-        *,
-        orm_base=None,
-        using_box: Box = None,
+        self, config: Config, *, orm_base=None, using_box: Box = None,
     ) -> None:
         """Initialize"""
 
@@ -99,8 +95,7 @@ class Bot:
 
         logger.info('connect to memcache')
         self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'],
-            port=config.CACHE['PORT'],
+            host=config.CACHE['HOST'], port=config.CACHE['PORT'],
         )
         self.cache = Cache(self.mc, config.CACHE.get('PREFIX', 'YUI_'))
 
@@ -137,9 +132,7 @@ class Bot:
     def register_tasks(self):
         """Register cronjob to bot from box."""
 
-        logger = logging.getLogger(
-            f'{__name__}.Bot.register_tasks'
-        )
+        logger = logging.getLogger(f'{__name__}.Bot.register_tasks')
 
         def register(c: CronTask):
             logger.info(f'register {c}')
@@ -176,7 +169,7 @@ class Bot:
                             self.config.USERS['owner'],
                             '*Traceback*\n```\n{}\n```\n'.format(
                                 traceback.format_exc(),
-                            )
+                            ),
                         )
                     finally:
                         sess.close()
@@ -197,20 +190,14 @@ class Bot:
             self.loop = loop
             loop.run_until_complete(
                 asyncio.wait(
-                    (
-                        self.connect(),
-                        self.process(),
-                    ),
+                    (self.connect(), self.process(),),
                     return_when=asyncio.FIRST_EXCEPTION,
                 )
             )
             loop.close()
 
     async def run_in_other_process(
-        self,
-        f: Callable[..., R],
-        *args,
-        **kwargs,
+        self, f: Callable[..., R], *args, **kwargs,
     ) -> R:
         return await self.loop.run_in_executor(
             executor=self.process_pool_executor,
@@ -218,10 +205,7 @@ class Bot:
         )
 
     async def run_in_other_thread(
-        self,
-        f: Callable[..., R],
-        *args,
-        **kwargs,
+        self, f: Callable[..., R], *args, **kwargs,
     ) -> R:
         return await self.loop.run_in_executor(
             executor=self.thread_pool_executor,
@@ -269,9 +253,9 @@ class Bot:
                         headers=response.headers,
                     )
             except ClientConnectorError:
-                raise APICallError('fail to call {} with {}'.format(
-                    method, data
-                ))
+                raise APICallError(
+                    'fail to call {} with {}'.format(method, data)
+                )
 
     async def say(
         self,
@@ -279,16 +263,12 @@ class Bot:
         text: str,
         *,
         retry_until_send: bool = False,
-        **kwargs
+        **kwargs,
     ) -> APIResponse:
         """Shortcut for bot saying."""
 
         coro = self.api.chat.postMessage(
-            channel,
-            text,
-            as_user=True,
-            link_names=True,
-            **kwargs
+            channel, text, as_user=True, link_names=True, **kwargs
         )
         if retry_until_send:
             return await retry(coro)
@@ -311,16 +291,13 @@ class Bot:
                 return False
             except:  # noqa: E722
                 logger.error(
-                    f'Event: {event} / '
-                    f'Traceback: {traceback.format_exc()}'
+                    f'Event: {event} / ' f'Traceback: {traceback.format_exc()}'
                 )
                 await self.say(
                     self.config.USERS['owner'],
-                    ('*Event*\n```\n{}\n```\n'
-                     '*Traceback*\n```\n{}\n```\n').format(
-                        event,
-                        traceback.format_exc(),
-                    )
+                    (
+                        '*Event*\n```\n{}\n```\n' '*Traceback*\n```\n{}\n```\n'
+                    ).format(event, traceback.format_exc(),),
                 )
                 return False
 
@@ -336,10 +313,10 @@ class Bot:
 
     async def ping(self, ws: ClientWebSocketResponse):
         while not ws.closed:
-            await ws.send_json({
-                'id': datetime.now().toordinal(),
-                'type': 'ping',
-            }, dumps=json.dumps)  # type: ignore
+            await ws.send_json(
+                {'id': datetime.now().toordinal(), 'type': 'ping'},
+                dumps=json.dumps,
+            )  # type: ignore
             await asyncio.sleep(60)
 
     async def receive(self, ws: ClientWebSocketResponse):
@@ -365,16 +342,16 @@ class Bot:
 
             if msg.type == aiohttp.WSMsgType.TEXT:
                 try:
-                    event = create_event(
-                        msg.json(loads=json.loads)
-                    )
-                except:  # noqa: F722
+                    event = create_event(msg.json(loads=json.loads))
+                except:  # noqa:
                     logger.exception(msg.data)
                 else:
                     await self.queue.put(event)
-            elif msg.type in (aiohttp.WSMsgType.CLOSE,
-                              aiohttp.WSMsgType.CLOSED,
-                              aiohttp.WSMsgType.CLOSING):
+            elif msg.type in (
+                aiohttp.WSMsgType.CLOSE,
+                aiohttp.WSMsgType.CLOSED,
+                aiohttp.WSMsgType.CLOSING,
+            ):
                 logger.info('websocket closed')
                 break
             elif msg.type == aiohttp.WSMsgType.ERROR:
@@ -382,9 +359,7 @@ class Bot:
                 break
             else:
                 logger.error(
-                    'Type: %s / MSG: %s',
-                    msg.type,
-                    msg,
+                    'Type: %s / MSG: %s', msg.type, msg,
                 )
                 break
 
@@ -403,25 +378,22 @@ class Bot:
                 continue
 
             if not rtm.body['ok']:
-                await asyncio.sleep((sleep+1)*10)
+                await asyncio.sleep((sleep + 1) * 10)
                 sleep += 1
                 continue
             else:
                 sleep = 0
 
-            await self.queue.put(create_event({
-                'type': 'chatterbox_system_start',
-            }))
+            await self.queue.put(
+                create_event({'type': 'chatterbox_system_start'})
+            )
             while not self.is_ready:
                 await asyncio.sleep(0.01)
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
                         await asyncio.wait(
-                            (
-                                self.ping(ws),
-                                self.receive(ws),
-                            ),
+                            (self.ping(ws), self.receive(ws),),
                             return_when=asyncio.FIRST_COMPLETED,
                         )
 

@@ -9,6 +9,7 @@ def call_or_none(c):
         if value is None:
             return None
         return c(value)
+
     return converter
 
 

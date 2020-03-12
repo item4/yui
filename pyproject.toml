@@ -1,3 +1,9 @@
+[tool.black]
+line-length = 79
+target-version = ['py38']
+skip_string_normalization = true
+exclude = '/(\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|\.svn|_build|buck-out|build|dist|migrations|settings\.py)/'
+
 [tool.poetry]
 name = "yui"
 version = "0.0.0"
@@ -46,6 +52,7 @@ aioresponses = "^0.6.1"
 flake8 = "^3.7.9"
 flake8-import-order = "^0.18.1"
 freezegun = "^0.3.12"
+pre-commit = "^2.1.1"
 
 [tool.poetry.extras]
 travis-ci = ["codecov"]

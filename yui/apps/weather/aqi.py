@@ -53,17 +53,14 @@ class AQIRecord:
 
 
 async def get_geometric_info_by_address(
-    address: str,
-    api_key: str,
+    address: str, api_key: str,
 ) -> Tuple[str, float, float]:
-    url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
-        'region': 'kr',
-        'address': address,
-        'key': api_key,
-    })
-    async with aiohttp.ClientSession(headers={
-        'Accept-Language': 'ko-KR',
-    }) as session:
+    url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode(
+        {'region': 'kr', 'address': address, 'key': api_key}
+    )
+    async with aiohttp.ClientSession(
+        headers={'Accept-Language': 'ko-KR'}
+    ) as session:
         async with session.get(url) as res:
             data = await res.json(loads=json.loads)
 
@@ -114,26 +111,22 @@ async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
 
 def get_aqi_description(aqi: int) -> str:
     if aqi > 300:
-        return (
-            "위험(환자군 및 민감군에게 응급 조치가 발생되거나, "
-            "일반인에게 유해한 영향이 유발될 수 있는 수준)"
-        )
+        return '위험(환자군 및 민감군에게 응급 조치가 발생되거나, ' '일반인에게 유해한 영향이 유발될 수 있는 수준)'
     elif aqi > 200:
         return (
-            "매우 나쁨(환자군 및 민감군에게 급성 노출시 심각한 영향 유발, "
-            "일반인도 약한 영향이 유발될 수 있는 수준)"
+            '매우 나쁨(환자군 및 민감군에게 급성 노출시 심각한 영향 유발, ' '일반인도 약한 영향이 유발될 수 있는 수준)'
         )
     elif aqi > 150:
         return (
-            "나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발, "
-            "일반인도 건강상 불쾌감을 경험할 수 있는 수준)"
+            '나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발, '
+            '일반인도 건강상 불쾌감을 경험할 수 있는 수준)'
         )
     elif aqi > 100:
-        return "민감군 영향(환자군 및 민감군에게 유해한 영향이 유발될 수 있는 수준)"
+        return '민감군 영향(환자군 및 민감군에게 유해한 영향이 유발될 수 있는 수준)'
     elif aqi > 50:
-        return "보통(환자군에게 만성 노출시 경미한 영향이 유발될 수 있는 수준)"
+        return '보통(환자군에게 만성 노출시 경미한 영향이 유발될 수 있는 수준)'
     else:
-        return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
+        return '좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)'
 
 
 @box.command('aqi', ['공기', '먼지', '미세먼지'])
@@ -161,26 +154,19 @@ async def aqi(bot, event: Message, address: str):
     else:
         try:
             full_address, lat, lng = await get_geometric_info_by_address(
-                address,
-                bot.config.GOOGLE_API_KEY,
+                address, bot.config.GOOGLE_API_KEY,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_full_address',
-                full_address,
+                f'AQI_ADDRESS_{addr}_full_address', full_address,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lat',
-                lat,
+                f'AQI_ADDRESS_{addr}_lat', lat,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lng',
-                lng,
+                f'AQI_ADDRESS_{addr}_lng', lng,
             )
         except IndexError:
-            await bot.say(
-                event.channel,
-                '해당 주소는 찾을 수 없어요!'
-            )
+            await bot.say(event.channel, '해당 주소는 찾을 수 없어요!')
             return
 
     idx = await bot.cache.get(f'AQI_IDX_{lat}_{lng}')
@@ -189,19 +175,13 @@ async def aqi(bot, event: Message, address: str):
         await bot.cache.set(f'AQI_IDX_{lat}_{lng}', idx)
 
     if idx == 'wrong':
-        await bot.say(
-            event.channel,
-            '해당 지역의 AQI 정보를 받아올 수 없어요!'
-        )
+        await bot.say(event.channel, '해당 지역의 AQI 정보를 받아올 수 없어요!')
         return
 
     result = await get_aqi_result(idx)
 
     if result is None:
-        await bot.say(
-            event.channel,
-            '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
-        )
+        await bot.say(event.channel, '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!')
         return
 
     time = datetime.datetime.fromtimestamp(result.time)
@@ -220,7 +200,5 @@ async def aqi(bot, event: Message, address: str):
 
     text = text.strip()
     await bot.say(
-        event.channel,
-        text,
-        thread_ts=event.ts,
+        event.channel, text, thread_ts=event.ts,
     )

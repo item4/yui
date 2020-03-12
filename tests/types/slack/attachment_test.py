@@ -46,7 +46,7 @@ def test_attachment_class():
         thumb_url=thumb_url,
         footer=footer,
         footer_icon=footer_icon,
-        ts=ts
+        ts=ts,
     )
 
     assert attach.fallback == fallback

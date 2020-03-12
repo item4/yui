@@ -24,7 +24,8 @@ def shorten(input) -> str:
     decimal_string = str(Decimal(format(input, 'f'))) if input else '0'
     return (
         decimal_string.rstrip('0').rstrip('.')
-        if '.' in decimal_string else decimal_string
+        if '.' in decimal_string
+        else decimal_string
     )
 
 
@@ -34,13 +35,9 @@ def clothes_by_temperature(temperature: float) -> str:
     elif temperature <= 9:
         return '코트, 가죽재킷, 니트, 스카프, 두꺼운 바지'
     elif temperature <= 11:
-        return (
-            '재킷, 트랜치코트, 니트, 면바지, 청바지, 검은색 스타킹'
-        )
+        return '재킷, 트랜치코트, 니트, 면바지, 청바지, 검은색 스타킹'
     elif temperature <= 16:
-        return (
-            '얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹'
-        )
+        return '얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹'
     elif temperature <= 19:
         return '얇은 니트, 얇은 재킷, 가디건, 맨투맨, 면바지, 청바지'
     elif temperature <= 22:
@@ -55,10 +52,7 @@ def clothes_by_temperature(temperature: float) -> str:
 @option('--fuzzy', '-f', is_flag=True, default=False)
 @argument('keyword', nargs=-1, concat=True)
 async def aws(
-    bot,
-    event: Message,
-    fuzzy: bool,
-    keyword: str,
+    bot, event: Message, fuzzy: bool, keyword: str,
 ):
     """
     지역의 현재 기상상태를 조회합니다.
@@ -76,8 +70,7 @@ async def aws(
             fine = last_call + cooltime
             await bot.say(
                 event.channel,
-                '아직 쿨타임이에요! '
-                f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해주세요!"
+                '아직 쿨타임이에요! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해주세요!",
             )
             return
 
@@ -85,8 +78,7 @@ async def aws(
 
     if len(keyword) < 2:
         await bot.say(
-            event.channel,
-            '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!',
+            event.channel, '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!',
         )
         return
 
@@ -96,8 +88,7 @@ async def aws(
                 data = await resp.json(loads=json.loads)
     except EXCEPTIONS:
         await bot.say(
-            event.channel,
-            '날씨 API 접근 중 에러가 발생했어요!',
+            event.channel, '날씨 API 접근 중 에러가 발생했어요!',
         )
         return
 
@@ -116,9 +107,7 @@ async def aws(
             address_score = 50 if keyword in record['address'] else 0
             score = name_ratio + address_score
             if score >= 90:
-                records.append(
-                    (score, record)
-                )
+                records.append((score, record))
 
     if records:
         for score, record in sorted(records, key=lambda x: -x[0]):
@@ -204,6 +193,5 @@ async def aws(
                 aws.last_call[event.channel.id] = None
     else:
         await bot.say(
-            event.channel,
-            '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!',
+            event.channel, '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!',
         )

@@ -21,9 +21,6 @@ async def select(bot, event: Message, items: List[str], seed: int):
 
     random.seed(seed)
 
-    await bot.say(
-        event.channel,
-        f'선택결과: {random.choice(items)}'
-    )
+    await bot.say(event.channel, f'선택결과: {random.choice(items)}')
 
     random.seed(None)

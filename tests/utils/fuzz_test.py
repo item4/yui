@@ -14,22 +14,46 @@ def test_normalize_nfd():
     """Test Korean to NFD tool."""
 
     assert normalize_korean_nfc_to_nfd('123asdf가나다라밯맣희QWERTY') == ''.join(
-        chr(x) for x in
-        [
-            49, 50, 51,  # 123
-            97, 115, 100, 102,  # asdf
-            4352, 4449, 4354, 4449, 4355, 4449, 4357, 4449,  # 가나다라
-            4359, 4449, 4546, 4358, 4449, 4546, 4370, 4468,  # 밯맣희
-            81, 87, 69, 82, 84, 89,  # QWERTY
+        chr(x)
+        for x in [
+            49,
+            50,
+            51,  # 123
+            97,
+            115,
+            100,
+            102,  # asdf
+            4352,
+            4449,
+            4354,
+            4449,
+            4355,
+            4449,
+            4357,
+            4449,  # 가나다라
+            4359,
+            4449,
+            4546,
+            4358,
+            4449,
+            4546,
+            4370,
+            4468,  # 밯맣희
+            81,
+            87,
+            69,
+            82,
+            84,
+            89,  # QWERTY
         ]
     )
 
     assert normalize_korean_nfc_to_nfd('ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ') == (
-        ''.join(chr(x) for x in range(4352, 4370+1))
+        ''.join(chr(x) for x in range(4352, 4370 + 1))
     )
 
     assert normalize_korean_nfc_to_nfd('ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ') == (
-        ''.join(chr(x) for x in range(4449, 4469+1))
+        ''.join(chr(x) for x in range(4449, 4469 + 1))
     )
 
 

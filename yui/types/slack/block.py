@@ -28,8 +28,7 @@ def enforce_plain_text(instance, attribute, value):
 class PlainTextField(TextField):
 
     type: TextFieldType = attr.ib(
-        validator=[enforce_plain_text],
-        default=TextFieldType.plain_text,
+        validator=[enforce_plain_text], default=TextFieldType.plain_text,
     )
 
 

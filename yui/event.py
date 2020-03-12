@@ -466,8 +466,9 @@ class Message(Event):
     attachments: List[Dict[str, Any]] = Field()
     hidden: bool = BooleanField()
     message: MessageMessage = OptionalField(MessageMessage)(repr=True)
-    previous_message: MessagePreviousMessage = \
-        OptionalField(MessagePreviousMessage)(repr=True)
+    previous_message: MessagePreviousMessage = OptionalField(
+        MessagePreviousMessage
+    )(repr=True)
     subtype: Optional[str] = OptionalField(str)(repr=True)
 
 

@@ -107,10 +107,7 @@ class Chat(Endpoint):
             params['username'] = username
 
         return await self._call(
-            'postEphemeral',
-            params,
-            token=token,
-            json_mode=True,
+            'postEphemeral', params, token=token, json_mode=True,
         )
 
     async def postMessage(
@@ -190,8 +187,5 @@ class Chat(Endpoint):
             params['username'] = username
 
         return await self._call(
-            'postMessage',
-            params,
-            token=token,
-            json_mode=True,
+            'postMessage', params, token=token, json_mode=True,
         )

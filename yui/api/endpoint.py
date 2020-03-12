@@ -15,9 +15,8 @@ def prepare_for_json(obj):
         return {
             prepare_for_json(k): prepare_for_json(v)
             for k, v in obj.items()
-            if v is not None and (
-                (isinstance(v, list) and v) or not isinstance(v, list)
-            )
+            if v is not None
+            and ((isinstance(v, list) and v) or not isinstance(v, list))
         }
     elif isinstance(obj, str):
         return obj
@@ -48,8 +47,5 @@ class Endpoint:
             data = prepare_for_json(data)
 
         return await self.bot.call(
-            f'{self.name}.{method}',
-            data,
-            token=token,
-            json_mode=json_mode,
+            f'{self.name}.{method}', data, token=token, json_mode=json_mode,
         )

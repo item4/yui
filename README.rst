@@ -37,7 +37,7 @@ If you did not have Poetry, Install it by below command.
    # or see https://poetry.eustace.io/docs/#installation for details
 
 
-You can install yui by poetry.
+You can install yui by poetry without development requirements.
 
 .. code-block:: bash
 
@@ -347,13 +347,12 @@ You can see example files on ``example`` directory at this repo.
 Contribute to YUI
 -----------------
 
-YUI must keep PEP-8 and some rules.
+YUI has some coding convention or rules such as PEP-8
 So you must run ``poetry install`` first and install pre-commit hook by below commands.
 
 .. code-block:: bash
 
-   $ mkdir -p .git/hooks/
-   $ ln -s $(pwd)/hooks/pre-commit .git/hooks
+   $ pre-commit install
 
 
 License

@@ -29,257 +29,269 @@ def test_clothes_by_temperature():
 @pytest.mark.asyncio
 async def test_aws(response_mock):
     response_mock.get(  # 1
-        API_URL,
-        exception=client_exceptions.ClientPayloadError(),
+        API_URL, exception=client_exceptions.ClientPayloadError(),
     )
     response_mock.get(  # 2
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T00:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': '부천',
-                    'height': 29,
-                    'rain': {
-                        'is_raining': 'Clear',
-                        'rain15': 0.0,
-                        'rain60': 0.0,
-                        'rain3h': 0.0,
-                        'rain6h': 0.0,
-                        'rain12h': 0.0,
-                        'rainday': 0.0,
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T00:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': '부천',
+                        'height': 29,
+                        'rain': {
+                            'is_raining': 'Clear',
+                            'rain15': 0.0,
+                            'rain60': 0.0,
+                            'rain3h': 0.0,
+                            'rain6h': 0.0,
+                            'rain12h': 0.0,
+                            'rainday': 0.0,
+                        },
+                        'temperature': -9.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': None,
+                        'atmospheric': None,
+                        'address': '경기도 부천시 중동',
                     },
-                    'temperature': -9.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
-                    },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': None,
-                    'atmospheric': None,
-                    'address': '경기도 부천시 중동',
-                },
-            ]
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(  # 3
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T00:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': '부천',
-                    'height': 29,
-                    'rain': {
-                        'is_raining': 'Clear',
-                        'rain15': 0.0,
-                        'rain60': 0.0,
-                        'rain3h': 0.0,
-                        'rain6h': 0.0,
-                        'rain12h': 0.0,
-                        'rainday': 0.0,
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T00:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': '부천',
+                        'height': 29,
+                        'rain': {
+                            'is_raining': 'Clear',
+                            'rain15': 0.0,
+                            'rain60': 0.0,
+                            'rain3h': 0.0,
+                            'rain6h': 0.0,
+                            'rain12h': 0.0,
+                            'rainday': 0.0,
+                        },
+                        'temperature': -9.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': None,
+                        'atmospheric': None,
+                        'address': '경기도 부천시 중동',
                     },
-                    'temperature': -9.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
+                    {
+                        'id': 429,
+                        'name': '부천원미',
+                        'height': 16,
+                        'rain': {
+                            'is_raining': 'Unknown',
+                            'rain15': None,
+                            'rain60': None,
+                            'rain3h': None,
+                            'rain6h': None,
+                            'rain12h': None,
+                            'rainday': None,
+                        },
+                        'temperature': None,
+                        'wind1': {
+                            'direction_code': None,
+                            'direction_text': 'Unavailable',
+                            'velocity': None,
+                        },
+                        'wind10': {
+                            'direction_code': None,
+                            'direction_text': 'Unavailable',
+                            'velocity': None,
+                        },
+                        'humidity': None,
+                        'atmospheric': None,
+                        'address': '경기도 부천시 중동',
                     },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': None,
-                    'atmospheric': None,
-                    'address': '경기도 부천시 중동',
-                },
-                {
-                    'id': 429,
-                    'name': '부천원미',
-                    'height': 16,
-                    'rain': {
-                        'is_raining': 'Unknown',
-                        'rain15': None,
-                        'rain60': None,
-                        'rain3h': None,
-                        'rain6h': None,
-                        'rain12h': None,
-                        'rainday': None,
-                    },
-                    'temperature': None,
-                    'wind1': {
-                        'direction_code': None,
-                        'direction_text': 'Unavailable',
-                        'velocity': None,
-                    },
-                    'wind10': {
-                        'direction_code': None,
-                        'direction_text': 'Unavailable',
-                        'velocity': None,
-                    },
-                    'humidity': None,
-                    'atmospheric': None,
-                    'address': '경기도 부천시 중동',
-                },
-            ]
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(  # 4
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T13:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': '가상',
-                    'height': 100,
-                    'rain': {
-                        'is_raining': 'Rain',
-                        'rain15': 10.0,
-                        'rain60': 20.0,
-                        'rain3h': 40.0,
-                        'rain6h': 80.0,
-                        'rain12h': 160.0,
-                        'rainday': 320.0,
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T13:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': '가상',
+                        'height': 100,
+                        'rain': {
+                            'is_raining': 'Rain',
+                            'rain15': 10.0,
+                            'rain60': 20.0,
+                            'rain3h': 40.0,
+                            'rain6h': 80.0,
+                            'rain12h': 160.0,
+                            'rainday': 320.0,
+                        },
+                        'temperature': 15.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': 43,
+                        'atmospheric': 1035.1,
+                        'address': '가상시 가상구',
                     },
-                    'temperature': 15.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
-                    },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': 43,
-                    'atmospheric': 1035.1,
-                    'address': '가상시 가상구',
-                },
-            ]
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(  # 5
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T13:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': '가상',
-                    'height': 100,
-                    'rain': {
-                        'is_raining': 'Rain',
-                        'rain15': 10.0,
-                        'rain60': 20.0,
-                        'rain3h': 40.0,
-                        'rain6h': 80.0,
-                        'rain12h': 160.0,
-                        'rainday': 320.0,
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T13:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': '가상',
+                        'height': 100,
+                        'rain': {
+                            'is_raining': 'Rain',
+                            'rain15': 10.0,
+                            'rain60': 20.0,
+                            'rain3h': 40.0,
+                            'rain6h': 80.0,
+                            'rain12h': 160.0,
+                            'rainday': 320.0,
+                        },
+                        'temperature': -15.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': 43,
+                        'atmospheric': 1035.1,
+                        'address': '가상시 가상구',
                     },
-                    'temperature': -15.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
-                    },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': 43,
-                    'atmospheric': 1035.1,
-                    'address': '가상시 가상구',
-                },
-            ]
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(  # 6
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T13:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': '가상',
-                    'height': 100,
-                    'rain': {
-                        'is_raining': 'Clear',
-                        'rain15': 0.0,
-                        'rain60': 0.0,
-                        'rain3h': 0.0,
-                        'rain6h': 0.0,
-                        'rain12h': 0.0,
-                        'rainday': 0.0,
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T13:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': '가상',
+                        'height': 100,
+                        'rain': {
+                            'is_raining': 'Clear',
+                            'rain15': 0.0,
+                            'rain60': 0.0,
+                            'rain3h': 0.0,
+                            'rain6h': 0.0,
+                            'rain12h': 0.0,
+                            'rainday': 0.0,
+                        },
+                        'temperature': -15.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': 43,
+                        'atmospheric': 1035.1,
+                        'address': '가상시 가상구',
                     },
-                    'temperature': -15.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
-                    },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': 43,
-                    'atmospheric': 1035.1,
-                    'address': '가상시 가상구',
-                },
-            ]
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(  # 7
         API_URL,
-        body=json.dumps({
-            'observed_at': '2019-12-31T13:00:00+0900',
-            'records': [
-                {
-                    'id': 433,
-                    'name': f'가상{i}',
-                    'height': 100,
-                    'rain': {
-                        'is_raining': 'Clear',
-                        'rain15': 0.0,
-                        'rain60': 0.0,
-                        'rain3h': 0.0,
-                        'rain6h': 0.0,
-                        'rain12h': 0.0,
-                        'rainday': 0.0,
-                    },
-                    'temperature': -15.0,
-                    'wind1': {
-                        'direction_code': 320.5,
-                        'direction_text': 'NW',
-                        'velocity': 1.5,
-                    },
-                    'wind10': {
-                        'direction_code': 298.0,
-                        'direction_text': 'WNW',
-                        'velocity': 1.3,
-                    },
-                    'humidity': 43,
-                    'atmospheric': 1035.1,
-                    'address': '가상시 가상구',
-                } for i in range(10)
-            ]
-        }),
+        body=json.dumps(
+            {
+                'observed_at': '2019-12-31T13:00:00+0900',
+                'records': [
+                    {
+                        'id': 433,
+                        'name': f'가상{i}',
+                        'height': 100,
+                        'rain': {
+                            'is_raining': 'Clear',
+                            'rain15': 0.0,
+                            'rain60': 0.0,
+                            'rain3h': 0.0,
+                            'rain6h': 0.0,
+                            'rain12h': 0.0,
+                            'rainday': 0.0,
+                        },
+                        'temperature': -15.0,
+                        'wind1': {
+                            'direction_code': 320.5,
+                            'direction_text': 'NW',
+                            'velocity': 1.5,
+                        },
+                        'wind10': {
+                            'direction_code': 298.0,
+                            'direction_text': 'WNW',
+                            'velocity': 1.3,
+                        },
+                        'humidity': 43,
+                        'atmospheric': 1035.1,
+                        'address': '가상시 가상구',
+                    }
+                    for i in range(10)
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     bot = FakeBot()
@@ -294,9 +306,7 @@ async def test_aws(response_mock):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!'
-    )
+    assert said.data['text'] == ('검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!')
     assert 'thread_ts' not in said.data
 
     # 1 API error
@@ -342,8 +352,7 @@ async def test_aws(response_mock):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '[2019년 12월 31일 00시 00분@부천원미/경기도 부천시 중동]'
-        ' 강수: 모름'
+        '[2019년 12월 31일 00시 00분@부천원미/경기도 부천시 중동]' ' 강수: 모름'
     )
     assert said.data['username'] == '부천원미 날씨'
     assert said.data['icon_emoji'] == ':crescent_moon:'

@@ -29,10 +29,9 @@ async def get_cat_image_url(timeout: float) -> str:
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                async with session.get(api_url, params={
-                    'format': 'xml',
-                    'type': 'jpg,png',
-                }) as res:
+                async with session.get(
+                    api_url, params={'format': 'xml', 'type': 'jpg,png'}
+                ) as res:
                     if res.status != 200:
                         raise APIServerError
                     xml_result = await res.read()
@@ -117,8 +116,7 @@ async def cat(bot, event: Message, timeout: float):
             fine = last_call + cooltime
             await cat_say(
                 text=(
-                    f"아직 쿨타임이다냥! "
-                    f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
+                    f'아직 쿨타임이다냥! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
                 )
             )
             return
@@ -165,8 +163,7 @@ async def dog(bot, event: Message, timeout: float):
             fine = last_call + cooltime
             await dog_say(
                 text=(
-                    f"아직 쿨타임이다멍! "
-                    f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
+                    f'아직 쿨타임이다멍! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
                 )
             )
             return
@@ -212,8 +209,7 @@ async def fox(bot, event: Message, timeout: float = 1.5):
             fine = last_call + cooltime
             await fox_say(
                 text=(
-                    f"아직 쿨타임이에요! "
-                    f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보세요!"
+                    f'아직 쿨타임이에요! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보세요!"
                 )
             )
             return

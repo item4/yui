@@ -53,8 +53,7 @@ def fx_google_api_key():
 @pytest.mark.asyncio
 async def test_get_geometric_info_by_address(fx_google_api_key):
     full_address, lat, lng = await get_geometric_info_by_address(
-        addr1,
-        fx_google_api_key,
+        addr1, fx_google_api_key,
     )
 
     assert full_address == '대한민국 경기도 부천시'
@@ -62,8 +61,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
     assert lng == 126.7660309
 
     full_address, lat, lng = await get_geometric_info_by_address(
-        addr2,
-        fx_google_api_key,
+        addr2, fx_google_api_key,
     )
 
     assert full_address == '대한민국 서울특별시'
@@ -72,8 +70,7 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
-            addr3,
-            fx_google_api_key,
+            addr3, fx_google_api_key,
         )
 
 
@@ -143,9 +140,7 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
         assert said.data['thread_ts'] == '1234.5678'
 
         await aqi(
-            bot,
-            event,
-            addr3,
+            bot, event, addr3,
         )
 
         said = bot.call_queue.pop(0)
@@ -157,29 +152,27 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
 @pytest.mark.asyncio
 async def test_aqi_error1(fx_config, response_mock):
     response_mock.get(
-        'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
-            'region': 'kr',
-            'address': addr1,
-            'key': 'qwer',
-        }),
-        body=json.dumps({
-            'results': [
-                {
-                    'formatted_address': '대한민국 경기도 부천시',
-                    'geometry': {
-                        'location': {
-                            'lat': 37.5034138,
-                            'lng': 126.7660309,
+        'https://maps.googleapis.com/maps/api/geocode/json?'
+        + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
+        body=json.dumps(
+            {
+                'results': [
+                    {
+                        'formatted_address': '대한민국 경기도 부천시',
+                        'geometry': {
+                            'location': {
+                                'lat': 37.5034138,
+                                'lng': 126.7660309,
+                            },
                         },
                     },
-                },
-            ],
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
-        'https://api.waqi.info/feed/geo:'
-        '37.5034138;126.7660309/?token=asdf',
+        'https://api.waqi.info/feed/geo:' '37.5034138;126.7660309/?token=asdf',
         body='null',
         headers={'Content-Type': 'application/json'},
     )
@@ -199,37 +192,33 @@ async def test_aqi_error1(fx_config, response_mock):
         said = bot.call_queue.pop(0)
         assert said.method == 'chat.postMessage'
         assert said.data['channel'] == 'C1'
-        assert said.data['text'] == (
-            '해당 지역의 AQI 정보를 받아올 수 없어요!'
-        )
+        assert said.data['text'] == ('해당 지역의 AQI 정보를 받아올 수 없어요!')
 
 
 @pytest.mark.asyncio
 async def test_aqi_error2(fx_config, response_mock):
     response_mock.get(
-        'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode({
-            'region': 'kr',
-            'address': addr1,
-            'key': 'qwer',
-        }),
-        body=json.dumps({
-            'results': [
-                {
-                    'formatted_address': '대한민국 경기도 부천시',
-                    'geometry': {
-                        'location': {
-                            'lat': 37.5034138,
-                            'lng': 126.7660309,
+        'https://maps.googleapis.com/maps/api/geocode/json?'
+        + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
+        body=json.dumps(
+            {
+                'results': [
+                    {
+                        'formatted_address': '대한민국 경기도 부천시',
+                        'geometry': {
+                            'location': {
+                                'lat': 37.5034138,
+                                'lng': 126.7660309,
+                            },
                         },
                     },
-                },
-            ],
-        }),
+                ],
+            }
+        ),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
-        'https://api.waqi.info/feed/geo:'
-        '37.5034138;126.7660309/?token=asdf',
+        'https://api.waqi.info/feed/geo:' '37.5034138;126.7660309/?token=asdf',
         body=json.dumps({'data': {'idx': '5511'}}),
         headers={'Content-Type': 'application/json'},
     )
@@ -254,6 +243,4 @@ async def test_aqi_error2(fx_config, response_mock):
         said = bot.call_queue.pop(0)
         assert said.method == 'chat.postMessage'
         assert said.data['channel'] == 'C1'
-        assert said.data['text'] == (
-            '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'
-        )
+        assert said.data['text'] == ('현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!')

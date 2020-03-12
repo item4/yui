@@ -20,15 +20,12 @@ def test_action_class():
     data_source = 'default'
     min_query_length = 100
     name = 'Test Button'
-    options = [OptionField(
-        text='test',
-        value='test',
-    )]
-    selected_options = [OptionField(
-        text='text',
-        value='value',
-        description='some description',
-    )]
+    options = [OptionField(text='test', value='test',)]
+    selected_options = [
+        OptionField(
+            text='text', value='value', description='some description',
+        )
+    ]
     style = 'danger'
     text = 'Test Text'
     type = 'button'
@@ -67,24 +64,18 @@ def test_action_class():
         name=name,
         text=text,
         type=type,
-        options=[OptionField(
-            text='test',
-            value='test',
-        )],
-        option_groups=[OptionFieldGroup(text='text', options=[
-            OptionField(
-                text='test2',
-                value='test2',
-            ),
-        ])],
+        options=[OptionField(text='test', value='test',)],
+        option_groups=[
+            OptionFieldGroup(
+                text='text',
+                options=[OptionField(text='test2', value='test2')],
+            )
+        ],
     )
 
     assert action.options is None
     assert action.option_groups == [
-        OptionFieldGroup(text='text', options=[
-            OptionField(
-                text='test2',
-                value='test2',
-            ),
-        ]),
+        OptionFieldGroup(
+            text='text', options=[OptionField(text='test2', value='test2')]
+        ),
     ]

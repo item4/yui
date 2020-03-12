@@ -76,45 +76,38 @@ def process(html: str, last_id: Optional[int]) -> Tuple[List[Attachment], int]:
         title = item.cssselect('.item_summary-title')[0].text_content()
         shop_el = item.cssselect('.item_summary-shop_name-field a.nav')[0]
         author_link = shop_el.get('href')
-        author_name = shop_el.cssselect(
-            'div.item_summary-shop_name')[0].text_content().strip()
+        author_name = (
+            shop_el.cssselect('div.item_summary-shop_name')[0]
+            .text_content()
+            .strip()
+        )
         author_icon = shop_el.cssselect('img')[0].get('src')
         price = item.cssselect('.item_summary .price')[0].text_content()
         fields: List[Field] = [
-            Field(
-                title='카테고리',
-                value=category,
-                short=True,
-            ),
-            Field(
-                title='가격',
-                value=price,
-                short=True,
-            ),
+            Field(title='카테고리', value=category, short=True,),
+            Field(title='가격', value=price, short=True,),
         ]
         if badges:
-            fields.append(Field(
-                title='상태',
-                value=' / '.join(badges),
-                short=True,
-            ))
+            fields.append(
+                Field(title='상태', value=' / '.join(badges), short=True,)
+            )
         if events:
-            fields.append(Field(
-                title='관련 행사',
-                value=' / '.join(events),
-                short=True,
-            ))
-        attachments.append(Attachment(
-            fallback=f'{title} - {title_link}',
-            title=title,
-            title_link=title_link,
-            color=color,
-            fields=fields,
-            image_url=image_url,
-            author_icon=author_icon,
-            author_link=author_link,
-            author_name=author_name,
-        ))
+            fields.append(
+                Field(title='관련 행사', value=' / '.join(events), short=True,)
+            )
+        attachments.append(
+            Attachment(
+                fallback=f'{title} - {title_link}',
+                title=title,
+                title_link=title_link,
+                color=color,
+                fields=fields,
+                image_url=image_url,
+                author_icon=author_icon,
+                author_link=author_link,
+                author_name=author_name,
+            )
+        )
 
     return attachments, id
 
@@ -136,9 +129,7 @@ async def watch(bot, sess):
 
     cache = get_or_create_cache('personal-booth', sess)
     attachments, cache.body = await bot.run_in_other_process(
-        process,
-        html,
-        cache.body,
+        process, html, cache.body,
     )
 
     if attachments:
@@ -146,9 +137,11 @@ async def watch(bot, sess):
         with sess.begin():
             sess.add(cache)
 
-        await retry(bot.api.chat.postMessage(
-            channel=C.sao.get(),
-            as_user=True,
-            text='Booth에 소드 아트 온라인 신간이 올라왔어요!',
-            attachments=attachments,
-        ))
+        await retry(
+            bot.api.chat.postMessage(
+                channel=C.sao.get(),
+                as_user=True,
+                text='Booth에 소드 아트 온라인 신간이 올라왔어요!',
+                attachments=attachments,
+            )
+        )

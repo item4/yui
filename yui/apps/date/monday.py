@@ -17,9 +17,7 @@ box.assert_channel_required('general')
 async def monday_dog(bot):
     name = getattr(bot.config, 'MONDAY_DOG_NAME', '월요일을 알리며 짖는 개')
     icon = getattr(
-        bot.config,
-        'MONDAY_DOG_ICON',
-        'https://i.imgur.com/UtBQSLl.jpg',
+        bot.config, 'MONDAY_DOG_ICON', 'https://i.imgur.com/UtBQSLl.jpg',
     )
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,
@@ -37,12 +35,12 @@ async def monday_dog(bot):
 
     if holidays:
         says = [
-            '월' * random.randint(3, 10) + '…' + ''.join(
+            '월' * random.randint(3, 10)
+            + '…'
+            + ''.join(
                 random.choice(['?', '!']) for x in range(random.randint(2, 4))
             ),
-            '(하지만 {} 쉬는 날이었다고 한다)'.format(
-                tossi.postfix(holidays[0], '(이)라'),
-            )
+            '(하지만 {} 쉬는 날이었다고 한다)'.format(tossi.postfix(holidays[0], '(이)라'),),
         ]
         for say in says:
             await monday_dog_say(text=say)

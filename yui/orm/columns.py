@@ -18,7 +18,6 @@ def extract_timezone_name(tz) -> str:
 
 
 class DateTimeAtComparator(Comparator):
-
     def __init__(self, *args):
         length = len(args)
         if length == 1:
@@ -68,11 +67,15 @@ class DateTimeAtComparator(Comparator):
         self.tz = extract_timezone_name(self.tz)
 
     def operate(self, op, *other, **kwargs):
-        other = [func.timezone(x.tz, x.dt) for x in [
-            o if isinstance(o, DateTimeAtComparator)
-            else DateTimeAtComparator(o)
-            for o in other
-        ]]
+        other = [
+            func.timezone(x.tz, x.dt)
+            for x in [
+                o
+                if isinstance(o, DateTimeAtComparator)
+                else DateTimeAtComparator(o)
+                for o in other
+            ]
+        ]
         other.insert(0, func.timezone(self.tz, self.dt))
         return op(*other, **kwargs)
 
@@ -80,7 +83,7 @@ class DateTimeAtComparator(Comparator):
         return func.timezone(self.tz, self.dt)
 
 
-def DateTimeAtColumn(prefix: str) -> hybrid_property:  # noqa
+def DateTimeAtColumn(prefix: str) -> hybrid_property:
     datetime_key = f'{prefix}_datetime'
     timezone_key = f'{prefix}_timezone'
 
@@ -97,20 +100,17 @@ def DateTimeAtColumn(prefix: str) -> hybrid_property:  # noqa
 
     def custom_comparator(cls):
         return DateTimeAtComparator(
-            getattr(cls, datetime_key),
-            getattr(cls, timezone_key),
+            getattr(cls, datetime_key), getattr(cls, timezone_key),
         )
 
     return hybrid_property(
-        fget=getter,
-        fset=setter,
-        custom_comparator=custom_comparator,
+        fget=getter, fset=setter, custom_comparator=custom_comparator,
     )
 
 
-def DateTimeColumn(nullable: bool = True, *args, **kwargs):  # noqa
+def DateTimeColumn(nullable: bool = True, *args, **kwargs):
     return Column(DateTime(timezone=False), nullable=nullable, *args, **kwargs)
 
 
-def TimezoneColumn(nullable: bool = True, *args, **kwargs):  # noqa
+def TimezoneColumn(nullable: bool = True, *args, **kwargs):
     return Column(TimezoneType(), nullable=nullable, *args, **kwargs)

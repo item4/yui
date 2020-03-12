@@ -19,12 +19,7 @@ class Users(Endpoint):
         else:
             user_id = user
 
-        return await self._call(
-            'info',
-            {
-                'user': user_id,
-            }
-        )
+        return await self._call('info', {'user': user_id})
 
     async def list(
         self,

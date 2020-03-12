@@ -59,10 +59,12 @@ def test_argument_decorator():
     assert args[4].type_ is None
 
     with pytest.raises(TypeError) as e:
+
         @argument('arg1', nargs=-1)
         @argument('arg2', nargs=-1)
         async def test2():
             pass
+
     assert str(e.value) == 'can not have two nargs<0'
 
 

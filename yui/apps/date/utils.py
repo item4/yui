@@ -26,10 +26,7 @@ def weekend_loading_percent(dt: datetime.datetime) -> float:
     if weekday in [5, 6]:
         return 100.0
     monday = (dt - datetime.timedelta(days=weekday)).replace(
-        hour=0,
-        minute=0,
-        second=0,
-        microsecond=0,
+        hour=0, minute=0, second=0, microsecond=0,
     )
     delta = dt - monday
     return delta.total_seconds() / (5 * 24 * 60 * 60) * 100

@@ -53,8 +53,9 @@ def encode_url(u: str) -> str:
         prefix = 'http://'
     elif u.startswith('https://'):
         prefix = 'https://'
-    u = u[len(prefix):]
-    return prefix + '/'.join(urllib.parse.quote(c) for c in u.split('/'))
+    return prefix + '/'.join(
+        urllib.parse.quote(c) for c in u.replace(prefix, '').split('/')
+    )
 
 
 def fix_url(url: str) -> str:
@@ -74,8 +75,7 @@ def make_sub_list(data: Set[Sub]) -> List[Attachment]:
             released_at = None
             try:
                 released_at = datetime.strptime(
-                    sub.released_at,
-                    '%Y%m%d%H%M%S',
+                    sub.released_at, '%Y%m%d%H%M%S',
                 )
             except ValueError:
                 pass
@@ -87,26 +87,18 @@ def make_sub_list(data: Set[Sub]) -> List[Attachment]:
                 fallback = f'{num} {name} {url}'
                 text = f'{num} {url}'
             result.append(
-                Attachment(
-                    fallback=fallback,
-                    author_name=name,
-                    text=text,
-                )
+                Attachment(fallback=fallback, author_name=name, text=text,)
             )
     else:
         result.append(
-            Attachment(
-                fallback='자막 제작자가 없습니다.',
-                text='자막 제작자가 없습니다.',
-            )
+            Attachment(fallback='자막 제작자가 없습니다.', text='자막 제작자가 없습니다.',)
         )
 
     return result
 
 
 @box.command('sub', ['자막', '애니자막'])
-@option('--finished/--on-air', '--종영/--방영', '--완결/--방송', '--fin/--on',
-        '-f/-o')
+@option('--finished/--on-air', '--종영/--방영', '--완결/--방송', '--fin/--on', '-f/-o')
 @argument('title', nargs=-1, concat=True, count_error='애니 제목을 입력해주세요')
 async def sub(bot, event: Message, finished: bool, title: str):
     """
@@ -156,12 +148,14 @@ async def get_ohli_caption_list(i, timeout: float) -> Set[Sub]:
         episode_num = sub['s']
         if int(math.ceil(episode_num)) == int(episode_num):
             episode_num = int(episode_num)
-        result.add(Sub(
-            maker=sub['n'],
-            episode_num=episode_num,
-            url=sub['a'],
-            released_at=sub['d'],
-        ))
+        result.add(
+            Sub(
+                maker=sub['n'],
+                episode_num=episode_num,
+                url=sub['a'],
+                released_at=sub['d'],
+            )
+        )
 
     return result
 
@@ -170,7 +164,7 @@ async def get_annissa_weekly_json(w, timeout: float) -> List[Dict[str, Any]]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    f'https://www.anissia.net/anitime/list?w={w}'
+                f'https://www.anissia.net/anitime/list?w={w}'
             ) as resp:
                 return json.loads(await resp.text())
 
@@ -190,8 +184,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         ohli_all = await get_ohli_now_json(timeout)
     except asyncio.TimeoutError:
         await bot.say(
-            event.channel,
-            'OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!',
+            event.channel, 'OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!',
         )
         return
 
@@ -201,10 +194,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         for ani in weekday_list:
             ani['week'] = w
             ani['ratio'] = max(
-                match(
-                    title.lower(),
-                    a['s'].lower(),
-                ) for a in ani['n']
+                match(title.lower(), a['s'].lower(),) for a in ani['n']
             )
             o_data.append(ani)
 
@@ -223,10 +213,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         if a_data:
             for ani in a_data:
                 ani['ratio'] = max(
-                    match(
-                        alias['s'].lower(),
-                        ani['s'].lower()
-                    ) for alias in o_ani['n']
+                    match(alias['s'].lower(), ani['s'].lower())
+                    for alias in o_ani['n']
                 )
 
                 if o_ani['t'] == ani['t']:
@@ -241,8 +229,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
                 try:
                     a_subs = await get_annissia_caption_list_json(
-                        a_ani['i'],
-                        timeout,
+                        a_ani['i'], timeout,
                     )
                 except asyncio.TimeoutError:
                     a_subs = []
@@ -250,15 +237,17 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
                 for sub in a_subs:
                     url = fix_url(encode_url(sub['a']))
-                    episode_num = int(sub['s'])/10
+                    episode_num = int(sub['s']) / 10
                     if int(math.ceil(episode_num)) == int(episode_num):
                         episode_num = int(episode_num)
-                    captions.add(Sub(
-                        maker=sub['n'],
-                        episode_num=episode_num,
-                        url=url,
-                        released_at=sub['d'],
-                    ))
+                    captions.add(
+                        Sub(
+                            maker=sub['n'],
+                            episode_num=episode_num,
+                            url=url,
+                            released_at=sub['d'],
+                        )
+                    )
 
         title = o_ani['s']
         dow = DOW[o_ani['week']]
@@ -300,17 +289,11 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         )
 
     else:
-        await bot.say(
-            event.channel,
-            '해당 제목의 애니는 찾을 수 없어요!'
-        )
+        await bot.say(event.channel, '해당 제목의 애니는 찾을 수 없어요!')
 
 
 async def search_finished(
-    bot,
-    event: Message,
-    title: str,
-    timeout: float = 2.5,
+    bot, event: Message, title: str, timeout: float = 2.5,
 ):
     try:
         async with async_timeout.timeout(timeout):
@@ -321,19 +304,13 @@ async def search_finished(
                 ) as resp:
                     data = await resp.json(loads=json.loads)
     except asyncio.TimeoutError:
-        await bot.say(
-            event.channel,
-            'OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!'
-        )
+        await bot.say(event.channel, 'OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!')
         return
 
     if data:
         await bot.say(
             event.channel,
-            (
-                f'완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의'
-                ' 애니가 검색되었어요!'
-            ),
+            (f'완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의' ' 애니가 검색되었어요!'),
             thread_ts=event.event_ts,
         )
         for ani in data:
@@ -345,8 +322,7 @@ async def search_finished(
             attachments: List[Attachment] = [
                 Attachment(
                     fallback='*{title}* ({url})'.format(
-                        title=ani['s'],
-                        url=fix_url(ani['l']),
+                        title=ani['s'], url=fix_url(ani['l']),
                     ),
                     title=ani['s'],
                     title_link=fix_url(ani['l']) if ani['l'] else None,
@@ -363,6 +339,5 @@ async def search_finished(
             )
     else:
         await bot.say(
-            event.channel,
-            '해당 제목의 완결 애니는 찾을 수 없어요!',
+            event.channel, '해당 제목의 완결 애니는 찾을 수 없어요!',
         )

@@ -19,9 +19,7 @@ async def test_no_packtpub_dotd(response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=json.dumps({
-            'data': [],
-        }),
+        body=json.dumps({'data': []}),
         headers={'Content-Type': 'application/json'},
     )
 
@@ -48,17 +46,12 @@ async def test_packtpub_dotd(response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         '?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=json.dumps({
-            'data': [{'productId': product_id}],
-        }),
+        body=json.dumps({'data': [{'productId': product_id}]}),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         f'https://static.packt-cdn.com/products/{product_id}/summary',
-        body=json.dumps({
-            'title': title,
-            'coverImage': image_url,
-        }),
+        body=json.dumps({'title': title, 'coverImage': image_url}),
         headers={'Content-Type': 'application/json'},
     )
 
@@ -95,17 +88,12 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
-        body=json.dumps({
-            'data': [{'productId': product_id}],
-        }),
+        body=json.dumps({'data': [{'productId': product_id}]}),
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
         f'https://static.packt-cdn.com/products/{product_id}/summary',
-        body=json.dumps({
-            'title': title,
-            'coverImage': image_url,
-        }),
+        body=json.dumps({'title': title, 'coverImage': image_url}),
         headers={'Content-Type': 'application/json'},
     )
 

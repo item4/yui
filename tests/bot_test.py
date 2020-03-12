@@ -14,7 +14,7 @@ from .util import FakeImportLib
 def test_bot_init(monkeypatch, fx_config):
     importlib = FakeImportLib()
 
-    monkeypatch.setattr("importlib.import_module", importlib.import_module)
+    monkeypatch.setattr('importlib.import_module', importlib.import_module)
 
     fx_config.APPS = ['yui.app1', 'yui.app2']
     box = Box()
@@ -40,45 +40,32 @@ async def test_call(fx_config, response_mock):
 
     response_mock.post(
         'https://slack.com/api/test11',
-        body=json.dumps({
-            'res': 'hello world!',
-        }),
+        body=json.dumps({'res': 'hello world!'}),
         headers={'content-type': 'application/json'},
         status=200,
     )
     response_mock.post(
         'https://slack.com/api/test12',
-        body=json.dumps({
-            'res': 'hello world!',
-            'data': {
-                'extra': 'wow',
-            },
-        }),
+        body=json.dumps({'res': 'hello world!', 'data': {'extra': 'wow'}}),
         headers={'content-type': 'application/json'},
         status=200,
     )
 
     response_mock.post(
         'https://slack.com/api/test21',
-        body=json.dumps({
-            'error': 'aaa',
-        }),
+        body=json.dumps({'error': 'aaa'}),
         headers={'content-type': 'application/json'},
         status=404,
     )
     response_mock.post(
         'https://slack.com/api/test22',
-        body=json.dumps({
-            'error': 'aaa',
-        }),
+        body=json.dumps({'error': 'aaa'}),
         headers={'content-type': 'application/json'},
         status=404,
     )
     response_mock.post(
         'https://slack.com/api/test3',
-        body=json.dumps({
-            'res': 'hello world!',
-        }),
+        body=json.dumps({'res': 'hello world!'}),
         headers={'content-type': 'application/json'},
         status=200,
     )

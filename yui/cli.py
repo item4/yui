@@ -100,7 +100,7 @@ def revision(
     splice: bool,
     branch_label: Optional[str],
     version_path: Optional[str],
-    rev_id: Optional[str]
+    rev_id: Optional[str],
 ):
     """Create a new revision file."""
 
@@ -121,7 +121,7 @@ def revision(
         splice=splice,
         branch_label=branch_label,
         version_path=version_path,
-        rev_id=rev_id
+        rev_id=rev_id,
     )
 
 
@@ -142,7 +142,7 @@ def migrate(
     splice: bool,
     branch_label: Optional[str],
     version_path: Optional[str],
-    rev_id: Optional[str]
+    rev_id: Optional[str],
 ):
     """Alias for 'revision --autogenerate'"""
 
@@ -163,7 +163,7 @@ def migrate(
         splice=splice,
         branch_label=branch_label,
         version_path=version_path,
-        rev_id=rev_id
+        rev_id=rev_id,
     )
 
 
@@ -195,7 +195,7 @@ def merge(
     revisions: str,
     message: Optional[str],
     branch_label=Optional[str],
-    rev_id=Optional[str]
+    rev_id=Optional[str],
 ):
     """Merge two revisions together.  Creates a new migration file."""
     bot = Bot(config)
@@ -207,11 +207,7 @@ def merge(
     c.attributes['Base'] = bot.orm_base
 
     command.merge(
-        c,
-        revisions,
-        message=message,
-        branch_label=branch_label,
-        rev_id=rev_id
+        c, revisions, message=message, branch_label=branch_label, rev_id=rev_id
     )
 
 
@@ -304,9 +300,7 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
     c.attributes['Base'] = bot.orm_base
 
     command.heads(
-        c,
-        verbose=verbose,
-        resolve_dependencies=resolve_dependencies
+        c, verbose=verbose, resolve_dependencies=resolve_dependencies
     )
 
 

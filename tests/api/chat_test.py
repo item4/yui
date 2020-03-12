@@ -46,11 +46,13 @@ async def test_slack_api_chat_post_ephemeral():
     user = bot.add_user('U0987', 'kirito')
     channel_id = 'C1234'
     user_id = 'U5555'
-    attachments = [Attachment(
-        fallback='fallback val',
-        title='title val',
-        fields=[Field('field title1', 'field value1', False)],
-    )]
+    attachments = [
+        Attachment(
+            fallback='fallback val',
+            title='title val',
+            fields=[Field('field title1', 'field value1', False)],
+        )
+    ]
     blocks = [Divider()]
     text = 'text val'
     parse = 'text'
@@ -67,9 +69,7 @@ async def test_slack_api_chat_post_ephemeral():
         await bot.api.chat.postEphemeral(channel=channel, user=user)
 
     await bot.api.chat.postEphemeral(
-        channel=channel,
-        user=user,
-        text=text,
+        channel=channel, user=user, text=text,
     )
 
     call = bot.call_queue.pop()
@@ -82,9 +82,7 @@ async def test_slack_api_chat_post_ephemeral():
     assert call.json_mode
 
     await bot.api.chat.postEphemeral(
-        channel=channel_id,
-        user=user_id,
-        attachments=attachments,
+        channel=channel_id, user=user_id, attachments=attachments,
     )
 
     call = bot.call_queue.pop()
@@ -94,13 +92,13 @@ async def test_slack_api_chat_post_ephemeral():
         'user': user_id,
         'attachments': [
             {
-                "fallback": "fallback val",
-                "title": "title val",
-                "fields": [
+                'fallback': 'fallback val',
+                'title': 'title val',
+                'fields': [
                     {
-                        "title": "field title1",
-                        "value": "field value1",
-                        "short": False,
+                        'title': 'field title1',
+                        'value': 'field value1',
+                        'short': False,
                     },
                 ],
             },
@@ -134,22 +132,18 @@ async def test_slack_api_chat_post_ephemeral():
         'link_names': True,
         'attachments': [
             {
-                "fallback": "fallback val",
-                "title": "title val",
-                "fields": [
+                'fallback': 'fallback val',
+                'title': 'title val',
+                'fields': [
                     {
-                        "title": "field title1",
-                        "value": "field value1",
-                        "short": False,
+                        'title': 'field title1',
+                        'value': 'field value1',
+                        'short': False,
                     },
                 ],
             },
         ],
-        'blocks': [
-            {
-                'type': 'divider',
-            },
-        ],
+        'blocks': [{'type': 'divider'}],
         'username': username,
         'as_user': False,
         'icon_url': icon_url,
@@ -165,11 +159,13 @@ async def test_slack_api_chat_post_message():
     bot = FakeBot()
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
-    attachments = [Attachment(
-        fallback='fallback val',
-        title='title val',
-        fields=[Field('field title1', 'field value1', False)],
-    )]
+    attachments = [
+        Attachment(
+            fallback='fallback val',
+            title='title val',
+            fields=[Field('field title1', 'field value1', False)],
+        )
+    ]
     blocks = [Divider()]
     text = 'text val'
     parse = 'text'
@@ -206,13 +202,13 @@ async def test_slack_api_chat_post_message():
         'channel': channel_id,
         'attachments': [
             {
-                "fallback": "fallback val",
-                "title": "title val",
-                "fields": [
+                'fallback': 'fallback val',
+                'title': 'title val',
+                'fields': [
                     {
-                        "title": "field title1",
-                        "value": "field value1",
-                        "short": False,
+                        'title': 'field title1',
+                        'value': 'field value1',
+                        'short': False,
                     },
                 ],
             },
@@ -249,22 +245,18 @@ async def test_slack_api_chat_post_message():
         'link_names': True,
         'attachments': [
             {
-                "fallback": "fallback val",
-                "title": "title val",
-                "fields": [
+                'fallback': 'fallback val',
+                'title': 'title val',
+                'fields': [
                     {
-                        "title": "field title1",
-                        "value": "field value1",
-                        "short": False,
+                        'title': 'field title1',
+                        'value': 'field value1',
+                        'short': False,
                     },
                 ],
             },
         ],
-        'blocks': [
-            {
-                'type': 'divider',
-            },
-        ],
+        'blocks': [{'type': 'divider'}],
         'unfurl_links': False,
         'unfurl_media': True,
         'username': username,

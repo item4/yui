@@ -48,35 +48,34 @@ async def book(bot, event: Message, keyword: str):
     for i in range(count):
         book = data['items'][i]
         title = strip_tags(book['title'])
-        attachments.append(Attachment(
-            fallback='{} - {}'.format(title, book['link']),
-            title=title,
-            title_link=book['link'],
-            thumb_url=book['image'],
-            text='저자: {} / 출판사: {}{}'.format(
-                strip_tags(book['author']),
-                strip_tags(book['publisher']),
-                ' / 정가: ￦{:,}'.format(Decimal(book['price']))
-                if book['price'] else '',
+        attachments.append(
+            Attachment(
+                fallback='{} - {}'.format(title, book['link']),
+                title=title,
+                title_link=book['link'],
+                thumb_url=book['image'],
+                text='저자: {} / 출판사: {}{}'.format(
+                    strip_tags(book['author']),
+                    strip_tags(book['publisher']),
+                    ' / 정가: ￦{:,}'.format(Decimal(book['price']))
+                    if book['price']
+                    else '',
+                ),
             )
-        ))
+        )
 
     if attachments:
         await bot.api.chat.postMessage(
             channel=event.channel,
-            text=('키워드 *{}* {} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
-                  ' 그 중 상위 {}개를 보여드릴게요!').format(
-                keyword,
-                tossi.pick(keyword, '(으)로'),
-                data['total'],
-                count,
+            text=(
+                '키워드 *{}* {} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
+                ' 그 중 상위 {}개를 보여드릴게요!'
+            ).format(
+                keyword, tossi.pick(keyword, '(으)로'), data['total'], count,
             ),
             attachments=attachments,
             as_user=True,
             thread_ts=event.ts,
         )
     else:
-        await bot.say(
-            event.channel,
-            '검색 결과가 없어요!'
-        )
+        await bot.say(event.channel, '검색 결과가 없어요!')

@@ -45,13 +45,11 @@ class Namespace:
             p.replace(annotation=inspect.Parameter.empty)
             for p in old_signature.parameters.values()
         ]
-        params.append(inspect.Parameter(
-            '_kwargs',
-            inspect.Parameter.VAR_KEYWORD,
-        ))
+        params.append(
+            inspect.Parameter('_kwargs', inspect.Parameter.VAR_KEYWORD,)
+        )
         new_signature = inspect.Signature(
-            params,
-            return_annotation=old_signature.return_annotation,
+            params, return_annotation=old_signature.return_annotation,
         )
 
         # make new __init__ by eval
@@ -90,11 +88,7 @@ def channel_id_convert(value):
         return id
 
     try:
-        objs = {
-            'C': bot.channels,
-            'D': bot.ims,
-            'G': bot.groups,
-        }[id[0]]
+        objs = {'C': bot.channels, 'D': bot.ims, 'G': bot.groups}[id[0]]
     except KeyError:
         raise KeyError('Given Channel ID prefix was not expected.')
     for obj in objs:
@@ -102,6 +96,7 @@ def channel_id_convert(value):
             return obj
 
     from .channel import create_unknown_channel  # circular dependency
+
     if isinstance(value, str):
         kwargs = {'id': value}
     else:
@@ -121,6 +116,7 @@ def user_id_convert(value):
         return id
 
     from .user import create_unknown_user  # circular dependency
+
     if not (id.startswith('U') or id.startswith('W')):
         raise KeyError('Given ID value has unexpected prefix.')
     for obj in bot.users:
@@ -196,7 +192,7 @@ Field = partial(attr.ib, default=None, repr=False)
 BooleanField = partial(Field, converter=bool)
 
 
-def OptionalField(conv):  # noqa
+def OptionalField(conv):
     return partial(Field, converter=attr.converters.optional(conv))
 
 
@@ -206,7 +202,7 @@ DateTimeField = OptionalField(fromtimestamp)
 OptionalUserField = OptionalField(user_id_convert)
 
 
-def ListField(conv):  # noqa
+def ListField(conv):
     return partial(Field, converter=lambda x: list_convert(x, conv))
 
 

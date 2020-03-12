@@ -19,11 +19,7 @@ def encode(obj):
     elif issubclass(obj.__class__, enum.Enum):
         return obj.value
     elif isinstance(obj, dict):
-        return {
-            encode(k): encode(v)
-            for k, v in obj.items()
-            if v is not None
-        }
+        return {encode(k): encode(v) for k, v in obj.items() if v is not None}
     elif isinstance(obj, bool):
         return bool2str(obj)
     try:

@@ -24,9 +24,7 @@ REF_URLS: Dict[str, str] = {
 
 
 def parse(
-    blob: bytes,
-    selector: str,
-    url_prefix: str,
+    blob: bytes, selector: str, url_prefix: str,
 ) -> List[Tuple[str, str]]:
     h = fromstring(blob)
     a_tags = h.cssselect(selector)
@@ -35,10 +33,7 @@ def parse(
     for a in a_tags:
         name = str(a.text_content())
         link = f"{url_prefix}{a.get('href')}"
-        result.append((
-            name,
-            link,
-        ))
+        result.append((name, link,))
     return result
 
 
@@ -92,17 +87,11 @@ def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
         link = f'https://docs.python.org/3/library/{a.get("href")}'
         if code_els:
             for code_el in code_els:
-                result.append((
-                    str(code_el.text_content()).strip(),
-                    name,
-                    link,
-                ))
+                result.append(
+                    (str(code_el.text_content()).strip(), name, link,)
+                )
         else:
-            result.append((
-                '',
-                name,
-                link,
-            ))
+            result.append(('', name, link,))
     return result
 
 
@@ -114,10 +103,7 @@ async def fetch_python_ref(bot: Bot):
         async with session.get(url) as resp:
             blob = await resp.read()
 
-    body = await bot.run_in_other_process(
-        parse_python,
-        blob,
-    )
+    body = await bot.run_in_other_process(parse_python, blob,)
 
     await bot.cache.set('REF_PYTHON', body)
 
@@ -160,8 +146,7 @@ async def html(bot, event: Message, keyword: str):
     data = await bot.cache.get('REF_HTML')
     if data is None:
         await bot.say(
-            event.channel,
-            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
         return
 
@@ -176,15 +161,9 @@ async def html(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(
-            event.channel,
-            f':html: `{name}` - {link}'
-        )
+        await bot.say(event.channel, f':html: `{name}` - {link}')
     else:
-        await bot.say(
-            event.channel,
-            '비슷한 HTML Element를 찾지 못하겠어요!'
-        )
+        await bot.say(event.channel, '비슷한 HTML Element를 찾지 못하겠어요!')
 
 
 @box.command('css')
@@ -200,8 +179,7 @@ async def css(bot, event: Message, keyword: str):
     data = await bot.cache.get('REF_CSS')
     if data is None:
         await bot.say(
-            event.channel,
-            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
         return
 
@@ -216,15 +194,9 @@ async def css(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(
-            event.channel,
-            f':css: `{name}` - {link}'
-        )
+        await bot.say(event.channel, f':css: `{name}` - {link}')
     else:
-        await bot.say(
-            event.channel,
-            '비슷한 CSS 관련 요소를 찾지 못하겠어요!'
-        )
+        await bot.say(event.channel, '비슷한 CSS 관련 요소를 찾지 못하겠어요!')
 
 
 @box.command('php')
@@ -239,12 +211,13 @@ async def php(bot, event: Message, keyword: str):
 
     raw_path = keyword.replace('::', '.')
     if '::' in keyword:
-        superclass, func = keyword \
-            .lower()\
-            .replace('$', '')\
-            .replace('__', '')\
-            .replace('_', '-')\
+        superclass, func = (
+            keyword.lower()
+            .replace('$', '')
+            .replace('__', '')
+            .replace('_', '-')
             .split('::')
+        )
     elif keyword.startswith('mysqli_stmt_'):
         superclass = 'mysqli-stmt'
         func = keyword[12:].replace('_', '-')
@@ -252,11 +225,13 @@ async def php(bot, event: Message, keyword: str):
         superclass = 'mysqli'
         func = keyword[7:].replace('_', '-')
     else:
-        superclass, func = 'function', keyword \
-            .lower()\
-            .replace('$', '')\
-            .replace('__', '')\
-            .replace('_', '-')
+        superclass, func = (
+            'function',
+            keyword.lower()
+            .replace('$', '')
+            .replace('__', '')
+            .replace('_', '-'),
+        )
 
     urls = [
         f'http://www.php.net/manual/en/{superclass}.{func}.php',
@@ -272,15 +247,11 @@ async def php(bot, event: Message, keyword: str):
                         continue
                     if res.status == 200:
                         await bot.say(
-                            event.channel,
-                            f':php: `{keyword}` - {res_url}'
+                            event.channel, f':php: `{keyword}` - {res_url}'
                         )
                         break
         else:
-            await bot.say(
-                event.channel,
-                '비슷한 PHP 관련 요소를 찾지 못하겠어요!'
-            )
+            await bot.say(event.channel, '비슷한 PHP 관련 요소를 찾지 못하겠어요!')
 
 
 @box.command('python', ['py'])
@@ -296,8 +267,7 @@ async def python(bot, event: Message, keyword: str):
     data = await bot.cache.get('REF_PYTHON')
     if data is None:
         await bot.say(
-            event.channel,
-            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
         return
 
@@ -315,12 +285,6 @@ async def python(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(
-            event.channel,
-            f':python: {name} - {link}'
-        )
+        await bot.say(event.channel, f':python: {name} - {link}')
     else:
-        await bot.say(
-            event.channel,
-            '비슷한 Python library를 찾지 못하겠어요!'
-        )
+        await bot.say(event.channel, '비슷한 Python library를 찾지 못하겠어요!')

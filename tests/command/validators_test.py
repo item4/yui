@@ -22,22 +22,15 @@ def test_get_channel_names(fx_config):
     bot.add_dm('D1', 'U1')
     bot.add_private_channel('G1', 'secret')
 
-    names, dm, fetch_error = get_channel_names([
-        C.general,
-        Cs.commons,
-        name_convert('food'),
-        DM,
-        'work',
-    ])
+    names, dm, fetch_error = get_channel_names(
+        [C.general, Cs.commons, name_convert('food'), DM, 'work']
+    )
 
     assert names == {'general', 'random', 'food', 'work'}
     assert dm is True
     assert fetch_error is False
 
-    fetch_error = get_channel_names([
-        C.bug,
-        Cs.bugs,
-    ])[2]
+    fetch_error = get_channel_names([C.bug, Cs.bugs])[2]
 
     assert fetch_error is True
 

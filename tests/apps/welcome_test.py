@@ -17,12 +17,7 @@ async def test_welcome_item4_handler(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
-    event = create_event({
-        'type': 'team_join',
-        'user': {
-            'id': 'U1',
-        },
-    })
+    event = create_event({'type': 'team_join', 'user': {'id': 'U1'}})
 
     await welcome_item4(bot, event)
 
@@ -44,22 +39,12 @@ async def test_welcome_9xd_handler(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
-    event = create_event({
-        'type': 'team_join',
-        'user': {
-            'id': 'U1',
-        },
-    })
+    event = create_event({'type': 'team_join', 'user': {'id': 'U1'}})
 
     @bot.response('chat.postMessage')
     def team_join(data):
         return APIResponse(
-            body={
-                'ok': True,
-                'ts': '1234.5678',
-            },
-            status=200,
-            headers={},
+            body={'ok': True, 'ts': '1234.5678'}, status=200, headers={},
         )
 
     await welcome_9xd(bot, event)
@@ -67,9 +52,7 @@ async def test_welcome_9xd_handler(fx_config):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'].startswith(
-        '<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:'
-    )
+    assert said.data['text'].startswith('<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:')
     assert '`.도움`' in said.data['text']
 
     thread = bot.call_queue.pop(0)

@@ -9,8 +9,7 @@ KWARGS_DICT = Dict[str, Any]
 
 
 def parse_option_and_arguments(
-    handler: Handler,
-    chunks: List[str],
+    handler: Handler, chunks: List[str],
 ) -> Tuple[KWARGS_DICT, List[str]]:
     end = False
 
@@ -101,14 +100,12 @@ def parse_option_and_arguments(
                     if option.container_cls:
                         try:
                             r = option.container_cls(
-                                option.transform_func(x)
-                                for x in r
+                                option.transform_func(x) for x in r
                             )
                         except ValueError as e:
                             raise SyntaxError(
                                 option.transform_error.format(
-                                    name=option.name,
-                                    e=e,
+                                    name=option.name, e=e,
                                 )
                             )
                     else:
@@ -117,8 +114,7 @@ def parse_option_and_arguments(
                         except ValueError as e:
                             raise SyntaxError(
                                 option.transform_error.format(
-                                    name=option.name,
-                                    e=e,
+                                    name=option.name, e=e,
                                 )
                             )
 
@@ -134,14 +130,13 @@ def parse_option_and_arguments(
 
     if required:
         raise SyntaxError(
-            '\n'.join(o.count_error.format(
-                name=o.name,
-                expected=o.nargs,
-                given=0,
-            ) for o in (
-                list(filter(lambda x: x.dest == o, options))[0]
-                for o in required
-            ))
+            '\n'.join(
+                o.count_error.format(name=o.name, expected=o.nargs, given=0,)
+                for o in (
+                    list(filter(lambda x: x.dest == o, options))[0]
+                    for o in required
+                )
+            )
         )
 
     for i, argument in enumerate(arguments):
@@ -150,19 +145,21 @@ def parse_option_and_arguments(
             length = len(chunks) - sum(a.nargs for a in arguments[i:]) - 1
 
         if length < 1:
-            raise SyntaxError(argument.count_error.format(
-                name=argument.name,
-                expected='>0',
-                given=0,
-            ))
+            raise SyntaxError(
+                argument.count_error.format(
+                    name=argument.name, expected='>0', given=0,
+                )
+            )
         if length <= len(chunks):
             args = [chunks.pop(0) for _ in range(length)]
         else:
-            raise SyntaxError(argument.count_error.format(
-                name=argument.name,
-                expected=argument.nargs,
-                given=len(chunks),
-            ))
+            raise SyntaxError(
+                argument.count_error.format(
+                    name=argument.name,
+                    expected=argument.nargs,
+                    given=len(chunks),
+                )
+            )
         try:
             if argument.concat:
                 r = ' '.join(args)
@@ -176,32 +173,30 @@ def parse_option_and_arguments(
                 r = cast(argument.type_, args[0])
         except (ValueError, CastError) as e:
             raise SyntaxError(
-                argument.type_error.format(
-                    name=argument.name,
-                    e=e,
-                )
+                argument.type_error.format(name=argument.name, e=e,)
             )
 
         if argument.transform_func:
             if argument.container_cls and r:
                 try:
                     r = argument.container_cls(
-                        argument.transform_func(x)
-                        for x in r
+                        argument.transform_func(x) for x in r
                     )
                 except ValueError as e:
-                    raise SyntaxError(argument.transform_error.format(
-                        name=argument.name,
-                        e=e,
-                    ))
+                    raise SyntaxError(
+                        argument.transform_error.format(
+                            name=argument.name, e=e,
+                        )
+                    )
             else:
                 try:
                     r = argument.transform_func(r)
                 except ValueError as e:
-                    raise SyntaxError(argument.transform_error.format(
-                        name=argument.name,
-                        e=e,
-                    ))
+                    raise SyntaxError(
+                        argument.transform_error.format(
+                            name=argument.name, e=e,
+                        )
+                    )
 
         if r is not None:
             result[argument.dest] = r

@@ -8,7 +8,6 @@ from ..types.namespace import Namespace, name_convert, user_id_convert
 
 
 class HelperMeta(type):
-
     def __getattr__(cls, key):
         return cls(key)
 

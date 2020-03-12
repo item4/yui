@@ -93,7 +93,7 @@ async def test_python_command():
         assert said.method == 'chat.postMessage'
         assert said.data['channel'] == 'C1'
         assert said.data['text'] == (
-             '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
 
         await fetch_python_ref(bot)

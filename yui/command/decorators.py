@@ -97,7 +97,7 @@ def argument(
                 type_error=type_error,
                 count_error=count_error,
                 transform_error=transform_error,
-            )
+            ),
         )
         return handler
 

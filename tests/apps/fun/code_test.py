@@ -23,8 +23,11 @@ async def test_write_code_review():
     attachments = said.data['attachments']
 
     assert len(attachments) == 1
-    assert attachments[0]['fallback'] == attachments[0]['image_url'] == \
-        'https://i.imgur.com/btkBRvc.png'
+    assert (
+        attachments[0]['fallback']
+        == attachments[0]['image_url']
+        == 'https://i.imgur.com/btkBRvc.png'
+    )
 
 
 @pytest.mark.asyncio

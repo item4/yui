@@ -27,9 +27,7 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword1}`란 이름을 가진 기억 레코드가 없어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword1),
-    ) == 0
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword1),) == 0
 
     await memo_show(bot, event, fx_sess, keyword2)
 
@@ -38,9 +36,7 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword2}`이란 이름을 가진 기억 레코드가 없어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword2),
-    ) == 0
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword2),) == 0
 
     await memo_add(bot, event, fx_sess, keyword1, text1)
 
@@ -49,9 +45,7 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword1}`로 기억 레코드를 생성했어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword1),
-    ) == 1
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword1),) == 1
 
     await memo_add(bot, event, fx_sess, keyword2, text3)
 
@@ -60,9 +54,7 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword2}`으로 기억 레코드를 생성했어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword2),
-    ) == 1
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword2),) == 1
 
     await memo_add(bot, event, fx_sess, keyword1, text2)
 
@@ -71,9 +63,7 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword1}`로 기억 레코드를 생성했어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword1),
-    ) == 2
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword1),) == 2
 
     await memo_show(bot, event, fx_sess, keyword1)
 
@@ -96,12 +86,8 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword1}`에 관한 기억 레코드를 모두 삭제했어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword1),
-    ) == 0
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword2),
-    ) == 1
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword1),) == 0
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword2),) == 1
 
     await memo_delete(bot, event, fx_sess, keyword2)
 
@@ -110,9 +96,5 @@ async def test_memo_flow(fx_sess):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == f'`{keyword2}`에 관한 기억 레코드를 모두 삭제했어요!'
 
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword1),
-    ) == 0
-    assert get_count(
-        fx_sess.query(Memo).filter_by(keyword=keyword2),
-    ) == 0
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword1),) == 0
+    assert get_count(fx_sess.query(Memo).filter_by(keyword=keyword2),) == 0

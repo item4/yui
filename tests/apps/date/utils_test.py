@@ -41,66 +41,24 @@ def test_weekend_loading_percent():
 
 
 def test_weekend_loading_box():
-    assert weekend_loading_box(0.0) == (
-        '[□□□□□□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(5.0) == (
-        '[■□□□□□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(10.0) == (
-        '[■■□□□□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(15.0) == (
-        '[■■■□□□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(20.0) == (
-        '[■■■■□□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(25.0) == (
-        '[■■■■■□□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(30.0) == (
-        '[■■■■■■□□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(35.0) == (
-        '[■■■■■■■□□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(40.0) == (
-        '[■■■■■■■■□□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(45.0) == (
-        '[■■■■■■■■■□□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(50.0) == (
-        '[■■■■■■■■■■□□□□□□□□□□]'
-    )
-    assert weekend_loading_box(55.0) == (
-        '[■■■■■■■■■■■□□□□□□□□□]'
-    )
-    assert weekend_loading_box(60.0) == (
-        '[■■■■■■■■■■■■□□□□□□□□]'
-    )
-    assert weekend_loading_box(65.0) == (
-        '[■■■■■■■■■■■■■□□□□□□□]'
-    )
-    assert weekend_loading_box(70.0) == (
-        '[■■■■■■■■■■■■■■□□□□□□]'
-    )
-    assert weekend_loading_box(75.0) == (
-        '[■■■■■■■■■■■■■■■□□□□□]'
-    )
-    assert weekend_loading_box(80.0) == (
-        '[■■■■■■■■■■■■■■■■□□□□]'
-    )
-    assert weekend_loading_box(85.0) == (
-        '[■■■■■■■■■■■■■■■■■□□□]'
-    )
-    assert weekend_loading_box(90.0) == (
-        '[■■■■■■■■■■■■■■■■■■□□]'
-    )
-    assert weekend_loading_box(95.0) == (
-        '[■■■■■■■■■■■■■■■■■■■□]'
-    )
-    assert weekend_loading_box(100.0) == (
-        '[■■■■■■■■■■■■■■■■■■■■]'
-    )
+    assert weekend_loading_box(0.0) == ('[□□□□□□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(5.0) == ('[■□□□□□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(10.0) == ('[■■□□□□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(15.0) == ('[■■■□□□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(20.0) == ('[■■■■□□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(25.0) == ('[■■■■■□□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(30.0) == ('[■■■■■■□□□□□□□□□□□□□□]')
+    assert weekend_loading_box(35.0) == ('[■■■■■■■□□□□□□□□□□□□□]')
+    assert weekend_loading_box(40.0) == ('[■■■■■■■■□□□□□□□□□□□□]')
+    assert weekend_loading_box(45.0) == ('[■■■■■■■■■□□□□□□□□□□□]')
+    assert weekend_loading_box(50.0) == ('[■■■■■■■■■■□□□□□□□□□□]')
+    assert weekend_loading_box(55.0) == ('[■■■■■■■■■■■□□□□□□□□□]')
+    assert weekend_loading_box(60.0) == ('[■■■■■■■■■■■■□□□□□□□□]')
+    assert weekend_loading_box(65.0) == ('[■■■■■■■■■■■■■□□□□□□□]')
+    assert weekend_loading_box(70.0) == ('[■■■■■■■■■■■■■■□□□□□□]')
+    assert weekend_loading_box(75.0) == ('[■■■■■■■■■■■■■■■□□□□□]')
+    assert weekend_loading_box(80.0) == ('[■■■■■■■■■■■■■■■■□□□□]')
+    assert weekend_loading_box(85.0) == ('[■■■■■■■■■■■■■■■■■□□□]')
+    assert weekend_loading_box(90.0) == ('[■■■■■■■■■■■■■■■■■■□□]')
+    assert weekend_loading_box(95.0) == ('[■■■■■■■■■■■■■■■■■■■□]')
+    assert weekend_loading_box(100.0) == ('[■■■■■■■■■■■■■■■■■■■■]')

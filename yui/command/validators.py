@@ -21,19 +21,15 @@ class DM:
 
 
 ACCEPTABLE_CHANNEL_TYPES = Union[
-    Type[DM],
-    PrivateChannel,
-    PublicChannel,
-    C,
-    Cs,
-    str,
+    Type[DM], PrivateChannel, PublicChannel, C, Cs, str,
 ]
 
 VALIDATOR_TYPE = Callable[[Any, Message], Awaitable[bool]]
 
 
-def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
-        -> Tuple[Set[str], bool, bool]:
+def get_channel_names(
+    channels: Sequence[ACCEPTABLE_CHANNEL_TYPES],
+) -> Tuple[Set[str], bool, bool]:
     dm = False
     channel_names = set()
     fetch_error = False
@@ -60,8 +56,7 @@ def get_channel_names(channels: Sequence[ACCEPTABLE_CHANNEL_TYPES])\
 
 
 def only(
-    *channels: ACCEPTABLE_CHANNEL_TYPES,
-    error: Optional[str] = None,
+    *channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to allow to use handler."""
 
@@ -72,10 +67,7 @@ def only(
             return True
         except NoChannelsError:
             if error:
-                await bot.say(
-                    event.channel,
-                    error
-                )
+                await bot.say(event.channel, error)
             return False
 
         if fetch_error:
@@ -86,28 +78,21 @@ def only(
                 return True
             else:
                 if error:
-                    await bot.say(
-                        event.channel,
-                        error
-                    )
+                    await bot.say(event.channel, error)
                 return False
 
         if allow_dm:
             return True
         else:
             if error:
-                await bot.say(
-                    event.channel,
-                    error
-                )
+                await bot.say(event.channel, error)
             return False
 
     return callback
 
 
 def not_(
-    *channels: ACCEPTABLE_CHANNEL_TYPES,
-    error: Optional[str] = None,
+    *channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to deny to use handler."""
 
@@ -116,10 +101,7 @@ def not_(
             channel_names, deny_dm, fetch_error = get_channel_names(channels)
         except AllChannelsError:
             if error:
-                await bot.say(
-                    event.channel,
-                    error
-                )
+                await bot.say(event.channel, error)
             return False
         except NoChannelsError:
             return True
@@ -130,20 +112,14 @@ def not_(
         if isinstance(event.channel, (PrivateChannel, PublicChannel)):
             if event.channel.name in channel_names:
                 if error:
-                    await bot.say(
-                        event.channel,
-                        error
-                    )
+                    await bot.say(event.channel, error)
                 return False
             else:
                 return True
 
         if deny_dm:
             if error:
-                await bot.say(
-                    event.channel,
-                    error
-                )
+                await bot.say(event.channel, error)
             return False
         else:
             return True

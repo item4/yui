@@ -4,6 +4,7 @@ import six
 
 try:
     from sqlalchemy.dialects.postgresql import JSON  # noqa
+
     has_postgres_json = True
 except ImportError:  # pragma: no cover
     has_postgres_json = False

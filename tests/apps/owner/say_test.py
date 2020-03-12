@@ -61,9 +61,7 @@ async def test_say_command(fx_config):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
-    )
+    assert said.data['text'] == ('`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!')
 
     event = bot.create_message('C1', 'U2')
 

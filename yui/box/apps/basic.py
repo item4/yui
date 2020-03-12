@@ -88,7 +88,8 @@ class App(BaseApp):
 
     async def run(self, bot: Bot, event: Event):
         subtype = hasattr(event, 'subtype') and (
-                event.subtype == self.subtype or self.subtype == '*')
+            event.subtype == self.subtype or self.subtype == '*'
+        )
         if event.type == self.type and subtype:
             if isinstance(event, Message):
                 return await self._run_message_event(bot, event)
@@ -103,9 +104,7 @@ class App(BaseApp):
 
         if validation:
             with self.prepare_kwargs(
-                bot=bot,
-                event=event,
-                func_params=self.handler.params,
+                bot=bot, event=event, func_params=self.handler.params,
             ) as kwargs:
                 res = await self.handler(**kwargs)
 
@@ -141,8 +140,7 @@ class App(BaseApp):
                     chunks = shlex.split(raw)
                 except ValueError:
                     await bot.say(
-                        event.channel,
-                        '*Error*: Can not parse this command'
+                        event.channel, '*Error*: Can not parse this command'
                     )
                     return False
             else:
@@ -150,8 +148,7 @@ class App(BaseApp):
 
             try:
                 kw, remain_chunks = parse_option_and_arguments(
-                    self.handler,
-                    chunks,
+                    self.handler, chunks,
                 )
             except SyntaxError as e:
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
@@ -168,16 +165,11 @@ class App(BaseApp):
                 if 'remain_chunks' in func_params:
                     annotation = func_params['remain_chunks'].annotation
                     if annotation in [str, inspect._empty]:  # type: ignore
-                        kw['remain_chunks'] = ' '.join(
-                            remain_chunks
-                        )
+                        kw['remain_chunks'] = ' '.join(remain_chunks)
                     else:
                         kw['remain_chunks'] = remain_chunks
                 with self.prepare_kwargs(
-                    bot=bot,
-                    event=event,
-                    func_params=func_params,
-                    **kw,
+                    bot=bot, event=event, func_params=func_params, **kw,
                 ) as kwargs:
                     res = await self.handler(**kwargs)
 

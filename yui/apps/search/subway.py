@@ -40,13 +40,15 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     logger.info(f'fetch {name} start')
 
     metadata_url = 'https://map.naver.com/v5/api/subway/provide?{}'.format(
-        urlencode({
-            'requestFile': 'metaData.json',
-            'readPath': service_region,
-            'version': api_version,
-            'language': 'ko',
-            'caller': 'NaverMapPcBetaWeb',
-        })
+        urlencode(
+            {
+                'requestFile': 'metaData.json',
+                'readPath': service_region,
+                'version': api_version,
+                'language': 'ko',
+                'caller': 'NaverMapPcBetaWeb',
+            }
+        )
     )
 
     async with aiohttp.ClientSession(headers=headers) as session:
@@ -83,8 +85,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
     data = await bot.cache.get(f'SUBWAY_{service_region}_{api_version}')
     if data is None:
         await bot.say(
-            event.channel,
-            '아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, '아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
         )
         return
 
@@ -104,32 +105,25 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             find_end_ratio = end_ratio
 
     if find_start_ratio < 40:
-        await bot.say(
-            event.channel,
-            '출발역으로 지정하신 역 이름을 찾지 못하겠어요'
-        )
+        await bot.say(event.channel, '출발역으로 지정하신 역 이름을 찾지 못하겠어요')
         return
     elif find_end_ratio < 40:
-        await bot.say(
-            event.channel,
-            '도착역으로 지정하신 역 이름을 찾지 못하겠어요'
-        )
+        await bot.say(event.channel, '도착역으로 지정하신 역 이름을 찾지 못하겠어요')
         return
     elif find_start and find_end:
         if find_start['id'] == find_end['id']:
-            await bot.say(
-                event.channel,
-                '출발역과 도착역이 동일한 역이에요!'
-            )
+            await bot.say(event.channel, '출발역과 도착역이 동일한 역이에요!')
             return
 
         url = 'https://map.naver.com/v5/api/subway/search?{}'.format(
-            urlencode({
-                'serviceRegion': service_region,
-                'start': find_start['id'],
-                'goal': find_end['id'],
-                'departureTime': now().strftime('%Y-%m-%dT%H:%M:%S'),
-            })
+            urlencode(
+                {
+                    'serviceRegion': service_region,
+                    'start': find_start['id'],
+                    'goal': find_end['id'],
+                    'departureTime': now().strftime('%Y-%m-%dT%H:%M:%S'),
+                }
+            )
         )
 
         async with aiohttp.ClientSession(headers=headers) as session:
@@ -187,16 +181,18 @@ async def body(bot, event: Message, region: str, start: str, end: str):
                 f' / 요금(카드 기준): {fare:,}원'
             )
 
-            await bot.say(
-                event.channel,
-                text
-            )
+            await bot.say(event.channel, text)
 
 
 @box.command('지하철', ['전철', 'subway'])
-@option('--region', '-r', '--지역', default='수도권',
-        transform_func=choice(list(REGION_TABLE.keys())),
-        transform_error='지원되는 지역이 아니에요')
+@option(
+    '--region',
+    '-r',
+    '--지역',
+    default='수도권',
+    transform_func=choice(list(REGION_TABLE.keys())),
+    transform_error='지원되는 지역이 아니에요',
+)
 @argument('start', count_error='출발역을 입력해주세요')
 @argument('end', count_error='도착역을 입력해주세요')
 async def subway(bot, event: Message, region: str, start: str, end: str):

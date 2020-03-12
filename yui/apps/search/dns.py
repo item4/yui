@@ -74,10 +74,7 @@ async def query_custom(domain: str, ip: str) -> Result:
 
 async def query(domain: str, server: DNSServer) -> Result:
     url = 'http://checkdnskr.appspot.com/api/lookup?{}'.format(
-        urlencode({
-            'domain': domain,
-            'ip': server.ip,
-        })
+        urlencode({'domain': domain, 'ip': server.ip})
     )
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
@@ -123,8 +120,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
     """
 
     chat = await bot.say(
-        event.channel,
-        f'`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
+        event.channel, f'`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!'
     )
     if chat.body['ok']:
         tasks = []
@@ -159,10 +155,10 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
                 '주어진' if server_list else '많이 쓰이는',
                 '\n'.join(
                     f'{r.server_name}({r.server_ip}): 조회중 에러발생'
-                    if r.error else
-                    f'{r.server_name}({r.server_ip}): {r.a_record}'
+                    if r.error
+                    else f'{r.server_name}({r.server_ip}): {r.a_record}'
                     for r in result
-                )
+                ),
             ),
             thread_ts=chat.body['ts'],
         )

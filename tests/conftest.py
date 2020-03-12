@@ -18,11 +18,12 @@ DEFAULT_DATABASE_URL = 'sqlite://'
 
 
 def pytest_addoption(parser):
-    parser.addoption('--database-url', type='string',
-                     default=os.getenv('YUI_TEST_DATABASE_URL',
-                                       DEFAULT_DATABASE_URL),
-                     help='Database URL for testing.'
-                          '[default: %default]')
+    parser.addoption(
+        '--database-url',
+        type='string',
+        default=os.getenv('YUI_TEST_DATABASE_URL', DEFAULT_DATABASE_URL),
+        help='Database URL for testing.' '[default: %default]',
+    )
 
 
 @pytest.fixture()
@@ -99,16 +100,18 @@ def fx_sess(fx_engine):
 
 def gen_config():
     cfg = copy.deepcopy(DEFAULT)
-    cfg.update(dict(
-        DEBUG=True,
-        DATABASE_URL='sqlite:///',
-        TOKEN='asdf1234',
-        REGISTER_CRONTAB=False,
-        CHANNELS={},
-        USERS={},
-        WEBSOCKETDEBUGGERURL='',
-        WEEKEND_LOADING_TIME=[0, 12]
-    ))
+    cfg.update(
+        dict(
+            DEBUG=True,
+            DATABASE_URL='sqlite:///',
+            TOKEN='asdf1234',
+            REGISTER_CRONTAB=False,
+            CHANNELS={},
+            USERS={},
+            WEBSOCKETDEBUGGERURL='',
+            WEEKEND_LOADING_TIME=[0, 12],
+        )
+    )
     config = Config(**cfg)
     config.LOGGING['loggers']['yui']['handlers'] = ['console']
     del config.LOGGING['handlers']['file']

@@ -29,9 +29,7 @@ async def holiday_message(bot):
     if holidays:
         await bot.say(
             C.general.get(),
-            '오늘은 {}! 즐거운 휴일 되세요!'.format(
-                tossi.postfix(holidays[0], '(이)에요'),
-            )
+            '오늘은 {}! 즐거운 휴일 되세요!'.format(tossi.postfix(holidays[0], '(이)에요'),),
         )
 
 
@@ -55,8 +53,7 @@ async def holiday(bot, event: Message, raw: str):
             dt = str_to_date()(raw)
         except ValueError:
             await bot.say(
-                event.channel,
-                '인식할 수 없는 날짜 표현식이에요!',
+                event.channel, '인식할 수 없는 날짜 표현식이에요!',
             )
             return
     else:
@@ -66,8 +63,7 @@ async def holiday(bot, event: Message, raw: str):
         holidays = await get_holiday_names(dt)
     except APIDoesNotSupport:
         await bot.say(
-            event.channel,
-            'API가 해당 년월일시의 자료를 제공하지 않아요!',
+            event.channel, 'API가 해당 년월일시의 자료를 제공하지 않아요!',
         )
         return
 
@@ -78,6 +74,5 @@ async def holiday(bot, event: Message, raw: str):
         )
     else:
         await bot.say(
-            event.channel,
-            '{}: 평일'.format(dt.strftime('%Y년 %m월 %d일')),
+            event.channel, '{}: 평일'.format(dt.strftime('%Y년 %m월 %d일')),
         )

@@ -50,9 +50,7 @@ class Conversations(Endpoint):
         return await self._call('history', params)
 
     async def info(
-        self,
-        channel: Union[Channel, ChannelID],
-        include_locale: bool = False,
+        self, channel: Union[Channel, ChannelID], include_locale: bool = False,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.info"""
 
@@ -66,7 +64,7 @@ class Conversations(Endpoint):
             {
                 'channel': channel_id,
                 'include_locale': bool2str(include_locale),
-            }
+            },
         )
 
     async def list(
@@ -107,9 +105,7 @@ class Conversations(Endpoint):
 
         if users is None:
             users = []
-        user_ids = [
-            u if isinstance(u, str) else u.id for u in users
-        ]
+        user_ids = [u if isinstance(u, str) else u.id for u in users]
         channel_id = None
         if isinstance(channel, Channel):
             channel_id = channel.id

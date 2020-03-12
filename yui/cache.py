@@ -9,7 +9,6 @@ DATA_TYPE = Optional[Union[str, bytes, bool, int, float, Decimal, Dict, List]]
 
 
 class Cache:
-
     def __init__(self, mc: aiomcache.Client, prefix: str = '') -> None:
         self.mc = mc
         self.prefix = prefix.encode()
@@ -20,20 +19,14 @@ class Cache:
         return self.prefix + key
 
     async def set(
-        self,
-        key: Union[str, bytes],
-        value: DATA_TYPE,
-        exptime: int = 0,
+        self, key: Union[str, bytes], value: DATA_TYPE, exptime: int = 0,
     ) -> bool:
         data = json.dumps(value).encode()
         key = self._key(key)
         return await self.mc.set(key, data, exptime=exptime)
 
     async def add(
-        self,
-        key: Union[str, bytes],
-        value: DATA_TYPE,
-        exptime: int = 0,
+        self, key: Union[str, bytes], value: DATA_TYPE, exptime: int = 0,
     ) -> bool:
         data = json.dumps(value).encode()
         key = self._key(key)

@@ -16,16 +16,12 @@ async def help(bot, event: Message, raw: str):
         await bot.say(
             event.channel,
             '\n'.join(
-                a.get_short_help(p)
-                for a in bot.box.apps if a.has_short_help
+                a.get_short_help(p) for a in bot.box.apps if a.has_short_help
             ),
             thread_ts=event.ts,
         )
     else:
-        apps = [
-            h for h in bot.box.apps
-            if h.has_short_help and raw in h.names
-        ]
+        apps = [h for h in bot.box.apps if h.has_short_help and raw in h.names]
 
         if apps:
             if len(apps) == 1:
@@ -36,9 +32,7 @@ async def help(bot, event: Message, raw: str):
                     help = a.get_short_help(p)
 
                 await bot.say(
-                    event.channel,
-                    help,
-                    thread_ts=event.ts,
+                    event.channel, help, thread_ts=event.ts,
                 )
             else:
                 await bot.say(
@@ -48,7 +42,5 @@ async def help(bot, event: Message, raw: str):
                 )
         else:
             await bot.say(
-                event.channel,
-                '그런 명령어는 없어요!',
-                thread_ts=event.ts,
+                event.channel, '그런 명령어는 없어요!', thread_ts=event.ts,
             )

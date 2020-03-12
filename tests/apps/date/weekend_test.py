@@ -20,9 +20,7 @@ async def test_weekend_start(fx_config):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%'
-    )
+    assert said.data['text'] == ('주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%')
 
 
 @pytest.mark.asyncio
@@ -37,6 +35,4 @@ async def test_weekend_half(fx_config):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == (
-        '주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%'
-    )
+    assert said.data['text'] == ('주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%')

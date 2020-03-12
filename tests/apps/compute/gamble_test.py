@@ -56,9 +56,7 @@ async def test_dice_handler():
     assert said.data['channel'] == 'C1'
     assert not said.data['as_user']
     assert said.data['username'] == '딜러'
-    assert said.data['text'] == (
-        '유이가 기도하며 주사위를 굴려줬습니다. 19입니다.'
-    )
+    assert said.data['text'] == ('유이가 기도하며 주사위를 굴려줬습니다. 19입니다.')
 
     assert not await dice(bot, event, '', seed=206)
 

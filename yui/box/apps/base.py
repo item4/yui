@@ -61,8 +61,7 @@ class BaseApp:
             kwargs['sess'] = sess
         if 'engine_config' in func_params:
             kwargs['engine_config'] = EngineConfig(
-                url=bot.config.DATABASE_URL,
-                echo=bot.config.DATABASE_ECHO,
+                url=bot.config.DATABASE_URL, echo=bot.config.DATABASE_ECHO,
             )
 
         try:

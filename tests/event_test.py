@@ -6,8 +6,9 @@ def test_create_event():
     assert type(event) == Hello
     assert event.type == 'hello'
 
-    event: TeamMigrationStarted = create_event({
-        'type': 'team_migration_started'})
+    event: TeamMigrationStarted = create_event(
+        {'type': 'team_migration_started'}
+    )
     assert type(event) == TeamMigrationStarted
     assert event.type == 'team_migration_started'
 

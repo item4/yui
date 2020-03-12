@@ -13,21 +13,17 @@ class EngineConfig(NamedTuple):
     echo: bool
 
 
-def make_session(*args, **kwargs) -> Session:  # noqa
+def make_session(*args, **kwargs) -> Session:
     kwargs['autocommit'] = True
     return Session(*args, **kwargs)
 
 
 @contextlib.contextmanager
 def subprocess_session_manager(
-    engine_config: EngineConfig,
-    *args,
-    **kwargs,
+    engine_config: EngineConfig, *args, **kwargs,
 ) -> Iterator[Session]:
     engine = create_database_engine(
-        engine_config.url,
-        engine_config.echo,
-        NullPool,
+        engine_config.url, engine_config.echo, NullPool,
     )
     session = make_session(bind=engine, *args, **kwargs)
     yield session

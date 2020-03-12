@@ -22,5 +22,5 @@ async def quit(bot, event: Message):
     else:
         await bot.say(
             event.channel,
-            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name)
+            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name),
         )

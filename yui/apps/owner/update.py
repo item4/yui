@@ -39,8 +39,7 @@ def prepare(kw):
 
     if 'title' in kw:
         kw['fallback'] = '{}: {}'.format(
-            kw['title'],
-            kw.get('text', '').replace('\n', ' '),
+            kw['title'], kw.get('text', '').replace('\n', ' '),
         ).strip()
     else:
         kw['fallback'] = kw.get('text', '').replace('\n', ' ').strip()
@@ -98,5 +97,5 @@ async def update(bot, event: Message, raw: str):
     else:
         await bot.say(
             event.channel,
-            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name)
+            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name),
         )

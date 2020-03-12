@@ -46,9 +46,7 @@ def get_or_create_cache(name: str, sess) -> JSONCache:
 
 
 def process(
-    html: str,
-    page: Page,
-    cache: Optional[List[str]],
+    html: str, page: Page, cache: Optional[List[str]],
 ) -> Tuple[List[Attachment], List[str]]:
     h = fromstring(html)
     items = h.cssselect('#search-result-container li.list__item')[::-1]
@@ -63,10 +61,7 @@ def process(
             continue
         thumbnail_container = item.cssselect('.product_img a')[0]
         image_url = thumbnail_container[-1].get('data-src').strip()
-        title_link = (
-            page.base_url +
-            thumbnail_container.get('href').strip()
-        )
+        title_link = page.base_url + thumbnail_container.get('href').strip()
         title = item.cssselect('.product_title')[0].text_content().strip()
         labels_els = item.cssselect('.product_labels')
         remain = labels_els[1][0].text_content().strip()[0]
@@ -86,36 +81,22 @@ def process(
             color = '3399ff'
 
         fields: List[Field] = [
-            Field(
-                title='장르',
-                value=page.genre,
-                short=True,
-            ),
-            Field(
-                title='타겟',
-                value=page.target,
-                short=True,
-            ),
-            Field(
-                title='가격',
-                value=price,
-                short=True,
-            ),
-            Field(
-                title='재고',
-                value=remain,
-                short=True,
-            ),
+            Field(title='장르', value=page.genre, short=True,),
+            Field(title='타겟', value=page.target, short=True,),
+            Field(title='가격', value=price, short=True,),
+            Field(title='재고', value=remain, short=True,),
         ]
-        attachments.append(Attachment(
-            fallback=f'{title} - {title_link}',
-            title=title,
-            title_link=title_link,
-            color=color,
-            fields=fields,
-            image_url=image_url,
-            author_name=f'{author_name} ({circle_name})',
-        ))
+        attachments.append(
+            Attachment(
+                fallback=f'{title} - {title_link}',
+                title=title,
+                title_link=title_link,
+                color=color,
+                fields=fields,
+                image_url=image_url,
+                author_name=f'{author_name} ({circle_name})',
+            )
+        )
 
     return attachments, current
 
@@ -124,36 +105,46 @@ def process(
 async def watch(bot, sess):
     pages: List[Page] = [
         Page(
-            url=('https://ec.toranoana.shop/'
-                 'tora/ec/cot/genre/GNRN00001186/all/all/'),
+            url=(
+                'https://ec.toranoana.shop/'
+                'tora/ec/cot/genre/GNRN00001186/all/all/'
+            ),
             genre='소드 아트 온라인',
             target='남성향',
             restrict='전연령',
         ),
         Page(
-            url=('https://ec.toranoana.shop/'
-                 'joshi/ec/cot/genre/GNRN00001186/all/all/'),
+            url=(
+                'https://ec.toranoana.shop/'
+                'joshi/ec/cot/genre/GNRN00001186/all/all/'
+            ),
             genre='소드 아트 온라인',
             target='여성향',
             restrict='전연령',
         ),
         Page(
-            url=('https://ec.toranoana.jp/'
-                 'joshi_r/ec/cot/genre/GNRN00001186/all/all/'),
+            url=(
+                'https://ec.toranoana.jp/'
+                'joshi_r/ec/cot/genre/GNRN00001186/all/all/'
+            ),
             genre='소드 아트 온라인',
             target='여성향',
             restrict='성인',
         ),
         Page(
-            url=('https://ec.toranoana.shop/'
-                 'joshi/ec/cot/genre/GNRN00003507/all/all/'),
+            url=(
+                'https://ec.toranoana.shop/'
+                'joshi/ec/cot/genre/GNRN00003507/all/all/'
+            ),
             genre='아이돌마스터 SideM',
             target='여성향',
             restrict='전연령',
         ),
         Page(
-            url=('https://ec.toranoana.jp/'
-                 'joshi_r/ec/cot/genre/GNRN00003507/all/all/'),
+            url=(
+                'https://ec.toranoana.jp/'
+                'joshi_r/ec/cot/genre/GNRN00003507/all/all/'
+            ),
             genre='아이돌마스터 SideM',
             target='여성향',
             restrict='성인',
@@ -170,10 +161,7 @@ async def watch(bot, sess):
 
         cache = get_or_create_cache(page.label, sess)
         attachments, cache.body = await bot.run_in_other_process(
-            process,
-            html,
-            page,
-            cache.body,
+            process, html, page, cache.body,
         )
 
         if attachments:
@@ -181,11 +169,13 @@ async def watch(bot, sess):
             with sess.begin():
                 sess.add(cache)
 
-            await retry(bot.api.chat.postMessage(
-                channel=C.toranoana.get(),
-                as_user=True,
-                text=f'토라노아나 {page.genre} 신간을 안내드릴게요!',
-                attachments=attachments,
-            ))
+            await retry(
+                bot.api.chat.postMessage(
+                    channel=C.toranoana.get(),
+                    as_user=True,
+                    text=f'토라노아나 {page.genre} 신간을 안내드릴게요!',
+                    attachments=attachments,
+                )
+            )
 
-        await asyncio.sleep(2*60)
+        await asyncio.sleep(2 * 60)

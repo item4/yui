@@ -68,20 +68,23 @@ def parse(html: str) -> Tuple[Optional[str], List[Attachment]]:
 
         for word in words:
             w = word.cssselect('.txt_searchword')[0]
-            attachments.append(Attachment(
-                title=strip_tags(w.text_content()),
-                title_link=fix_url(w.get('href')),
-                text=fix_blank(
-                    word.cssselect('.list_search')[0].text_content()
-                ),
-            ))
+            attachments.append(
+                Attachment(
+                    title=strip_tags(w.text_content()),
+                    title_link=fix_url(w.get('href')),
+                    text=fix_blank(
+                        word.cssselect('.list_search')[0].text_content()
+                    ),
+                )
+            )
 
         return None, attachments
 
 
 @box.command('dic', ['사전'])
-@option('--category', '-c', transform_func=choice(list(DICS.keys())),
-        default='영어')
+@option(
+    '--category', '-c', transform_func=choice(list(DICS.keys())), default='영어'
+)
 @argument('keyword', nargs=-1, concat=True)
 async def dic(bot: Bot, event: Message, category: str, keyword: str):
     """
@@ -101,10 +104,7 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
     """
 
     url = 'http://dic.daum.net/search.do?{}'.format(
-        urlencode({
-            'q': keyword,
-            'dic': DICS[category],
-        })
+        urlencode({'q': keyword, 'dic': DICS[category]})
     )
     html = ''
     async with aiohttp.ClientSession() as session:
@@ -114,10 +114,7 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
     redirect, attachments = await bot.run_in_other_process(parse, html)
 
     if redirect:
-        await bot.say(
-            event.channel,
-            redirect
-        )
+        await bot.say(event.channel, redirect)
     else:
         await bot.api.chat.postMessage(
             channel=event.channel,

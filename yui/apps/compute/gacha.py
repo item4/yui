@@ -23,9 +23,7 @@ CHANCES = [
     Decimal('0.99'),
 ]
 D001 = Decimal('0.01')
-COLLECT_QUERY1 = re.compile(
-    r'^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$'
-)
+COLLECT_QUERY1 = re.compile(r'^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$')
 COLLECT_QUERY2 = re.compile(
     r'^(?:(?:총|전체)\s*)?'
     r'(?P<total>\d+)\s*(?:종류?|개)?\s*중(?:에서?)?\s*'
@@ -41,7 +39,6 @@ def to_percent(v: Decimal, q=CHANCE_MIN) -> str:
 
 
 class Gacha(route.RouteApp):
-
     def __init__(self) -> None:
         self.name = '가챠'
         self.route_list = [
@@ -55,7 +52,8 @@ class Gacha(route.RouteApp):
         return f'`{prefix}가챠`: 가챠 계산기'
 
     def get_full_help(self, prefix: str):
-        return inspect.cleandoc(f"""
+        return inspect.cleandoc(
+            f"""
 *가챠 계산기*
 
 해로운 문명, 가챠에 관련된 계산을 도와줍니다.
@@ -72,28 +70,22 @@ Aliases
 - `수집`대신 `collect`를 사용할 수 있습니다.
 - `도전`대신 `challenge`를 사용할 수 있습니다.
 - `도전`에서 `--성공`대신 `--성공횟수`/`--successes`/`-s`를 사용할 수 있습니다.
-""")
+"""
+        )
 
     async def fallback(self, bot, event: Message):
-        await bot.say(
-            event.channel,
-            f'Usage: `{bot.config.PREFIX}help 가챠`'
-        )
+        await bot.say(event.channel, f'Usage: `{bot.config.PREFIX}help 가챠`')
 
     @option('--successes', '-s', '--성공횟수', '--성공', default=1)
     @argument('chance')
     async def challenge(
-        self,
-        bot,
-        event: Message,
-        successes: int,
-        chance: str,
+        self, bot, event: Message, successes: int, chance: str,
     ):
         if successes < SUCCESSES_MIN or successes > SUCCESSES_MAX:
             await bot.say(
                 event.channel,
                 f'성공횟수는 {SUCCESSES_MIN}회 이상,'
-                f' {SUCCESSES_MAX:,}회 이하로 입력해주세요!'
+                f' {SUCCESSES_MAX:,}회 이하로 입력해주세요!',
             )
             return
         try:
@@ -102,28 +94,20 @@ Aliases
             else:
                 p = Decimal(chance)
         except InvalidOperation:
-            await bot.say(
-                event.channel,
-                '정상적인 확률을 입력해주세요!'
-            )
+            await bot.say(event.channel, '정상적인 확률을 입력해주세요!')
             return
         if p < CHANCE_MIN or p > CHANCE_MAX:
             await bot.say(
                 event.channel,
                 f'확률값은 {to_percent(CHANCE_MIN)}% 이상,'
-                f' {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!'
+                f' {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!',
             )
             return
         if p / successes < CHANCE_MIN:
-            await bot.say(
-                event.channel,
-                '입력하신 확률값에 비해 성공 횟수가 너무 많아요!'
-            )
+            await bot.say(event.channel, '입력하신 확률값에 비해 성공 횟수가 너무 많아요!')
             return
         counts = {
-            int(math.ceil(
-                nbinom.ppf(float(q), successes, float(p))
-            ))
+            int(math.ceil(nbinom.ppf(float(q), successes, float(p))))
             for q in filter(lambda x: x >= p, CHANCES + [p])
         }
         results = [
@@ -138,7 +122,7 @@ Aliases
         await bot.say(
             event.channel,
             f'{to_percent(p)}% 확률의 도전을 {successes:,}번'
-            f' 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}'
+            f' 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}',
         )
 
     @argument('query', nargs=-1, concat=True)
@@ -153,28 +137,16 @@ Aliases
                 n = int(match.group('n'))
                 total = int(match.group('total'))
             else:
-                await bot.say(
-                    event.channel,
-                    '요청을 해석하는데에 실패했어요!'
-                )
+                await bot.say(event.channel, '요청을 해석하는데에 실패했어요!')
                 return
         if total < 2 or total > 512:
-            await bot.say(
-                event.channel,
-                '정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)'
-            )
+            await bot.say(event.channel, '정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)')
             return
         if n < 1 or n > 512:
-            await bot.say(
-                event.channel,
-                '정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)'
-            )
+            await bot.say(event.channel, '정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)')
             return
         if total < n:
-            await bot.say(
-                event.channel,
-                '원하는 갯수가 전체 갯수보다 많을 수 없어요!'
-            )
+            await bot.say(event.channel, '원하는 갯수가 전체 갯수보다 많을 수 없어요!')
             return
 
         result = n * harmonic(n)
@@ -189,7 +161,7 @@ Aliases
             f'상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%'
             f'확률로 준다고 가정할 때 {n}종류의 특전을 {text} 모으려면, 평균적으로'
             f' {math.ceil(result)}(`{float(result):.2f}`)개의 상품을'
-            ' 구입해야 수집에 성공할 수 있어요!'
+            ' 구입해야 수집에 성공할 수 있어요!',
         )
 
 

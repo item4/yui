@@ -37,9 +37,9 @@ def parse_dice_syntax(expr: str, seed: int = None) -> List[DiceResult]:
         random.seed(seed)
         result = []
         chunks = [
-            y for y in [
-                x.strip() for x in DICE_SYNTAX_SEPERATOR.split(expr)
-            ] if len(y) > 0
+            y
+            for y in [x.strip() for x in DICE_SYNTAX_SEPERATOR.split(expr)]
+            if len(y) > 0
         ]
         if len(chunks) > 5:
             raise SyntaxError('Too many queries')
@@ -81,10 +81,12 @@ def parse_dice_syntax(expr: str, seed: int = None) -> List[DiceResult]:
                         '+'.join(str(x) for x in rounds),
                         modifier_str,
                     )
-                result.append(DiceResult(
-                    query=f'{count_str}d{faces}{modifier_str}',
-                    result=text,
-                ))
+                result.append(
+                    DiceResult(
+                        query=f'{count_str}d{faces}{modifier_str}',
+                        result=text,
+                    )
+                )
             else:
                 raise SyntaxError(f'Can not parse this chunk (`{chunk}`)')
 
