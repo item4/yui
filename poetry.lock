@@ -189,8 +189,8 @@ category = "main"
 description = "Composable command line interface toolkit"
 name = "click"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "7.0"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+version = "7.1.1"
 
 [[package]]
 category = "main"
@@ -471,7 +471,7 @@ description = "Fast, correct Python JSON library supporting dataclasses, datetim
 name = "orjson"
 optional = false
 python-versions = ">=3.6"
-version = "2.5.1"
+version = "2.6.0"
 
 [[package]]
 category = "dev"
@@ -479,7 +479,7 @@ description = "Core utilities for Python packages"
 name = "packaging"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "20.1"
+version = "20.3"
 
 [package.dependencies]
 pyparsing = ">=2.0.2"
@@ -501,8 +501,8 @@ category = "dev"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 name = "pre-commit"
 optional = false
-python-versions = ">=3.6"
-version = "2.1.1"
+python-versions = ">=3.6.1"
+version = "2.2.0"
 
 [package.dependencies]
 cfgv = ">=2.0.0"
@@ -581,7 +581,7 @@ description = "pytest: simple powerful testing with Python"
 name = "pytest"
 optional = false
 python-versions = ">=3.5"
-version = "5.3.5"
+version = "5.4.1"
 
 [package.dependencies]
 atomicwrites = ">=1.0"
@@ -715,7 +715,7 @@ description = "Database Abstraction Library"
 name = "sqlalchemy"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "1.3.13"
+version = "1.3.15"
 
 [package.extras]
 mssql = ["pyodbc"]
@@ -1003,8 +1003,8 @@ chardet = [
     {file = "chardet-3.0.4.tar.gz", hash = "sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae"},
 ]
 click = [
-    {file = "Click-7.0-py2.py3-none-any.whl", hash = "sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13"},
-    {file = "Click-7.0.tar.gz", hash = "sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7"},
+    {file = "click-7.1.1-py2.py3-none-any.whl", hash = "sha256:e345d143d80bf5ee7534056164e5e112ea5e22716bbb1ce727941f4c8b471b9a"},
+    {file = "click-7.1.1.tar.gz", hash = "sha256:8a18b4ea89d8820c5d0c7da8a64b2c324b4dabb695804dbfea19b9be9d88c0cc"},
 ]
 codecov = [
     {file = "codecov-2.0.16-py2.py3-none-any.whl", hash = "sha256:38b32934e759a29313382287f59986f25613708f60760c88d31e956399bbeffe"},
@@ -1238,29 +1238,32 @@ numpy = [
     {file = "numpy-1.18.1.zip", hash = "sha256:b6ff59cee96b454516e47e7721098e6ceebef435e3e21ac2d6c3b8b02628eb77"},
 ]
 orjson = [
-    {file = "orjson-2.5.1-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:45e87784efe07b465a60673bacc91407b09f984a420479fe5f6b0fb143f985b2"},
-    {file = "orjson-2.5.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:60a9f1061fe04b5249aa16a92012899e24ff6422ccde39c9bfeedc41159588f6"},
-    {file = "orjson-2.5.1-cp36-none-win_amd64.whl", hash = "sha256:ef89160b3b1890cd9353a14c8083e927363c7cb7fefabb071ca2a0d7888fd543"},
-    {file = "orjson-2.5.1-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:a3c3594a587a7de9c1416a85b3cc9383283f7370a670789fbd8077b21c80dc24"},
-    {file = "orjson-2.5.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:5a19c8f0023c5d04211261915b1116de4de0318e414f8e60819943e6f94d5690"},
-    {file = "orjson-2.5.1-cp37-none-win_amd64.whl", hash = "sha256:63815d36c3a0ad0922990faf01aa1344facf662322c572cd2a9a5ef9ab0f8903"},
-    {file = "orjson-2.5.1-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:a23d88f79534336bfccf75313d7c45e54615753970134cd4fdfcfada09d884ed"},
-    {file = "orjson-2.5.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:afa6b0662116fb8e03604dc4c8eb8d8fc07a0c9c5401b3aa4bb9ed75e9a91fb1"},
-    {file = "orjson-2.5.1-cp38-none-win_amd64.whl", hash = "sha256:01d6e8a5bdd5cd75e8e241ec837073236b557e9f3e8d35ddb4bccb418c61721e"},
-    {file = "orjson-2.5.1-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:1b4ce958d6e356f2c8eee65e1201d9c04b50a44d398e0febb744c6a7afa05223"},
-    {file = "orjson-2.5.1.tar.gz", hash = "sha256:af588778834e195085b5ab64a7ba1642722ede82e4668c6a9cb57a66458633cf"},
+    {file = "orjson-2.6.0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:b74ae845ba2557a2b17594f2dbfa3ddacbab9dbab4f354e81f957f1fd053ed82"},
+    {file = "orjson-2.6.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:7c4a4b3e5dba7a4c0d4a67ac28f3d86c622727c1fd779c84fc213eee4e824f41"},
+    {file = "orjson-2.6.0-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:dd75d066c9a84a04d73602de624734bbcbb3e24e9ac1b0bb3ab1c1f5d981e1b0"},
+    {file = "orjson-2.6.0-cp36-none-win_amd64.whl", hash = "sha256:fd85e05f8c67bb1fbccdd95eadf26973c6ee5f3e0b4fe5e57f46280639c193a8"},
+    {file = "orjson-2.6.0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:094fbc8a38ddf65fb5f66272e3215fe6713a2097c13492fc6630403b44d8b45b"},
+    {file = "orjson-2.6.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:e3896c5ea509c016fdfc9e68d0fd68c24536eeac1f644749d135c3702640433a"},
+    {file = "orjson-2.6.0-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:81eb151390a18138097949b7c1ceccaa8f98ccbc85aaea7aed96db0ac0f41775"},
+    {file = "orjson-2.6.0-cp37-none-win_amd64.whl", hash = "sha256:5c85e3c502544559b9f36f6d13273f17ce6c4a106edb5c2e7176fd8eb8e31e54"},
+    {file = "orjson-2.6.0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:2d1ec79397dc83de46482561b8ad73647dfe6353c0c7634d92008a0921ed5e76"},
+    {file = "orjson-2.6.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:0daa5783e175faf834aea621e1b523f3f1eb6841956ba90d16253881197a302d"},
+    {file = "orjson-2.6.0-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:dd39cee37c66820d69222928fa9b2256d220f5d8dbb4aa1ed5f0f3729a9a9952"},
+    {file = "orjson-2.6.0-cp38-none-win_amd64.whl", hash = "sha256:aa648afb7785e4f3f932664700c9a08fa34a74188bee3e27c1741f305f328bb3"},
+    {file = "orjson-2.6.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:22a60e27e36ed5d094baab6f15ed258e7006b6e4f8029cdbf8266a91f8794dfe"},
+    {file = "orjson-2.6.0.tar.gz", hash = "sha256:c7193de6bd965fb3ee84c72f2126270ecd2e6b755da4d9c7ea47026f9888d16c"},
 ]
 packaging = [
-    {file = "packaging-20.1-py2.py3-none-any.whl", hash = "sha256:170748228214b70b672c581a3dd610ee51f733018650740e98c7df862a583f73"},
-    {file = "packaging-20.1.tar.gz", hash = "sha256:e665345f9eef0c621aa0bf2f8d78cf6d21904eef16a93f020240b704a57f1334"},
+    {file = "packaging-20.3-py2.py3-none-any.whl", hash = "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"},
+    {file = "packaging-20.3.tar.gz", hash = "sha256:3c292b474fda1671ec57d46d739d072bfd495a4f51ad01a055121d81e952b7a3"},
 ]
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
 ]
 pre-commit = [
-    {file = "pre_commit-2.1.1-py2.py3-none-any.whl", hash = "sha256:09ebe467f43ce24377f8c2f200fe3cd2570d328eb2ce0568c8e96ce19da45fa6"},
-    {file = "pre_commit-2.1.1.tar.gz", hash = "sha256:f8d555e31e2051892c7f7b3ad9f620bd2c09271d87e9eedb2ad831737d6211eb"},
+    {file = "pre_commit-2.2.0-py2.py3-none-any.whl", hash = "sha256:487c675916e6f99d355ec5595ad77b325689d423ef4839db1ed2f02f639c9522"},
+    {file = "pre_commit-2.2.0.tar.gz", hash = "sha256:c0aa11bce04a7b46c5544723aedf4e81a4d5f64ad1205a30a9ea12d5e81969e1"},
 ]
 psycopg2-binary = [
     {file = "psycopg2-binary-2.8.4.tar.gz", hash = "sha256:3a2522b1d9178575acee4adf8fd9f979f9c0449b00b4164bb63c3475ea6528ed"},
@@ -1320,8 +1323,8 @@ pyppeteer = [
     {file = "pyppeteer-0.0.25.tar.gz", hash = "sha256:51fe769b722a1718043b74d12c20420f29e0dd9eeea2b66652b7f93a9ad465dd"},
 ]
 pytest = [
-    {file = "pytest-5.3.5-py3-none-any.whl", hash = "sha256:ff615c761e25eb25df19edddc0b970302d2a9091fbce0e7213298d85fb61fef6"},
-    {file = "pytest-5.3.5.tar.gz", hash = "sha256:0d5fe9189a148acc3c3eb2ac8e1ac0742cb7618c084f3d228baaec0c254b318d"},
+    {file = "pytest-5.4.1-py3-none-any.whl", hash = "sha256:0e5b30f5cb04e887b91b1ee519fa3d89049595f428c1db76e73bd7f17b09b172"},
+    {file = "pytest-5.4.1.tar.gz", hash = "sha256:84dde37075b8805f3d1f392cc47e38a0e59518fb46a431cfdaf7cf1ce805f970"},
 ]
 pytest-asyncio = [
     {file = "pytest-asyncio-0.10.0.tar.gz", hash = "sha256:9fac5100fd716cbecf6ef89233e8590a4ad61d729d1732e0a96b84182df1daaf"},
@@ -1394,7 +1397,7 @@ six = [
     {file = "six-1.14.0.tar.gz", hash = "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a"},
 ]
 sqlalchemy = [
-    {file = "SQLAlchemy-1.3.13.tar.gz", hash = "sha256:64a7b71846db6423807e96820993fa12a03b89127d278290ca25c0b11ed7b4fb"},
+    {file = "SQLAlchemy-1.3.15.tar.gz", hash = "sha256:c4cca4aed606297afbe90d4306b49ad3a4cd36feb3f87e4bfd655c57fd9ef445"},
 ]
 sqlalchemy-utils = [
     {file = "SQLAlchemy-Utils-0.34.2.tar.gz", hash = "sha256:6689b29d7951c5c7c4d79fa6b8c95f9ff9ec708b07aa53f82060599bd14dcc88"},
