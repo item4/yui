@@ -1,4 +1,7 @@
-from typing import Any, List, TypeVar, Union
+from typing import Any
+from typing import List
+from typing import TypeVar
+from typing import Union
 
 
 NoneType = type(None)

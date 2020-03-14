@@ -4,7 +4,9 @@ from aiohttp import client_exceptions
 
 import pytest
 
-from yui.apps.weather.aws import API_URL, aws, clothes_by_temperature
+from yui.apps.weather.aws import API_URL
+from yui.apps.weather.aws import aws
+from yui.apps.weather.aws import clothes_by_temperature
 from yui.utils import json
 
 from ...util import FakeBot

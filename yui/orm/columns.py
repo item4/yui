@@ -1,9 +1,11 @@
 import datetime
 from typing import Optional
 
-from dateutil.tz import UTC, tzfile
+from dateutil.tz import UTC
+from dateutil.tz import tzfile
 
-from sqlalchemy.ext.hybrid import Comparator, hybrid_property
+from sqlalchemy.ext.hybrid import Comparator
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import Column
 from sqlalchemy.sql.expression import func
 from sqlalchemy.types import DateTime

@@ -4,7 +4,8 @@ import aiohttp
 
 import tossi
 
-from .utils import APIDoesNotSupport, get_holiday_names
+from .utils import APIDoesNotSupport
+from .utils import get_holiday_names
 from ...box import box
 from ...command import C
 from ...event import Message

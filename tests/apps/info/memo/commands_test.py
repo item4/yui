@@ -1,6 +1,8 @@
 import pytest
 
-from yui.apps.info.memo.commands import memo_add, memo_delete, memo_show
+from yui.apps.info.memo.commands import memo_add
+from yui.apps.info.memo.commands import memo_delete
+from yui.apps.info.memo.commands import memo_show
 from yui.apps.info.memo.models import Memo
 from yui.orm.utils import get_count
 

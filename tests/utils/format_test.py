@@ -1,17 +1,15 @@
-from yui.utils.format import (
-    bold,
-    code,
-    escape,
-    italics,
-    link,
-    link_channel,
-    link_everyone,
-    link_here,
-    link_url,
-    preformatted,
-    quote,
-    strike,
-)
+from yui.utils.format import bold
+from yui.utils.format import code
+from yui.utils.format import escape
+from yui.utils.format import italics
+from yui.utils.format import link
+from yui.utils.format import link_channel
+from yui.utils.format import link_everyone
+from yui.utils.format import link_here
+from yui.utils.format import link_url
+from yui.utils.format import preformatted
+from yui.utils.format import quote
+from yui.utils.format import strike
 
 from ..util import FakeBot
 

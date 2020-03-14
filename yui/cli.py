@@ -9,7 +9,8 @@ from alembic.config import Config as AlembicConfig
 import click
 
 from .bot import Bot
-from .config import ConfigurationError, load
+from .config import ConfigurationError
+from .config import load
 
 
 class Config(AlembicConfig):

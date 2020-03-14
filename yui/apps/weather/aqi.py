@@ -1,6 +1,7 @@
 import datetime
 from hashlib import md5
-from typing import Optional, Tuple
+from typing import Optional
+from typing import Tuple
 from urllib.parse import urlencode
 
 import aiohttp

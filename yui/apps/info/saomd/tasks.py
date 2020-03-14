@@ -1,7 +1,9 @@
 import asyncio
 import logging
-from typing import Dict, List
-from urllib.parse import parse_qs, urlparse
+from typing import Dict
+from typing import List
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 import aiohttp
 
@@ -9,15 +11,14 @@ from lxml.html import fromstring
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from .models import (
-    Notice,
-    SERVER_LABEL,
-    Server,
-)
+from .models import Notice
+from .models import SERVER_LABEL
+from .models import Server
 from ....bot import Bot
 from ....box import box
 from ....command import C
-from ....orm import EngineConfig, subprocess_session_manager
+from ....orm import EngineConfig
+from ....orm import subprocess_session_manager
 from ....types.slack.attachment import Attachment
 from ....utils.api import retry
 

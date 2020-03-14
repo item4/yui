@@ -1,6 +1,7 @@
 from yui.box import Box
 from yui.box.apps.basic import App
-from yui.command.decorators import argument, option
+from yui.command.decorators import argument
+from yui.command.decorators import option
 from yui.event import Message
 
 

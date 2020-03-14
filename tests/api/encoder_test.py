@@ -1,11 +1,11 @@
-from yui.api.encoder import bool2str, to_json
-from yui.types.slack.action import (
-    Action,
-    Confirmation,
-    OptionField,
-    OptionFieldGroup,
-)
-from yui.types.slack.attachment import Attachment, Field
+from yui.api.encoder import bool2str
+from yui.api.encoder import to_json
+from yui.types.slack.action import Action
+from yui.types.slack.action import Confirmation
+from yui.types.slack.action import OptionField
+from yui.types.slack.action import OptionFieldGroup
+from yui.types.slack.attachment import Attachment
+from yui.types.slack.attachment import Field
 from yui.utils import json
 
 

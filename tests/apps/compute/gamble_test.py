@@ -1,6 +1,7 @@
 import pytest
 
-from yui.apps.compute.gamble import dice, parse_dice_syntax
+from yui.apps.compute.gamble import dice
+from yui.apps.compute.gamble import parse_dice_syntax
 
 from ...util import FakeBot
 

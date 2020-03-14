@@ -2,11 +2,9 @@ from freezegun import freeze_time
 
 import pytest
 
-from yui.apps.info.packtpub import (
-    PACKTPUB_URL,
-    auto_packtpub_dotd,
-    packtpub_dotd,
-)
+from yui.apps.info.packtpub import PACKTPUB_URL
+from yui.apps.info.packtpub import auto_packtpub_dotd
+from yui.apps.info.packtpub import packtpub_dotd
 from yui.utils import json
 from yui.utils.datetime import datetime
 

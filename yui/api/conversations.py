@@ -1,8 +1,12 @@
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..types.base import ChannelID, Ts, UserID
+from ..types.base import ChannelID
+from ..types.base import Ts
+from ..types.base import UserID
 from ..types.channel import Channel
 from ..types.slack.response import APIResponse
 from ..types.user import User

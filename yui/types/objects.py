@@ -1,29 +1,27 @@
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
-from .base import (
-    AppID,
-    BotID,
-    FileID,
-    SubteamID,
-    TeamID,
-    Ts,
-)
-from .namespace import (
-    BooleanField,
-    ChannelListField,
-    DateTimeField,
-    Field,
-    IDField,
-    NameField,
-    OptionalField,
-    OptionalUserField,
-    StringField,
-    TsField,
-    UserField,
-    UserListField,
-    namespace,
-)
+from .base import AppID
+from .base import BotID
+from .base import FileID
+from .base import SubteamID
+from .base import TeamID
+from .base import Ts
+from .namespace import BooleanField
+from .namespace import ChannelListField
+from .namespace import DateTimeField
+from .namespace import Field
+from .namespace import IDField
+from .namespace import NameField
+from .namespace import OptionalField
+from .namespace import OptionalUserField
+from .namespace import StringField
+from .namespace import TsField
+from .namespace import UserField
+from .namespace import UserListField
+from .namespace import namespace
 from .user import User
 
 

@@ -1,5 +1,6 @@
 import contextlib
-from typing import Iterator, NamedTuple
+from typing import Iterator
+from typing import NamedTuple
 
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import NullPool

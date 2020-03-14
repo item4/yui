@@ -2,7 +2,6 @@ import asyncio
 import random
 from typing import Optional
 
-
 from .models import EventLog
 from ....types.channel import Channel
 

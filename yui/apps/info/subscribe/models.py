@@ -1,8 +1,11 @@
 from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer, String
+from sqlalchemy.types import Integer
+from sqlalchemy.types import String
 
 from ....orm import Base
-from ....orm.columns import DateTimeAtColumn, DateTimeColumn, TimezoneColumn
+from ....orm.columns import DateTimeAtColumn
+from ....orm.columns import DateTimeColumn
+from ....orm.columns import TimezoneColumn
 
 
 class RSSFeedURL(Base):

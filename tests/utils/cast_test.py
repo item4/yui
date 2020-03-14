@@ -1,8 +1,16 @@
-from typing import Any, Dict, List, NewType, Optional, Set, Tuple, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import NewType
+from typing import Optional
+from typing import Set
+from typing import Tuple
+from typing import Union
 
 import pytest
 
-from yui.types.namespace import Field, namespace
+from yui.types.namespace import Field
+from yui.types.namespace import namespace
 from yui.utils.cast import cast
 
 from ..util import FakeBot

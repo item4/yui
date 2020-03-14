@@ -1,8 +1,14 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
-from ..types.base import ChannelID, Ts, UserID
+from ..types.base import ChannelID
+from ..types.base import Ts
+from ..types.base import UserID
 from ..types.channel import Channel
 from ..types.slack.attachment import Attachment
 from ..types.slack.block import Block

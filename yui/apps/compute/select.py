@@ -2,7 +2,8 @@ import random
 from typing import List
 
 from ...box import box
-from ...command import argument, option
+from ...command import argument
+from ...command import option
 from ...event import Message
 
 

@@ -1,6 +1,7 @@
 import pytest
 
-from yui.apps.fun.code import code_review, write_code_review
+from yui.apps.fun.code import code_review
+from yui.apps.fun.code import write_code_review
 
 from ...util import FakeBot
 

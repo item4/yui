@@ -1,12 +1,15 @@
 import asyncio
-from typing import List, NamedTuple
+from typing import List
+from typing import NamedTuple
 from urllib.parse import urlencode
 
 import aiohttp
-from aiohttp.client_exceptions import ClientConnectionError, ContentTypeError
+from aiohttp.client_exceptions import ClientConnectionError
+from aiohttp.client_exceptions import ContentTypeError
 
 from ...box import box
-from ...command import argument, option
+from ...command import argument
+from ...command import option
 from ...event import Message
 from ...transform import extract_url
 from ...utils import json

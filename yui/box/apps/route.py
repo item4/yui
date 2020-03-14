@@ -2,13 +2,18 @@ from __future__ import annotations
 
 import html
 import shlex
-from typing import List, Optional, TYPE_CHECKING, Union
+from typing import List
+from typing import Optional
+from typing import TYPE_CHECKING
+from typing import Union
 
 from .base import BaseApp
 from ..parsers import parse_option_and_arguments
 from ..utils import SPACE_RE
-from ...event import Event, Message
-from ...types.handler import HANDLER_CALL_TYPE, Handler
+from ...event import Event
+from ...event import Message
+from ...types.handler import HANDLER_CALL_TYPE
+from ...types.handler import Handler
 from ...utils.handler import get_handler
 
 if TYPE_CHECKING:

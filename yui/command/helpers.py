@@ -1,10 +1,10 @@
-from ..exceptions import (
-    AllChannelsError,
-    AllUsersError,
-    NoChannelsError,
-    NoUsersError,
-)
-from ..types.namespace import Namespace, name_convert, user_id_convert
+from ..exceptions import AllChannelsError
+from ..exceptions import AllUsersError
+from ..exceptions import NoChannelsError
+from ..exceptions import NoUsersError
+from ..types.namespace import Namespace
+from ..types.namespace import name_convert
+from ..types.namespace import user_id_convert
 
 
 class HelperMeta(type):

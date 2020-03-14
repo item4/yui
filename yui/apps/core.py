@@ -1,42 +1,39 @@
 import asyncio
 import logging
 
-from ..bot import APICallError, BotReconnect
+from ..bot import APICallError
+from ..bot import BotReconnect
 from ..box import box
-from ..event import (
-    ChannelArchive,
-    ChannelCreated,
-    ChannelDeleted,
-    ChannelHistoryChanged,
-    ChannelJoined,
-    ChannelLeft,
-    ChannelMarked,
-    ChannelRename,
-    ChannelUnarchive,
-    ChatterboxSystemStart,
-    GroupArchive,
-    GroupClose,
-    GroupHistoryChanged,
-    GroupJoined,
-    GroupLeft,
-    GroupMarked,
-    GroupOpen,
-    GroupRename,
-    GroupUnarchive,
-    IMClose,
-    IMCreated,
-    IMHistoryChanged,
-    IMMarked,
-    IMOpen,
-    TeamJoin,
-    TeamMigrationStarted,
-    UserChange,
-)
-from ..types.channel import (
-    DirectMessageChannel,
-    PrivateChannel,
-    PublicChannel,
-)
+from ..event import ChannelArchive
+from ..event import ChannelCreated
+from ..event import ChannelDeleted
+from ..event import ChannelHistoryChanged
+from ..event import ChannelJoined
+from ..event import ChannelLeft
+from ..event import ChannelMarked
+from ..event import ChannelRename
+from ..event import ChannelUnarchive
+from ..event import ChatterboxSystemStart
+from ..event import GroupArchive
+from ..event import GroupClose
+from ..event import GroupHistoryChanged
+from ..event import GroupJoined
+from ..event import GroupLeft
+from ..event import GroupMarked
+from ..event import GroupOpen
+from ..event import GroupRename
+from ..event import GroupUnarchive
+from ..event import IMClose
+from ..event import IMCreated
+from ..event import IMHistoryChanged
+from ..event import IMMarked
+from ..event import IMOpen
+from ..event import TeamJoin
+from ..event import TeamMigrationStarted
+from ..event import UserChange
+from ..types.channel import DirectMessageChannel
+from ..types.channel import PrivateChannel
+from ..types.channel import PublicChannel
 from ..types.user import User
 
 logger = logging.getLogger(__name__)

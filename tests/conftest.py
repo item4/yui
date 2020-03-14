@@ -10,8 +10,10 @@ from sqlalchemy.exc import ProgrammingError
 
 from yui.bot import Bot
 from yui.box import Box
-from yui.config import Config, DEFAULT
-from yui.orm import Base, make_session
+from yui.config import Config
+from yui.config import DEFAULT
+from yui.orm import Base
+from yui.orm import make_session
 
 
 DEFAULT_DATABASE_URL = 'sqlite://'

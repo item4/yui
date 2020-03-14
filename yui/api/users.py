@@ -1,4 +1,5 @@
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint

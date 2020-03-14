@@ -1,7 +1,10 @@
 import pytest
 
-from yui.command.decorators import argument, option
-from yui.types.handler import Argument, Handler, Option
+from yui.command.decorators import argument
+from yui.command.decorators import option
+from yui.types.handler import Argument
+from yui.types.handler import Handler
+from yui.types.handler import Option
 
 
 def test_argument_decorator():

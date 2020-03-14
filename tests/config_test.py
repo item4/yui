@@ -3,7 +3,9 @@ from typing import List
 
 import pytest
 
-from yui.config import ConfigurationError, error, load
+from yui.config import ConfigurationError
+from yui.config import error
+from yui.config import load
 
 
 def test_error():

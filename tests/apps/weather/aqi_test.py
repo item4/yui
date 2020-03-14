@@ -5,12 +5,10 @@ from urllib.parse import urlencode
 
 import pytest
 
-from yui.apps.weather.aqi import (
-    aqi,
-    get_aqi_description,
-    get_aqi_idx,
-    get_geometric_info_by_address,
-)
+from yui.apps.weather.aqi import aqi
+from yui.apps.weather.aqi import get_aqi_description
+from yui.apps.weather.aqi import get_aqi_idx
+from yui.apps.weather.aqi import get_geometric_info_by_address
 from yui.utils import json
 
 from ...util import FakeBot

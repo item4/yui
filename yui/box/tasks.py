@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Dict, TYPE_CHECKING, Tuple
+from typing import Dict
+from typing import TYPE_CHECKING
+from typing import Tuple
 
-from ..types.handler import DECORATOR_ARGS_TYPE, Handler
+from ..types.handler import DECORATOR_ARGS_TYPE
+from ..types.handler import Handler
 from ..utils.handler import get_handler
 
 if TYPE_CHECKING:

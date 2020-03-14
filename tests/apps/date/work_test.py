@@ -2,7 +2,8 @@ from freezegun import freeze_time
 
 import pytest
 
-from yui.apps.date.work import work_end, work_start
+from yui.apps.date.work import work_end
+from yui.apps.date.work import work_start
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot

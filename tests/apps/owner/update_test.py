@@ -1,6 +1,7 @@
 import pytest
 
-from yui.apps.owner.update import FLAG_MAP, update
+from yui.apps.owner.update import FLAG_MAP
+from yui.apps.owner.update import update
 
 from ...util import FakeBot
 

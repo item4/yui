@@ -1,11 +1,19 @@
-from typing import Any, Dict, List, Optional, Set, Type, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Set
+from typing import Type
+from typing import Union
 
 from .apps.base import BaseApp
 from .apps.basic import App
 from .tasks import CronTask
 from ..command.validators import VALIDATOR_TYPE
 from ..event import Event
-from ..types.handler import DECORATOR_ARGS_TYPE, DECORATOR_TYPE, Handler
+from ..types.handler import DECORATOR_ARGS_TYPE
+from ..types.handler import DECORATOR_TYPE
+from ..types.handler import Handler
 from ..utils.handler import get_handler
 
 

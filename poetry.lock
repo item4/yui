@@ -885,11 +885,23 @@ version = "1.4.2"
 idna = ">=2.0"
 multidict = ">=4.0"
 
+[[package]]
+category = "dev"
+description = "yet another import fixing tool"
+name = "zimports"
+optional = false
+python-versions = "*"
+version = "0.2.0"
+
+[package.dependencies]
+flake8-import-order = "*"
+pyflakes = "*"
+
 [extras]
 travis-ci = ["codecov"]
 
 [metadata]
-content-hash = "a92352f7bd0554951c9f03a787061bbbac16069c9d47191e4c66800548005a5a"
+content-hash = "b3ca97060dd4c7bfd0d15defe4baffb5cba15340c2a92366962c78077cd07eb2"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -1489,4 +1501,7 @@ yarl = [
     {file = "yarl-1.4.2-cp38-cp38-win32.whl", hash = "sha256:6faa19d3824c21bcbfdfce5171e193c8b4ddafdf0ac3f129ccf0cdfcb083e462"},
     {file = "yarl-1.4.2-cp38-cp38-win_amd64.whl", hash = "sha256:0ca2f395591bbd85ddd50a82eb1fde9c1066fafe888c5c7cc1d810cf03fd3cc6"},
     {file = "yarl-1.4.2.tar.gz", hash = "sha256:58cd9c469eced558cd81aa3f484b2924e8897049e06889e8ff2510435b7ef74b"},
+]
+zimports = [
+    {file = "zimports-0.2.0.tar.gz", hash = "sha256:ddd74b45c25bcb525a97df5f1ce782a0734a8c894acd415d7ee0f2cafa7357e7"},
 ]

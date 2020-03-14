@@ -1,14 +1,17 @@
 import datetime
 import shlex
-from typing import List, Set
+from typing import List
+from typing import Set
 
 import pytest
 
 from yui.box import Box
 from yui.box.apps.basic import App
 from yui.box.parsers import parse_option_and_arguments
-from yui.command.decorators import argument, option
-from yui.transform import str_to_date, value_range
+from yui.command.decorators import argument
+from yui.command.decorators import option
+from yui.transform import str_to_date
+from yui.transform import value_range
 
 
 def test_parse_option_and_arguments():

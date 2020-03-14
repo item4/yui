@@ -2,12 +2,10 @@ import datetime
 
 import pytest
 
-from yui.apps.date.utils import (
-    APIDoesNotSupport,
-    get_holiday_names,
-    weekend_loading_box,
-    weekend_loading_percent,
-)
+from yui.apps.date.utils import APIDoesNotSupport
+from yui.apps.date.utils import get_holiday_names
+from yui.apps.date.utils import weekend_loading_box
+from yui.apps.date.utils import weekend_loading_percent
 
 
 @pytest.mark.asyncio

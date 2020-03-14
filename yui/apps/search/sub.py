@@ -2,7 +2,10 @@ import asyncio
 import math
 import urllib.parse
 from datetime import datetime
-from typing import Any, Dict, List, Set
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Set
 
 import aiohttp
 import aiohttp.client_exceptions
@@ -14,7 +17,8 @@ import attr
 from fuzzywuzzy import fuzz
 
 from ...box import box
-from ...command import argument, option
+from ...command import argument
+from ...command import option
 from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json

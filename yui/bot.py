@@ -4,14 +4,22 @@ import importlib
 import logging
 import logging.config
 import traceback
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, TypeVar, Union
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+from datetime import timedelta
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import TypeVar
+from typing import Union
 
 import aiocron
 
 import aiohttp
-from aiohttp.client_exceptions import ClientConnectorError, ContentTypeError
+from aiohttp.client_exceptions import ClientConnectorError
+from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 
 import aiomcache
@@ -21,19 +29,21 @@ import async_timeout
 from dateutil.tz import tzoffset
 
 from .api import SlackAPI
-from .box import Box, box
+from .box import Box
+from .box import box
 from .box.tasks import CronTask
 from .cache import Cache
 from .config import Config
 from .event import create_event
-from .orm import Base, EngineConfig, get_database_engine, make_session
+from .orm import Base
+from .orm import EngineConfig
+from .orm import get_database_engine
+from .orm import make_session
 from .types.base import ChannelID
-from .types.channel import (
-    Channel,
-    DirectMessageChannel,
-    PrivateChannel,
-    PublicChannel,
-)
+from .types.channel import Channel
+from .types.channel import DirectMessageChannel
+from .types.channel import PrivateChannel
+from .types.channel import PublicChannel
 from .types.namespace import Namespace
 from .types.slack.response import APIResponse
 from .types.user import User

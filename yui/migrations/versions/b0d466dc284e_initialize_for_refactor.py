@@ -13,7 +13,8 @@ import sqlalchemy as sa
 
 import sqlalchemy_utils as sau
 
-from yui.orm.types import JSONType, TimezoneType
+from yui.orm.types import JSONType
+from yui.orm.types import TimezoneType
 
 # revision identifiers, used by Alembic.
 revision = 'b0d466dc284e'

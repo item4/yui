@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any, Coroutine
+from typing import Any
+from typing import Coroutine
 
 from ..types.slack.response import APIResponse
 

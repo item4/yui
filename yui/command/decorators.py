@@ -1,8 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, Callable, List, Optional, TYPE_CHECKING, Type
+from typing import Any
+from typing import Callable
+from typing import List
+from typing import Optional
+from typing import TYPE_CHECKING
+from typing import Type
 
-from ..types.handler import Argument, Handler, Option
+from ..types.handler import Argument
+from ..types.handler import Handler
+from ..types.handler import Option
 from ..utils.handler import get_handler
 
 if TYPE_CHECKING:

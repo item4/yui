@@ -1,7 +1,8 @@
 import asyncio
 import logging
 import re
-from typing import Dict, Tuple
+from typing import Dict
+from typing import Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -11,8 +12,10 @@ from fake_useragent import UserAgent
 import tossi
 
 from ...box import box
-from ...command import argument, option
-from ...event import ChatterboxSystemStart, Message
+from ...command import argument
+from ...command import option
+from ...event import ChatterboxSystemStart
+from ...event import Message
 from ...transform import choice
 from ...utils import json
 from ...utils.datetime import now

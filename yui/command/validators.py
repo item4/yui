@@ -1,19 +1,20 @@
-from typing import (
-    Any,
-    Awaitable,
-    Callable,
-    Optional,
-    Sequence,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any
+from typing import Awaitable
+from typing import Callable
+from typing import Optional
+from typing import Sequence
+from typing import Set
+from typing import Tuple
+from typing import Type
+from typing import Union
 
-from .helpers import C, Cs
+from .helpers import C
+from .helpers import Cs
 from ..event import Message
-from ..exceptions import AllChannelsError, NoChannelsError
-from ..types.channel import PrivateChannel, PublicChannel
+from ..exceptions import AllChannelsError
+from ..exceptions import NoChannelsError
+from ..types.channel import PrivateChannel
+from ..types.channel import PublicChannel
 
 
 class DM:

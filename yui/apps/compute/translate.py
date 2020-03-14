@@ -1,9 +1,14 @@
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Set
+from typing import Tuple
 
 import aiohttp
 
 from ...box import box
-from ...command import argument, option
+from ...command import argument
+from ...command import option
 from ...event import Message
 from ...utils import json
 

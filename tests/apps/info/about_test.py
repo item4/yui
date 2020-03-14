@@ -1,6 +1,7 @@
 import pytest
 
-from yui.apps.info.about import MESSAGE, about
+from yui.apps.info.about import MESSAGE
+from yui.apps.info.about import about
 
 from ...util import FakeBot
 

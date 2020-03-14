@@ -1,14 +1,18 @@
 import inspect
 import math
 import re
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+from decimal import Decimal
+from decimal import InvalidOperation
+from decimal import ROUND_FLOOR
 
 from scipy.stats import nbinom
 
 from sympy.functions.combinatorial.numbers import harmonic
 
-from ...box import box, route
-from ...command import argument, option
+from ...box import box
+from ...box import route
+from ...command import argument
+from ...command import option
 from ...event import Message
 
 SUCCESSES_MIN = 1

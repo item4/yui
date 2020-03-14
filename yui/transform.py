@@ -1,14 +1,16 @@
 import datetime
 import re
 from decimal import Decimal
-from typing import Any, Callable, Optional, Sequence, TypeVar
+from typing import Any
+from typing import Callable
+from typing import Optional
+from typing import Sequence
+from typing import TypeVar
 
-from .types.namespace import (
-    channel_id_convert,
-    name_convert,
-    user_id_convert,
-    user_name_convert,
-)
+from .types.namespace import channel_id_convert
+from .types.namespace import name_convert
+from .types.namespace import user_id_convert
+from .types.namespace import user_name_convert
 
 T = TypeVar('T', int, float, Decimal)
 

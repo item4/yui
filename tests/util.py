@@ -1,7 +1,13 @@
 import asyncio
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Union
 
 import aiomcache
 
@@ -9,14 +15,14 @@ import attr
 
 from yui.api import SlackAPI
 from yui.bot import Bot
-from yui.cache import Cache, DATA_TYPE
-from yui.config import Config, DEFAULT
+from yui.cache import Cache
+from yui.cache import DATA_TYPE
+from yui.config import Config
+from yui.config import DEFAULT
 from yui.event import Message
-from yui.types.channel import (
-    DirectMessageChannel,
-    PrivateChannel,
-    PublicChannel,
-)
+from yui.types.channel import DirectMessageChannel
+from yui.types.channel import PrivateChannel
+from yui.types.channel import PublicChannel
 from yui.types.namespace import Namespace
 from yui.types.user import User
 

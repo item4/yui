@@ -1,7 +1,11 @@
 import copy
 import pathlib
 import sys
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Set
 
 import attr
 
@@ -10,7 +14,8 @@ from sqlalchemy.engine import Engine
 import toml
 
 from .types.namespace import namespace
-from .utils.cast import CastError, cast
+from .utils.cast import CastError
+from .utils.cast import cast
 
 
 DEFAULT = {

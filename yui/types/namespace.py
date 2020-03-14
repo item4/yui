@@ -1,6 +1,7 @@
 import inspect
 from functools import partial
-from typing import Dict, TYPE_CHECKING
+from typing import Dict
+from typing import TYPE_CHECKING
 
 import attr
 

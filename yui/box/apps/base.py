@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import contextlib
 import inspect
-from typing import Mapping, TYPE_CHECKING
+from typing import Mapping
+from typing import TYPE_CHECKING
 
 from ...event import Event
-from ...orm import EngineConfig, make_session
+from ...orm import EngineConfig
+from ...orm import make_session
 
 if TYPE_CHECKING:
     from ...bot import Bot

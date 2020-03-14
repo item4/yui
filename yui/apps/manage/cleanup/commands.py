@@ -1,8 +1,11 @@
 import datetime
 
-from .commons import cleanup_by_event_logs, cleanup_by_history
+from .commons import cleanup_by_event_logs
+from .commons import cleanup_by_history
 from ....box import box
-from ....command import Cs, Us, option
+from ....command import Cs
+from ....command import Us
+from ....command import option
 from ....event import Message
 from ....transform import choice
 from ....utils.datetime import now

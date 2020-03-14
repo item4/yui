@@ -5,15 +5,13 @@ import aiohttp
 
 import pytest
 
-from yui.apps.animal import (
-    APIServerError,
-    cat,
-    dog,
-    fox,
-    get_cat_image_url,
-    get_dog_image_url,
-    get_fox_image_url,
-)
+from yui.apps.animal import APIServerError
+from yui.apps.animal import cat
+from yui.apps.animal import dog
+from yui.apps.animal import fox
+from yui.apps.animal import get_cat_image_url
+from yui.apps.animal import get_dog_image_url
+from yui.apps.animal import get_fox_image_url
 from yui.utils import json
 
 from ..util import FakeBot

@@ -2,20 +2,18 @@ from datetime import datetime
 from typing import List
 
 from .base import Ts
-from .namespace import (
-    BooleanField,
-    DateTimeField,
-    Field,
-    IDField,
-    IntegerField,
-    ListField,
-    NameField,
-    StringField,
-    TsField,
-    UserField,
-    UserListField,
-    namespace,
-)
+from .namespace import BooleanField
+from .namespace import DateTimeField
+from .namespace import Field
+from .namespace import IDField
+from .namespace import IntegerField
+from .namespace import ListField
+from .namespace import NameField
+from .namespace import StringField
+from .namespace import TsField
+from .namespace import UserField
+from .namespace import UserListField
+from .namespace import namespace
 from .user import User
 
 

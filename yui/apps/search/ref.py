@@ -1,6 +1,8 @@
 import asyncio
 import logging
-from typing import Dict, List, Tuple
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import aiohttp
 
@@ -11,7 +13,8 @@ from lxml.html import fromstring
 from ...bot import Bot
 from ...box import box
 from ...command import argument
-from ...event import ChatterboxSystemStart, Message
+from ...event import ChatterboxSystemStart
+from ...event import Message
 
 logger = logging.getLogger(__name__)
 

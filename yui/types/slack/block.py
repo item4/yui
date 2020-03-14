@@ -1,9 +1,13 @@
 import enum
-from typing import List, Optional, Union
+from typing import List
+from typing import Optional
+from typing import Union
 
 import attr
 
-from ..base import ChannelID, PublicChannelID, UserID
+from ..base import ChannelID
+from ..base import PublicChannelID
+from ..base import UserID
 
 
 class TextFieldType(enum.Enum):

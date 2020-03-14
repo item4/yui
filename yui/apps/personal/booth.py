@@ -1,4 +1,6 @@
-from typing import List, Optional, Tuple
+from typing import List
+from typing import Optional
+from typing import Tuple
 
 import aiohttp
 
@@ -9,7 +11,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from ..shared.cache import JSONCache
 from ...box import box
 from ...command import C
-from ...types.slack.attachment import Attachment, Field
+from ...types.slack.attachment import Attachment
+from ...types.slack.attachment import Field
 from ...utils.api import retry
 from ...utils.datetime import now
 

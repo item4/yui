@@ -1,13 +1,10 @@
 from fuzzywuzzy import fuzz
 
-
-from yui.utils.fuzz import (
-    match,
-    normalize_korean_nfc_to_nfd,
-    partial_ratio,
-    ratio,
-    token_sort_ratio,
-)
+from yui.utils.fuzz import match
+from yui.utils.fuzz import normalize_korean_nfc_to_nfd
+from yui.utils.fuzz import partial_ratio
+from yui.utils.fuzz import ratio
+from yui.utils.fuzz import token_sort_ratio
 
 
 def test_normalize_nfd():

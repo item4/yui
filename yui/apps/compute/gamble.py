@@ -1,6 +1,7 @@
 import random
 import re
-from typing import List, NamedTuple
+from typing import List
+from typing import NamedTuple
 
 from ...box import box
 from ...event import Message

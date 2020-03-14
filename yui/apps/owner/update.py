@@ -1,7 +1,10 @@
-from typing import Any, Dict, List
+from typing import Any
+from typing import Dict
+from typing import List
 
 from ...box import box
-from ...command import C, U
+from ...command import C
+from ...command import U
 from ...event import Message
 from ...transform import extract_url
 from ...types.slack.attachment import Attachment

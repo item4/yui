@@ -1,42 +1,40 @@
-from typing import Any, ClassVar, Dict, List, Optional, Type, Union
+from typing import Any
+from typing import ClassVar
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Type
+from typing import Union
 
-from .types.base import (
-    ChannelID,
-    Comment,
-    CommentID,
-    FileID,
-    SubteamID,
-    TeamID,
-    Ts,
-)
-from .types.channel import (
-    Channel,
-    DirectMessageChannel,
-    PrivateChannel,
-    PublicChannel,
-)
-from .types.namespace import (
-    BooleanField,
-    ChannelField,
-    Field,
-    IDField,
-    IntegerField,
-    ListField,
-    OptionalField,
-    StringField,
-    TsField,
-    UserField,
-    UserListField,
-    namespace,
-)
-from .types.objects import (
-    BotObject,
-    DnDStatus,
-    File,
-    MessageMessage,
-    MessagePreviousMessage,
-    Subteam,
-)
+from .types.base import ChannelID
+from .types.base import Comment
+from .types.base import CommentID
+from .types.base import FileID
+from .types.base import SubteamID
+from .types.base import TeamID
+from .types.base import Ts
+from .types.channel import Channel
+from .types.channel import DirectMessageChannel
+from .types.channel import PrivateChannel
+from .types.channel import PublicChannel
+from .types.namespace import BooleanField
+from .types.namespace import ChannelField
+from .types.namespace import Field
+from .types.namespace import IDField
+from .types.namespace import IntegerField
+from .types.namespace import ListField
+from .types.namespace import OptionalField
+from .types.namespace import StringField
+from .types.namespace import TsField
+from .types.namespace import UserField
+from .types.namespace import UserListField
+from .types.namespace import namespace
+from .types.objects import BotObject
+from .types.objects import DnDStatus
+from .types.objects import File
+from .types.objects import MessageMessage
+from .types.objects import MessagePreviousMessage
+from .types.objects import Subteam
 from .types.user import User
 
 

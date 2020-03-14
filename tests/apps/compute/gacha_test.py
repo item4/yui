@@ -2,7 +2,8 @@ from decimal import Decimal
 
 import pytest
 
-from yui.apps.compute.gacha import Gacha, to_percent
+from yui.apps.compute.gacha import Gacha
+from yui.apps.compute.gacha import to_percent
 
 from ...util import FakeBot
 

@@ -4,15 +4,13 @@ from decimal import Decimal
 
 import pytest
 
-from yui.transform import (
-    choice,
-    enum_getitem,
-    extract_url,
-    get_channel,
-    get_user,
-    str_to_date,
-    value_range,
-)
+from yui.transform import choice
+from yui.transform import enum_getitem
+from yui.transform import extract_url
+from yui.transform import get_channel
+from yui.transform import get_user
+from yui.transform import str_to_date
+from yui.transform import value_range
 
 from .util import FakeBot
 

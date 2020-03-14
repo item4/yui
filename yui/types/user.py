@@ -1,15 +1,13 @@
 from datetime import datetime
 
 from .base import TeamID
-from .namespace import (
-    BooleanField,
-    DateTimeField,
-    Field,
-    IDField,
-    NameField,
-    StringField,
-    namespace,
-)
+from .namespace import BooleanField
+from .namespace import DateTimeField
+from .namespace import Field
+from .namespace import IDField
+from .namespace import NameField
+from .namespace import StringField
+from .namespace import namespace
 
 
 @namespace

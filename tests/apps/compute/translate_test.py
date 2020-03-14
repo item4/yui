@@ -2,7 +2,9 @@ import os
 
 import pytest
 
-from yui.apps.compute.translate import _translate, detect_language, translate
+from yui.apps.compute.translate import _translate
+from yui.apps.compute.translate import detect_language
+from yui.apps.compute.translate import translate
 
 from ...util import FakeBot
 

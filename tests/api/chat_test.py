@@ -1,7 +1,8 @@
 import pytest
 
 from yui.api.encoder import bool2str
-from yui.types.slack.attachment import Attachment, Field
+from yui.types.slack.attachment import Attachment
+from yui.types.slack.attachment import Field
 from yui.types.slack.block import Divider
 
 from ..util import FakeBot

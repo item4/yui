@@ -1,4 +1,5 @@
-from yui.types.slack.attachment import Attachment, Field
+from yui.types.slack.attachment import Attachment
+from yui.types.slack.attachment import Field
 
 
 def test_field_class():

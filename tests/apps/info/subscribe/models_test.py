@@ -1,6 +1,7 @@
 import datetime
 
-from dateutil.tz import UTC, gettz
+from dateutil.tz import UTC
+from dateutil.tz import gettz
 
 from yui.apps.info.subscribe.models import RSSFeedURL
 from yui.utils.datetime import now

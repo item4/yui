@@ -1,6 +1,13 @@
-from dateutil.tz import UTC, gettz, tzfile
+from dateutil.tz import UTC
+from dateutil.tz import gettz
+from dateutil.tz import tzfile
 
 import six
+
+from sqlalchemy_utils.types import JSONType as _JSONType
+from sqlalchemy_utils.types import TimezoneType as _TimezoneType
+
+from ..utils import json
 
 try:
     from sqlalchemy.dialects.postgresql import JSON  # noqa
@@ -8,11 +15,6 @@ try:
     has_postgres_json = True
 except ImportError:  # pragma: no cover
     has_postgres_json = False
-
-from sqlalchemy_utils.types import JSONType as _JSONType
-from sqlalchemy_utils.types import TimezoneType as _TimezoneType
-
-from ..utils import json
 
 
 class JSONType(_JSONType):

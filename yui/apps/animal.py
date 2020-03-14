@@ -7,7 +7,8 @@ import aiohttp.client_exceptions
 
 import async_timeout
 
-from lxml import etree, html
+from lxml import etree
+from lxml import html
 
 from ..box import box
 from ..command import option

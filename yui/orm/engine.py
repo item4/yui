@@ -1,4 +1,5 @@
-from typing import Optional, Type
+from typing import Optional
+from typing import Type
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine

@@ -1,12 +1,10 @@
-from yui.types.slack.action import (
-    Action,
-    ActionDataSource,
-    ActionStyle,
-    ActionType,
-    Confirmation,
-    OptionField,
-    OptionFieldGroup,
-)
+from yui.types.slack.action import Action
+from yui.types.slack.action import ActionDataSource
+from yui.types.slack.action import ActionStyle
+from yui.types.slack.action import ActionType
+from yui.types.slack.action import Confirmation
+from yui.types.slack.action import OptionField
+from yui.types.slack.action import OptionFieldGroup
 
 
 def test_action_class():

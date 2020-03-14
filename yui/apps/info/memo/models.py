@@ -1,8 +1,12 @@
 from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer, String, Text
+from sqlalchemy.types import Integer
+from sqlalchemy.types import String
+from sqlalchemy.types import Text
 
 from ....orm import Base
-from ....orm.columns import DateTimeAtColumn, DateTimeColumn, TimezoneColumn
+from ....orm.columns import DateTimeAtColumn
+from ....orm.columns import DateTimeColumn
+from ....orm.columns import TimezoneColumn
 
 
 class Memo(Base):

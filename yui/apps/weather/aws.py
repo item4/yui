@@ -1,15 +1,19 @@
 from datetime import timedelta
 from decimal import Decimal
-from typing import Dict, List, Tuple
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import aiohttp
 from aiohttp import client_exceptions
 
 from ...box import box
-from ...command import argument, option
+from ...command import argument
+from ...command import option
 from ...event import Message
 from ...utils import json
-from ...utils.datetime import fromisoformat, now
+from ...utils.datetime import fromisoformat
+from ...utils.datetime import now
 from ...utils.fuzz import ratio
 
 API_URL = 'https://item4.net/api/weather/'

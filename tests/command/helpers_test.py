@@ -1,12 +1,13 @@
 import pytest
 
-from yui.command.helpers import C, Cs, U, Us
-from yui.exceptions import (
-    AllChannelsError,
-    AllUsersError,
-    NoChannelsError,
-    NoUsersError,
-)
+from yui.command.helpers import C
+from yui.command.helpers import Cs
+from yui.command.helpers import U
+from yui.command.helpers import Us
+from yui.exceptions import AllChannelsError
+from yui.exceptions import AllUsersError
+from yui.exceptions import NoChannelsError
+from yui.exceptions import NoUsersError
 
 from ..util import FakeBot
 

@@ -1,44 +1,39 @@
-from .cast import (
-    AnyCaster,
-    BaseCaster,
-    BoolCaster,
-    CastError,
-    CasterBox,
-    DictCaster,
-    KNOWN_TYPES,
-    KnownTypesCaster,
-    ListCaster,
-    NewTypeCaster,
-    NoHandleCaster,
-    NoneType,
-    NoneTypeCaster,
-    SetCaster,
-    TupleCaster,
-    TypeVarCaster,
-    UnionCaster,
-    UnionType,
-    cast,
-)
-from .datetime import datetime, now
-from .format import (
-    bold,
-    code,
-    italics,
-    preformatted,
-    quote,
-    strike,
-)
-from .fuzz import (
-    KOREAN_ALPHABETS_FIRST_MAP,
-    KOREAN_ALPHABETS_MIDDLE_MAP,
-    KOREAN_END,
-    KOREAN_START,
-    match,
-    normalize_korean_nfc_to_nfd,
-    partial_ratio,
-    ratio,
-    token_sort_ratio,
-)
+from .cast import AnyCaster
+from .cast import BaseCaster
+from .cast import BoolCaster
+from .cast import CastError
+from .cast import CasterBox
+from .cast import DictCaster
+from .cast import KNOWN_TYPES
+from .cast import KnownTypesCaster
+from .cast import ListCaster
+from .cast import NewTypeCaster
+from .cast import NoHandleCaster
+from .cast import NoneType
+from .cast import NoneTypeCaster
+from .cast import SetCaster
+from .cast import TupleCaster
+from .cast import TypeVarCaster
+from .cast import UnionCaster
+from .cast import UnionType
+from .cast import cast
+from .datetime import datetime
+from .datetime import now
+from .format import bold
+from .format import code
+from .format import italics
+from .format import preformatted
+from .format import quote
+from .format import strike
+from .fuzz import KOREAN_ALPHABETS_FIRST_MAP
+from .fuzz import KOREAN_ALPHABETS_MIDDLE_MAP
+from .fuzz import KOREAN_END
+from .fuzz import KOREAN_START
+from .fuzz import match
+from .fuzz import normalize_korean_nfc_to_nfd
+from .fuzz import partial_ratio
+from .fuzz import ratio
+from .fuzz import token_sort_ratio
 from .handler import get_handler
 from .html import strip_tags
 from .url import b64_redirect

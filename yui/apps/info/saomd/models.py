@@ -2,7 +2,9 @@ import enum
 from typing import Dict
 
 from sqlalchemy.schema import Column
-from sqlalchemy.types import Boolean, Integer, String
+from sqlalchemy.types import Boolean
+from sqlalchemy.types import Integer
+from sqlalchemy.types import String
 
 from sqlalchemy_utils.types import ChoiceType
 

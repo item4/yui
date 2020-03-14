@@ -1,13 +1,11 @@
 import pytest
 
-from yui.apps.search.ref import (
-    css,
-    fetch_css_ref,
-    fetch_html_ref,
-    fetch_python_ref,
-    html,
-    python,
-)
+from yui.apps.search.ref import css
+from yui.apps.search.ref import fetch_css_ref
+from yui.apps.search.ref import fetch_html_ref
+from yui.apps.search.ref import fetch_python_ref
+from yui.apps.search.ref import html
+from yui.apps.search.ref import python
 
 from ...util import FakeBot
 

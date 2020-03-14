@@ -1,17 +1,15 @@
 from __future__ import annotations
 
 import inspect
-from typing import (
-    Any,
-    Callable,
-    Coroutine,
-    List,
-    Mapping,
-    Optional,
-    TYPE_CHECKING,
-    Type,
-    Union,
-)
+from typing import Any
+from typing import Callable
+from typing import Coroutine
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import TYPE_CHECKING
+from typing import Type
+from typing import Union
 
 import attr
 

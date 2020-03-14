@@ -1,6 +1,7 @@
 import pytest
 
-from yui.apps.fun.answer import RESPONSES, magic_conch
+from yui.apps.fun.answer import RESPONSES
+from yui.apps.fun.answer import magic_conch
 
 from ...util import FakeBot
 
