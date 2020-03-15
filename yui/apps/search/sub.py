@@ -63,9 +63,12 @@ def encode_url(u: str) -> str:
 
 
 def fix_url(url: str) -> str:
+
     if url.startswith('https://') or url.startswith('http://'):
         return url
-    return 'http://{}'.format(url)
+    elif url.startswith('blog.naver.com') or '.tistory.com' in url:
+        return f'https://{url}'
+    return f'http://{url}'
 
 
 def make_sub_list(data: Set[Sub]) -> List[Attachment]:
