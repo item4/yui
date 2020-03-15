@@ -91,11 +91,11 @@ def make_sub_list(data: Set[Sub]) -> List[Attachment]:
                 fallback = f'{num} {name} {url}'
                 text = f'{num} {url}'
             result.append(
-                Attachment(fallback=fallback, author_name=name, text=text,)
+                Attachment(fallback=fallback, author_name=name, text=text)
             )
     else:
         result.append(
-            Attachment(fallback='자막 제작자가 없습니다.', text='자막 제작자가 없습니다.',)
+            Attachment(fallback='자막 제작자가 없습니다.', text='자막 제작자가 없습니다.')
         )
 
     return result
