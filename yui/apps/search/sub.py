@@ -25,15 +25,6 @@ from ...utils import json
 from ...utils.fuzz import match
 
 
-@attr.dataclass(frozen=True, hash=True, slots=True, cmp=True)
-class Sub:
-
-    maker: str
-    episode_num: float
-    url: str
-    released_at: str
-
-
 DOW = [
     '일요일',
     '월요일',
@@ -45,6 +36,32 @@ DOW = [
     '기타',
 ]
 DATE_FORMAT = '%Y년 %m월 %d일 %H시'
+
+
+def fix_url(url: str) -> str:
+    if 'blog.naver.com' in url or '.tistory.com' in url or '.blog.me' in url:
+        if url.startswith('http'):
+            url = url.split('//', 1)[1]
+        return f'https://{url}'
+    elif url.startswith('http://') or url.startswith('https://'):
+        return url
+    return f'http://{url}'
+
+
+def convert_released_dt(input: str) -> str:
+    try:
+        return datetime.strptime(input, '%Y%m%d%H%M%S').strftime(DATE_FORMAT)
+    except ValueError:
+        return str(input)
+
+
+@attr.dataclass(frozen=True, hash=True, slots=True, cmp=True)
+class Sub:
+
+    maker: str
+    episode_num: float
+    url: str = attr.ib(converter=fix_url)
+    released_at: str = attr.ib(converter=convert_released_dt)
 
 
 def print_time(t: str) -> str:
@@ -62,32 +79,18 @@ def encode_url(u: str) -> str:
     )
 
 
-def fix_url(url: str) -> str:
-
-    if url.startswith('https://') or url.startswith('http://'):
-        return url
-    elif url.startswith('blog.naver.com') or '.tistory.com' in url:
-        return f'https://{url}'
-    return f'http://{url}'
-
-
 def make_sub_list(data: Set[Sub]) -> List[Attachment]:
     result: List[Attachment] = []
 
     if data:
-        for sub in list(data):
+        for sub in reversed(
+            sorted(list(data), key=lambda x: (x.episode_num, x.released_at))
+        ):
             num = '완결' if sub.episode_num == 9999 else f'{sub.episode_num}화'
             name = sub.maker
-            url = fix_url(sub.url)
-            released_at = None
-            try:
-                released_at = datetime.strptime(
-                    sub.released_at, '%Y%m%d%H%M%S',
-                )
-            except ValueError:
-                pass
-            if released_at:
-                date = released_at.strftime(DATE_FORMAT)
+            url = sub.url
+            date = sub.released_at
+            if date:
                 fallback = f'{num} {date} {name} {url}'
                 text = f'{num} {date} {url}'
             else:
@@ -226,7 +229,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
                 if o_ani['t'] == ani['t']:
                     ani['ratio'] += 5
-                if fuzz.ratio(fix_url(ani['l']), o_ani['l']) > 90:
+                if fuzz.ratio(ani['l'], o_ani['l']) > 90:
                     ani['ratio'] += 10
 
             a_ani = max(a_data, key=lambda x: x['ratio'])
@@ -243,7 +246,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
                     use_anissia = False
 
                 for sub in a_subs:
-                    url = fix_url(encode_url(sub['a']))
+                    url = encode_url(sub['a'])
                     episode_num = int(sub['s']) / 10
                     if int(math.ceil(episode_num)) == int(episode_num):
                         episode_num = int(episode_num)
@@ -329,7 +332,7 @@ async def search_finished(
             attachments: List[Attachment] = [
                 Attachment(
                     fallback='*{title}* ({url})'.format(
-                        title=ani['s'], url=fix_url(ani['l']),
+                        title=ani['s'], url=ani['l'],
                     ),
                     title=ani['s'],
                     title_link=fix_url(ani['l']) if ani['l'] else None,
