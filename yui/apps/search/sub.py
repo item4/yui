@@ -25,7 +25,7 @@ from ...utils import json
 from ...utils.fuzz import match
 
 
-@attr.dataclass(frozen=True, hash=True, slots=True)
+@attr.dataclass(frozen=True, hash=True, slots=True, cmp=True)
 class Sub:
 
     maker: str
