@@ -12,7 +12,7 @@ async def test_write_code_review():
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
-    event = bot.create_message('C1', 'U1', text='램지 코드 리뷰')
+    event = bot.create_message('C1', 'U1', text='코드 리뷰')
     await write_code_review(bot, event, seed=100)
 
     said = bot.call_queue.pop(0)
@@ -37,13 +37,13 @@ async def test_code_review():
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
-    event = bot.create_message('C1', 'U1', text='코드 리뷰')
+    event = bot.create_message('C1', 'U1', text='영화 리뷰')
 
     assert await code_review(bot, event)
 
     assert not bot.call_queue
 
-    event = bot.create_message('C1', 'U1', text='램지 코드 리뷰')
+    event = bot.create_message('C1', 'U1', text='코드 리뷰')
 
     assert not await code_review(bot, event)
 
@@ -53,6 +53,6 @@ async def test_code_review():
     assert len(said.data['attachments']) == 1
     assert not said.data['as_user']
 
-    event = bot.create_message('C1', 'U1', text='램지 코드 리뷰')
+    event = bot.create_message('C1', 'U1', text='코드 리뷰')
 
     assert await code_review(bot, event)
