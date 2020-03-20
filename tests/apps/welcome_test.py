@@ -17,7 +17,7 @@ async def test_welcome_item4_handler(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
-    event = create_event({'type': 'team_join', 'user': {'id': 'U1'}})
+    event = create_event('team_join', {'user': {'id': 'U1'}})
 
     await welcome_item4(bot, event)
 
@@ -39,7 +39,7 @@ async def test_welcome_9xd_handler(fx_config):
     bot = FakeBot(fx_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
-    event = create_event({'type': 'team_join', 'user': {'id': 'U1'}})
+    event = create_event('team_join', {'user': {'id': 'U1'}})
 
     @bot.response('chat.postMessage')
     def team_join(data):

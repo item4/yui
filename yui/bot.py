@@ -351,8 +351,10 @@ class Bot:
                 break
 
             if msg.type == aiohttp.WSMsgType.TEXT:
+                source = msg.json(loads=json.loads)
+                type_ = source.pop('type', None)
                 try:
-                    event = create_event(msg.json(loads=json.loads))
+                    event = create_event(type_, source)
                 except:  # noqa:
                     logger.exception(msg.data)
                 else:

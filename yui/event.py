@@ -2,9 +2,12 @@ from typing import Any
 from typing import ClassVar
 from typing import Dict
 from typing import List
+from typing import Literal
+from typing import NoReturn
 from typing import Optional
 from typing import Type
 from typing import Union
+from typing import overload
 
 from .types.base import ChannelID
 from .types.base import Comment
@@ -38,6 +41,154 @@ from .types.objects import Subteam
 from .types.user import User
 
 
+AccountsChangedType = Literal['accounts_changed']
+BotAddedType = Literal['bot_added']
+BotChangedType = Literal['bot_changed']
+ChannelArchiveType = Literal['channel_archive']
+ChannelCreatedType = Literal['channel_created']
+ChannelDeletedType = Literal['channel_deleted']
+ChannelHistoryChangedType = Literal['channel_history_changed']
+ChannelJoinedType = Literal['channel_joined']
+ChannelLeftType = Literal['channel_left']
+ChannelMarkedType = Literal['channel_marked']
+ChannelRenameType = Literal['channel_rename']
+ChannelUnarchiveType = Literal['channel_unarchive']
+DnDUpdatedType = Literal['dnd_updated']
+DnDUpdatedUserType = Literal['dnd_updated_user']
+EmailDomainChangedType = Literal['email_domain_changed']
+EmojiChangedType = Literal['emoji_changed']
+FileChangeType = Literal['file_change']
+FileCommentAddedType = Literal['file_comment_added']
+FileCommentDeletedType = Literal['file_comment_deleted']
+FileCommentEditedType = Literal['file_comment_edited']
+FileCreatedType = Literal['type_created']
+FileDeletedType = Literal['file_deleted']
+FilePublicType = Literal['file_public']
+FileSharedType = Literal['file_shared']
+FileUnsharedType = Literal['file_unshared']
+GoodByeType = Literal['goodbye']
+GroupArchiveType = Literal['group_archive']
+GroupCloseType = Literal['group_close']
+GroupHistoryChangedType = Literal['group_history_changed']
+GroupJoinedType = Literal['group_joined']
+GroupLeftType = Literal['group_left']
+GroupMarkedType = Literal['group_marked']
+GroupOpenType = Literal['group_open']
+GroupRenameType = Literal['group_rename']
+GroupUnarchiveType = Literal['group_unarchive']
+HelloType = Literal['hello']
+IMCloseType = Literal['im_close']
+IMCreatedType = Literal['im_created']
+IMHistoryChangedType = Literal['im_history_changed']
+IMMarkedType = Literal['im_marked']
+IMOpenType = Literal['im_open']
+ManualPresenceChangeType = Literal['manual_presence_change']
+MemberJoinedChannelType = Literal['member_joined_channel']
+MemberLeftChannelType = Literal['member_left_channel']
+MessageType = Literal['message']
+PinRemovedType = Literal['pin_added']
+PongType = Literal['pong']
+PrefChangeType = Literal['pref_change']
+PresenceChangeType = Literal['presence_change']
+ReactionAddedType = Literal['reaction_added']
+ReactionRemovedType = Literal['reaction_removed']
+ReconnectURLType = Literal['reconnect_url']
+StarAddedType = Literal['star_added']
+StarRemovedType = Literal['star_removed']
+SubteamCreatedType = Literal['subteam_created']
+SubteamMembersChangedType = Literal['subteam_members_changed']
+SubteamSelfAddedType = Literal['subteam_self_added']
+SubteamSelfRemovedType = Literal['subteam_self_removed']
+SubteamUpdatedType = Literal['subteam_updated']
+TeamDomainChangeType = Literal['team_domain_change']
+TeamJoinType = Literal['team_join']
+TeamMigrationStartedType = Literal['team_migration_started']
+TeamPlanChangeType = Literal['team_plan_change']
+TeamPrefChangeType = Literal['team_pref_change']
+TeamProfileChangeType = Literal['team_profile_change']
+TeamProfileDeleteType = Literal['team_profile_delete']
+TeamProfileReorderType = Literal['team_profile_reorder']
+TeamRenameType = Literal['team_rename']
+UserChangeType = Literal['user_change']
+UserTypingType = Literal['user_typing']
+ChatterboxSystemStartType = Literal['chatterbox_system_start']
+
+EventType = Literal[
+    AccountsChangedType,
+    BotAddedType,
+    BotChangedType,
+    ChannelArchiveType,
+    ChannelCreatedType,
+    ChannelDeletedType,
+    ChannelHistoryChangedType,
+    ChannelJoinedType,
+    ChannelLeftType,
+    ChannelMarkedType,
+    ChannelRenameType,
+    ChannelUnarchiveType,
+    DnDUpdatedType,
+    DnDUpdatedUserType,
+    EmailDomainChangedType,
+    EmojiChangedType,
+    FileChangeType,
+    FileCommentAddedType,
+    FileCommentDeletedType,
+    FileCommentEditedType,
+    FileCreatedType,
+    FileDeletedType,
+    FilePublicType,
+    FileSharedType,
+    FileUnsharedType,
+    GoodByeType,
+    GroupArchiveType,
+    GroupCloseType,
+    GroupHistoryChangedType,
+    GroupJoinedType,
+    GroupLeftType,
+    GroupMarkedType,
+    GroupOpenType,
+    GroupRenameType,
+    GroupUnarchiveType,
+    HelloType,
+    IMCloseType,
+    IMCreatedType,
+    IMHistoryChangedType,
+    IMMarkedType,
+    IMOpenType,
+    ManualPresenceChangeType,
+    MemberJoinedChannelType,
+    MemberLeftChannelType,
+    MessageType,
+    PinRemovedType,
+    PongType,
+    PrefChangeType,
+    PresenceChangeType,
+    ReactionAddedType,
+    ReactionRemovedType,
+    ReconnectURLType,
+    StarAddedType,
+    StarRemovedType,
+    SubteamCreatedType,
+    SubteamMembersChangedType,
+    SubteamSelfAddedType,
+    SubteamSelfRemovedType,
+    SubteamUpdatedType,
+    TeamDomainChangeType,
+    TeamJoinType,
+    TeamMigrationStartedType,
+    TeamPlanChangeType,
+    TeamPrefChangeType,
+    TeamProfileChangeType,
+    TeamProfileDeleteType,
+    TeamProfileReorderType,
+    TeamRenameType,
+    UserChangeType,
+    UserTypingType,
+    ChatterboxSystemStartType,
+]
+Source = Dict[str, Any]
+
+
 class BaseEvent:
     """Base class of Event."""
 
@@ -49,7 +200,7 @@ class Event(BaseEvent):
     subtype: Optional[str] = None
 
 
-_events: Dict[str, Type[BaseEvent]] = {}
+_events: Dict[EventType, Type[BaseEvent]] = {}
 
 
 def event(cls):
@@ -61,6 +212,8 @@ def event(cls):
 @namespace
 class UnknownEvent(BaseEvent):
     """Unknown Event."""
+
+    type: str
 
 
 @event
@@ -715,15 +868,421 @@ class ChatterboxSystemStart(Event):
     type: ClassVar[str] = 'chatterbox_system_start'
 
 
-def create_event(d: Dict) -> BaseEvent:
+@overload
+def create_event(
+    type_: AccountsChangedType, source: Source
+) -> AccountsChanged:
+    ...
+
+
+@overload
+def create_event(type_: BotAddedType, source: Source) -> BotAdded:
+    ...
+
+
+@overload
+def create_event(type_: BotChangedType, source: Source) -> BotChanged:
+    ...
+
+
+@overload
+def create_event(type_: ChannelArchiveType, source: Source) -> ChannelArchive:
+    ...
+
+
+@overload
+def create_event(type_: ChannelCreatedType, source: Source) -> ChannelCreated:
+    ...
+
+
+@overload
+def create_event(type_: ChannelDeletedType, source: Source) -> ChannelDeleted:
+    ...
+
+
+@overload
+def create_event(
+    type_: ChannelHistoryChangedType, source: Source
+) -> ChannelHistoryChanged:
+    ...
+
+
+@overload
+def create_event(type_: ChannelJoinedType, source: Source) -> ChannelJoined:
+    ...
+
+
+@overload
+def create_event(type_: ChannelLeftType, source: Source) -> ChannelLeft:
+    ...
+
+
+@overload
+def create_event(type_: ChannelMarkedType, source: Source) -> ChannelMarked:
+    ...
+
+
+@overload
+def create_event(type_: ChannelRenameType, source: Source) -> ChannelRename:
+    ...
+
+
+@overload
+def create_event(
+    type_: ChannelUnarchiveType, source: Source
+) -> ChannelUnarchive:
+    ...
+
+
+@overload
+def create_event(type_: DnDUpdatedType, source: Source) -> DnDUpdated:
+    ...
+
+
+@overload
+def create_event(type_: DnDUpdatedUserType, source: Source) -> DnDUpdatedUser:
+    ...
+
+
+@overload
+def create_event(
+    type_: EmailDomainChangedType, source: Source
+) -> EmailDomainChanged:
+    ...
+
+
+@overload
+def create_event(type_: EmojiChangedType, source: Source) -> EmojiChanged:
+    ...
+
+
+@overload
+def create_event(type_: FileChangeType, source: Source) -> FileChange:
+    ...
+
+
+@overload
+def create_event(
+    type_: FileCommentAddedType, source: Source
+) -> FileCommentAdded:
+    ...
+
+
+@overload
+def create_event(
+    type_: FileCommentDeletedType, source: Source
+) -> FileCommentDeleted:
+    ...
+
+
+@overload
+def create_event(
+    type_: FileCommentEditedType, source: Source
+) -> FileCommentEdited:
+    ...
+
+
+@overload
+def create_event(type_: FileCreatedType, source: Source) -> FileCreated:
+    ...
+
+
+@overload
+def create_event(type_: FileDeletedType, source: Source) -> FileDeleted:
+    ...
+
+
+@overload
+def create_event(type_: FilePublicType, source: Source) -> FilePublic:
+    ...
+
+
+@overload
+def create_event(type_: FileSharedType, source: Source) -> FileShared:
+    ...
+
+
+@overload
+def create_event(type_: FileUnsharedType, source: Source) -> FileUnshared:
+    ...
+
+
+@overload
+def create_event(type_: GoodByeType, source: Source) -> GoodBye:
+    ...
+
+
+@overload
+def create_event(type_: GroupArchiveType, source: Source) -> GroupArchive:
+    ...
+
+
+@overload
+def create_event(type_: GroupCloseType, source: Source) -> GroupClose:
+    ...
+
+
+@overload
+def create_event(
+    type_: GroupHistoryChangedType, source: Source
+) -> GroupHistoryChanged:
+    ...
+
+
+@overload
+def create_event(type_: GroupJoinedType, source: Source) -> GroupJoined:
+    ...
+
+
+@overload
+def create_event(type_: GroupLeftType, source: Source) -> GroupLeft:
+    ...
+
+
+@overload
+def create_event(type_: GroupMarkedType, source: Source) -> GroupMarked:
+    ...
+
+
+@overload
+def create_event(type_: GroupOpenType, source: Source) -> GroupOpen:
+    ...
+
+
+@overload
+def create_event(type_: GroupRenameType, source: Source) -> GroupRename:
+    ...
+
+
+@overload
+def create_event(type_: GroupUnarchiveType, source: Source) -> GroupUnarchive:
+    ...
+
+
+@overload
+def create_event(type_: HelloType, source: Source) -> Hello:
+    ...
+
+
+@overload
+def create_event(type_: IMCloseType, source: Source) -> IMClose:
+    ...
+
+
+@overload
+def create_event(type_: IMCreatedType, source: Source) -> IMCreated:
+    ...
+
+
+@overload
+def create_event(
+    type_: IMHistoryChangedType, source: Source
+) -> IMHistoryChanged:
+    ...
+
+
+@overload
+def create_event(type_: IMMarkedType, source: Source) -> IMMarked:
+    ...
+
+
+@overload
+def create_event(type_: IMOpenType, source: Source) -> IMOpen:
+    ...
+
+
+@overload
+def create_event(
+    type_: ManualPresenceChangeType, source: Source
+) -> ManualPresenceChange:
+    ...
+
+
+@overload
+def create_event(
+    type_: MemberJoinedChannelType, source: Source
+) -> MemberJoinedChannel:
+    ...
+
+
+@overload
+def create_event(
+    type_: MemberLeftChannelType, source: Source
+) -> MemberLeftChannel:
+    ...
+
+
+@overload
+def create_event(type_: MessageType, source: Source) -> Message:
+    ...
+
+
+@overload
+def create_event(type_: PinRemovedType, source: Source) -> PinRemoved:
+    ...
+
+
+@overload
+def create_event(type_: PongType, source: Source) -> Pong:
+    ...
+
+
+@overload
+def create_event(type_: PrefChangeType, source: Source) -> PrefChange:
+    ...
+
+
+@overload
+def create_event(type_: PresenceChangeType, source: Source) -> PresenceChange:
+    ...
+
+
+@overload
+def create_event(type_: ReactionAddedType, source: Source) -> ReactionAdded:
+    ...
+
+
+@overload
+def create_event(
+    type_: ReactionRemovedType, source: Source
+) -> ReactionRemoved:
+    ...
+
+
+@overload
+def create_event(type_: ReconnectURLType, source: Source) -> ReconnectURL:
+    ...
+
+
+@overload
+def create_event(type_: StarAddedType, source: Source) -> StarAdded:
+    ...
+
+
+@overload
+def create_event(type_: StarRemovedType, source: Source) -> StarRemoved:
+    ...
+
+
+@overload
+def create_event(type_: SubteamCreatedType, source: Source) -> SubteamCreated:
+    ...
+
+
+@overload
+def create_event(
+    type_: SubteamMembersChangedType, source: Source
+) -> SubteamMembersChanged:
+    ...
+
+
+@overload
+def create_event(
+    type_: SubteamSelfAddedType, source: Source
+) -> SubteamSelfAdded:
+    ...
+
+
+@overload
+def create_event(
+    type_: SubteamSelfRemovedType, source: Source
+) -> SubteamSelfRemoved:
+    ...
+
+
+@overload
+def create_event(type_: SubteamUpdatedType, source: Source) -> SubteamUpdated:
+    ...
+
+
+@overload
+def create_event(
+    type_: TeamDomainChangeType, source: Source
+) -> TeamDomainChange:
+    ...
+
+
+@overload
+def create_event(type_: TeamJoinType, source: Source) -> TeamJoin:
+    ...
+
+
+@overload
+def create_event(
+    type_: TeamMigrationStartedType, source: Source
+) -> TeamMigrationStarted:
+    ...
+
+
+@overload
+def create_event(type_: TeamPlanChangeType, source: Source) -> TeamPlanChange:
+    ...
+
+
+@overload
+def create_event(type_: TeamPrefChangeType, source: Source) -> TeamPrefChange:
+    ...
+
+
+@overload
+def create_event(
+    type_: TeamProfileChangeType, source: Source
+) -> TeamProfileChange:
+    ...
+
+
+@overload
+def create_event(
+    type_: TeamProfileDeleteType, source: Source
+) -> TeamProfileDelete:
+    ...
+
+
+@overload
+def create_event(
+    type_: TeamProfileReorderType, source: Source
+) -> TeamProfileReorder:
+    ...
+
+
+@overload
+def create_event(type_: TeamRenameType, source: Source) -> TeamRename:
+    ...
+
+
+@overload
+def create_event(type_: UserChangeType, source: Source) -> UserChange:
+    ...
+
+
+@overload
+def create_event(type_: UserTypingType, source: Source) -> UserTyping:
+    ...
+
+
+@overload
+def create_event(
+    type_: ChatterboxSystemStartType, source: Source
+) -> ChatterboxSystemStart:
+    ...
+
+
+@overload
+def create_event(type_: str, source: Source) -> BaseEvent:
+    ...
+
+
+@overload
+def create_event(type_: str, source: None) -> NoReturn:
+    ...
+
+
+def create_event(type_, source):
     """Create Event"""
 
-    cls = _events.get(d['type'])
-    if cls:
-        d.pop('type')
-    else:
-        cls = UnknownEvent
+    cls = _events.get(type_, UnknownEvent)
+
     try:
-        return cls(**d)  # type: ignore
+        return cls(type=type_, **source)  # type: ignore
     except TypeError as e:
         raise TypeError(f'Error at creating {cls.__name__}: {e}')
