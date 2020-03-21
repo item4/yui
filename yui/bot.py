@@ -396,9 +396,7 @@ class Bot:
             else:
                 sleep = 0
 
-            await self.queue.put(
-                create_event({'type': 'chatterbox_system_start'})
-            )
+            await self.queue.put(create_event('chatterbox_system_start', {}))
             while not self.is_ready:
                 await asyncio.sleep(0.01)
             try:
