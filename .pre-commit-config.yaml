@@ -21,6 +21,9 @@ repos:
     rev: 0.1.3
     hooks:
     - id: zimports
+      args:
+      - '--expand-stars'
+      - '--keep-unused'
   - repo: https://github.com/asottile/yesqa
     rev: v1.1.0
     hooks:
