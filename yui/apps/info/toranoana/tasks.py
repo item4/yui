@@ -236,7 +236,7 @@ def process(
                 ).scalar()
             ):
                 item.tags.append(tag)
-            if not is_new:
+            if not is_new and tag.id in old_tags:
                 old_tags.remove(tag.id)
 
         for author, wrote in authors:
@@ -254,7 +254,7 @@ def process(
                 ).scalar()
             ):
                 item.authors.append(author)
-            if not is_new:
+            if not is_new and author.id in old_authors:
                 old_authors.remove(author.id)
 
         for circle, wrote in circles:
@@ -272,7 +272,7 @@ def process(
                 ).scalar()
             ):
                 item.circles.append(circle)
-            if not is_new:
+            if not is_new and circle.id in old_circles:
                 old_circles.remove(circle.id)
 
         for coupling, wrote in couplings:
@@ -290,7 +290,7 @@ def process(
                 ).scalar()
             ):
                 item.couplings.append(coupling)
-            if not is_new:
+            if not is_new and coupling.id in old_couplings:
                 old_couplings.remove(coupling.id)
 
         for character, wrote in characters:
@@ -308,7 +308,7 @@ def process(
                 ).scalar()
             ):
                 item.characters.append(character)
-            if not is_new:
+            if not is_new and character.id in old_characters:
                 old_characters.remove(character.id)
 
         if is_new or sess.is_modified(item):
