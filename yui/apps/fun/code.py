@@ -7,7 +7,7 @@ from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils.datetime import now
 
-COOLTIME = timedelta(minutes=5)
+COOLTIME = timedelta(minutes=15)
 PATTERN = re.compile(r'[제내저이]?\s*(?:코드|[PM]R|풀리퀘)좀?\s*리뷰',)
 
 ICON_URL = 'https://i.imgur.com/bGVUlSp.jpg'
