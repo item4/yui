@@ -56,291 +56,309 @@ def process(
 ):
     rows = h.cssselect('#search-result-container li.list__item')
     for row in rows:
-        tags: List[Tuple[Tag, bool]] = []
-        authors: List[Tuple[Author, bool]] = []
-        circles: List[Tuple[Circle, bool]] = []
-        couplings: List[Tuple[Coupling, bool]] = []
-        characters: List[Tuple[Character, bool]] = []
-        code = row.cssselect('input#commodityCode')[0].get('value').strip()
-        is_new = False
-        is_adult = False
-        try:
-            item = sess.query(Item).filter_by(code=code).one()
-        except NoResultFound:
-            is_new = True
-            item = Item()
-            item.code = code
-            item.genre = genre
-
-        thumbnail_container = row.cssselect('.product_img a')[0]
-        item.image_url = thumbnail_container[-1].get('data-src').strip()
-        item.title = row.cssselect('.product_title')[0].text_content().strip()
-
-        tags_els = row.cssselect('.product_tags li')
-
-        for el in tags_els:
-            code = el.get('class').split(' ')[-1].replace('catalogMark', '')
-            name = el.text_content()
-            if code == '18':
-                is_adult = True
+        with sess.no_autoflush:
+            tags: List[Tuple[Tag, bool]] = []
+            authors: List[Tuple[Author, bool]] = []
+            circles: List[Tuple[Circle, bool]] = []
+            couplings: List[Tuple[Coupling, bool]] = []
+            characters: List[Tuple[Character, bool]] = []
+            code = row.cssselect('input#commodityCode')[0].get('value').strip()
+            is_new = False
+            is_adult = False
             try:
-                tag = sess.query(Tag).filter_by(code=code, name=name,).one()
-                tags.append((tag, True))
+                item = sess.query(Item).filter_by(code=code).one()
             except NoResultFound:
-                tag = Tag(code=code, name=name)
-                tags.append((tag, False))
+                is_new = True
+                item = Item()
+                item.code = code
+                item.genre = genre
 
-        labels_els = row.cssselect('.product_labels')
-        item.stock = {'○': Stock.ok, '△': Stock.few}.get(
-            labels_els[1][0].text_content().strip()[0], Stock.soldout
-        )
-        for el in labels_els[0][0]:
-            href = el.get('href')
-            code = href.split('=')[-1] if href else ''
-            name = el.text_content().strip()
-            if not code and not name:
-                continue
-            try:
-                author = (
-                    sess.query(Author).filter_by(code=code, name=name,).one()
+            thumbnail_container = row.cssselect('.product_img a')[0]
+            item.image_url = str(
+                thumbnail_container[-1].get('data-src').strip()
+            )
+            item.title = str(
+                row.cssselect('.product_title')[0].text_content().strip()
+            )
+
+            tags_els = row.cssselect('.product_tags li')
+
+            for el in tags_els:
+                code = (
+                    el.get('class').split(' ')[-1].replace('catalogMark', '')
                 )
-                authors.append((author, True))
-            except NoResultFound:
-                author = Author(code=code, name=name)
-                authors.append((author, False))
+                name = el.text_content()
+                if code == '18':
+                    is_adult = True
+                try:
+                    tag = sess.query(Tag).filter_by(code=code, name=name).one()
+                    tags.append((tag, True))
+                except NoResultFound:
+                    tag = Tag(code=code, name=name)
+                    tags.append((tag, False))
 
-        for el in labels_els[0][1]:
-            href = el.get('href')
-            code = href.split('/')[-2] if href else ''
-            name = el.text_content().strip()
-            if not code and not name:
-                continue
-            try:
-                circle = (
-                    sess.query(Circle).filter_by(code=code, name=name,).one()
-                )
-                circles.append((circle, True))
-            except NoResultFound:
-                circle = Circle(code=code, name=name)
-                circles.append((circle, False))
+            labels_els = row.cssselect('.product_labels')
+            item.stock = {'○': Stock.ok, '△': Stock.few}.get(
+                labels_els[1][0].text_content().strip()[0], Stock.soldout
+            )
+            for el in labels_els[0][0]:
+                href = el.get('href')
+                code = href.split('=')[-1] if href else ''
+                name = el.text_content().strip()
+                if not code and not name:
+                    continue
+                try:
+                    author = (
+                        sess.query(Author)
+                        .filter_by(code=code, name=name)
+                        .one()
+                    )
+                    authors.append((author, True))
+                except NoResultFound:
+                    author = Author(code=code, name=name)
+                    authors.append((author, False))
 
-        try:
-            coupling_els = labels_els[0][3]
-            character_els = labels_els[0][4]
-        except IndexError:
+            for el in labels_els[0][1]:
+                href = el.get('href')
+                code = href.split('/')[-2] if href else ''
+                name = el.text_content().strip()
+                if not code and not name:
+                    continue
+                try:
+                    circle = (
+                        sess.query(Circle)
+                        .filter_by(code=code, name=name)
+                        .one()
+                    )
+                    circles.append((circle, True))
+                except NoResultFound:
+                    circle = Circle(code=code, name=name)
+                    circles.append((circle, False))
+
             try:
-                character_els = labels_els[0][3]
+                coupling_els = labels_els[0][3]
+                character_els = labels_els[0][4]
             except IndexError:
-                character_els = []
-            coupling_els = []
+                try:
+                    character_els = labels_els[0][3]
+                except IndexError:
+                    character_els = []
+                coupling_els = []
 
-        for el in coupling_els:
-            href = el.get('href')
-            code = href.split('=')[-1] if href else ''
-            name = el.text_content().strip()
-            if not code and not name:
-                continue
-            try:
-                coupling = (
-                    sess.query(Coupling).filter_by(code=code, name=name,).one()
-                )
-                couplings.append((coupling, True))
-            except NoResultFound:
-                coupling = Coupling(code=code, name=name)
-                couplings.append((coupling, False))
+            for el in coupling_els:
+                href = el.get('href')
+                code = href.split('=')[-1] if href else ''
+                name = el.text_content().strip()
+                if not code and not name:
+                    continue
+                try:
+                    coupling = (
+                        sess.query(Coupling)
+                        .filter_by(code=code, name=name)
+                        .one()
+                    )
+                    couplings.append((coupling, True))
+                except NoResultFound:
+                    coupling = Coupling(code=code, name=name)
+                    couplings.append((coupling, False))
 
-        for el in character_els:
-            href = el.get('href')
-            code = href.split('=')[-1] if href else ''
-            name = el.text_content().strip()
-            if not code and not name:
-                continue
-            try:
-                character = (
-                    sess.query(Character)
-                    .filter_by(code=code, name=name,)
-                    .one()
-                )
-                characters.append((character, True))
-            except NoResultFound:
-                character = Character(code=code, name=name)
-                characters.append((character, False))
+            for el in character_els:
+                href = el.get('href')
+                code = href.split('=')[-1] if href else ''
+                name = el.text_content().strip()
+                if not code and not name:
+                    continue
+                try:
+                    character = (
+                        sess.query(Character)
+                        .filter_by(code=code, name=name)
+                        .one()
+                    )
+                    characters.append((character, True))
+                except NoResultFound:
+                    character = Character(code=code, name=name)
+                    characters.append((character, False))
 
-        item.price = int(
-            PRICE_PATTERN.sub(
-                r'\1',
-                row.cssselect('.product_price')[0].text_content().strip(),
-            ).replace(',', '')
-        )
-        if is_male:
-            if is_adult:
-                item.male_target = Target.adult
+            price = int(
+                PRICE_PATTERN.sub(
+                    r'\1',
+                    row.cssselect('.product_price')[0].text_content().strip(),
+                ).replace(',', '')
+            )
+            item.price = price
+            if is_male:
+                if is_adult:
+                    item.male_target = Target.adult
+                else:
+                    item.male_target = Target.common
             else:
-                item.male_target = Target.common
-        else:
-            if is_adult:
-                item.female_target = Target.adult
-            else:
-                item.female_target = Target.common
+                if is_adult:
+                    item.female_target = Target.adult
+                else:
+                    item.female_target = Target.common
 
-        queue: List[Union[Author, Circle, Tag, Coupling, Character, Item]] = []
+            queue: List[
+                Union[Author, Circle, Tag, Coupling, Character, Item]
+            ] = []
 
-        old_tags: List[int] = []
-        old_authors: List[int] = []
-        old_circles: List[int] = []
-        old_couplings: List[int] = []
-        old_characters: List[int] = []
-        if not is_new:
-            old_tags = [
-                x.id
-                for x in sess.query(Tag).filter(
-                    Tag.id == ItemTag.tag_id, ItemTag.item == item,
-                )
-            ]
-            old_authors = [
-                x.id
-                for x in sess.query(Author).filter(
-                    Author.id == ItemAuthor.author_id, ItemAuthor.item == item,
-                )
-            ]
-            old_circles = [
-                x.id
-                for x in sess.query(Circle).filter(
-                    Circle.id == ItemCircle.circle_id, ItemCircle.item == item,
-                )
-            ]
-            old_couplings = [
-                x.id
-                for x in sess.query(Coupling).filter(
-                    Coupling.id == ItemCoupling.coupling_id,
-                    ItemCoupling.item == item,
-                )
-            ]
-            old_characters = [
-                x.id
-                for x in sess.query(Character).filter(
-                    Character.id == ItemCharacter.character_id,
-                    ItemCharacter.item == item,
-                )
-            ]
-
-        for tag, wrote in tags:
-            if not wrote:
-                queue.append(tag)
-            if (
-                is_new
-                or not sess.query(
-                    exists().where(
-                        and_(ItemTag.item == item, ItemTag.tag == tag)
-                    )
-                ).scalar()
-            ):
-                item.tags.append(tag)
-            if not is_new and tag.id in old_tags:
-                old_tags.remove(tag.id)
-
-        for author, wrote in authors:
-            if not wrote:
-                queue.append(author)
-            if (
-                is_new
-                or not sess.query(
-                    exists().where(
-                        and_(
-                            ItemAuthor.item == item,
-                            ItemAuthor.author == author,
-                        )
-                    )
-                ).scalar()
-            ):
-                item.authors.append(author)
-            if not is_new and author.id in old_authors:
-                old_authors.remove(author.id)
-
-        for circle, wrote in circles:
-            if not wrote:
-                queue.append(circle)
-            if (
-                is_new
-                or not sess.query(
-                    exists().where(
-                        and_(
-                            ItemCircle.item == item,
-                            ItemCircle.circle == circle,
-                        )
-                    )
-                ).scalar()
-            ):
-                item.circles.append(circle)
-            if not is_new and circle.id in old_circles:
-                old_circles.remove(circle.id)
-
-        for coupling, wrote in couplings:
-            if not wrote:
-                queue.append(coupling)
-            if (
-                is_new
-                or not sess.query(
-                    exists().where(
-                        and_(
-                            ItemCoupling.item == item,
-                            ItemCoupling.coupling == coupling,
-                        )
-                    )
-                ).scalar()
-            ):
-                item.couplings.append(coupling)
-            if not is_new and coupling.id in old_couplings:
-                old_couplings.remove(coupling.id)
-
-        for character, wrote in characters:
-            if not wrote:
-                queue.append(character)
-            if (
-                is_new
-                or not sess.query(
-                    exists().where(
-                        and_(
-                            ItemCharacter.item == item,
-                            ItemCharacter.character == character,
-                        )
-                    )
-                ).scalar()
-            ):
-                item.characters.append(character)
-            if not is_new and character.id in old_characters:
-                old_characters.remove(character.id)
-
-        if is_new or sess.is_modified(item):
-            item.updated_at = dt
-
-        item.checked_at = dt
-        queue.append(item)
-
-        with sess.begin():
-            for record in queue:
-                sess.add(record)
-
+            old_tags: List[int] = []
+            old_authors: List[int] = []
+            old_circles: List[int] = []
+            old_couplings: List[int] = []
+            old_characters: List[int] = []
             if not is_new:
-                sess.query(ItemTag).filter(
-                    ItemTag.item == item, ItemTag.tag_id.in_(old_tags),
-                ).delete(synchronize_session=False)
-                sess.query(ItemAuthor).filter(
-                    ItemAuthor.item == item,
-                    ItemAuthor.author_id.in_(old_authors),
-                ).delete(synchronize_session=False)
-                sess.query(ItemCircle).filter(
-                    ItemCircle.item == item,
-                    ItemCircle.circle_id.in_(old_circles),
-                ).delete(synchronize_session=False)
-                sess.query(ItemCoupling).filter(
-                    ItemCoupling.item == item,
-                    ItemCoupling.coupling_id.in_(old_couplings),
-                ).delete(synchronize_session=False)
-                sess.query(ItemCharacter).filter(
-                    ItemCharacter.item == item,
-                    ItemCharacter.character_id.in_(old_characters),
-                ).delete(synchronize_session=False)
+                old_tags = [
+                    x.id
+                    for x in sess.query(Tag).filter(
+                        Tag.id == ItemTag.tag_id, ItemTag.item == item,
+                    )
+                ]
+                old_authors = [
+                    x.id
+                    for x in sess.query(Author).filter(
+                        Author.id == ItemAuthor.author_id,
+                        ItemAuthor.item == item,
+                    )
+                ]
+                old_circles = [
+                    x.id
+                    for x in sess.query(Circle).filter(
+                        Circle.id == ItemCircle.circle_id,
+                        ItemCircle.item == item,
+                    )
+                ]
+                old_couplings = [
+                    x.id
+                    for x in sess.query(Coupling).filter(
+                        Coupling.id == ItemCoupling.coupling_id,
+                        ItemCoupling.item == item,
+                    )
+                ]
+                old_characters = [
+                    x.id
+                    for x in sess.query(Character).filter(
+                        Character.id == ItemCharacter.character_id,
+                        ItemCharacter.item == item,
+                    )
+                ]
+
+            for tag, wrote in tags:
+                if not wrote:
+                    queue.append(tag)
+                if (
+                    is_new
+                    or not sess.query(
+                        exists().where(
+                            and_(ItemTag.item == item, ItemTag.tag == tag)
+                        )
+                    ).scalar()
+                ):
+                    item.tags.append(tag)
+                if not is_new and tag.id in old_tags:
+                    old_tags.remove(tag.id)
+
+            for author, wrote in authors:
+                if not wrote:
+                    queue.append(author)
+                if (
+                    is_new
+                    or not sess.query(
+                        exists().where(
+                            and_(
+                                ItemAuthor.item == item,
+                                ItemAuthor.author == author,
+                            )
+                        )
+                    ).scalar()
+                ):
+                    item.authors.append(author)
+                if not is_new and author.id in old_authors:
+                    old_authors.remove(author.id)
+
+            for circle, wrote in circles:
+                if not wrote:
+                    queue.append(circle)
+                if (
+                    is_new
+                    or not sess.query(
+                        exists().where(
+                            and_(
+                                ItemCircle.item == item,
+                                ItemCircle.circle == circle,
+                            )
+                        )
+                    ).scalar()
+                ):
+                    item.circles.append(circle)
+                if not is_new and circle.id in old_circles:
+                    old_circles.remove(circle.id)
+
+            for coupling, wrote in couplings:
+                if not wrote:
+                    queue.append(coupling)
+                if (
+                    is_new
+                    or not sess.query(
+                        exists().where(
+                            and_(
+                                ItemCoupling.item == item,
+                                ItemCoupling.coupling == coupling,
+                            )
+                        )
+                    ).scalar()
+                ):
+                    item.couplings.append(coupling)
+                if not is_new and coupling.id in old_couplings:
+                    old_couplings.remove(coupling.id)
+
+            for character, wrote in characters:
+                if not wrote:
+                    queue.append(character)
+                if (
+                    is_new
+                    or not sess.query(
+                        exists().where(
+                            and_(
+                                ItemCharacter.item == item,
+                                ItemCharacter.character == character,
+                            )
+                        )
+                    ).scalar()
+                ):
+                    item.characters.append(character)
+                if not is_new and character.id in old_characters:
+                    old_characters.remove(character.id)
+
+            if is_new or sess.is_modified(item):
+                item.updated_at = dt
+
+            item.checked_at = dt
+            queue.append(item)
+
+            with sess.begin():
+                for record in queue:
+                    sess.add(record)
+
+                if not is_new:
+                    sess.query(ItemTag).filter(
+                        ItemTag.item == item, ItemTag.tag_id.in_(old_tags),
+                    ).delete(synchronize_session=False)
+                    sess.query(ItemAuthor).filter(
+                        ItemAuthor.item == item,
+                        ItemAuthor.author_id.in_(old_authors),
+                    ).delete(synchronize_session=False)
+                    sess.query(ItemCircle).filter(
+                        ItemCircle.item == item,
+                        ItemCircle.circle_id.in_(old_circles),
+                    ).delete(synchronize_session=False)
+                    sess.query(ItemCoupling).filter(
+                        ItemCoupling.item == item,
+                        ItemCoupling.coupling_id.in_(old_couplings),
+                    ).delete(synchronize_session=False)
+                    sess.query(ItemCharacter).filter(
+                        ItemCharacter.item == item,
+                        ItemCharacter.character_id.in_(old_characters),
+                    ).delete(synchronize_session=False)
 
 
 def get_dedupe_genre_url_map(sess) -> GenreURLList:
@@ -414,7 +432,7 @@ def get_watches(*, sess, item: Item):
     )
 
 
-@box.cron('0,30 * * * *')
+@box.cron('*/3 * * * *')
 async def crawl(bot, sess):
     dt = now()
     url_map = await bot.run_in_other_thread(get_dedupe_genre_url_map, sess)
