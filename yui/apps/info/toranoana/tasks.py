@@ -247,9 +247,14 @@ def process(
                     queue.append(tag)
                 if (
                     is_new
+                    or not item.id
+                    or not tag.id
                     or not sess.query(
                         exists().where(
-                            and_(ItemTag.item == item, ItemTag.tag == tag)
+                            and_(
+                                ItemTag.item_id == item.id,
+                                ItemTag.tag_id == tag.id,
+                            )
                         )
                     ).scalar()
                 ):
@@ -262,11 +267,13 @@ def process(
                     queue.append(author)
                 if (
                     is_new
+                    or not item.id
+                    or not author.id
                     or not sess.query(
                         exists().where(
                             and_(
-                                ItemAuthor.item == item,
-                                ItemAuthor.author == author,
+                                ItemAuthor.item_id == item.id,
+                                ItemAuthor.author_id == author.id,
                             )
                         )
                     ).scalar()
@@ -280,11 +287,13 @@ def process(
                     queue.append(circle)
                 if (
                     is_new
+                    or not item.id
+                    or not circle.id
                     or not sess.query(
                         exists().where(
                             and_(
-                                ItemCircle.item == item,
-                                ItemCircle.circle == circle,
+                                ItemCircle.item_id == item.id,
+                                ItemCircle.circle.id == circle.id,
                             )
                         )
                     ).scalar()
@@ -298,11 +307,13 @@ def process(
                     queue.append(coupling)
                 if (
                     is_new
+                    or not item.id
+                    or not coupling.id
                     or not sess.query(
                         exists().where(
                             and_(
-                                ItemCoupling.item == item,
-                                ItemCoupling.coupling == coupling,
+                                ItemCoupling.item_id == item.id,
+                                ItemCoupling.coupling_id == coupling.id,
                             )
                         )
                     ).scalar()
@@ -316,11 +327,13 @@ def process(
                     queue.append(character)
                 if (
                     is_new
+                    or not item.id
+                    or not character.id
                     or not sess.query(
                         exists().where(
                             and_(
-                                ItemCharacter.item == item,
-                                ItemCharacter.character == character,
+                                ItemCharacter.item_id == item.id,
+                                ItemCharacter.character_id == character.id,
                             )
                         )
                     ).scalar()
