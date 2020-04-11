@@ -293,7 +293,7 @@ def process(
                         exists().where(
                             and_(
                                 ItemCircle.item_id == item.id,
-                                ItemCircle.circle.id == circle.id,
+                                ItemCircle.circle_id == circle.id,
                             )
                         )
                     ).scalar()
