@@ -46,7 +46,7 @@ async def body(
 
     try:
         async with timeout(TIMEOUT):
-            result, local = await bot.run_in_other_thread(
+            result, local = await bot.run_in_other_process(
                 calculate, expr, decimal_mode=decimal_mode,
             )
     except (SyntaxError, BadSyntax) as e:
