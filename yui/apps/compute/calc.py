@@ -1218,7 +1218,7 @@ class Evaluator:
 def calculate(expr: str, *, decimal_mode: bool = True):
     import resource
 
-    limit = 5 * 1024 * 1024
+    limit = 2 * 1024 * 1024
     resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
     e = Evaluator(decimal_mode=decimal_mode)
     result = e.run(expr)
