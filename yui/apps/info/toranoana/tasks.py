@@ -476,7 +476,7 @@ async def crawl(bot, sess):
                 )
 
     data: DefaultDict[str, List[Attachment]] = defaultdict(list)
-    for item in sess.query(Item).filter_by(updated_at=dt,):
+    for item in sess.query(Item).filter_by(updated_at=dt):
         author_name = ', '.join(author.name for author in item.authors)
         circle_name = ', '.join(circle.name for circle in item.circles)
         author_line = f'{author_name} ({circle_name})'
