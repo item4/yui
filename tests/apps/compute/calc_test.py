@@ -774,6 +774,7 @@ def test_yield_from():
     assert 'x' not in e.symbol_table
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     (
         'expr, expected_decimal_result, expected_num_result,'
