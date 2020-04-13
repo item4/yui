@@ -9,6 +9,8 @@ from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
 from yui.apps.compute.calc import calculate
 
+from ...util import FakeBot
+
 
 class GetItemSpy:
     def __init__(self):
@@ -846,17 +848,22 @@ def test_yield_from():
         ),
     ],
 )
-def test_calculate_fine(
+async def test_calculate_fine(
     expr: str,
     expected_decimal_result,
     expected_num_result,
     expected_decimal_local: dict,
     expected_num_local: dict,
 ):
+    bot = FakeBot()
 
-    decimal_result, decimal_local = calculate(expr, decimal_mode=True)
+    decimal_result, decimal_local = await bot.run_in_other_process(
+        calculate, expr, decimal_mode=True,
+    )
 
-    num_result, num_local = calculate(expr, decimal_mode=False)
+    num_result, num_local = await bot.run_in_other_process(
+        calculate, expr, decimal_mode=False,
+    )
 
     assert expected_decimal_result == decimal_result
     assert expected_decimal_local.keys() == decimal_local.keys()

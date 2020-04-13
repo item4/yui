@@ -1222,8 +1222,5 @@ def calculate(expr: str, *, decimal_mode: bool = True):
     resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
     e = Evaluator(decimal_mode=decimal_mode)
     result = e.run(expr)
-    resource.setrlimit(
-        resource.RLIMIT_AS, (resource.RLIM_INFINITY, resource.RLIM_INFINITY)
-    )
 
     return result, e.symbol_table
