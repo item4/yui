@@ -445,7 +445,7 @@ def get_watches(*, sess, item: Item):
     )
 
 
-@box.cron('*/3 * * * *')
+@box.cron('0,30 * * * *')
 async def crawl(bot, sess):
     dt = now()
     url_map = await bot.run_in_other_thread(get_dedupe_genre_url_map, sess)
