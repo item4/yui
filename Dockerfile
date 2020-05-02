@@ -2,6 +2,10 @@ FROM python:3.8
 
 MAINTAINER item4 <item4@localhost>
 
+ENV HOME="/home/kazuto"
+ENV PATH="${HOME}/.poetry/bin:${PATH}"
+ENV TZ="Asia/Seoul"
+
 RUN apt-get update -q \
     && apt-get install --no-install-recommends -y \
     build-essential\
@@ -15,13 +19,8 @@ RUN apt-get update -q \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --upgrade pip setuptools wheel
 
-ENV HOME="/home/kazuto"
-
-RUN groupadd --gid 1007 kirigaya && useradd --create-home --uid 1007 --gid 1007 kazuto && mkdir -p $HOME/yui/data && chown -R kazuto:kirigaya $HOME/yui
+RUN groupadd --gid 1007 kirigaya && useradd --create-home --uid 1007 --gid 1007 kazuto && mkdir -p $HOME/yui/data && chown -R kazuto:kirigaya $HOME
 USER kazuto
-
-ENV PATH="${HOME}/.poetry/bin:${PATH}"
-ENV TZ="Asia/Seoul"
 
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
@@ -32,6 +31,3 @@ WORKDIR ${HOME}/yui/
 RUN poetry install --no-dev
 
 COPY --chown=kazuto:kirigaya . ${HOME}/yui/
-CMD ["yui", "run"]
-
-VOLUME ${HOME}/yui/data
