@@ -67,7 +67,7 @@ GOOGLE_API_KEY = 'GOOGLE_API_KEY'
 
 AQI_API_TOKEN = 'AQI_API_TOKEN'
 
-WEBSOCKETDEBUGGERURL = 'http://10.5.0.2:9222/json/version'
+WEBSOCKETDEBUGGERURL = 'http://10.5.0.3:9222/json/version'
 
 [CHANNELS]
 general = '_general'
@@ -77,6 +77,11 @@ welcome = '_general'
 
 [USERS]
 owner = 'U11111111'
+
+[CACHE]
+HOST = 'memcached'
+PORT = 11211
+PREFIX = 'YUI_'
 
 [LOGGING]
 version = 1

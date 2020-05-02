@@ -12,6 +12,7 @@ services:
     links:
       - db
       - headless_chrome
+      - memcached
     command: ./data/run.sh
     networks:
       yuinet:
@@ -29,14 +30,19 @@ services:
       retries: 10
     networks:
       yuinet:
-        ipv4_address: 10.5.0.3
+        ipv4_address: 10.5.0.2
   headless_chrome:
     image: yukinying/chrome-headless-browser
     cap_add:
       - SYS_ADMIN
     networks:
       yuinet:
-        ipv4_address: 10.5.0.2
+        ipv4_address: 10.5.0.3
+  memcached:
+    image: memcached:latest
+    networks:
+      yuinet:
+      ipv4_address: 10.5.0.4
 
 networks:
   yuinet:
