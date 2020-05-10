@@ -37,7 +37,7 @@ class DateTimeAtComparator(Comparator):
         elif isinstance(maybe_dt, datetime.datetime):
             if maybe_tz is None:
                 maybe_tz = maybe_dt.tzinfo
-                maybe_dt = maybe_dt.replace(tzinfo=None)
+                maybe_dt = maybe_dt.astimezone(UTC)
 
             self.dt = maybe_dt.isoformat()
 
@@ -93,12 +93,14 @@ def DateTimeAtColumn(prefix: str) -> hybrid_property:
         dt: Optional[datetime.datetime] = getattr(self, datetime_key)
         tz: Optional[datetime.tzinfo] = getattr(self, timezone_key)
         if dt and tz:
-            return dt.replace(tzinfo=tz)
+            return dt.replace(tzinfo=UTC).astimezone(tz)
+        if dt:
+            return dt.replace(tzinfo=None)
         return dt
 
     def setter(self, dt: datetime.datetime):
         setattr(self, timezone_key, dt.tzinfo)
-        setattr(self, datetime_key, dt.replace(tzinfo=None))
+        setattr(self, datetime_key, dt.astimezone(UTC))
 
     def custom_comparator(cls):
         return DateTimeAtComparator(
@@ -111,7 +113,7 @@ def DateTimeAtColumn(prefix: str) -> hybrid_property:
 
 
 def DateTimeColumn(nullable: bool = True, *args, **kwargs):
-    return Column(DateTime(timezone=False), nullable=nullable, *args, **kwargs)
+    return Column(DateTime(timezone=True), nullable=nullable, *args, **kwargs)
 
 
 def TimezoneColumn(nullable: bool = True, *args, **kwargs):

@@ -20,7 +20,7 @@ def test_memo_model_with_aware_dt(fx_sess):
         fx_sess.add(record)
 
     assert record.created_at == now_dt
-    assert record.created_datetime == now_dt.replace(tzinfo=None)
+    assert record.created_datetime == now_dt.astimezone(UTC)
     assert record.created_timezone == gettz('Asia/Seoul')
 
 
@@ -37,7 +37,7 @@ def test_memo_model_with_aware_utc_dt(fx_sess):
         fx_sess.add(record)
 
     assert record.created_at == dt
-    assert record.created_datetime == datetime.datetime(2018, 10, 7, 1, 2, 3)
+    assert record.created_datetime == dt
     assert record.created_timezone == UTC
 
 
@@ -54,5 +54,5 @@ def test_memo_model_with_naive_dt(fx_sess):
         fx_sess.add(record)
 
     assert record.created_at == dt
-    assert record.created_datetime == dt
+    assert record.created_datetime.replace(tzinfo=None) == dt
     assert record.created_timezone is None
