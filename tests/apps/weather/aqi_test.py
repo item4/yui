@@ -51,7 +51,8 @@ def fx_google_api_key():
 @pytest.mark.asyncio
 async def test_get_geometric_info_by_address(fx_google_api_key):
     full_address, lat, lng = await get_geometric_info_by_address(
-        addr1, fx_google_api_key,
+        addr1,
+        fx_google_api_key,
     )
 
     assert full_address == '대한민국 경기도 부천시'
@@ -59,7 +60,8 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
     assert lng == 126.7660309
 
     full_address, lat, lng = await get_geometric_info_by_address(
-        addr2, fx_google_api_key,
+        addr2,
+        fx_google_api_key,
     )
 
     assert full_address == '대한민국 서울특별시'
@@ -68,7 +70,8 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
-            addr3, fx_google_api_key,
+            addr3,
+            fx_google_api_key,
         )
 
 
@@ -78,7 +81,7 @@ async def test_get_aqi_idx(fx_aqi_api_token):
 
     if result is None:
         pytest.skip('AQI Server problem')
-    assert result == '4495'
+    assert result == '1681'
 
 
 @pytest.mark.asyncio
@@ -138,7 +141,9 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
         assert said.data['thread_ts'] == '1234.5678'
 
         await aqi(
-            bot, event, addr3,
+            bot,
+            event,
+            addr3,
         )
 
         said = bot.call_queue.pop(0)
