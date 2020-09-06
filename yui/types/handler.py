@@ -67,6 +67,7 @@ class Handler:
     last_call: Any = attr.ib(init=False)
     doc: Optional[str] = attr.ib(init=False)
     params: Mapping[str, inspect.Parameter] = attr.ib(init=False)
+    is_prepared: bool = attr.ib(init=False, default=False)
 
     def __attrs_post_init__(self):
         self.doc = inspect.getdoc(self.f)
@@ -74,6 +75,37 @@ class Handler:
         self.arguments = []
         self.options = []
         self.last_call = {}
+
+    def prepare(self):
+        from ..box.utils import is_container
+
+        for o in self.options:
+            if o.type_ is None:
+                type_ = self.params[o.dest].annotation
+
+                if type_ == inspect._empty:  # type: ignore
+                    type_ = str
+                else:
+                    if o.transform_func:
+                        type_ = str
+
+                o.type_ = type_
+
+        for a in self.arguments:
+            if a.type_ is None:
+                type_ = self.params[a.dest].annotation
+
+                if type_ == inspect._empty:  # type: ignore
+                    type_ = str
+                else:
+                    if a.transform_func:
+                        type_ = str
+
+                a.type_ = type_
+                if is_container(a.type_):
+                    a.container_cls = None
+                    a.typing_has_container = True
+        self.is_prepared = True
 
     def __call__(self, *args, **kwargs) -> HANDLER_CALL_RETURN_TYPE:
         _self = kwargs.pop('_self', None)

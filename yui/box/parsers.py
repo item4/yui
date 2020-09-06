@@ -1,10 +1,8 @@
-import inspect
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 
-from .utils import is_container
 from ..types.handler import Handler
 from ..utils.cast import CastError
 from ..utils.cast import cast
@@ -16,37 +14,12 @@ def parse_option_and_arguments(
     handler: Handler, chunks: List[str],
 ) -> Tuple[KWARGS_DICT, List[str]]:
     end = False
+    if not handler.is_prepared:
+        handler.prepare()
 
     result: KWARGS_DICT = {}
     options = handler.options
     arguments = handler.arguments
-
-    for o in options:
-        if o.type_ is None:
-            type_ = handler.params[o.dest].annotation
-
-            if type_ == inspect._empty:  # type: ignore
-                type_ = str
-            else:
-                if o.transform_func:
-                    type_ = str
-
-            o.type_ = type_
-
-    for a in arguments:
-        if a.type_ is None:
-            type_ = handler.params[a.dest].annotation
-
-            if type_ == inspect._empty:  # type: ignore
-                type_ = str
-            else:
-                if a.transform_func:
-                    type_ = str
-
-            a.type_ = type_
-            if is_container(a.type_):
-                a.container_cls = None
-                a.typing_has_container = True
 
     required = {o.dest for o in options if o.required}
 
