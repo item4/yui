@@ -1,11 +1,11 @@
 YUI
 ===
 
-.. image:: https://travis-ci.org/item4/yui.svg?branch=master
+.. image:: https://travis-ci.org/item4/yui.svg?branch=main
    :target: https://travis-ci.org/item4/yui
    :alt: CI Test Status
 
-.. image:: https://codecov.io/gh/item4/yui/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/item4/yui/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/item4/yui
    :alt: Code Coverage Status
 
