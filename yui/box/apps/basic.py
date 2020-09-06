@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import html
 import inspect
-import shlex
 from typing import List
 from typing import Optional
 from typing import TYPE_CHECKING
@@ -10,6 +9,7 @@ from typing import TYPE_CHECKING
 from .base import BaseApp
 from ..parsers import parse_option_and_arguments
 from ..utils import SPACE_RE
+from ..utils import split_chunks
 from ...command.validators import VALIDATOR_TYPE
 from ...event import Event
 from ...event import Message
@@ -138,16 +138,13 @@ class App(BaseApp):
 
         if match:
             func_params = self.handler.params
-            if self.use_shlex:
-                try:
-                    chunks = shlex.split(raw)
-                except ValueError:
-                    await bot.say(
-                        event.channel, '*Error*: Can not parse this command'
-                    )
-                    return False
-            else:
-                chunks = raw.split(' ')
+            try:
+                chunks = split_chunks(raw, self.use_shlex)
+            except ValueError:
+                await bot.say(
+                    event.channel, '*Error*: Can not parse this command'
+                )
+                return False
 
             try:
                 kw, remain_chunks = parse_option_and_arguments(
