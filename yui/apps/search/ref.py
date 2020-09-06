@@ -27,7 +27,9 @@ REF_URLS: Dict[str, str] = {
 
 
 def parse(
-    blob: bytes, selector: str, url_prefix: str,
+    blob: bytes,
+    selector: str,
+    url_prefix: str,
 ) -> List[Tuple[str, str]]:
     h = fromstring(blob)
     a_tags = h.cssselect(selector)
@@ -36,12 +38,17 @@ def parse(
     for a in a_tags:
         name = str(a.text_content())
         link = f"{url_prefix}{a.get('href')}"
-        result.append((name, link,))
+        result.append(
+            (
+                name,
+                link,
+            )
+        )
     return result
 
 
 async def fetch_css_ref(bot: Bot):
-    logger.info(f'fetch css ref start')
+    logger.info('fetch css ref start')
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
     async with aiohttp.ClientSession() as session:
@@ -57,11 +64,11 @@ async def fetch_css_ref(bot: Bot):
 
     await bot.cache.set('REF_CSS', body)
 
-    logger.info(f'fetch css ref end')
+    logger.info('fetch css ref end')
 
 
 async def fetch_html_ref(bot: Bot):
-    logger.info(f'fetch html ref start')
+    logger.info('fetch html ref start')
 
     url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
     async with aiohttp.ClientSession() as session:
@@ -76,7 +83,7 @@ async def fetch_html_ref(bot: Bot):
     )
     await bot.cache.set('REF_HTML', body)
 
-    logger.info(f'fetch html ref end')
+    logger.info('fetch html ref end')
 
 
 def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
@@ -91,26 +98,39 @@ def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
         if code_els:
             for code_el in code_els:
                 result.append(
-                    (str(code_el.text_content()).strip(), name, link,)
+                    (
+                        str(code_el.text_content()).strip(),
+                        name,
+                        link,
+                    )
                 )
         else:
-            result.append(('', name, link,))
+            result.append(
+                (
+                    '',
+                    name,
+                    link,
+                )
+            )
     return result
 
 
 async def fetch_python_ref(bot: Bot):
-    logger.info(f'fetch python ref start')
+    logger.info('fetch python ref start')
 
     url = 'https://docs.python.org/3/library/'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
 
-    body = await bot.run_in_other_process(parse_python, blob,)
+    body = await bot.run_in_other_process(
+        parse_python,
+        blob,
+    )
 
     await bot.cache.set('REF_PYTHON', body)
 
-    logger.info(f'fetch python ref end')
+    logger.info('fetch python ref end')
 
 
 @box.on(ChatterboxSystemStart)

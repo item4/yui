@@ -47,10 +47,14 @@ class Namespace:
             for p in old_signature.parameters.values()
         ]
         params.append(
-            inspect.Parameter('_kwargs', inspect.Parameter.VAR_KEYWORD,)
+            inspect.Parameter(
+                '_kwargs',
+                inspect.Parameter.VAR_KEYWORD,
+            )
         )
         new_signature = inspect.Signature(
-            params, return_annotation=old_signature.return_annotation,
+            params,
+            return_annotation=old_signature.return_annotation,
         )
 
         # make new __init__ by eval
@@ -68,7 +72,7 @@ def __init__{str(new_signature)}:
         __new_init__.__module__ = cls.__module__
         __new_init__.__annotations__ = cls.__old_init__.__annotations__
         __new_init__.__qualname__ = f'{cls.__qualname__}.__init__'
-        __new_init__.__name__ = f'__init__'
+        __new_init__.__name__ = '__init__'
 
         # overwrite __init__
         cls.__init__ = __new_init__

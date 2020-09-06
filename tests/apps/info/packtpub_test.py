@@ -16,7 +16,7 @@ from ...util import FakeBot
 async def test_no_packtpub_dotd(response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
-        f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
+        '?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
         body=json.dumps({'data': []}),
         headers={'Content-Type': 'application/json'},
     )
@@ -85,7 +85,7 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
     image_url = 'test url'
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
-        f'?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
+        '?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
         body=json.dumps({'data': [{'productId': product_id}]}),
         headers={'Content-Type': 'application/json'},
     )

@@ -22,7 +22,7 @@ async def auto_weekend_loading(bot):
 
 @box.cron('0 0 * * 6')
 async def auto_weekend_start(bot):
-    await bot.say(C.general.get(), f'주말이에요! 즐거운 주말 되세요!')
+    await bot.say(C.general.get(), '주말이에요! 즐거운 주말 되세요!')
 
 
 @box.command('주말로딩')
