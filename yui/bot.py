@@ -4,6 +4,7 @@ import importlib
 import logging
 import logging.config
 import traceback
+from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -85,7 +86,11 @@ class Bot:
     loop: asyncio.AbstractEventLoop
 
     def __init__(
-        self, config: Config, *, orm_base=None, using_box: Box = None,
+        self,
+        config: Config,
+        *,
+        orm_base=None,
+        using_box: Box = None,
     ) -> None:
         """Initialize"""
 
@@ -105,7 +110,8 @@ class Bot:
 
         logger.info('connect to memcache')
         self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'], port=config.CACHE['PORT'],
+            host=config.CACHE['HOST'],
+            port=config.CACHE['PORT'],
         )
         self.cache = Cache(self.mc, config.CACHE.get('PREFIX', 'YUI_'))
 
@@ -200,27 +206,44 @@ class Bot:
             self.loop = loop
             loop.run_until_complete(
                 asyncio.wait(
-                    (self.connect(), self.process(),),
+                    (
+                        self.connect(),
+                        self.process(),
+                    ),
                     return_when=asyncio.FIRST_EXCEPTION,
                 )
             )
             loop.close()
 
     async def run_in_other_process(
-        self, f: Callable[..., R], *args, **kwargs,
+        self,
+        f: Callable[..., R],
+        *args,
+        **kwargs,
     ) -> R:
-        return await self.loop.run_in_executor(
-            executor=self.process_pool_executor,
-            func=functools.partial(f, *args, **kwargs),
-        )
+        try:
+            return await self.loop.run_in_executor(
+                executor=self.process_pool_executor,
+                func=functools.partial(f, *args, **kwargs),
+            )
+        except BrokenExecutor:
+            self.process_pool_executor = ProcessPoolExecutor()
+            raise
 
     async def run_in_other_thread(
-        self, f: Callable[..., R], *args, **kwargs,
+        self,
+        f: Callable[..., R],
+        *args,
+        **kwargs,
     ) -> R:
-        return await self.loop.run_in_executor(
-            executor=self.thread_pool_executor,
-            func=functools.partial(f, *args, **kwargs),
-        )
+        try:
+            return await self.loop.run_in_executor(
+                executor=self.thread_pool_executor,
+                func=functools.partial(f, *args, **kwargs),
+            )
+        except BrokenExecutor:
+            self.thread_pool_executor = ThreadPoolExecutor()
+            raise
 
     async def call(
         self,
@@ -307,7 +330,10 @@ class Bot:
                     self.config.USERS['owner'],
                     (
                         '*Event*\n```\n{}\n```\n' '*Traceback*\n```\n{}\n```\n'
-                    ).format(event, traceback.format_exc(),),
+                    ).format(
+                        event,
+                        traceback.format_exc(),
+                    ),
                 )
                 return False
 
@@ -371,7 +397,9 @@ class Bot:
                 break
             else:
                 logger.error(
-                    'Type: %s / MSG: %s', msg.type, msg,
+                    'Type: %s / MSG: %s',
+                    msg.type,
+                    msg,
                 )
                 break
 
@@ -403,7 +431,10 @@ class Bot:
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
                         await asyncio.wait(
-                            (self.ping(ws), self.receive(ws),),
+                            (
+                                self.ping(ws),
+                                self.receive(ws),
+                            ),
                             return_when=asyncio.FIRST_COMPLETED,
                         )
 
