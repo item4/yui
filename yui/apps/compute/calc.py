@@ -35,7 +35,11 @@ class PLACEHOLDER:
 
 
 async def body(
-    bot: Bot, event: Message, expr: str, help: str, decimal_mode: bool = True,
+    bot: Bot,
+    event: Message,
+    expr: str,
+    help: str,
+    decimal_mode: bool = True,
 ):
     expr = expr.strip()
     expr_is_multiline = '\n' in expr
@@ -47,11 +51,15 @@ async def body(
     try:
         async with timeout(TIMEOUT):
             result, local = await bot.run_in_other_process(
-                calculate, expr, decimal_mode=decimal_mode,
+                calculate,
+                expr,
+                decimal_mode=decimal_mode,
             )
     except (SyntaxError, BadSyntax) as e:
         await bot.say(
-            event.channel, '입력해주신 수식에 문법 오류가 있어요! {}'.format(e), thread_ts=ts,
+            event.channel,
+            '입력해주신 수식에 문법 오류가 있어요! {}'.format(e),
+            thread_ts=ts,
         )
         return
     except ZeroDivisionError:
@@ -77,7 +85,7 @@ async def body(
         return
 
     if result is not None:
-        result_string = str(result)
+        result_string = str(result)[:1500].strip()
 
         if expr_is_multiline or '\n' in result_string:
             r = (
@@ -92,12 +100,14 @@ async def body(
             r = f'`{result_string}`' if result_string.strip() else '_Empty_'
             text = f'`{expr}` == {r}'
         await bot.say(
-            event.channel, text, thread_ts=ts,
+            event.channel,
+            text,
+            thread_ts=ts,
         )
     elif local:
         r = '\n'.join(
             '{} = {}'.format(key, repr(value)) for key, value in local.items()
-        )
+        )[:1500].strip()
         if ts is None:
             ts = event.ts
         await bot.say(
@@ -107,7 +117,9 @@ async def body(
         )
     else:
         await bot.say(
-            event.channel, '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!', thread_ts=ts,
+            event.channel,
+            '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!',
+            thread_ts=ts,
         )
 
 
@@ -123,7 +135,11 @@ async def calc_decimal(bot, event: Message, raw: str):
     """
 
     await body(
-        bot, event, raw, '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX), True,
+        bot,
+        event,
+        raw,
+        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+        True,
     )
 
 
@@ -817,7 +833,9 @@ class Evaluator:
             return None
 
         return getattr(
-            self, f'visit_{node.__class__.__name__.lower()}', self.no_impl,
+            self,
+            f'visit_{node.__class__.__name__.lower()}',
+            self.no_impl,
         )(node)
 
     def assign(self, node, val):
@@ -833,7 +851,9 @@ class Evaluator:
                     )
                 )
             for telem, tval in itertools.zip_longest(
-                node.elts, val, fillvalue=PLACEHOLDER,
+                node.elts,
+                val,
+                fillvalue=PLACEHOLDER,
             ):
                 if telem == PLACEHOLDER:
                     raise ValueError('not enough values to unpack')
@@ -914,13 +934,17 @@ class Evaluator:
         if target_cls == _ast.Name:
             target_id = target.id  # type: ignore
             self.symbol_table[target_id] = BINOP_TABLE[op_cls](
-                self.symbol_table[target_id], value,
+                self.symbol_table[target_id],
+                value,
             )
         elif target_cls == _ast.Subscript:
             sym = self._run(target.value)  # type: ignore
             xslice = self._run(target.slice)  # type: ignore
             if isinstance(target.slice, _ast.Index):  # type: ignore
-                sym[xslice] = BINOP_TABLE[op_cls](sym[xslice], value,)
+                sym[xslice] = BINOP_TABLE[op_cls](
+                    sym[xslice],
+                    value,
+                )
             else:
                 raise BadSyntax('This assign method is not allowed')
         else:
@@ -1105,7 +1129,8 @@ class Evaluator:
                     if len(node.generators) > 1:
                         r = self.visit_listcomp(
                             _ast.ListComp(
-                                elt=node.elt, generators=node.generators[1:],
+                                elt=node.elt,
+                                generators=node.generators[1:],
                             )
                         )
                         result += r
@@ -1160,7 +1185,8 @@ class Evaluator:
                     if len(node.generators) > 1:
                         r = self.visit_setcomp(
                             _ast.SetComp(
-                                elt=node.elt, generators=node.generators[1:],
+                                elt=node.elt,
+                                generators=node.generators[1:],
                             )
                         )
                         result |= r
@@ -1172,7 +1198,9 @@ class Evaluator:
 
     def visit_slice(self, node: _ast.Slice):  # lower, upper, step
         return slice(
-            self._run(node.lower), self._run(node.upper), self._run(node.step),
+            self._run(node.lower),
+            self._run(node.upper),
+            self._run(node.step),
         )
 
     def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
