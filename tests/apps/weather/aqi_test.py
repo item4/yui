@@ -81,7 +81,7 @@ async def test_get_aqi_idx(fx_aqi_api_token):
 
     if result is None:
         pytest.skip('AQI Server problem')
-    assert result == '1681'
+    assert result == '4495'
 
 
 @pytest.mark.asyncio
