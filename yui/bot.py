@@ -301,7 +301,7 @@ class Bot:
         """Shortcut for bot saying."""
 
         coro = self.api.chat.postMessage(
-            channel, text, as_user=True, link_names=True, **kwargs
+            channel, text[:300], as_user=True, link_names=True, **kwargs
         )
         if retry_until_send:
             return await retry(coro)
