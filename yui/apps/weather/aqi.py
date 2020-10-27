@@ -54,7 +54,8 @@ class AQIRecord:
 
 
 async def get_geometric_info_by_address(
-    address: str, api_key: str,
+    address: str,
+    api_key: str,
 ) -> Tuple[str, float, float]:
     url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode(
         {'region': 'kr', 'address': address, 'key': api_key}
@@ -155,16 +156,20 @@ async def aqi(bot, event: Message, address: str):
     else:
         try:
             full_address, lat, lng = await get_geometric_info_by_address(
-                address, bot.config.GOOGLE_API_KEY,
+                address,
+                bot.config.GOOGLE_API_KEY,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_full_address', full_address,
+                f'AQI_ADDRESS_{addr}_full_address',
+                full_address,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lat', lat,
+                f'AQI_ADDRESS_{addr}_lat',
+                lat,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lng', lng,
+                f'AQI_ADDRESS_{addr}_lng',
+                lng,
             )
         except IndexError:
             await bot.say(event.channel, '해당 주소는 찾을 수 없어요!')
@@ -186,7 +191,9 @@ async def aqi(bot, event: Message, address: str):
         return
 
     time = datetime.datetime.fromtimestamp(result.time)
-    time -= tzlocal.get_localzone().utcoffset(time)
+    offset = tzlocal.get_localzone().utcoffset(time)
+    if offset:
+        time -= offset
 
     ftime = time.strftime('%Y년 %m월 %d일 %H시')
     text = (
@@ -201,5 +208,7 @@ async def aqi(bot, event: Message, address: str):
 
     text = text.strip()
     await bot.say(
-        event.channel, text, thread_ts=event.ts,
+        event.channel,
+        text,
+        thread_ts=event.ts,
     )
