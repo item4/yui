@@ -19,7 +19,7 @@ def test_json_cache_model_with_aware_dt(fx_sess):
         fx_sess.add(record)
 
     assert record.created_at == now_dt
-    assert record.created_datetime == now_dt.astimezone(UTC)
+    assert record.created_datetime == now_dt
     assert record.created_timezone == gettz('Asia/Seoul')
 
 
