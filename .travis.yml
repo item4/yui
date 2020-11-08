@@ -19,7 +19,7 @@ before_install:
 - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 - export PATH="$HOME/.poetry/bin:$PATH"
 install:
-- poetry install -E travis-ci
+- poetry install --no-ansi -E travis-ci
 before_script:
 - psql -c 'create database yui_test;' -U postgres
 - psql -c 'show timezone;' -U postgres

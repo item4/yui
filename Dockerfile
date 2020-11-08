@@ -28,6 +28,6 @@ COPY --chown=kazuto:kirigaya ./pyproject.toml ./poetry.lock ${HOME}/yui/
 
 WORKDIR ${HOME}/yui/
 
-RUN poetry install --no-dev
+RUN poetry install --no-dev --no-ansi
 
 COPY --chown=kazuto:kirigaya . ${HOME}/yui/
