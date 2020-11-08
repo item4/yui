@@ -1,5 +1,4 @@
 import datetime
-from typing import List
 from urllib.parse import urlencode
 
 from pyppeteer.errors import TimeoutError
@@ -116,15 +115,16 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
         not_found_tag = await page.querySelector(NOT_FOUND_SELECTOR)
         if not_found_tag is None:
             results = await page.querySelectorAllEval(
-                TABLE_ROW_SELECTOR, SCRIPT,
+                TABLE_ROW_SELECTOR,
+                SCRIPT,
             )
         else:
             results = []
 
-    attachments: List[Attachment] = []
+    attachments: list[Attachment] = []
 
     for row in results:
-        actions: List[Action] = [
+        actions: list[Action] = [
             Action(
                 name='dl',
                 type='button',
@@ -150,7 +150,8 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
                 ).format(
                     row['size'],
                     datetime.datetime.fromtimestamp(
-                        row['uploaded_at'], tz=tzlocal.get_localzone(),
+                        row['uploaded_at'],
+                        tz=tzlocal.get_localzone(),
                     ).strftime('%Y-%m-%d %H:%M'),
                     row['seeders'],
                     row['leechers'],
@@ -168,5 +169,6 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
         )
     else:
         await bot.say(
-            event.channel, '검색결과가 없어요!',
+            event.channel,
+            '검색결과가 없어요!',
         )

@@ -1,6 +1,6 @@
 import re
 import shlex
-from typing import List
+import typing
 
 SPACE_RE = re.compile(r'[\s\xa0]+')
 
@@ -10,13 +10,10 @@ CONTAINER = (set, tuple, list)
 def is_container(t) -> bool:
     """Check given value is container type?"""
 
-    if hasattr(t, '__origin__'):
-        return t.__origin__ in CONTAINER
-
-    return t in CONTAINER
+    return t in CONTAINER or typing.get_origin(t) in CONTAINER
 
 
-def split_chunks(text: str, use_shlex: bool) -> List[str]:
+def split_chunks(text: str, use_shlex: bool) -> list[str]:
     if use_shlex:
         lex = shlex.shlex(text, posix=True)
         lex.whitespace_split = True

@@ -1,18 +1,16 @@
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Tuple
 
 from ..types.handler import Handler
 from ..utils.cast import CastError
 from ..utils.cast import cast
 
-KWARGS_DICT = Dict[str, Any]
+KWARGS_DICT = dict[str, Any]
 
 
 def parse_option_and_arguments(
-    handler: Handler, chunks: List[str],
-) -> Tuple[KWARGS_DICT, List[str]]:
+    handler: Handler,
+    chunks: list[str],
+) -> tuple[KWARGS_DICT, list[str]]:
     end = False
     if not handler.is_prepared:
         handler.prepare()
@@ -82,7 +80,8 @@ def parse_option_and_arguments(
                         except ValueError as e:
                             raise SyntaxError(
                                 option.transform_error.format(
-                                    name=option.name, e=e,
+                                    name=option.name,
+                                    e=e,
                                 )
                             )
                     else:
@@ -91,7 +90,8 @@ def parse_option_and_arguments(
                         except ValueError as e:
                             raise SyntaxError(
                                 option.transform_error.format(
-                                    name=option.name, e=e,
+                                    name=option.name,
+                                    e=e,
                                 )
                             )
 
@@ -108,7 +108,11 @@ def parse_option_and_arguments(
     if required:
         raise SyntaxError(
             '\n'.join(
-                o.count_error.format(name=o.name, expected=o.nargs, given=0,)
+                o.count_error.format(
+                    name=o.name,
+                    expected=o.nargs,
+                    given=0,
+                )
                 for o in (
                     list(filter(lambda x: x.dest == o, options))[0]
                     for o in required
@@ -124,7 +128,9 @@ def parse_option_and_arguments(
         if length < 1:
             raise SyntaxError(
                 argument.count_error.format(
-                    name=argument.name, expected='>0', given=0,
+                    name=argument.name,
+                    expected='>0',
+                    given=0,
                 )
             )
         if length <= len(chunks):
@@ -150,7 +156,10 @@ def parse_option_and_arguments(
                 r = cast(argument.type_, args[0])
         except (ValueError, CastError) as e:
             raise SyntaxError(
-                argument.type_error.format(name=argument.name, e=e,)
+                argument.type_error.format(
+                    name=argument.name,
+                    e=e,
+                )
             )
 
         if argument.transform_func:
@@ -162,7 +171,8 @@ def parse_option_and_arguments(
                 except ValueError as e:
                     raise SyntaxError(
                         argument.transform_error.format(
-                            name=argument.name, e=e,
+                            name=argument.name,
+                            e=e,
                         )
                     )
             else:
@@ -171,7 +181,8 @@ def parse_option_and_arguments(
                 except ValueError as e:
                     raise SyntaxError(
                         argument.transform_error.format(
-                            name=argument.name, e=e,
+                            name=argument.name,
+                            e=e,
                         )
                     )
 

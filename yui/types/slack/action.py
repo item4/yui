@@ -1,5 +1,4 @@
 import enum
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -39,7 +38,7 @@ class OptionFieldGroup:
     """Optional Option Group on Action"""
 
     text: str
-    options: List[OptionField]
+    options: list[OptionField]
 
 
 class ActionType(enum.Enum):
@@ -83,9 +82,9 @@ class Action:
     id: Optional[str] = None
     confirm: Optional[Confirmation] = None
     min_query_length: Optional[int] = None
-    options: Optional[List[OptionField]] = None
-    option_groups: Optional[List[OptionFieldGroup]] = None
-    selected_options: Optional[List[OptionField]] = None
+    options: Optional[list[OptionField]] = None
+    option_groups: Optional[list[OptionFieldGroup]] = None
+    selected_options: Optional[list[OptionField]] = None
     value: Optional[str] = None
     url: Optional[str] = None
 

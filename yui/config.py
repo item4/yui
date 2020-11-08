@@ -2,10 +2,7 @@ import copy
 import pathlib
 import sys
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Set
 
 import attr
 
@@ -76,24 +73,24 @@ class Config:
     RECEIVE_TIMEOUT: int
     DEBUG: bool
     PREFIX: str
-    APPS: List[str]
+    APPS: list[str]
     DATABASE_URL: str
     DATABASE_ECHO: bool
-    LOGGING: Dict[str, Any]
+    LOGGING: dict[str, Any]
     REGISTER_CRONTAB: bool
-    CHANNELS: Dict[str, Any]
-    USERS: Dict[str, Any]
-    CACHE: Dict[str, Any]
+    CHANNELS: dict[str, Any]
+    USERS: dict[str, Any]
+    CACHE: dict[str, Any]
     WEBSOCKETDEBUGGERURL: Optional[str] = None
     DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
 
     def check(
         self,
-        configs: Dict[str, Any],
-        single_channels: Set[str],
-        multiple_channels: Set[str],
-        single_users: Set[str],
-        multiple_users: Set[str],
+        configs: dict[str, Any],
+        single_channels: set[str],
+        multiple_channels: set[str],
+        single_users: set[str],
+        multiple_users: set[str],
     ) -> bool:
         for key, value in configs.items():
             try:

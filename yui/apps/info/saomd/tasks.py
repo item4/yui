@@ -1,7 +1,5 @@
 import asyncio
 import logging
-from typing import Dict
-from typing import List
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
@@ -26,7 +24,7 @@ box.assert_channel_required('saomd')
 
 logger = logging.getLogger(__name__)
 
-NOTICE_URLS: Dict[Server, str] = {
+NOTICE_URLS: dict[Server, str] = {
     Server.japan: (
         'https://api-defrag.wrightflyer.net/webview/announcement'
         '?phone_type=2'
@@ -39,16 +37,18 @@ NOTICE_URLS: Dict[Server, str] = {
 
 
 def process(
-    server: Server, html: str, engine_config: EngineConfig,
-) -> List[Attachment]:
+    server: Server,
+    html: str,
+    engine_config: EngineConfig,
+) -> list[Attachment]:
 
     base = '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server]))
     h = fromstring(html)
     dls = h.cssselect('dl')
 
-    attachments: List[Attachment] = []
+    attachments: list[Attachment] = []
 
-    notice_ids: List[int] = []
+    notice_ids: list[int] = []
 
     if len(dls) < 5:
         return attachments
@@ -99,9 +99,14 @@ def process(
 
             status = 'pass'
             try:
-                notice: Notice = sess.query(Notice).filter_by(
-                    notice_id=id, server=server,
-                ).one()
+                notice: Notice = (
+                    sess.query(Notice)
+                    .filter_by(
+                        notice_id=id,
+                        server=server,
+                    )
+                    .one()
+                )
             except NoResultFound:
                 status = 'new'
                 notice = Notice()
@@ -219,7 +224,10 @@ async def watch_notice(bot: Bot, engine_config: EngineConfig):
                 html = await resp.text()
 
         attachments = await bot.run_in_other_process(
-            process, server, html, engine_config,
+            process,
+            server,
+            html,
+            engine_config,
         )
         if attachments:
             await retry(

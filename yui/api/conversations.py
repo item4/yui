@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -54,7 +53,9 @@ class Conversations(Endpoint):
         return await self._call('history', params)
 
     async def info(
-        self, channel: Union[Channel, ChannelID], include_locale: bool = False,
+        self,
+        channel: Union[Channel, ChannelID],
+        include_locale: bool = False,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.info"""
 
@@ -97,7 +98,7 @@ class Conversations(Endpoint):
         *,
         channel: Optional[Union[Channel, ChannelID]] = None,
         return_im: Optional[bool] = None,
-        users: Optional[List[Union[User, UserID]]] = None,
+        users: Optional['list[Union[User, UserID]]'] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.open"""
 

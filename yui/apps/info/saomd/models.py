@@ -1,5 +1,4 @@
 import enum
-from typing import Dict
 
 from sqlalchemy.schema import Column
 from sqlalchemy.types import Boolean
@@ -19,7 +18,7 @@ class Server(enum.IntEnum):
     worldwide = 2
 
 
-SERVER_LABEL: Dict[Server, str] = {
+SERVER_LABEL: dict[Server, str] = {
     Server.japan: '일본',
     Server.worldwide: '글로벌',
 }

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from .base import Ts
 from .namespace import BooleanField
@@ -53,7 +52,7 @@ class PublicChannel(Channel):
     name: str = NameField()
     creator: User = UserField()
     last_read: Ts = TsField()
-    members: List[User] = UserListField()
+    members: list[User] = UserListField()
     created: datetime = DateTimeField()
     is_org_shared: bool = BooleanField()
     has_pins: bool = BooleanField()
@@ -68,7 +67,7 @@ class PublicChannel(Channel):
     is_mpim: bool = BooleanField()
     topic: ChannelTopic = Field(converter=ChannelTopic)
     purpose: ChannelPurpose = Field(converter=ChannelPurpose)
-    previous_names: List[str] = ListField(str)()
+    previous_names: list[str] = ListField(str)()
 
 
 @namespace
@@ -91,7 +90,7 @@ class PrivateChannel(Channel):
     name: str = NameField()
     creator: User = UserField()
     last_read: Ts = TsField()
-    members: List[User] = UserListField()
+    members: list[User] = UserListField()
     created: datetime = DateTimeField()
     is_org_shared: bool = BooleanField()
     has_pins: bool = BooleanField()

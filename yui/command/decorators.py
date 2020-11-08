@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 from typing import Callable
-from typing import List
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import Type
@@ -162,7 +161,7 @@ def option(
 
     """
 
-    options: List[Option] = []
+    options: list[Option] = []
 
     if nargs == 1 and container_cls:
         container_cls = None

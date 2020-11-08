@@ -1,5 +1,4 @@
 import random
-from typing import List
 
 from ...box import box
 from ...command import argument
@@ -10,7 +9,7 @@ from ...event import Message
 @box.command('select', ['선택', '골라'])
 @option('--seed')
 @argument('items', nargs=-1)
-async def select(bot, event: Message, items: List[str], seed: int):
+async def select(bot, event: Message, items: list[str], seed: int):
     """
     주어진 항목중에 랜덤으로 선택해서 알려줍니다.
 

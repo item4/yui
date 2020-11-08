@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict
 from typing import TYPE_CHECKING
-from typing import Tuple
 
 from ..types.handler import DECORATOR_ARGS_TYPE
 from ..types.handler import Handler
@@ -17,7 +15,7 @@ class CronTask:
 
     handler: Handler
 
-    def __init__(self, box: Box, spec: str, args: Tuple, kwargs: Dict) -> None:
+    def __init__(self, box: Box, spec: str, args: tuple, kwargs: dict) -> None:
         """Initialize."""
 
         if 'start' not in kwargs:

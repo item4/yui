@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import html
 import inspect
-from typing import List
 from typing import Optional
 from typing import TYPE_CHECKING
 
@@ -30,7 +29,7 @@ class App(BaseApp):
         handler: Handler,
         *,
         name: Optional[str] = None,
-        aliases: Optional[List[str]] = None,
+        aliases: Optional[list[str]] = None,
         short_help: Optional[str] = None,
         help: Optional[str] = None,
         use_shlex: bool = False,
@@ -42,8 +41,8 @@ class App(BaseApp):
         self.subtype = subtype
         self.handler = handler
         self.name = name
-        self.aliases: List[str] = [] if aliases is None else aliases
-        self.names: List[str] = self.aliases[:]
+        self.aliases: list[str] = [] if aliases is None else aliases
+        self.names: list[str] = self.aliases[:]
 
         if name:
             self.names.append(name)
@@ -107,7 +106,9 @@ class App(BaseApp):
 
         if validation:
             with self.prepare_kwargs(
-                bot=bot, event=event, func_params=self.handler.params,
+                bot=bot,
+                event=event,
+                func_params=self.handler.params,
             ) as kwargs:
                 res = await self.handler(**kwargs)
 
@@ -148,7 +149,8 @@ class App(BaseApp):
 
             try:
                 kw, remain_chunks = parse_option_and_arguments(
-                    self.handler, chunks,
+                    self.handler,
+                    chunks,
                 )
             except SyntaxError as e:
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
@@ -169,7 +171,10 @@ class App(BaseApp):
                     else:
                         kw['remain_chunks'] = remain_chunks
                 with self.prepare_kwargs(
-                    bot=bot, event=event, func_params=func_params, **kw,
+                    bot=bot,
+                    event=event,
+                    func_params=func_params,
+                    **kw,
                 ) as kwargs:
                     res = await self.handler(**kwargs)
 

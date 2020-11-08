@@ -1,7 +1,6 @@
 import datetime
 from hashlib import md5
 from typing import Optional
-from typing import Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -56,7 +55,7 @@ class AQIRecord:
 async def get_geometric_info_by_address(
     address: str,
     api_key: str,
-) -> Tuple[str, float, float]:
+) -> tuple[str, float, float]:
     url = 'https://maps.googleapis.com/maps/api/geocode/json?' + urlencode(
         {'region': 'kr', 'address': address, 'key': api_key}
     )

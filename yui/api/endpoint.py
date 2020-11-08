@@ -1,6 +1,5 @@
 import enum
 from typing import Any
-from typing import Dict
 
 import attr
 
@@ -39,7 +38,7 @@ class Endpoint:
     async def _call(
         self,
         method: str,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         *,
         token=None,
         json_mode: bool = False,
@@ -48,5 +47,8 @@ class Endpoint:
             data = prepare_for_json(data)
 
         return await self.bot.call(
-            f'{self.name}.{method}', data, token=token, json_mode=json_mode,
+            f'{self.name}.{method}',
+            data,
+            token=token,
+            json_mode=json_mode,
         )

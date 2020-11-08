@@ -1,8 +1,5 @@
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Set
 from typing import Type
 from typing import Union
 
@@ -23,13 +20,13 @@ class Box:
     def __init__(self) -> None:
         """Initialize"""
 
-        self.config_required: Dict[str, Any] = {}
-        self.channel_required: Set[str] = set()
-        self.channels_required: Set[str] = set()
-        self.user_required: Set[str] = set()
-        self.users_required: Set[str] = set()
-        self.apps: List[BaseApp] = []
-        self.tasks: List[CronTask] = []
+        self.config_required: dict[str, Any] = {}
+        self.channel_required: set[str] = set()
+        self.channels_required: set[str] = set()
+        self.user_required: set[str] = set()
+        self.users_required: set[str] = set()
+        self.apps: list[BaseApp] = []
+        self.tasks: list[CronTask] = []
 
     def register(self, app: BaseApp):
         """Register App manually."""
@@ -64,7 +61,7 @@ class Box:
     def command(
         self,
         name: str,
-        aliases: Optional[List[str]] = None,
+        aliases: Optional[list[str]] = None,
         *,
         subtype: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -114,7 +111,12 @@ class Box:
             handler = get_handler(target)
 
             self.apps.append(
-                App(event_type, subtype, handler, channel_validator=channels,)
+                App(
+                    event_type,
+                    subtype,
+                    handler,
+                    channel_validator=channels,
+                )
             )
 
             return handler

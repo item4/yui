@@ -1,5 +1,4 @@
 import inspect
-from typing import List
 
 import aiohttp
 
@@ -135,7 +134,8 @@ class Toranoana(route.RouteApp):
             ]
         except KeyError:
             await bot.say(
-                event.channel, '인식할 수 없는 구독타겟이에요!',
+                event.channel,
+                '인식할 수 없는 구독타겟이에요!',
             )
             return
 
@@ -210,7 +210,7 @@ class Toranoana(route.RouteApp):
         else:
             target = event.user
             target_desc = f'{format.link(target)}님의 DM으로'
-        watches: List[Watch] = sess.query(Watch).filter_by(
+        watches: list[Watch] = sess.query(Watch).filter_by(
             print_target_id=target.id,
         )
         watch_list = '\n'.join(
@@ -228,7 +228,10 @@ class Toranoana(route.RouteApp):
             text = f'{target_desc} 구독중인 내역이 없어요!'
 
         await bot.api.chat.postEphemeral(
-            event.channel, event.user, text, as_user=True,
+            event.channel,
+            event.user,
+            text,
+            as_user=True,
         )
 
     @argument('id')
@@ -238,9 +241,14 @@ class Toranoana(route.RouteApp):
         else:
             target = event.user
         try:
-            watch: Watch = sess.query(Watch).filter_by(
-                id=id, print_target_id=target.id,
-            ).one()
+            watch: Watch = (
+                sess.query(Watch)
+                .filter_by(
+                    id=id,
+                    print_target_id=target.id,
+                )
+                .one()
+            )
         except NoResultFound:
             await bot.api.chat.postEphemeral(
                 event.channel,
@@ -256,7 +264,10 @@ class Toranoana(route.RouteApp):
             sess.delete(watch)
 
         await bot.api.chat.postEphemeral(
-            event.channel, event.user, '구독이 취소되었어요!', as_user=True,
+            event.channel,
+            event.user,
+            '구독이 취소되었어요!',
+            as_user=True,
         )
 
     @argument('field')
@@ -273,7 +284,8 @@ class Toranoana(route.RouteApp):
     ):
         if U.owner.get().id != event.user.id:
             await bot.say(
-                event.channel, '해당 명령어를 사용할 권한이 없어요!',
+                event.channel,
+                '해당 명령어를 사용할 권한이 없어요!',
             )
             return
 

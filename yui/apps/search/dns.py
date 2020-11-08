@@ -1,5 +1,4 @@
 import asyncio
-from typing import List
 from typing import NamedTuple
 from urllib.parse import urlencode
 
@@ -30,7 +29,7 @@ class Result(NamedTuple):
     error: bool
 
 
-SERVER_LIST_V4: List[DNSServer] = [
+SERVER_LIST_V4: list[DNSServer] = [
     DNSServer('KT', '168.126.63.1'),
     DNSServer('KT', '168.126.63.2'),
     DNSServer('SK', '210.220.163.82'),
@@ -49,7 +48,7 @@ SERVER_LIST_V4: List[DNSServer] = [
     DNSServer('Quad9', '149.112.112.112'),
 ]
 
-SERVER_LIST_V6: List[DNSServer] = [
+SERVER_LIST_V6: list[DNSServer] = [
     DNSServer('Google', '2001:4860:4860::8888'),
     DNSServer('Google', '2001:4860:4860::8844'),
     DNSServer('Quad9', '2620:fe::fe'),
@@ -109,7 +108,7 @@ async def query(domain: str, server: DNSServer) -> Result:
 @box.command('dns')
 @option('--dns', '-d', dest='server_list', multiple=True)
 @argument('domain', transform_func=extract_url)
-async def dns(bot, event: Message, server_list: List[str], domain: str):
+async def dns(bot, event: Message, server_list: list[str], domain: str):
     """
     주어진 도메인의 A레코드 조회
 
@@ -140,7 +139,7 @@ async def dns(bot, event: Message, server_list: List[str], domain: str):
 
         ok, no = await asyncio.wait(tasks)
 
-        result: List[Result] = []
+        result: list[Result] = []
         for r in ok:
             try:
                 res = r.result()

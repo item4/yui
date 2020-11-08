@@ -1,8 +1,5 @@
 from typing import Any
-from typing import Dict
 from typing import Optional
-from typing import Set
-from typing import Tuple
 
 import aiohttp
 
@@ -15,7 +12,7 @@ from ...utils import json
 box.assert_config_required('NAVER_CLIENT_ID', str)
 box.assert_config_required('NAVER_CLIENT_SECRET', str)
 
-LANGUAGE_MAP: Dict[Optional[str], Optional[str]] = {
+LANGUAGE_MAP: dict[Optional[str], Optional[str]] = {
     None: None,
     'auto': None,
     '자동': None,
@@ -74,7 +71,7 @@ LANGUAGE_MAP: Dict[Optional[str], Optional[str]] = {
     '독일어': 'de',
 }
 
-LANGUAGE_NAME: Dict[str, str] = {
+LANGUAGE_NAME: dict[str, str] = {
     'ko': '한국어',
     'ja': '일본어',
     'zh-CN': '중국어 간체',
@@ -95,7 +92,7 @@ LANGUAGE_NAME: Dict[str, str] = {
     'it': '이탈리아어',
 }
 
-AVAILABLE_COMBINATIONS: Set[Tuple[str, str]] = {
+AVAILABLE_COMBINATIONS: set[tuple[str, str]] = {
     ('ko', 'en'),
     ('ko', 'ja'),
     ('ko', 'zh-CN'),
@@ -119,16 +116,19 @@ AVAILABLE_COMBINATIONS: Set[Tuple[str, str]] = {
 AVAILABLE_COMBINATIONS |= {(t, s) for s, t in AVAILABLE_COMBINATIONS}
 
 
-async def detect_language(headers: Dict[str, str], text: str) -> str:
+async def detect_language(headers: dict[str, str], text: str) -> str:
     url = 'https://openapi.naver.com/v1/papago/detectLangs'
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.post(url, data={'query': text}) as resp:
-            result: Dict[str, Any] = await resp.json(loads=json.loads)
+            result: dict[str, Any] = await resp.json(loads=json.loads)
             return result['langCode']
 
 
 async def _translate(
-    headers: Dict[str, str], source: str, target: str, text: str,
+    headers: dict[str, str],
+    source: str,
+    target: str,
+    text: str,
 ) -> str:
     url = 'https://openapi.naver.com/v1/papago/n2mt'
     data = {
@@ -138,7 +138,7 @@ async def _translate(
     }
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.post(url, data=data) as resp:
-            result: Dict[str, Any] = await resp.json(loads=json.loads)
+            result: dict[str, Any] = await resp.json(loads=json.loads)
             return result['message']['result']['translatedText']
 
 

@@ -1,6 +1,5 @@
 import random
 import re
-from typing import List
 from typing import NamedTuple
 
 from ...box import box
@@ -33,7 +32,7 @@ class DiceResult(NamedTuple):
         return f'{self.query} == {self.result}'
 
 
-def parse_dice_syntax(expr: str, seed: int = None) -> List[DiceResult]:
+def parse_dice_syntax(expr: str, seed: int = None) -> list[DiceResult]:
     try:
         random.seed(seed)
         result = []

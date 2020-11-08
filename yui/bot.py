@@ -11,8 +11,6 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import TypeVar
 from typing import Union
 
@@ -68,7 +66,7 @@ class APICallError(Exception):
         message: str,
         *,
         status_code: int = None,
-        result: Dict[str, Any] = None,
+        result: dict[str, Any] = None,
         headers: Any = None,
     ) -> None:
         super(APICallError, self).__init__(message)
@@ -126,10 +124,10 @@ class Bot:
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
         self.api = SlackAPI(self)
-        self.channels: List[PublicChannel] = []
-        self.ims: List[DirectMessageChannel] = []
-        self.groups: List[PrivateChannel] = []
-        self.users: List[User] = []
+        self.channels: list[PublicChannel] = []
+        self.ims: list[DirectMessageChannel] = []
+        self.groups: list[PrivateChannel] = []
+        self.users: list[User] = []
         self.restart = False
         self.is_ready = False
 
@@ -154,7 +152,7 @@ class Bot:
             logger.info(f'register {c}')
             lock = asyncio.Lock()
             func_params = c.handler.params
-            kw: Dict[str, Any] = {}
+            kw: dict[str, Any] = {}
             if 'bot' in func_params:
                 kw['bot'] = self
 
@@ -248,7 +246,7 @@ class Bot:
     async def call(
         self,
         method: str,
-        data: Dict[str, Any] = None,
+        data: dict[str, Any] = None,
         *,
         token: str = None,
         json_mode: bool = False,

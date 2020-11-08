@@ -1,8 +1,5 @@
 from datetime import timedelta
 from decimal import Decimal
-from typing import Dict
-from typing import List
-from typing import Tuple
 
 import aiohttp
 from aiohttp import client_exceptions
@@ -56,7 +53,10 @@ def clothes_by_temperature(temperature: float) -> str:
 @option('--fuzzy', '-f', is_flag=True, default=False)
 @argument('keyword', nargs=-1, concat=True)
 async def aws(
-    bot, event: Message, fuzzy: bool, keyword: str,
+    bot,
+    event: Message,
+    fuzzy: bool,
+    keyword: str,
 ):
     """
     지역의 현재 기상상태를 조회합니다.
@@ -82,7 +82,8 @@ async def aws(
 
     if len(keyword) < 2:
         await bot.say(
-            event.channel, '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!',
+            event.channel,
+            '검색어가 너무 짧아요! 2글자 이상의 검색어를 사용해주세요!',
         )
         return
 
@@ -92,11 +93,12 @@ async def aws(
                 data = await resp.json(loads=json.loads)
     except EXCEPTIONS:
         await bot.say(
-            event.channel, '날씨 API 접근 중 에러가 발생했어요!',
+            event.channel,
+            '날씨 API 접근 중 에러가 발생했어요!',
         )
         return
 
-    records: List[Tuple[int, Dict]] = []
+    records: list[tuple[int, dict]] = []
     observed_at = fromisoformat(data['observed_at'].split('+', 1)[0])
 
     for record in data['records']:
@@ -197,5 +199,6 @@ async def aws(
                 aws.last_call[event.channel.id] = None
     else:
         await bot.say(
-            event.channel, '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!',
+            event.channel,
+            '검색결과가 없어요! 한국 기상청 AWS가 설치되지 않은 장소 같아요!',
         )

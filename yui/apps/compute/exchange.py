@@ -1,6 +1,5 @@
 import re
 from decimal import Decimal
-from typing import Dict
 from urllib.parse import urlencode
 
 import aiohttp
@@ -13,7 +12,7 @@ from ...utils import json
 QUERY_RE = re.compile(
     r'^(\d+(?:\.\d+)?)\s*(\S+)(?:\s+(?:to|->|=)\s+(\S+))?$', re.IGNORECASE
 )
-SHORTCUT_TABLE: Dict[str, str] = {
+SHORTCUT_TABLE: dict[str, str] = {
     '$': 'USD',
     '달러': 'USD',
     '\\': 'KRW',
@@ -35,7 +34,7 @@ class WrongUnit(ExchangeError):
     """Wrong unit."""
 
 
-async def get_exchange_rate(base: str, to: str) -> Dict:
+async def get_exchange_rate(base: str, to: str) -> dict:
     """Get exchange rate."""
 
     if base == to:

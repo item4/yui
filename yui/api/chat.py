@@ -1,6 +1,4 @@
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -51,9 +49,9 @@ class Chat(Endpoint):
         user: Union[User, UserID],
         text: Optional[str] = None,
         *,
-        attachments: Optional[List[Attachment]] = None,
+        attachments: Optional[list[Attachment]] = None,
         as_user: Optional[bool] = None,
-        blocks: Optional[List[Block]] = None,
+        blocks: Optional[list[Block]] = None,
         icon_emoji: Optional[str] = None,
         icon_url: Optional[str] = None,
         link_names: Optional[bool] = None,
@@ -74,7 +72,7 @@ class Chat(Endpoint):
         else:
             user_id = user
 
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             'channel': channel_id,
             'user': user_id,
         }
@@ -113,7 +111,10 @@ class Chat(Endpoint):
             params['username'] = username
 
         return await self._call(
-            'postEphemeral', params, token=token, json_mode=True,
+            'postEphemeral',
+            params,
+            token=token,
+            json_mode=True,
         )
 
     async def postMessage(
@@ -122,8 +123,8 @@ class Chat(Endpoint):
         text: Optional[str] = None,
         *,
         as_user: Optional[bool] = None,
-        attachments: Optional[List[Attachment]] = None,
-        blocks: Optional[List[Block]] = None,
+        attachments: Optional[list[Attachment]] = None,
+        blocks: Optional[list[Block]] = None,
         icon_emoji: Optional[str] = None,
         icon_url: Optional[str] = None,
         link_names: Optional[bool] = None,
@@ -143,7 +144,7 @@ class Chat(Endpoint):
         else:
             channel_id = channel
 
-        params: Dict[str, Any] = {
+        params: dict[str, Any] = {
             'channel': channel_id,
         }
 
@@ -193,5 +194,8 @@ class Chat(Endpoint):
             params['username'] = username
 
         return await self._call(
-            'postMessage', params, token=token, json_mode=True,
+            'postMessage',
+            params,
+            token=token,
+            json_mode=True,
         )

@@ -1,6 +1,4 @@
 from datetime import datetime
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from .base import AppID
@@ -32,7 +30,7 @@ class BotObject:
     id: BotID = IDField()
     app_id: AppID = IDField()
     name: str = NameField()
-    icons: Dict[str, str] = Field()
+    icons: dict[str, str] = Field()
 
 
 @namespace
@@ -57,8 +55,8 @@ class File:
 class SubteamPrefs:
     """Prefs of Subteam."""
 
-    channels: List = ChannelListField()
-    groups: List = ChannelListField()
+    channels: list = ChannelListField()
+    groups: list = ChannelListField()
 
 
 @namespace
@@ -80,7 +78,7 @@ class Subteam:
     updated_by: Optional[User] = OptionalUserField()
     deleted_by: Optional[User] = OptionalUserField()
     perfs: SubteamPrefs = Field(converter=SubteamPrefs)
-    users: List[User] = UserListField()
+    users: list[User] = UserListField()
     user_count: str = StringField()
 
 

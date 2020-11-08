@@ -1,6 +1,4 @@
 from typing import Any
-from typing import Dict
-from typing import List
 
 from ...box import box
 from ...command import C
@@ -42,7 +40,8 @@ def prepare(kw):
 
     if 'title' in kw:
         kw['fallback'] = '{}: {}'.format(
-            kw['title'], kw.get('text', '').replace('\n', ' '),
+            kw['title'],
+            kw.get('text', '').replace('\n', ' '),
         ).strip()
     else:
         kw['fallback'] = kw.get('text', '').replace('\n', ' ').strip()
@@ -61,8 +60,8 @@ async def update(bot, event: Message, raw: str):
 
     if event.user == U.owner.get():
         lines = raw.splitlines()
-        attachments: List[Attachment] = []
-        kw: Dict[str, Any] = {}
+        attachments: list[Attachment] = []
+        kw: dict[str, Any] = {}
         pretext = '유이 업데이트 안내'
         for line in lines:
             if line == '---':

@@ -1,8 +1,5 @@
 import re
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -20,10 +17,10 @@ from ...transform import choice
 from ...types.slack.attachment import Attachment
 from ...utils.html import strip_tags
 
-headers: Dict[str, str] = {
+headers: dict[str, str] = {
     'User-Agent': FakeUserAgent().chrome,
 }
-DICS: Dict[str, str] = {
+DICS: dict[str, str] = {
     '영어': 'eng',
     'English': 'ee',
     '한국어': 'kor',
@@ -60,7 +57,7 @@ def fix_blank(text: str) -> str:
     return BLANK_RE.sub('', text)
 
 
-def parse(html: str) -> Tuple[Optional[str], List[Attachment]]:
+def parse(html: str) -> tuple[Optional[str], list[Attachment]]:
     h = fromstring(html)
     meta = h.cssselect('meta[http-equiv=Refresh]')
     if meta:
@@ -68,7 +65,7 @@ def parse(html: str) -> Tuple[Optional[str], List[Attachment]]:
     else:
         words = h.cssselect('div.search_type')
 
-        attachments: List[Attachment] = []
+        attachments: list[Attachment] = []
 
         for word in words:
             w = word.cssselect('.txt_searchword')[0]

@@ -1,5 +1,4 @@
 import datetime
-from typing import List
 
 import aiohttp
 
@@ -10,7 +9,7 @@ class APIDoesNotSupport(Exception):
     pass
 
 
-async def get_holiday_names(dt: datetime.datetime) -> List[str]:
+async def get_holiday_names(dt: datetime.datetime) -> list[str]:
     url = 'https://item4.net/api/holiday'
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -26,7 +25,10 @@ def weekend_loading_percent(dt: datetime.datetime) -> float:
     if weekday in [5, 6]:
         return 100.0
     monday = (dt - datetime.timedelta(days=weekday)).replace(
-        hour=0, minute=0, second=0, microsecond=0,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
     )
     delta = dt - monday
     return delta.total_seconds() / (5 * 24 * 60 * 60) * 100

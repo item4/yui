@@ -1,5 +1,4 @@
 import enum
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -32,7 +31,8 @@ def enforce_plain_text(instance, attribute, value):
 class PlainTextField(TextField):
 
     type: TextFieldType = attr.ib(
-        validator=[enforce_plain_text], default=TextFieldType.plain_text,
+        validator=[enforce_plain_text],
+        default=TextFieldType.plain_text,
     )
 
 
@@ -93,7 +93,7 @@ class Option:
 class OptionGroup:
 
     label: PlainTextField
-    options: List[Option] = attr.Factory(list)
+    options: list[Option] = attr.Factory(list)
 
 
 @attr.dataclass(slots=True)
@@ -101,8 +101,8 @@ class StaticSelectElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    options: List[Option] = attr.Factory(list)
-    option_groups: List[OptionGroup] = attr.Factory(list)
+    options: list[Option] = attr.Factory(list)
+    option_groups: list[OptionGroup] = attr.Factory(list)
     initial_option: Optional[Option] = None
     confirm: Optional[ConfirmationDialog] = None
     type: str = attr.ib(default='static_select', init=False)
@@ -154,7 +154,7 @@ class OverflowElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    options: List[Option] = attr.Factory(list)
+    options: list[Option] = attr.Factory(list)
     confirm: Optional[ConfirmationDialog] = None
     type: str = attr.ib(default='overflow', init=False)
 
@@ -182,7 +182,7 @@ class Section(Block):
 
     text: TextField
     type: str = attr.ib(default='section', init=False)
-    fields: List[TextField] = attr.Factory(list)
+    fields: list[TextField] = attr.Factory(list)
     accessory: Optional[Element] = None
 
 
@@ -206,7 +206,7 @@ class Image(Block):
 @attr.dataclass(slots=True)
 class Action(Block):
 
-    elements: List[InteractiveElement] = attr.Factory(list)
+    elements: list[InteractiveElement] = attr.Factory(list)
 
 
 @attr.dataclass(slots=True)
@@ -214,4 +214,4 @@ class Context(Block):
     """Context Block"""
 
     type: str = attr.ib(default='context', init=False)
-    elements: List[Union[TextField, ImageElement]] = attr.Factory(list)
+    elements: list[Union[TextField, ImageElement]] = attr.Factory(list)

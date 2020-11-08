@@ -1,8 +1,5 @@
 import asyncio
 import logging
-from typing import Dict
-from typing import List
-from typing import Tuple
 
 import aiohttp
 
@@ -19,7 +16,7 @@ from ...event import Message
 logger = logging.getLogger(__name__)
 
 
-REF_URLS: Dict[str, str] = {
+REF_URLS: dict[str, str] = {
     'html': 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element',
     'css': 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference',
     'python': 'https://docs.python.org/3/library/',
@@ -30,7 +27,7 @@ def parse(
     blob: bytes,
     selector: str,
     url_prefix: str,
-) -> List[Tuple[str, str]]:
+) -> list[tuple[str, str]]:
     h = fromstring(blob)
     a_tags = h.cssselect(selector)
 
@@ -86,7 +83,7 @@ async def fetch_html_ref(bot: Bot):
     logger.info('fetch html ref end')
 
 
-def parse_python(blob: bytes) -> List[Tuple[str, str, str]]:
+def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
     h = fromstring(blob)
     a_tags = h.cssselect('a.reference.internal')
 

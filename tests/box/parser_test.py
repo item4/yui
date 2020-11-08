@@ -1,7 +1,5 @@
 import datetime
 import shlex
-from typing import List
-from typing import Set
 
 import pytest
 
@@ -48,15 +46,15 @@ def test_parse_option_and_arguments():
         required_option: int,
         dest_changed_option: int,
         is_flag: bool,
-        multiple: List[int],
+        multiple: list[int],
         container,
         callable_default: str,
         non_type,
         default_option,
         transform: int,
         transform_non_type: datetime.date,
-        transform_container: Set[int],
-        transform_two: List[datetime.date],
+        transform_container: set[int],
+        transform_two: list[datetime.date],
     ):
         pass
 
@@ -155,8 +153,8 @@ def test_parse_option_and_arguments():
     async def test_argument1(
         non_type,
         transform_non_type: datetime.date,
-        container_with_typing: List[int],
-        container_with_transform: List[datetime.date],
+        container_with_typing: list[int],
+        container_with_transform: list[datetime.date],
     ):
         pass
 

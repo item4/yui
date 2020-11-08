@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 import attr
@@ -29,9 +28,9 @@ class Attachment:
     title: Optional[str] = None
     title_link: Optional[str] = None
     text: Optional[str] = None
-    blocks: Optional[List[Block]] = None
-    fields: List[Field] = attr.Factory(list)
-    actions: Optional[List[Action]] = None
+    blocks: Optional[list[Block]] = None
+    fields: list[Field] = attr.Factory(list)
+    actions: Optional[list[Action]] = None
     image_url: Optional[str] = None
     thumb_url: Optional[str] = None
     footer: Optional[str] = None

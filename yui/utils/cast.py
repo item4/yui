@@ -1,7 +1,7 @@
 from typing import Any
-from typing import List
 from typing import TypeVar
 from typing import Union
+from typing import get_origin
 
 
 NoneType = type(None)
@@ -85,7 +85,7 @@ class AnyCaster(BaseCaster):
 
 class UnionCaster(BaseCaster):
     def check(self, t, value):
-        return getattr(t, '__origin__', None) == Union
+        return get_origin(t) == Union
 
     def cast(self, caster_box, t, value):
         types = caster_box.sort(t.__args__, value)
@@ -99,10 +99,10 @@ class UnionCaster(BaseCaster):
 
 class TupleCaster(BaseCaster):
     def check(self, t, value):
-        return getattr(t, '__origin__', None) == tuple
+        return t == tuple or get_origin(t) == tuple
 
     def cast(self, caster_box, t, value):
-        if t.__args__:
+        if hasattr(t, '__args__') and t.__args__:
             return tuple(
                 caster_box.cast(ty, x) for ty, x in zip(t.__args__, value)
             )
@@ -112,10 +112,10 @@ class TupleCaster(BaseCaster):
 
 class SetCaster(BaseCaster):
     def check(self, t, value):
-        return getattr(t, '__origin__', None) == set
+        return t == set or get_origin(t) == set
 
     def cast(self, caster_box, t, value):
-        if t.__args__:
+        if hasattr(t, '__args__') and t.__args__:
             return {caster_box.cast(t.__args__[0], x) for x in value}
         else:
             return set(value)
@@ -123,10 +123,10 @@ class SetCaster(BaseCaster):
 
 class ListCaster(BaseCaster):
     def check(self, t, value):
-        return getattr(t, '__origin__', None) == list
+        return t == list or get_origin(t) == list
 
     def cast(self, caster_box, t, value):
-        if t.__args__:
+        if hasattr(t, '__args__') and t.__args__:
             return [caster_box.cast(t.__args__[0], x) for x in value]
         else:
             return list(value)
@@ -134,14 +134,15 @@ class ListCaster(BaseCaster):
 
 class DictCaster(BaseCaster):
     def check(self, t, value):
-        return getattr(t, '__origin__', None) == dict
+        return t == dict or get_origin(t) == dict
 
     def cast(self, caster_box, t, value):
-        if t.__args__:
+        if hasattr(t, '__args__') and t.__args__:
             return {
-                caster_box.cast(t.__args__[0], k,): caster_box.cast(
-                    t.__args__[1], v
-                )
+                caster_box.cast(
+                    t.__args__[0],
+                    k,
+                ): caster_box.cast(t.__args__[1], v)
                 for k, v in value.items()
             }
         else:
@@ -176,7 +177,7 @@ class AttrCaster(BaseCaster):
 
 
 class CasterBox:
-    def __init__(self, caster_box: List[BaseCaster]) -> None:
+    def __init__(self, caster_box: list[BaseCaster]) -> None:
         self.caster_box = caster_box
 
     def __call__(self, t, value):

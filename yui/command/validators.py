@@ -3,8 +3,6 @@ from typing import Awaitable
 from typing import Callable
 from typing import Optional
 from typing import Sequence
-from typing import Set
-from typing import Tuple
 from typing import Type
 from typing import Union
 
@@ -22,7 +20,12 @@ class DM:
 
 
 ACCEPTABLE_CHANNEL_TYPES = Union[
-    Type[DM], PrivateChannel, PublicChannel, C, Cs, str,
+    Type[DM],
+    PrivateChannel,
+    PublicChannel,
+    C,
+    Cs,
+    str,
 ]
 
 VALIDATOR_TYPE = Callable[[Any, Message], Awaitable[bool]]
@@ -30,7 +33,7 @@ VALIDATOR_TYPE = Callable[[Any, Message], Awaitable[bool]]
 
 def get_channel_names(
     channels: Sequence[ACCEPTABLE_CHANNEL_TYPES],
-) -> Tuple[Set[str], bool, bool]:
+) -> tuple[set[str], bool, bool]:
     dm = False
     channel_names = set()
     fetch_error = False
@@ -57,7 +60,8 @@ def get_channel_names(
 
 
 def only(
-    *channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None,
+    *channels: ACCEPTABLE_CHANNEL_TYPES,
+    error: Optional[str] = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to allow to use handler."""
 
@@ -93,7 +97,8 @@ def only(
 
 
 def not_(
-    *channels: ACCEPTABLE_CHANNEL_TYPES, error: Optional[str] = None,
+    *channels: ACCEPTABLE_CHANNEL_TYPES,
+    error: Optional[str] = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to deny to use handler."""
 

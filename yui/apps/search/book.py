@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import List
 
 import aiohttp
 
@@ -41,7 +40,7 @@ async def book(bot, event: Message, keyword: str):
         async with session.get(url, params=params, headers=headers) as resp:
             data = await resp.json(loads=json.loads)
 
-    attachments: List[Attachment] = []
+    attachments: list[Attachment] = []
 
     count = min(5, len(data['items']))
 
@@ -71,7 +70,10 @@ async def book(bot, event: Message, keyword: str):
                 '키워드 *{}* {} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
                 ' 그 중 상위 {}개를 보여드릴게요!'
             ).format(
-                keyword, tossi.pick(keyword, '(으)로'), data['total'], count,
+                keyword,
+                tossi.pick(keyword, '(으)로'),
+                data['total'],
+                count,
             ),
             attachments=attachments,
             as_user=True,

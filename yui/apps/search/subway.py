@@ -1,8 +1,6 @@
 import asyncio
 import logging
 import re
-from typing import Dict
-from typing import Tuple
 from urllib.parse import urlencode
 
 import aiohttp
@@ -25,11 +23,11 @@ PARENTHESES = re.compile(r'\(.+?\)')
 
 logger = logging.getLogger(__name__)
 
-headers: Dict[str, str] = {
+headers: dict[str, str] = {
     'User-Agent': UserAgent().chrome,
 }
 TEMPLATE = '{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}'
-REGION_TABLE: Dict[str, Tuple[str, str]] = {
+REGION_TABLE: dict[str, tuple[str, str]] = {
     '수도권': ('1000', '6.10'),
     '부산': ('7000', '4.7'),
     '대구': ('4000', '4.9'),

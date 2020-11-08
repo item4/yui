@@ -2,11 +2,6 @@ import asyncio
 import datetime
 import re
 from collections import defaultdict
-from typing import DefaultDict
-from typing import Dict
-from typing import List
-from typing import Set
-from typing import Tuple
 from typing import Union
 
 import aiohttp
@@ -48,20 +43,25 @@ box.assert_channel_required('toranoana')
 
 PRICE_PATTERN = re.compile(r'((\d+,?)+).*')
 
-GenreURLList = Dict[Genre, List[str]]
+GenreURLlist = dict[Genre, list[str]]
 
 
 def process(
-    *, sess, h, genre: Genre, dt: datetime.datetime, is_male: bool,
+    *,
+    sess,
+    h,
+    genre: Genre,
+    dt: datetime.datetime,
+    is_male: bool,
 ):
     rows = h.cssselect('#search-result-container li.list__item')
     for row in rows:
         with sess.no_autoflush:
-            tags: List[Tuple[Tag, bool]] = []
-            authors: List[Tuple[Author, bool]] = []
-            circles: List[Tuple[Circle, bool]] = []
-            couplings: List[Tuple[Coupling, bool]] = []
-            characters: List[Tuple[Character, bool]] = []
+            tags: list[tuple[Tag, bool]] = []
+            authors: list[tuple[Author, bool]] = []
+            circles: list[tuple[Circle, bool]] = []
+            couplings: list[tuple[Coupling, bool]] = []
+            characters: list[tuple[Character, bool]] = []
             code = row.cssselect('input#commodityCode')[0].get('value').strip()
             is_new = False
             is_adult = False
@@ -197,20 +197,21 @@ def process(
                 else:
                     item.female_target = Target.common
 
-            queue: List[
+            queue: list[
                 Union[Author, Circle, Tag, Coupling, Character, Item]
             ] = []
 
-            old_tags: List[int] = []
-            old_authors: List[int] = []
-            old_circles: List[int] = []
-            old_couplings: List[int] = []
-            old_characters: List[int] = []
+            old_tags: list[int] = []
+            old_authors: list[int] = []
+            old_circles: list[int] = []
+            old_couplings: list[int] = []
+            old_characters: list[int] = []
             if not is_new:
                 old_tags = [
                     x.id
                     for x in sess.query(Tag).filter(
-                        Tag.id == ItemTag.tag_id, ItemTag.item == item,
+                        Tag.id == ItemTag.tag_id,
+                        ItemTag.item == item,
                     )
                 ]
                 old_authors = [
@@ -354,7 +355,8 @@ def process(
 
                 if not is_new:
                     sess.query(ItemTag).filter(
-                        ItemTag.item == item, ItemTag.tag_id.in_(old_tags),
+                        ItemTag.item == item,
+                        ItemTag.tag_id.in_(old_tags),
                     ).delete(synchronize_session=False)
                     sess.query(ItemAuthor).filter(
                         ItemAuthor.item == item,
@@ -374,8 +376,8 @@ def process(
                     ).delete(synchronize_session=False)
 
 
-def get_dedupe_genre_url_map(sess) -> GenreURLList:
-    result: DefaultDict[Genre, Set[str]] = defaultdict(set)
+def get_dedupe_genre_url_map(sess) -> GenreURLlist:
+    result: defaultdict[Genre, set[str]] = defaultdict(set)
     for watch in sess.query(Watch):
         genre = watch.genre
         code = genre.code
@@ -411,7 +413,12 @@ async def scan_all_pages(
                 end_page = int(pager[0].get('data-maxpage', 1))
 
         await bot.run_in_other_thread(
-            process, sess=sess, h=h, genre=genre, dt=dt, is_male=is_male,
+            process,
+            sess=sess,
+            h=h,
+            genre=genre,
+            dt=dt,
+            is_male=is_male,
         )
 
         page += 1
@@ -475,7 +482,7 @@ async def crawl(bot, sess):
                     dt=dt,
                 )
 
-    data: DefaultDict[str, List[Attachment]] = defaultdict(list)
+    data: defaultdict[str, list[Attachment]] = defaultdict(list)
     for item in sess.query(Item).filter_by(updated_at=dt):
         author_name = ', '.join(author.name for author in item.authors)
         circle_name = ', '.join(circle.name for circle in item.circles)
@@ -508,8 +515,16 @@ async def crawl(bot, sess):
                     value=item.genre.name_ko or item.genre.name,
                     short=True,
                 ),
-                Field(title='카테고리', value='\n'.join(targets), short=True,),
-                Field(title='가격', value=f'{item.price} JPY', short=True,),
+                Field(
+                    title='카테고리',
+                    value='\n'.join(targets),
+                    short=True,
+                ),
+                Field(
+                    title='가격',
+                    value=f'{item.price} JPY',
+                    short=True,
+                ),
                 Field(title='재고', value=STOCK_LABEL[item.stock], short=True),
             ],
         )
@@ -538,7 +553,9 @@ async def crawl(bot, sess):
             )
 
         watches = await bot.run_in_other_thread(
-            get_watches, sess=sess, item=item,
+            get_watches,
+            sess=sess,
+            item=item,
         )
 
         for watch in watches:
@@ -552,5 +569,7 @@ async def crawl(bot, sess):
             channel_id = target
         for a in chunked(attachments, 20):
             await bot.say(
-                channel_id, '토라노아나 변경항목을 전달해드릴게요!', attachments=a,
+                channel_id,
+                '토라노아나 변경항목을 전달해드릴게요!',
+                attachments=a,
             )

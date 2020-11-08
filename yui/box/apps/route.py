@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import html
-from typing import List
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import Union
@@ -41,7 +40,7 @@ class RouteApp(BaseApp):
 
     use_shlex: bool = True
     name: str
-    route_list: List[Route] = []
+    route_list: list[Route] = []
 
     def get_short_help(self, prefix: str) -> str:
         raise NotImplementedError
@@ -107,13 +106,17 @@ class RouteApp(BaseApp):
 
             try:
                 kw, remain_chunks = parse_option_and_arguments(
-                    handler, chunks,
+                    handler,
+                    chunks,
                 )
             except SyntaxError as e:
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
                 return False
             with self.prepare_kwargs(
-                bot=bot, event=event, func_params=func_params, **kw,
+                bot=bot,
+                event=event,
+                func_params=func_params,
+                **kw,
             ) as kwargs:
                 return await handler(**kwargs)
         return True

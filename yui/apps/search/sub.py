@@ -3,9 +3,6 @@ import math
 import urllib.parse
 from datetime import datetime
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Set
 
 import aiohttp
 import aiohttp.client_exceptions
@@ -79,8 +76,8 @@ def encode_url(u: str) -> str:
     )
 
 
-def make_sub_list(data: Set[Sub]) -> List[Attachment]:
-    result: List[Attachment] = []
+def make_sub_list(data: set[Sub]) -> list[Attachment]:
+    result: list[Attachment] = []
 
     if data:
         for sub in reversed(
@@ -136,7 +133,7 @@ async def sub(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def get_ohli_now_json(timeout: float) -> List[List[Dict[str, Any]]]:
+async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -145,8 +142,8 @@ async def get_ohli_now_json(timeout: float) -> List[List[Dict[str, Any]]]:
                 return json.loads(await resp.text())
 
 
-async def get_ohli_caption_list(i, timeout: float) -> Set[Sub]:
-    result: Set[Sub] = set()
+async def get_ohli_caption_list(i, timeout: float) -> set[Sub]:
+    result: set[Sub] = set()
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -170,7 +167,7 @@ async def get_ohli_caption_list(i, timeout: float) -> Set[Sub]:
     return result
 
 
-async def get_annissa_weekly_json(w, timeout: float) -> List[Dict[str, Any]]:
+async def get_annissa_weekly_json(w, timeout: float) -> list[dict[str, Any]]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -179,7 +176,7 @@ async def get_annissa_weekly_json(w, timeout: float) -> List[Dict[str, Any]]:
                 return json.loads(await resp.text())
 
 
-async def get_annissia_caption_list_json(i, timeout: float) -> List[Dict]:
+async def get_annissia_caption_list_json(i, timeout: float) -> list[dict]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -194,17 +191,22 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         ohli_all = await get_ohli_now_json(timeout)
     except asyncio.TimeoutError:
         await bot.say(
-            event.channel, 'OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!',
+            event.channel,
+            'OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!',
         )
         return
 
-    o_data: List[Dict[str, Any]] = []
+    o_data: list[dict[str, Any]] = []
 
     for w, weekday_list in enumerate(ohli_all):
         for ani in weekday_list:
             ani['week'] = w
             ani['ratio'] = max(
-                match(title.lower(), a['s'].lower(),) for a in ani['n']
+                match(
+                    title.lower(),
+                    a['s'].lower(),
+                )
+                for a in ani['n']
             )
             o_data.append(ani)
 
@@ -239,7 +241,8 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
                 try:
                     a_subs = await get_annissia_caption_list_json(
-                        a_ani['i'], timeout,
+                        a_ani['i'],
+                        timeout,
                     )
                 except asyncio.TimeoutError:
                     a_subs = []
@@ -279,7 +282,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
             fallback = f'*{title}* ({dow} {time} / {url})'
             text = f'{dow} {time}'
 
-        attachments: List[Attachment] = [
+        attachments: list[Attachment] = [
             Attachment(
                 fallback=fallback,
                 title=title,
@@ -303,7 +306,10 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
 
 
 async def search_finished(
-    bot, event: Message, title: str, timeout: float = 2.5,
+    bot,
+    event: Message,
+    title: str,
+    timeout: float = 2.5,
 ):
     try:
         async with async_timeout.timeout(timeout):
@@ -329,10 +335,11 @@ async def search_finished(
             except asyncio.TimeoutError:
                 captions = set()
 
-            attachments: List[Attachment] = [
+            attachments: list[Attachment] = [
                 Attachment(
                     fallback='*{title}* ({url})'.format(
-                        title=ani['s'], url=ani['l'],
+                        title=ani['s'],
+                        url=ani['l'],
                     ),
                     title=ani['s'],
                     title_link=fix_url(ani['l']) if ani['l'] else None,
@@ -349,5 +356,6 @@ async def search_finished(
             )
     else:
         await bot.say(
-            event.channel, '해당 제목의 완결 애니는 찾을 수 없어요!',
+            event.channel,
+            '해당 제목의 완결 애니는 찾을 수 없어요!',
         )

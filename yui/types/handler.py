@@ -4,7 +4,6 @@ import inspect
 from typing import Any
 from typing import Callable
 from typing import Coroutine
-from typing import List
 from typing import Mapping
 from typing import Optional
 from typing import TYPE_CHECKING
@@ -61,8 +60,8 @@ class Option:
 @attr.dataclass(slots=True)
 class Handler:
     f: HANDLER_CALL_TYPE
-    arguments: List[Argument] = attr.ib(init=False)
-    options: List[Option] = attr.ib(init=False)
+    arguments: list[Argument] = attr.ib(init=False)
+    options: list[Option] = attr.ib(init=False)
     cron: Optional[CronTask] = attr.ib(init=False, default=None)
     last_call: Any = attr.ib(init=False)
     doc: Optional[str] = attr.ib(init=False)

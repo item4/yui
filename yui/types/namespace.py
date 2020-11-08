@@ -1,6 +1,5 @@
 import inspect
 from functools import partial
-from typing import Dict
 from typing import TYPE_CHECKING
 
 import attr
@@ -58,8 +57,8 @@ class Namespace:
         )
 
         # make new __init__ by eval
-        _global: Dict = {}
-        _local: Dict = {}
+        _global = {}
+        _local = {}
         code = f"""\
 def __init__{str(new_signature)}:
     self.__old_init__({init_args})

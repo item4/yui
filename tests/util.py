@@ -4,8 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -32,7 +30,7 @@ class Call:
     """API Call from bot"""
 
     method: str
-    data: Optional[Dict[str, Any]]
+    data: Optional[dict[str, Any]]
     token: Optional[str] = None
     json_mode: bool = False
 
@@ -43,7 +41,10 @@ class CacheMock(Cache):
         self.set_keys = []
 
     async def set(
-        self, key: Union[str, bytes], value: DATA_TYPE, exptime: int = 0,
+        self,
+        key: Union[str, bytes],
+        value: DATA_TYPE,
+        exptime: int = 0,
     ) -> bool:
         self.set_keys.append(key)
         return await super(CacheMock, self).set(key, value, exptime)
@@ -62,17 +63,18 @@ class FakeBot(Bot):
 
         Namespace._bot = self
         self.loop = asyncio.get_event_loop()
-        self.call_queue: List[Call] = []
+        self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
-        self.channels: List[PublicChannel] = []
-        self.ims: List[DirectMessageChannel] = []
-        self.groups: List[PrivateChannel] = []
+        self.channels: list[PublicChannel] = []
+        self.ims: list[DirectMessageChannel] = []
+        self.groups: list[PrivateChannel] = []
         self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'], port=config.CACHE['PORT'],
+            host=config.CACHE['HOST'],
+            port=config.CACHE['PORT'],
         )
         self.cache: CacheMock = CacheMock(self.mc, 'YUI_TEST_')
-        self.users: List[User] = [User(id='U0', team_id='T0', name='system')]
-        self.responses: Dict[str, Callable] = {}
+        self.users: list[User] = [User(id='U0', team_id='T0', name='system')]
+        self.responses: dict[str, Callable] = {}
         self.config = config
         self.process_pool_executor = ProcessPoolExecutor()
         self.thread_pool_executor = ThreadPoolExecutor()
@@ -80,7 +82,7 @@ class FakeBot(Bot):
     async def call(
         self,
         method: str,
-        data: Optional[Dict[str, Any]] = None,
+        data: Optional[dict[str, Any]] = None,
         *,
         token: Optional[str] = None,
         json_mode: bool = False,
@@ -105,19 +107,33 @@ class FakeBot(Bot):
         return decorator
 
     def add_channel(
-        self, id: str, name: str, creator: str = 'U0', last_read: int = 0,
+        self,
+        id: str,
+        name: str,
+        creator: str = 'U0',
+        last_read: int = 0,
     ):
         channel = PublicChannel(
-            id=id, name=name, creator=creator, last_read=last_read,
+            id=id,
+            name=name,
+            creator=creator,
+            last_read=last_read,
         )
         self.channels.append(channel)
         return channel
 
     def add_private_channel(
-        self, id: str, name: str, creator: str = 'U0', last_read: int = 0,
+        self,
+        id: str,
+        name: str,
+        creator: str = 'U0',
+        last_read: int = 0,
     ):
         channel = PrivateChannel(
-            id=id, name=name, creator=creator, last_read=last_read,
+            id=id,
+            name=name,
+            creator=creator,
+            last_read=last_read,
         )
         self.groups.append(channel)
         return channel
@@ -139,7 +155,10 @@ class FakeBot(Bot):
     def create_message(
         self,
         channel: Union[
-            PublicChannel, PrivateChannel, DirectMessageChannel, str,
+            PublicChannel,
+            PrivateChannel,
+            DirectMessageChannel,
+            str,
         ],
         user: Union[User, str],
         ts: str = '',
@@ -167,7 +186,7 @@ class FakeImportLib:
     """Fake object for importlib.import_module."""
 
     def __init__(self) -> None:
-        self.import_queue: List[str] = []
+        self.import_queue: list[str] = []
 
     def import_module(self, path: str):
         self.import_queue.append(path)

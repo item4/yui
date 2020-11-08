@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import List
 
 import aiohttp
 
@@ -17,7 +16,7 @@ PACKTPUB_URL = 'https://www.packtpub.com/packt/offers/free-learning'
 
 
 async def say_packtpub_dotd(bot: Bot, channel):
-    attachments: List[Attachment] = []
+    attachments: list[Attachment] = []
     now_dt = now()
     start = now_dt.strftime('%Y-%m-%d')
     end = (now_dt + timedelta(days=1)).strftime('%Y-%m-%d')

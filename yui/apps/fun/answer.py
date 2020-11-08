@@ -1,11 +1,10 @@
 import random
 import re
-from typing import List
 
 from ...box import box
 from ...event import Message
 
-RESPONSES: List[str] = [
+RESPONSES: list[str] = [
     '그래',
     '그럴걸?',
     '돼',

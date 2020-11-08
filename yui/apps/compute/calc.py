@@ -12,10 +12,7 @@ import statistics
 from collections import abc
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Set
 from typing import Union
 
 import _ast
@@ -290,7 +287,7 @@ class BadSyntax(Exception):
     pass
 
 
-BINOP_TABLE: Dict[Any, Callable[[Any, Any], Any]] = {
+BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     _ast.Add: lambda a, b: a + b,
     _ast.BitAnd: lambda a, b: a & b,
     _ast.BitOr: lambda a, b: a | b,
@@ -305,11 +302,11 @@ BINOP_TABLE: Dict[Any, Callable[[Any, Any], Any]] = {
     _ast.RShift: lambda a, b: a >> b,
     _ast.Sub: lambda a, b: a - b,
 }
-BOOLOP_TABLE: Dict[Any, Callable[[Any, Any], Any]] = {
+BOOLOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     _ast.And: lambda a, b: a and b,
     _ast.Or: lambda a, b: a or b,
 }
-COMPARE_TABLE: Dict[Any, Callable[[Any, Any], bool]] = {
+COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
     _ast.Eq: lambda a, b: a == b,
     _ast.Gt: lambda a, b: a > b,
     _ast.GtE: lambda a, b: a >= b,
@@ -321,7 +318,7 @@ COMPARE_TABLE: Dict[Any, Callable[[Any, Any], bool]] = {
     _ast.NotEq: lambda a, b: a != b,
     _ast.NotIn: lambda a, b: a not in b,
 }
-UNARYOP_TABLE: Dict[Any, Callable[[Any], Any]] = {
+UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
     _ast.Invert: lambda x: ~x,
     _ast.Not: lambda x: not x,
     _ast.UAdd: lambda x: +x,
@@ -715,7 +712,7 @@ class Evaluator:
                 'reverse',
             },
         }
-        self.global_symbol_table: Dict[str, Any] = {
+        self.global_symbol_table: dict[str, Any] = {
             # builtin func
             'abs': abs,
             'all': all,
@@ -818,7 +815,7 @@ class Evaluator:
             'random': random,
             'statistics': statistics,
         }
-        self.symbol_table: Dict[str, Any] = {}
+        self.symbol_table: dict[str, Any] = {}
         self.current_interrupt: Optional[
             Union[_ast.Break, _ast.Continue]
         ] = None
@@ -1026,7 +1023,7 @@ class Evaluator:
         }
 
     def visit_dictcomp(self, node: _ast.DictComp):  # key, value, generators
-        result: Dict[Any, Any] = {}
+        result: dict = {}
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
             for val in self._run(current_gen.iter):
@@ -1114,7 +1111,7 @@ class Evaluator:
         return [self._run(x) for x in node.elts]
 
     def visit_listcomp(self, node: _ast.ListComp):  # elt, generators
-        result: List[Any] = []
+        result: list = []
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
             for val in self._run(current_gen.iter):
@@ -1170,7 +1167,7 @@ class Evaluator:
         return {self._run(x) for x in node.elts}
 
     def visit_setcomp(self, node: _ast.SetComp):  # elt, generators
-        result: Set[Any] = set()
+        result = set()
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
             for val in self._run(current_gen.iter):

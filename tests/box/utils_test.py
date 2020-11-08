@@ -1,14 +1,10 @@
-from typing import List
-from typing import Set
-from typing import Tuple
-
 from yui.box.utils import is_container
 
 
 def test_is_container():
-    assert is_container(List[int])
-    assert is_container(Set[int])
-    assert is_container(Tuple[int])
+    assert is_container(list[int])
+    assert is_container(set[int])
+    assert is_container(tuple[int])
     assert is_container(list)
     assert is_container(set)
     assert is_container(tuple)

@@ -1,7 +1,5 @@
 from typing import Any
 from typing import ClassVar
-from typing import Dict
-from typing import List
 from typing import Literal
 from typing import NoReturn
 from typing import Optional
@@ -186,7 +184,7 @@ EventType = Literal[
     UserTypingType,
     ChatterboxSystemStartType,
 ]
-Source = Dict[str, Any]
+Source = dict[str, Any]
 
 
 class BaseEvent:
@@ -200,7 +198,7 @@ class Event(BaseEvent):
     subtype: Optional[str] = None
 
 
-_events: Dict[EventType, Type[BaseEvent]] = {}
+_events: dict[EventType, Type[BaseEvent]] = {}
 
 
 def event(cls):
@@ -350,7 +348,7 @@ class EmojiChanged(Event):
     type: ClassVar[str] = 'emoji_changed'
     event_ts: Ts = TsField()
     name: str = StringField()
-    names: List[str] = ListField(str)()
+    names: list[str] = ListField(str)()
     value: str = StringField()
 
 
@@ -614,7 +612,7 @@ class Message(Event):
     event_ts: Ts = TsField()
     user: User = UserField(default=None)
     text: str = StringField(repr=True)
-    attachments: List[Dict[str, Any]] = Field()
+    attachments: list[dict[str, Any]] = Field()
     hidden: bool = BooleanField()
     message: MessageMessage = OptionalField(MessageMessage)(repr=True)
     previous_message: MessagePreviousMessage = OptionalField(
@@ -631,7 +629,7 @@ class PinAdded(Event):
     user: User = UserField()
     channel_id: ChannelID = IDField()
     event_ts: Ts = TsField()
-    item: Dict = Field()
+    item: dict = Field()
 
 
 @event
@@ -642,7 +640,7 @@ class PinRemoved(Event):
     user: User = UserField()
     channel_id: ChannelID = IDField()
     event_ts: Ts = TsField()
-    item: Dict = Field()
+    item: dict = Field()
     has_pins: bool = BooleanField()
 
 
@@ -668,7 +666,7 @@ class PresenceChange(Event):
 
     type: ClassVar[str] = 'presence_change'
     user: User = UserField()
-    users: List[User] = UserListField()
+    users: list[User] = UserListField()
     presence: str = StringField()
 
 
@@ -681,7 +679,7 @@ class ReactionAdded(Event):
     item_user: User = UserField()
     event_ts: Ts = TsField()
     reaction: str = StringField()
-    item: Dict[str, Any] = Field()
+    item: dict[str, Any] = Field()
 
 
 @event
@@ -693,7 +691,7 @@ class ReactionRemoved(Event):
     user: User = UserField()
     event_ts: Ts = TsField()
     reaction: str = StringField()
-    item: Dict[str, Any] = Field()
+    item: dict[str, Any] = Field()
 
 
 @event
@@ -711,7 +709,7 @@ class StarAdded(Event):
     type: ClassVar[str] = 'star_added'
     user: User = UserField()
     event_ts: Ts = TsField()
-    item: Dict = Field()
+    item: dict = Field()
 
 
 @event
@@ -721,7 +719,7 @@ class StarRemoved(Event):
     type: ClassVar[str] = 'star_removed'
     user: User = UserField()
     event_ts: Ts = TsField()
-    item: Dict = Field()
+    item: dict = Field()
 
 
 @event
@@ -741,9 +739,9 @@ class SubteamMembersChanged(Event):
     team_id: TeamID = IDField()
     date_previous_update: int = IntegerField()
     date_update: int = IntegerField()
-    added_users: List[User] = UserListField()
+    added_users: list[User] = UserListField()
     added_users_count: str = StringField()
-    removed_users: List[User] = UserListField()
+    removed_users: list[User] = UserListField()
     removed_users_count: str = StringField()
 
 
@@ -817,7 +815,7 @@ class TeamProfileChange(Event):
     """Team profile fields have been updated."""
 
     type: ClassVar[str] = 'team_profile_change'
-    profile: Dict = Field()
+    profile: dict = Field()
 
 
 @event
@@ -825,7 +823,7 @@ class TeamProfileDelete(Event):
     """Team profile fields have been deleted."""
 
     type: ClassVar[str] = 'team_profile_delete'
-    profile: Dict = Field()
+    profile: dict = Field()
 
 
 @event
@@ -833,7 +831,7 @@ class TeamProfileReorder(Event):
     """Team profile fields have been reordered."""
 
     type: ClassVar[str] = 'team_profile_reorder'
-    profile: Dict = Field()
+    profile: dict = Field()
 
 
 @event

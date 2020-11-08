@@ -1,5 +1,3 @@
-from typing import List
-
 from fake_useragent import FakeUserAgent
 
 from .models import Target
@@ -11,7 +9,7 @@ HEADERS = {
 }
 
 
-def get_urls(code: str, male: Target, female: Target) -> List[str]:
+def get_urls(code: str, male: Target, female: Target) -> list[str]:
     result = []
     if male in [Target.common, Target.wildcard]:
         result.append(

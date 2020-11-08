@@ -1,5 +1,4 @@
 import enum
-from typing import Dict
 
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -37,12 +36,12 @@ class Target(enum.IntEnum):
     wildcard = 3
 
 
-STOCK_LABEL: Dict[Stock, str] = {
+STOCK_LABEL: dict[Stock, str] = {
     Stock.soldout: '재고 없음',
     Stock.few: '재고 조금 남음',
     Stock.ok: '재고 있음',
 }
-TARGET_LABEL: Dict[Target, str] = {
+TARGET_LABEL: dict[Target, str] = {
     Target.nobody: '구독안함',
     Target.common: '전연령',
     Target.adult: '성인전용',
@@ -81,9 +80,15 @@ class Watch(Base):
 
     genre = relationship(Genre)
 
-    male = Column(ChoiceType(Target, impl=Integer()), nullable=False,)
+    male = Column(
+        ChoiceType(Target, impl=Integer()),
+        nullable=False,
+    )
 
-    female = Column(ChoiceType(Target, impl=Integer()), nullable=False,)
+    female = Column(
+        ChoiceType(Target, impl=Integer()),
+        nullable=False,
+    )
 
     @hybrid_property
     def male_text(self) -> str:
@@ -175,7 +180,10 @@ class Item(Base):
 
     price = Column(Integer, nullable=False)
 
-    stock = Column(ChoiceType(Stock, impl=Integer()), nullable=False,)
+    stock = Column(
+        ChoiceType(Stock, impl=Integer()),
+        nullable=False,
+    )
 
     genre_id = Column(Integer, ForeignKey(Genre.id), nullable=False)
 
@@ -194,21 +202,33 @@ class Item(Base):
     )
 
     authors = relationship(
-        Author, secondary='toranoana_itemauthor', backref='items',
+        Author,
+        secondary='toranoana_itemauthor',
+        backref='items',
     )
 
     circles = relationship(
-        Circle, secondary='toranoana_itemcircle', backref='items',
+        Circle,
+        secondary='toranoana_itemcircle',
+        backref='items',
     )
 
-    tags = relationship(Tag, secondary='toranoana_itemtag', backref='items',)
+    tags = relationship(
+        Tag,
+        secondary='toranoana_itemtag',
+        backref='items',
+    )
 
     couplings = relationship(
-        Coupling, secondary='toranoana_itemcoupling', backref='items',
+        Coupling,
+        secondary='toranoana_itemcoupling',
+        backref='items',
     )
 
     characters = relationship(
-        Character, secondary='toranoana_itemcharacter', backref='items',
+        Character,
+        secondary='toranoana_itemcharacter',
+        backref='items',
     )
 
     checked_datetime = DateTimeColumn(nullable=False)
