@@ -20,6 +20,19 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
 
     """
 
+    if len(keyword) > 20:
+        await bot.say(
+            event.channel,
+            '기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!',
+        )
+        return
+    if len(text) > 500:
+        await bot.say(
+            event.channel,
+            '기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!',
+        )
+        return
+
     memo = Memo()
     memo.keyword = keyword
     memo.author = event.user.id
@@ -32,7 +45,8 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
     await bot.say(
         event.channel,
         '{}{} 기억 레코드를 생성했어요!'.format(
-            format.code(keyword), tossi.pick(keyword, '(으)로'),
+            format.code(keyword),
+            tossi.pick(keyword, '(으)로'),
         ),
     )
 
@@ -63,7 +77,8 @@ async def memo_show(bot, event: Message, sess, keyword: str):
         await bot.say(
             event.channel,
             '{}{} 이름을 가진 기억 레코드가 없어요!'.format(
-                format.code(keyword), tossi.pick(keyword, '(이)란'),
+                format.code(keyword),
+                tossi.pick(keyword, '(이)란'),
             ),
         )
 
