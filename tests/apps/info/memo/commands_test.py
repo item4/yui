@@ -147,6 +147,7 @@ async def test_memo_flow(fx_sess):
     )
 
 
+@pytest.mark.asyncio
 async def test_length_limit(fx_sess):
     bot = FakeBot()
     bot.add_channel('C1', 'test')
