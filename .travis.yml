@@ -1,5 +1,5 @@
 language: python
-python: 3.8
+python: 3.9
 dist: xenial
 sudo: false
 cache:
