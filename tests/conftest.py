@@ -22,7 +22,7 @@ DEFAULT_DATABASE_URL = 'sqlite://'
 def pytest_addoption(parser):
     parser.addoption(
         '--database-url',
-        type='string',
+        type=str,
         default=os.getenv('YUI_TEST_DATABASE_URL', DEFAULT_DATABASE_URL),
         help='Database URL for testing.' '[default: %default]',
     )
