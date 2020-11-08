@@ -863,11 +863,9 @@ class Evaluator:
         elif cls == _ast.Subscript:
             sym = self._run(node.value)
             xslice = self._run(node.slice)
-            if isinstance(node.slice, _ast.Index):
-                sym[xslice] = val
-            elif isinstance(node.slice, _ast.Slice):
+            if isinstance(node.slice, _ast.Slice):
                 sym[slice(xslice.start, xslice.stop)] = val
-            elif isinstance(node.slice, _ast.ExtSlice):
+            else:
                 sym[xslice] = val
         else:
             raise BadSyntax('This assign method is not allowed')
@@ -940,7 +938,9 @@ class Evaluator:
         elif target_cls == _ast.Subscript:
             sym = self._run(target.value)  # type: ignore
             xslice = self._run(target.slice)  # type: ignore
-            if isinstance(target.slice, _ast.Index):  # type: ignore
+            if not isinstance(
+                target.slice, (_ast.Tuple, _ast.Slice)  # type: ignore
+            ):
                 sym[xslice] = BINOP_TABLE[op_cls](
                     sym[xslice],
                     value,
@@ -1009,7 +1009,10 @@ class Evaluator:
             elif target_cls == _ast.Subscript:
                 sym = self._run(target.value)  # type: ignore
                 xslice = self._run(target.slice)  # type: ignore
-                if isinstance(target.slice, _ast.Index):  # type: ignore
+                if not isinstance(
+                    target.slice,  # type: ignore
+                    (_ast.Tuple, _ast.Slice),
+                ):
                     del sym[xslice]
                 else:
                     raise BadSyntax('This delete method is not allowed')
@@ -1050,9 +1053,6 @@ class Evaluator:
 
     def visit_expr(self, node: _ast.Expr):  # value,
         return self._run(node.value)
-
-    def visit_extslice(self, node: _ast.ExtSlice):  # dims,
-        return tuple(self._run(x) for x in node.dims)
 
     def visit_functiondef(self, node: _ast.FunctionDef):
         raise BadSyntax('Defining new function via def syntax is not allowed')
@@ -1102,9 +1102,6 @@ class Evaluator:
     def visit_importfrom(self, node: _ast.ImportFrom):
         raise BadSyntax('You can not import anything')
 
-    def visit_index(self, node: _ast.Index):  # value,
-        return self._run(node.value)
-
     def visit_joinedstr(self, node: _ast.JoinedStr):  # values,
         return ''.join(self._run(x) for x in node.values)
 
@@ -1148,7 +1145,7 @@ class Evaluator:
 
     def visit_name(self, node: _ast.Name):  # id, ctx
         ctx = node.ctx.__class__
-        if ctx in (_ast.Param, _ast.Del):
+        if ctx == ast.Del:
             return node.id
         else:
             if node.id in self.symbol_table:

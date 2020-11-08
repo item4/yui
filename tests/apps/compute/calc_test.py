@@ -347,21 +347,6 @@ def test_expr():
     assert e.run('{1: 111, 2: 222}') == {1: 111, 2: 222}
 
 
-def test_extslice():
-    e = Evaluator()
-    e.symbol_table['obj'] = GetItemSpy()
-    e.run('obj[1,2:3,4]')
-    es = e.symbol_table['obj'].queue.pop()
-    assert isinstance(es, tuple)
-    assert len(es) == 3
-    assert es[0] == 1
-    assert isinstance(es[1], slice)
-    assert es[1].start == 2
-    assert es[1].stop == 3
-    assert es[1].step is None
-    assert es[2] == 4
-
-
 def test_functiondef():
     e = Evaluator()
     err = 'Defining new function via def syntax is not allowed'
@@ -524,17 +509,6 @@ def test_importfrom():
     with pytest.raises(BadSyntax, match=err):
         e.run('from os import path')
     assert 'path' not in e.symbol_table
-
-
-def test_index():
-    e = Evaluator()
-    e.symbol_table['obj'] = GetItemSpy()
-    e.run('obj[10]')
-    index = e.symbol_table['obj'].queue.pop()
-    assert index == 10
-    e.run('obj["asdf"]')
-    index = e.symbol_table['obj'].queue.pop()
-    assert index == 'asdf'
 
 
 def test_lambda():
@@ -857,11 +831,15 @@ async def test_calculate_fine(
     bot = FakeBot()
 
     decimal_result, decimal_local = await bot.run_in_other_process(
-        calculate, expr, decimal_mode=True,
+        calculate,
+        expr,
+        decimal_mode=True,
     )
 
     num_result, num_local = await bot.run_in_other_process(
-        calculate, expr, decimal_mode=False,
+        calculate,
+        expr,
+        decimal_mode=False,
     )
 
     assert expected_decimal_result == decimal_result
