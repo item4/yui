@@ -55,19 +55,13 @@ jobs:
 
       # Lint
       - name: Check coding convention
-        run: |
-          source .venv/bin/activate
-          flake8 yui tests
+        run: .venv/bin/flake8 yui tests
       - name: Check missing autofix
-        run: |
-          source .venv/bin/activate
-          black --check .
+        run: .venv/bin/black --check .
 
       # Test
       - name: Run test cases
-        run: |
-          source .venv/bin/activate
-          pytest -v --cov yui tests
+        run: .venv/bin/pytest -v --cov yui tests
         env:
           YUI_TEST_DATABASE_URL: postgresql://kirito:eugeo@localhost/test
           AQI_API_TOKEN: ${{ secrets.TEST_AQI_API_TOKEN }}
