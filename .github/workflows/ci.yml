@@ -44,4 +44,10 @@ jobs:
       - name: Check missing autofix
         run: poetry run black --check .
       - name: Run test cases
-        run: poetry run pytest --database-url=postgresql://kirito:eugeo@localhost/test -v --cov yui tests
+        run: poetry run pytest -v --cov yui tests
+        env:
+          YUI_TEST_DATABASE_URL: postgresql://kirito:eugeo@localhost/test
+          AQI_API_TOKEN: ${{ secrets.TEST_AQI_API_TOKEN }}
+          GOOGLE_API_KEY: ${{ secrets.TEST_GOOGLE_API_KEY }}
+          NAVER_CLIENT_ID: ${{ secrets.TEST_NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.TEST_NAVER_CLIENT_SECRET }}
