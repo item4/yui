@@ -93,7 +93,7 @@ def process(
                 Stock.soldout,
             )
 
-            name_els = row.cssselect('.product-list-name')
+            name_els = row.cssselect('.product-list-name a')
             for el in name_els:
                 url = el.get('href', '').strip()
                 name = el.text_content().strip()
