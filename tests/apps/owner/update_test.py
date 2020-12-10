@@ -91,8 +91,14 @@ TITLE=타이틀만 있음
             color='123456',
             text='임의의 색상 지정',
         ),
-        dict(fallback='본문만 있음', text='본문만 있음',),
-        dict(fallback='타이틀만 있음:', title='타이틀만 있음',),
+        dict(
+            fallback='본문만 있음',
+            text='본문만 있음',
+        ),
+        dict(
+            fallback='타이틀만 있음:',
+            title='타이틀만 있음',
+        ),
     ]
 
     event = bot.create_message('C1', 'U2')

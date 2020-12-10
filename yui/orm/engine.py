@@ -9,15 +9,21 @@ from ..config import Config
 
 
 def create_database_engine(
-    url: str, echo: bool, poolclass: Optional[Type[Pool]] = None,
+    url: str,
+    echo: bool,
+    poolclass: Optional[Type[Pool]] = None,
 ) -> Engine:
     return create_engine(
-        url, echo=echo, poolclass=poolclass, pool_pre_ping=True,
+        url,
+        echo=echo,
+        poolclass=poolclass,
+        pool_pre_ping=True,
     )
 
 
 def get_database_engine(
-    config: Config, poolclass: Optional[Type[Pool]] = None,
+    config: Config,
+    poolclass: Optional[Type[Pool]] = None,
 ) -> Engine:
     try:
         engine = config.DATABASE_ENGINE

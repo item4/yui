@@ -40,7 +40,9 @@ async def dday(bot, event: Message, at: datetime.date, date: datetime.date):
         await bot.say(
             event.channel,
             '{}로부터 {}까지 {:,}일 남았어요!'.format(
-                at.strftime('%Y년 %m월 %d일'), date.strftime('%Y년 %m월 %d일'), diff,
+                at.strftime('%Y년 %m월 %d일'),
+                date.strftime('%Y년 %m월 %d일'),
+                diff,
             ),
         )
     else:

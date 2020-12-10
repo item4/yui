@@ -18,4 +18,6 @@ def fromtimestamp(timestamp: float, tzname: str = 'Asia/Seoul') -> dt.datetime:
 
 
 def fromisoformat(date_str: str, tzname: str = 'Asia/Seoul') -> dt.datetime:
-    return dt.datetime.fromisoformat(date_str).replace(tzinfo=gettz(tzname),)
+    return dt.datetime.fromisoformat(date_str).replace(
+        tzinfo=gettz(tzname),
+    )

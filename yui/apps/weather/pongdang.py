@@ -30,6 +30,7 @@ async def pongdang(bot, event: Message):
     await bot.say(
         event.channel,
         '{} 기준 한강 수온은 {}°C에요!'.format(
-            observed_at.strftime('%Y년 %m월 %d일 %H시 %M분'), temperature,
+            observed_at.strftime('%Y년 %m월 %d일 %H시 %M분'),
+            temperature,
         ),
     )

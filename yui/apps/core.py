@@ -56,7 +56,8 @@ async def on_start(bot):
         bot.channels.clear()
         while True:
             result = await bot.api.conversations.list(
-                cursor=cursor, types='public_channel,private_channel,im',
+                cursor=cursor,
+                types='public_channel,private_channel,im',
             )
             cursor = None
             await asyncio.sleep(0.1)
@@ -86,7 +87,11 @@ async def on_start(bot):
     bot.is_ready = False
 
     await asyncio.wait(
-        (channels(), users(),), return_when=asyncio.FIRST_EXCEPTION,
+        (
+            channels(),
+            users(),
+        ),
+        return_when=asyncio.FIRST_EXCEPTION,
     )
 
     bot.is_ready = True
@@ -135,7 +140,8 @@ async def public_channel_mutation_detected(bot):
     new_channels = []
     while True:
         result = await bot.api.conversations.list(
-            cursor=cursor, types='public_channel',
+            cursor=cursor,
+            types='public_channel',
         )
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
@@ -166,7 +172,8 @@ async def private_channel_mutation_detected(bot):
     cursor = None
     while True:
         result = await bot.api.conversations.list(
-            cursor=cursor, types='private_channel',
+            cursor=cursor,
+            types='private_channel',
         )
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
@@ -192,7 +199,10 @@ async def direct_message_channel_mutation_detected(bot):
     new_ims = []
     cursor = None
     while True:
-        result = await bot.api.conversations.list(cursor=cursor, types='im',)
+        result = await bot.api.conversations.list(
+            cursor=cursor,
+            types='im',
+        )
         await asyncio.sleep(0.1)
         cursor = result.body.get('response_metadata', {}).get('next_cursor')
         for c in result.body['channels']:

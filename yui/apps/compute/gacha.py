@@ -83,7 +83,11 @@ Aliases
     @option('--successes', '-s', '--성공횟수', '--성공', default=1)
     @argument('chance')
     async def challenge(
-        self, bot, event: Message, successes: int, chance: str,
+        self,
+        bot,
+        event: Message,
+        successes: int,
+        chance: str,
     ):
         if successes < SUCCESSES_MIN or successes > SUCCESSES_MAX:
             await bot.say(

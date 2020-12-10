@@ -44,7 +44,10 @@ def test_to_json():
                     min_query_length=100,
                     confirm=Confirmation(text='confirm text'),
                     selected_options=[
-                        OptionField(text='a1 so1 text', value='a1 so1 value',)
+                        OptionField(
+                            text='a1 so1 text',
+                            value='a1 so1 value',
+                        )
                     ],
                     value='action1 value',
                     url='action1 url',

@@ -18,10 +18,17 @@ def test_action_class():
     data_source = 'default'
     min_query_length = 100
     name = 'Test Button'
-    options = [OptionField(text='test', value='test',)]
+    options = [
+        OptionField(
+            text='test',
+            value='test',
+        )
+    ]
     selected_options = [
         OptionField(
-            text='text', value='value', description='some description',
+            text='text',
+            value='value',
+            description='some description',
         )
     ]
     style = 'danger'
@@ -62,7 +69,12 @@ def test_action_class():
         name=name,
         text=text,
         type=type,
-        options=[OptionField(text='test', value='test',)],
+        options=[
+            OptionField(
+                text='test',
+                value='test',
+            )
+        ],
         option_groups=[
             OptionFieldGroup(
                 text='text',

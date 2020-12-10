@@ -50,5 +50,6 @@ async def say(
         text = '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name)
 
     await bot.say(
-        target, text,
+        target,
+        text,
     )

@@ -29,7 +29,10 @@ async def test_slack_api_users_list():
     bot = FakeBot()
 
     await bot.api.users.list(
-        curser='asdf1234', include_locale=True, limit=20, presence=True,
+        curser='asdf1234',
+        include_locale=True,
+        limit=20,
+        presence=True,
     )
 
     call = bot.call_queue.pop()

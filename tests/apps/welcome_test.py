@@ -44,7 +44,9 @@ async def test_welcome_9xd_handler(fx_config):
     @bot.response('chat.postMessage')
     def team_join(data):
         return APIResponse(
-            body={'ok': True, 'ts': '1234.5678'}, status=200, headers={},
+            body={'ok': True, 'ts': '1234.5678'},
+            status=200,
+            headers={},
         )
 
     await welcome_9xd(bot, event)

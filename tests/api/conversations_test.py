@@ -83,7 +83,11 @@ async def test_slack_api_conversations_list():
     bot = FakeBot()
 
     await bot.api.conversations.list(
-        cursor, exclude_archived, exclude_members, limit, types,
+        cursor,
+        exclude_archived,
+        exclude_members,
+        limit,
+        types,
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.list'
@@ -109,13 +113,15 @@ async def test_slack_api_conversations_open():
 
     with pytest.raises(ValueError):
         await bot.api.conversations.open(
-            channel=channel_id, users=[user_id],
+            channel=channel_id,
+            users=[user_id],
         )
     with pytest.raises(ValueError):
         await bot.api.conversations.open()
 
     await bot.api.conversations.open(
-        channel=channel_id, return_im=return_im,
+        channel=channel_id,
+        return_im=return_im,
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.open'
@@ -124,14 +130,18 @@ async def test_slack_api_conversations_open():
         'return_im': bool2str(return_im),
     }
 
-    await bot.api.conversations.open(channel=channel,)
+    await bot.api.conversations.open(
+        channel=channel,
+    )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.open'
     assert call.data == {
         'channel': channel_id,
     }
 
-    await bot.api.conversations.open(users=[user, user2_id],)
+    await bot.api.conversations.open(
+        users=[user, user2_id],
+    )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.open'
     assert call.data == {

@@ -99,7 +99,11 @@ class RSS(route.RouteApp):
 
     async def list(self, bot, event: Message, sess):
         feeds = (
-            sess.query(RSSFeedURL).filter_by(channel=event.channel.id,).all()
+            sess.query(RSSFeedURL)
+            .filter_by(
+                channel=event.channel.id,
+            )
+            .all()
         )
 
         if feeds:
@@ -190,7 +194,9 @@ async def crawl(bot, sess):
 
         if attachments:
             await bot.api.chat.postMessage(
-                channel=feed.channel, attachments=attachments, as_user=True,
+                channel=feed.channel,
+                attachments=attachments,
+                as_user=True,
             )
 
             with sess.begin():

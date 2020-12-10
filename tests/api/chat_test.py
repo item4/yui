@@ -70,7 +70,9 @@ async def test_slack_api_chat_post_ephemeral():
         await bot.api.chat.postEphemeral(channel=channel, user=user)
 
     await bot.api.chat.postEphemeral(
-        channel=channel, user=user, text=text,
+        channel=channel,
+        user=user,
+        text=text,
     )
 
     call = bot.call_queue.pop()
@@ -83,7 +85,9 @@ async def test_slack_api_chat_post_ephemeral():
     assert call.json_mode
 
     await bot.api.chat.postEphemeral(
-        channel=channel_id, user=user_id, attachments=attachments,
+        channel=channel_id,
+        user=user_id,
+        attachments=attachments,
     )
 
     call = bot.call_queue.pop()

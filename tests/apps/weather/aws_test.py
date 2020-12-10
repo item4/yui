@@ -31,7 +31,8 @@ def test_clothes_by_temperature():
 @pytest.mark.asyncio
 async def test_aws(response_mock):
     response_mock.get(  # 1
-        API_URL, exception=client_exceptions.ClientPayloadError(),
+        API_URL,
+        exception=client_exceptions.ClientPayloadError(),
     )
     response_mock.get(  # 2
         API_URL,
