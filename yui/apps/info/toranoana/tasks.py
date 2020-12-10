@@ -381,7 +381,7 @@ async def scan_all_pages(
     page = 1
     end_page = 1
     while page <= end_page:
-        paginated_url = f'{url}?&currentPage={page}'
+        paginated_url = f'{url}&currentPage={page}'
         if page > 1:
             await asyncio.sleep(1)
 
