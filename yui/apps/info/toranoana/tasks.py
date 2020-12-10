@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import logging
 from collections import defaultdict
 from typing import Union
 
@@ -41,6 +42,8 @@ from ....utils.datetime import now
 box.assert_channel_required('toranoana')
 
 GenreURLlist = dict[Genre, list[str]]
+
+logger = logging.getLogger(__name__)
 
 
 def process(
@@ -111,7 +114,12 @@ def process(
                         circle = Circle(code=code, name=name)
                         circles.append((circle, False))
                 else:
-                    code = 'ACTR' + url.split('ACTR', 1)[1]
+                    try:
+                        code = 'ACTR' + url.split('ACTR', 1)[1]
+                    except IndexError:
+                        logger.debug(url)
+                        continue
+
                     try:
                         author = (
                             sess.query(Author)
