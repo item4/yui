@@ -13,18 +13,22 @@ def get_urls(code: str, male: Target, female: Target) -> list[str]:
     result = []
     if male in [Target.common, Target.wildcard]:
         result.append(
-            f'https://ec.toranoana.shop/tora/ec/cot/genre/{code}/all/all/'
+            'https://ecs.toranoana.jp/tora/ec/app/catalog/list/'
+            f'?coterieGenreCode1={code}'
         )
     if male in [Target.adult, Target.wildcard]:
         result.append(
-            f'https://ec.toranoana.jp/tora_r/ec/cot/genre/{code}/all/all/'
+            f'https://ec.toranoana.jp/tora_r/ec/app/catalog/list/'
+            f'?coterieGenreCode1={code}'
         )
     if female in [Target.common, Target.wildcard]:
         result.append(
-            f'https://ec.toranoana.shop/joshi/ec/cot/genre/{code}/all/all/'
+            'https://ecs.toranoana.jp/joshi/ec/app/catalog/list/'
+            f'?coterieGenreCode1={code}'
         )
     if female in [Target.adult, Target.wildcard]:
         result.append(
-            f'https://ec.toranoana.jp/joshi_r/ec/cot/genre/{code}/all/all/'
+            'https://ec.toranoana.jp/joshi_r/ec/app/catalog/list/'
+            f'?coterieGenreCode1={code}'
         )
     return result
