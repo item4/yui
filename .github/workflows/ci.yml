@@ -72,3 +72,10 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.TEST_GOOGLE_API_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.TEST_NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.TEST_NAVER_CLIENT_SECRET }}
+
+      # After jobs
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
