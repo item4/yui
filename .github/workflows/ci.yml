@@ -57,17 +57,17 @@ jobs:
       - name: Check coding convention
         run: |
           source .venv/bin/activate
-          poetry run flake8
+          flake8 yui tests
       - name: Check missing autofix
         run: |
           source .venv/bin/activate
-          poetry run black --check .
+          black --check .
 
       # Test
       - name: Run test cases
         run: |
           source .venv/bin/activate
-          poetry run pytest -v --cov yui tests
+          pytest -v --cov yui tests
         env:
           YUI_TEST_DATABASE_URL: postgresql://kirito:eugeo@localhost/test
           AQI_API_TOKEN: ${{ secrets.TEST_AQI_API_TOKEN }}
