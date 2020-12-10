@@ -1,6 +1,5 @@
 import asyncio
 import datetime
-import re
 from collections import defaultdict
 from typing import Union
 
@@ -41,8 +40,6 @@ from ....utils.datetime import now
 
 box.assert_channel_required('toranoana')
 
-PRICE_PATTERN = re.compile(r'((\d+,?)+).*')
-
 GenreURLlist = dict[Genre, list[str]]
 
 
@@ -54,7 +51,7 @@ def process(
     dt: datetime.datetime,
     is_male: bool,
 ):
-    rows = h.cssselect('#search-result-container li.list__item')
+    rows = h.cssselect('#search-result-container li.product-list-item')
     for row in rows:
         with sess.no_autoflush:
             tags: list[tuple[Tag, bool]] = []
@@ -73,21 +70,94 @@ def process(
                 item.code = code
                 item.genre = genre
 
-            thumbnail_container = row.cssselect('.product_img a')[0]
+            thumbnail_container = row.cssselect('.product-list-img a')[0]
             item.image_url = str(
                 thumbnail_container[-1].get('data-src').strip()
             )
             item.title = str(
-                row.cssselect('.product_title')[0].text_content().strip()
+                row.cssselect('.product-list-title')[0].text_content().strip()
+            )
+            item.price = int(
+                row.cssselect(
+                    '.product-list-price .fs_L',
+                )[0]
+                .text_content()
+                .strip()
+                .replace(',', '')
+            )
+            item.stock = {
+                'stock_sufficient': Stock.ok,
+                'stock_little': Stock.few,
+            }.get(
+                row.cssselect('.product-list-basic')[0].get('class'),
+                Stock.soldout,
             )
 
-            tags_els = row.cssselect('.product_tags li')
+            name_els = row.cssselect('.product-list-name')
+            for el in name_els:
+                url = el.get('href', '').strip()
+                name = el.text_content().strip()
 
+                if '/circle/' in url:
+                    code = url.split('/circle/', 1)[1].replace('/all/', '')
+                    try:
+                        circle = (
+                            sess.query(Circle)
+                            .filter_by(code=code, name=name)
+                            .one()
+                        )
+                        circles.append((circle, True))
+                    except NoResultFound:
+                        circle = Circle(code=code, name=name)
+                        circles.append((circle, False))
+                else:
+                    code = 'ACTR' + url.split('ACTR', 1)[1]
+                    try:
+                        author = (
+                            sess.query(Author)
+                            .filter_by(code=code, name=name)
+                            .one()
+                        )
+                        authors.append((author, True))
+                    except NoResultFound:
+                        author = Author(code=code, name=name)
+                        authors.append((author, False))
+
+            label_els = row.cssselect('.product-list-labels li a')
+            for el in label_els:
+                url = el.get('href', '').strip()
+                name = el.text_content().strip()
+                if '?coupling_facet=' in url:  # coupling
+                    code = name
+                    try:
+                        coupling = (
+                            sess.query(Coupling)
+                            .filter_by(code=code, name=name)
+                            .one()
+                        )
+                        couplings.append((coupling, True))
+                    except NoResultFound:
+                        coupling = Coupling(code=code, name=name)
+                        couplings.append((coupling, False))
+                elif '?charaId=' in url:  # character
+                    code = url.split('?charaId=', 1)[1]
+                    try:
+                        character = (
+                            sess.query(Character)
+                            .filter_by(code=code, name=name)
+                            .one()
+                        )
+                        characters.append((character, True))
+                    except NoResultFound:
+                        character = Character(code=code, name=name)
+                        characters.append((character, False))
+
+            tags_els = row.cssselect('.product-list-tags')
             for el in tags_els:
                 code = (
                     el.get('class').split(' ')[-1].replace('catalogMark', '')
                 )
-                name = el.text_content()
+                name = el.text_content().strip()
                 if code == '18':
                     is_adult = True
                 try:
@@ -97,95 +167,6 @@ def process(
                     tag = Tag(code=code, name=name)
                     tags.append((tag, False))
 
-            labels_els = row.cssselect('.product_labels')
-            item.stock = {'○': Stock.ok, '△': Stock.few}.get(
-                labels_els[1][0].text_content().strip()[0], Stock.soldout
-            )
-            for el in labels_els[0][0]:
-                href = el.get('href')
-                code = href.split('=')[-1] if href else ''
-                name = el.text_content().strip()
-                if not code and not name:
-                    continue
-                try:
-                    author = (
-                        sess.query(Author)
-                        .filter_by(code=code, name=name)
-                        .one()
-                    )
-                    authors.append((author, True))
-                except NoResultFound:
-                    author = Author(code=code, name=name)
-                    authors.append((author, False))
-
-            for el in labels_els[0][1]:
-                href = el.get('href')
-                code = href.split('/')[-2] if href else ''
-                name = el.text_content().strip()
-                if not code and not name:
-                    continue
-                try:
-                    circle = (
-                        sess.query(Circle)
-                        .filter_by(code=code, name=name)
-                        .one()
-                    )
-                    circles.append((circle, True))
-                except NoResultFound:
-                    circle = Circle(code=code, name=name)
-                    circles.append((circle, False))
-
-            try:
-                coupling_els = labels_els[0][3]
-                character_els = labels_els[0][4]
-            except IndexError:
-                try:
-                    character_els = labels_els[0][3]
-                except IndexError:
-                    character_els = []
-                coupling_els = []
-
-            for el in coupling_els:
-                href = el.get('href')
-                code = href.split('=')[-1] if href else ''
-                name = el.text_content().strip()
-                if not code and not name:
-                    continue
-                try:
-                    coupling = (
-                        sess.query(Coupling)
-                        .filter_by(code=code, name=name)
-                        .one()
-                    )
-                    couplings.append((coupling, True))
-                except NoResultFound:
-                    coupling = Coupling(code=code, name=name)
-                    couplings.append((coupling, False))
-
-            for el in character_els:
-                href = el.get('href')
-                code = href.split('=')[-1] if href else ''
-                name = el.text_content().strip()
-                if not code and not name:
-                    continue
-                try:
-                    character = (
-                        sess.query(Character)
-                        .filter_by(code=code, name=name)
-                        .one()
-                    )
-                    characters.append((character, True))
-                except NoResultFound:
-                    character = Character(code=code, name=name)
-                    characters.append((character, False))
-
-            price = int(
-                PRICE_PATTERN.sub(
-                    r'\1',
-                    row.cssselect('.product_price')[0].text_content().strip(),
-                ).replace(',', '')
-            )
-            item.price = price
             if is_male:
                 if is_adult:
                     item.male_target = Target.adult
