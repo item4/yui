@@ -52,18 +52,22 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-ansi --no-interaction
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      - name: Activate virtualenv
-        run: source .venv/bin/activate
 
       # Lint
       - name: Check coding convention
-        run: poetry run flake8
+        run: |
+          source .venv/bin/activate
+          poetry run flake8
       - name: Check missing autofix
-        run: poetry run black --check .
+        run: |
+          source .venv/bin/activate
+          poetry run black --check .
 
       # Test
       - name: Run test cases
-        run: poetry run pytest -v --cov yui tests
+        run: |
+          source .venv/bin/activate
+          poetry run pytest -v --cov yui tests
         env:
           YUI_TEST_DATABASE_URL: postgresql://kirito:eugeo@localhost/test
           AQI_API_TOKEN: ${{ secrets.TEST_AQI_API_TOKEN }}
