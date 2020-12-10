@@ -468,7 +468,15 @@ async def crawl(bot, sess):
     for item in sess.query(Item).filter_by(updated_at=dt):
         author_name = ', '.join(author.name for author in item.authors)
         circle_name = ', '.join(circle.name for circle in item.circles)
-        author_line = f'{author_name} ({circle_name})'
+        if author_name:
+            if circle_name:
+                author_line = f'{author_name} ({circle_name})'
+            else:
+                author_line = author_name
+        elif circle_name:
+            author_line = circle_name
+        else:
+            author_line = 'Unknown Author'
 
         targets = []
         color = '3399ff'
