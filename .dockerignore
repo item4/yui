@@ -182,7 +182,6 @@ Temporary Items
 .apdisk
 
 # yui docker only
-*.iml
 .idea
 *.config.toml
 log
@@ -190,12 +189,11 @@ log
 docker
 .git
 .coveragerc
-.flake8
 .gitignore
-.travis.yml
-lint.py
 mypy.ini
-ci
 examples
-hooks
 tests
+.pre-commit-config.yaml
+dmypy.ini
+README.rst
+.github
