@@ -59,9 +59,13 @@ async def cleanup_by_history(
             r = await bot.api.chat.delete(
                 channel,
                 message['ts'],
-                token=bot.config.OWNER_USER_TOKEN,
+                token=None
+                if channel.id.startswith('D')
+                else bot.config.OWNER_USER_TOKEN,
             )
             if not r.body['ok']:
+                if channel.id.startswith('D'):
+                    continue
                 break
             deleted += 1
             await asyncio.sleep(random.uniform(0.02, 0.5))
