@@ -1,9 +1,8 @@
 YUI
 ===
 
-.. image:: https://travis-ci.org/item4/yui.svg?branch=main
-   :target: https://travis-ci.org/item4/yui
-   :alt: CI Test Status
+.. image:: https://github.com/item4/yui/workflows/Run%20test,%20lint%20check%20and%20deploy/badge.svg
+   :alt: CI Status
 
 .. image:: https://codecov.io/gh/item4/yui/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/item4/yui
@@ -17,7 +16,7 @@ Requirements
 
 - Git
 - Slack bot permission for bot account
-- Python 3.8 or higher
+- Python 3.9 or higher
 - PostgreSQL
 - memcached
 - Poetry_
