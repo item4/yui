@@ -38,10 +38,10 @@ jobs:
       - name: Setup poetry
         uses: abatilo/actions-poetry@v2.0.0
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --no-ansi --no-interaction
       - name: Check coding convention
         run: poetry run flake8
       - name: Check missing autofix
         run: poetry run black --check .
       - name: Run test cases
-        run: poetry run pytest postgresql://kirito@eugeo:localhost/test -v --cov yui tests
+        run: poetry run pytest postgresql://kirito:eugeo@localhost/test -v --cov yui tests
