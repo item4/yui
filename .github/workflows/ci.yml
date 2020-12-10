@@ -44,4 +44,4 @@ jobs:
       - name: Check missing autofix
         run: poetry run black --check .
       - name: Run test cases
-        run: poetry run pytest postgresql://kirito:eugeo@localhost/test -v --cov yui tests
+        run: poetry run pytest --database-url=postgresql://kirito:eugeo@localhost/test -v --cov yui tests
