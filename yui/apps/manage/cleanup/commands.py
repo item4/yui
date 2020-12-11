@@ -48,7 +48,11 @@ async def cleanup(bot, sess, event: Message, count: int, mode: str):
 
     now_dt = now()
 
-    if event.user not in force_cleanup:
+    is_dm = event.channel.id.startswith('D')
+    if is_dm:
+        mode = 'history'
+
+    if event.user not in force_cleanup and not is_dm:
         if event.channel not in channels:
             await bot.say(
                 event.channel,

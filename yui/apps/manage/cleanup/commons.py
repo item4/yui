@@ -48,31 +48,33 @@ async def cleanup_by_history(
     count: int = 100,
 ) -> int:
     deleted = 0
-    history = await bot.api.conversations.history(
-        channel,
-        count=count,
-        latest=ts,
-        unreads=True,
-    )
+    deletable = True
+    while deletable and deleted < count:
+        history = await bot.api.conversations.history(
+            channel,
+            count=count,
+            latest=ts,
+            unreads=True,
+        )
+        deletable = False
+        if history.body['ok']:
+            for message in history.body['messages']:
+                try:
+                    r = await bot.api.chat.delete(
+                        channel,
+                        message['ts'],
+                        token=None
+                        if channel.id.startswith('D')
+                        else bot.config.OWNER_USER_TOKEN,
+                    )
+                    ok = r.body['ok']
+                except APICallError:
+                    ok = False
+                if ok:
+                    deletable = True
+                    deleted += 1
 
-    if history.body['ok']:
-        for message in history.body['messages']:
-            try:
-                r = await bot.api.chat.delete(
-                    channel,
-                    message['ts'],
-                    token=None
-                    if channel.id.startswith('D')
-                    else bot.config.OWNER_USER_TOKEN,
-                )
-                ok = r.body['ok']
-            except APICallError:
-                ok = False
-            if not ok:
-                if channel.id.startswith('D'):
-                    continue
-                break
-            deleted += 1
-            await asyncio.sleep(random.uniform(0.02, 0.5))
+                await asyncio.sleep(random.uniform(0.02, 0.5))
+            await asyncio.sleep(random.uniform(1.0, 3.0))
 
     return deleted
