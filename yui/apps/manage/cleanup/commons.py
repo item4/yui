@@ -3,6 +3,7 @@ import random
 from typing import Optional
 
 from .models import EventLog
+from ....bot import APICallError
 from ....types.channel import Channel
 
 
@@ -56,14 +57,18 @@ async def cleanup_by_history(
 
     if history.body['ok']:
         for message in history.body['messages']:
-            r = await bot.api.chat.delete(
-                channel,
-                message['ts'],
-                token=None
-                if channel.id.startswith('D')
-                else bot.config.OWNER_USER_TOKEN,
-            )
-            if not r.body['ok']:
+            try:
+                r = await bot.api.chat.delete(
+                    channel,
+                    message['ts'],
+                    token=None
+                    if channel.id.startswith('D')
+                    else bot.config.OWNER_USER_TOKEN,
+                )
+                ok = r.body['ok']
+            except APICallError:
+                ok = False
+            if not ok:
                 if channel.id.startswith('D'):
                     continue
                 break
