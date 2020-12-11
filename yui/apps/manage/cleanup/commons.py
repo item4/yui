@@ -30,7 +30,7 @@ async def cleanup_by_event_logs(
         resp = await bot.api.chat.delete(
             log.channel,
             log.ts,
-            token=bot.config.OWNER_USER_TOKEN,
+            token=token,
         )
         ok = resp.body['ok']
         if ok or (not ok and resp.body['error'] == 'message_not_found'):
