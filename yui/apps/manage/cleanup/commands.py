@@ -10,7 +10,6 @@ from ....event import Message
 from ....transform import choice
 from ....utils.datetime import now
 
-box.assert_config_required('OWNER_USER_TOKEN', str)
 box.assert_channels_required('auto_cleanup_targets')
 box.assert_users_required('force_cleanup')
 
@@ -36,21 +35,32 @@ async def cleanup(bot, sess, event: Message, count: int, mode: str):
 
     """
 
-    try:
-        channels = Cs.auto_cleanup_targets.gets()
-        force_cleanup = Us.force_cleanup.gets()
-    except KeyError:
-        await bot.say(
-            event.channel,
-            '권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!',
-        )
-        return
-
     now_dt = now()
-
     is_dm = event.channel.id.startswith('D')
     if is_dm:
         mode = 'history'
+        token = None
+        channels = []
+        force_cleanup = []
+    else:
+        try:
+            token = bot.config.BOT_OWNER_TOKEN
+        except AttributeError:
+            await bot.say(
+                event.channel,
+                '본 슬랙에서는 이 명령어를 DM 외의 용도로 사용할 수 없어요!',
+            )
+            return
+
+        try:
+            channels = Cs.auto_cleanup_targets.gets()
+            force_cleanup = Us.force_cleanup.gets()
+        except KeyError:
+            await bot.say(
+                event.channel,
+                '권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!',
+            )
+            return
 
     if event.user not in force_cleanup and not is_dm:
         if event.channel not in channels:
@@ -77,12 +87,14 @@ async def cleanup(bot, sess, event: Message, count: int, mode: str):
             sess,
             event.channel,
             event.ts,
+            token,
         )
     else:
         deleted = await cleanup_by_history(
             bot,
             event.channel,
             event.ts,
+            token,
             count,
         )
 

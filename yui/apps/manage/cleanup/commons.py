@@ -12,6 +12,7 @@ async def cleanup_by_event_logs(
     sess,
     channel: Channel,
     ts: str,
+    token: Optional[str],
     count: Optional[int] = None,
 ) -> int:
     deleted = 0
@@ -45,6 +46,7 @@ async def cleanup_by_history(
     bot,
     channel: Channel,
     ts: str,
+    token: Optional[str],
     count: int = 100,
 ) -> int:
     deleted = 0
@@ -63,9 +65,7 @@ async def cleanup_by_history(
                     r = await bot.api.chat.delete(
                         channel,
                         message['ts'],
-                        token=None
-                        if channel.id.startswith('D')
-                        else bot.config.OWNER_USER_TOKEN,
+                        token=token,
                     )
                     ok = r.body['ok']
                 except APICallError:
