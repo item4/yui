@@ -52,6 +52,45 @@ class Conversations(Endpoint):
 
         return await self._call('history', params)
 
+    async def replies(
+        self,
+        channel: Union[Channel, ChannelID],
+        ts: Ts,
+        count: Optional[int] = None,
+        inclusive: Optional[bool] = None,
+        latest: Optional[Ts] = None,
+        oldest: Optional[Ts] = None,
+        unreads: Optional[bool] = None,
+    ) -> APIResponse:
+        """	https://slack.com/api/conversations.replies"""
+
+        if isinstance(channel, Channel):
+            channel_id = channel.id
+        else:
+            channel_id = channel
+
+        params = {
+            'channel': channel_id,
+            'ts': ts,
+        }
+
+        if count is not None:
+            params['count'] = str(count)
+
+        if inclusive is not None:
+            params['inclusive'] = bool2str(inclusive)
+
+        if latest is not None:
+            params['latest'] = latest
+
+        if oldest is not None:
+            params['oldest'] = oldest
+
+        if unreads is not None:
+            params['unreads'] = bool2str(unreads)
+
+        return await self._call('replies', params)
+
     async def info(
         self,
         channel: Union[Channel, ChannelID],

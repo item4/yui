@@ -61,7 +61,16 @@ async def cleanup_by_history(
         )
         deletable = False
         if history.body['ok']:
-            for message in history.body['messages']:
+            messages = history.body['messages']
+            while messages:
+                message = messages.pop(0)
+                reply_count = message.get('reply_count', 0)
+                if reply_count:
+                    r = await bot.api.conversations.replies(
+                        channel,
+                        ts=message['ts'],
+                    )
+                    messages += r.body['messages']
                 try:
                     r = await bot.api.chat.delete(
                         channel,
