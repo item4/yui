@@ -37,7 +37,7 @@ async def cleanup_by_event_logs(
             deleted += ok
             with sess.begin():
                 sess.delete(log)
-        await asyncio.sleep(random.uniform(0.02, 0.5))
+        await asyncio.sleep(random.uniform(0.05, 1.0))
 
     return deleted
 
@@ -85,7 +85,7 @@ async def cleanup_by_history(
                     deletable = True
                     deleted += 1
 
-                await asyncio.sleep(random.uniform(0.02, 0.5))
-            await asyncio.sleep(random.uniform(1.0, 3.0))
+                await asyncio.sleep(random.uniform(0.05, 1.0))
+            await asyncio.sleep(random.uniform(1.5, 3.5))
 
     return deleted
