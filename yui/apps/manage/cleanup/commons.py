@@ -48,6 +48,7 @@ async def cleanup_by_history(
     ts: str,
     token: Optional[str],
     count: int = 100,
+    as_user: bool = False,
 ) -> int:
     deleted = 0
     deletable = True
@@ -66,6 +67,7 @@ async def cleanup_by_history(
                         channel,
                         message['ts'],
                         token=token,
+                        as_user=as_user,
                     )
                     ok = r.body['ok']
                 except APICallError:
