@@ -70,7 +70,7 @@ async def cleanup_by_history(
                         channel,
                         ts=message['ts'],
                     )
-                    messages += r.body['messages']
+                    messages += r.body.get('messages', [])
                 try:
                     r = await bot.api.chat.delete(
                         channel,
