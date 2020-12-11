@@ -25,5 +25,11 @@ async def cleanup_channels(bot, sess):
     ts = str(time.mktime(time_limit.timetuple()))
 
     for channel in channels:
-        await cleanup_by_event_logs(bot, sess, channel, ts)
+        await cleanup_by_event_logs(
+            bot,
+            sess,
+            channel,
+            ts,
+            bot.config.OWNER_USER_TOKEN,
+        )
         await asyncio.sleep(5)
