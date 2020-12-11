@@ -17,7 +17,6 @@ COOLTIME = datetime.timedelta(minutes=5)
 
 
 @box.command('청소')
-@option('--count', '-c', default=100)
 @option(
     '--mode',
     'm',
@@ -26,7 +25,7 @@ COOLTIME = datetime.timedelta(minutes=5)
     ),
     default='log',
 )
-async def cleanup(bot, sess, event: Message, count: int, mode: str):
+async def cleanup(bot, sess, event: Message, mode: str):
     """
     채널 청소
 
@@ -35,6 +34,7 @@ async def cleanup(bot, sess, event: Message, count: int, mode: str):
 
     """
 
+    count = 100
     now_dt = now()
     is_dm = event.channel.id.startswith('D')
     if is_dm:
