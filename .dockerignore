@@ -197,3 +197,4 @@ tests
 dmypy.ini
 README.rst
 .github
+check_zimports.sh
