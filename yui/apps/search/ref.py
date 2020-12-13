@@ -5,13 +5,12 @@ import aiohttp
 
 from fuzzywuzzy import fuzz
 
-from lxml.html import fromstring
-
 from ...bot import Bot
 from ...box import box
 from ...command import argument
 from ...event import ChatterboxSystemStart
 from ...event import Message
+from ...utils.html import get_root
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ def parse(
     selector: str,
     url_prefix: str,
 ) -> list[tuple[str, str]]:
-    h = fromstring(blob)
+    h = get_root(blob)
     a_tags = h.cssselect(selector)
 
     result = []
@@ -84,7 +83,7 @@ async def fetch_html_ref(bot: Bot):
 
 
 def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
-    h = fromstring(blob)
+    h = get_root(blob)
     a_tags = h.cssselect('a.reference.internal')
 
     result = []

@@ -5,8 +5,6 @@ from typing import Union
 
 import aiohttp
 
-from lxml import html
-
 from more_itertools import chunked
 
 from sqlalchemy.orm.exc import NoResultFound
@@ -36,6 +34,7 @@ from ....box import box
 from ....types.slack.attachment import Attachment
 from ....types.slack.attachment import Field
 from ....utils.datetime import now
+from ....utils.html import get_root
 
 
 box.assert_channel_required('toranoana')
@@ -387,7 +386,7 @@ async def scan_all_pages(
 
         async with session.get(paginated_url) as resp:
             blob = await resp.text()
-        h = html.fromstring(blob)
+        h = get_root(blob)
 
         if page == 1:
             pager = h.cssselect('#pager')

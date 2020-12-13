@@ -8,7 +8,6 @@ import aiohttp.client_exceptions
 import async_timeout
 
 from lxml import etree
-from lxml import html
 
 from ..box import box
 from ..command import option
@@ -16,6 +15,7 @@ from ..event import Message
 from ..types.channel import DirectMessageChannel
 from ..utils import json
 from ..utils.datetime import now
+from ..utils.html import get_root
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
 DM_COOLTIME = datetime.timedelta(minutes=3)
@@ -80,7 +80,7 @@ async def get_fox_image_url(timeout: float) -> str:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.text()
-    h = html.fromstring(data)
+    h = get_root(data)
     image_els = h.cssselect('#gallery-1 img.attachment-thumbnail')
     try:
         return str(image_els[0].get('src'))

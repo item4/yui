@@ -6,8 +6,6 @@ import aiohttp
 
 from fake_useragent import FakeUserAgent
 
-from lxml.html import fromstring
-
 from ...bot import Bot
 from ...box import box
 from ...command import argument
@@ -15,6 +13,8 @@ from ...command import option
 from ...event import Message
 from ...transform import choice
 from ...types.slack.attachment import Attachment
+from ...utils.html import USELESS_TAGS
+from ...utils.html import get_root
 from ...utils.html import strip_tags
 
 headers: dict[str, str] = {
@@ -58,7 +58,7 @@ def fix_blank(text: str) -> str:
 
 
 def parse(html: str) -> tuple[Optional[str], list[Attachment]]:
-    h = fromstring(html)
+    h = get_root(html, useless_tags=list(USELESS_TAGS - {'head'}))
     meta = h.cssselect('meta[http-equiv=Refresh]')
     if meta:
         return fix_url(meta[0].get('content')[7:]), []

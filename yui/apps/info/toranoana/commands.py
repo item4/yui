@@ -2,8 +2,6 @@ import inspect
 
 import aiohttp
 
-from lxml import html
-
 from sqlalchemy.orm.exc import NoResultFound
 
 from .commons import HEADERS
@@ -21,6 +19,7 @@ from ....command import U
 from ....command import argument
 from ....event import Message
 from ....utils import format
+from ....utils.html import get_root
 
 
 box.assert_channel_required('toranoana')
@@ -174,7 +173,7 @@ class Toranoana(route.RouteApp):
         async with aiohttp.ClientSession(headers=HEADERS) as session:
             async with session.get(scan_urls[0]) as resp:
                 blob = await resp.text()
-            h = html.fromstring(blob)
+            h = get_root(blob)
 
             genre = Genre()
             genre.code = code

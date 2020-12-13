@@ -5,8 +5,6 @@ from urllib.parse import urlparse
 
 import aiohttp
 
-from lxml.html import fromstring
-
 from sqlalchemy.orm.exc import NoResultFound
 
 from .models import Notice
@@ -19,6 +17,7 @@ from ....orm import EngineConfig
 from ....orm import subprocess_session_manager
 from ....types.slack.attachment import Attachment
 from ....utils.api import retry
+from ....utils.html import get_root
 
 box.assert_channel_required('saomd')
 
@@ -43,7 +42,7 @@ def process(
 ) -> list[Attachment]:
 
     base = '{u.scheme}://{u.netloc}'.format(u=urlparse(NOTICE_URLS[server]))
-    h = fromstring(html)
+    h = get_root(html)
     dls = h.cssselect('dl')
 
     attachments: list[Attachment] = []
