@@ -25,7 +25,7 @@ jobs:
       - name: Check missing autofix
         run: black --check .
       - name: Check import convention
-        run: source check_zimports.sh
+        run: ./check_zimports.sh
 
   test-program:
     name: Test Program
