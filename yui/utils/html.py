@@ -36,4 +36,4 @@ def get_root(
 def strip_tags(text: str) -> str:
     """Remove HTML Tags from input text"""
 
-    return str(get_root(text, useless_tags=['*']).text_content())
+    return str(fromstring(text).text_content())
