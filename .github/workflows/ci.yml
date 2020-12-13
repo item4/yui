@@ -5,8 +5,30 @@ on:
   - pull_request
 
 jobs:
-  check-n-test:
-    name: Check and test
+  check-coding-convention:
+    name: Check Coding Convention
+    runs-on: ubuntu-latest
+    steps:
+      # Set-up
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+
+      # Install Depencencies
+      - name: Install Checkers
+        run: pip install black flake8 flake8-import-order zimports
+
+      # Lint
+      - name: Check coding convention
+        run: flake8 yui tests
+      - name: Check missing autofix
+        run: black --check .
+      - name: Check import convention
+        run: source check_zimports.sh
+
+  test-program:
+    name: Test Program
     runs-on: ubuntu-latest
 
     services:
@@ -57,12 +79,6 @@ jobs:
       - name: Fix PATH
         run: echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
 
-      # Lint
-      - name: Check coding convention
-        run: flake8 yui tests
-      - name: Check missing autofix
-        run: black --check .
-
       # Test
       - name: Run test cases
         run: pytest -v --cov=yui --cov-report=xml tests
@@ -82,7 +98,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    needs: [check-n-test]
+    needs: [check-coding-convention, test-program]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
