@@ -46,7 +46,7 @@ async def cleanup(bot, sess, event: Message, mode: str):
     else:
         as_user = False
         try:
-            token = bot.config.BOT_OWNER_TOKEN
+            token = bot.config.OWNER_USER_TOKEN
         except AttributeError:
             await bot.say(
                 event.channel,
