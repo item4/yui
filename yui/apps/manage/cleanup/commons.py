@@ -47,17 +47,15 @@ async def cleanup_by_history(
     channel: Channel,
     ts: str,
     token: Optional[str],
-    count: int = 100,
+    minimum: int = 100,
     as_user: bool = False,
 ) -> int:
     deleted = 0
     deletable = True
-    while deletable and deleted < count:
+    while deletable and deleted < minimum:
         history = await bot.api.conversations.history(
             channel,
-            count=count,
             latest=ts,
-            unreads=True,
         )
         deletable = False
         if history.body['ok']:

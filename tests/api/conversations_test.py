@@ -13,39 +13,87 @@ async def test_slack_api_conversations_history():
 
     await bot.api.conversations.history(
         channel_id,
-        count=1234,
+        cursor='asdf',
         inclusive=True,
         latest='123',
+        limit=42,
         oldest='456',
-        unreads=False,
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.history'
     assert call.data == {
         'channel': channel_id,
-        'count': '1234',
+        'cursor': 'asdf',
         'inclusive': bool2str(True),
         'latest': '123',
+        'limit': '42',
         'oldest': '456',
-        'unreads': bool2str(False),
     }
     await bot.api.conversations.history(
         channel,
-        count=1234,
+        cursor='asdf',
         inclusive=True,
         latest='123',
+        limit=42,
         oldest='456',
-        unreads=False,
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.history'
     assert call.data == {
         'channel': channel.id,
-        'count': '1234',
+        'cursor': 'asdf',
         'inclusive': bool2str(True),
         'latest': '123',
+        'limit': '42',
         'oldest': '456',
-        'unreads': bool2str(False),
+    }
+
+
+@pytest.mark.asyncio
+async def test_slack_api_conversations_replies():
+    bot = FakeBot()
+    channel = bot.add_channel('C4567', 'test')
+    channel_id = 'C1234'
+    ts = '123456.7'
+
+    await bot.api.conversations.replies(
+        channel_id,
+        ts,
+        cursor='asdf',
+        inclusive=True,
+        latest='123',
+        limit=42,
+        oldest='456',
+    )
+    call = bot.call_queue.pop()
+    assert call.method == 'conversations.replies'
+    assert call.data == {
+        'channel': channel_id,
+        'ts': ts,
+        'cursor': 'asdf',
+        'inclusive': bool2str(True),
+        'latest': '123',
+        'limit': '42',
+        'oldest': '456',
+    }
+    await bot.api.conversations.replies(
+        channel,
+        ts,
+        cursor='asdf',
+        inclusive=True,
+        latest='123',
+        limit=42,
+        oldest='456',
+    )
+    call = bot.call_queue.pop()
+    assert call.method == 'conversations.replies'
+    assert call.data == {
+        'channel': channel.id,
+        'cursor': 'asdf',
+        'inclusive': bool2str(True),
+        'latest': '123',
+        'limit': '42',
+        'oldest': '456',
     }
 
 

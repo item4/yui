@@ -18,11 +18,11 @@ class Conversations(Endpoint):
     async def history(
         self,
         channel: Union[Channel, ChannelID],
-        count: Optional[int] = None,
+        cursor: Optional[str] = None,
         inclusive: Optional[bool] = None,
         latest: Optional[Ts] = None,
+        limit: Optional[int] = None,
         oldest: Optional[Ts] = None,
-        unreads: Optional[bool] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.history"""
 
@@ -35,20 +35,20 @@ class Conversations(Endpoint):
             'channel': channel_id,
         }
 
-        if count is not None:
-            params['count'] = str(count)
-
         if inclusive is not None:
             params['inclusive'] = bool2str(inclusive)
 
         if latest is not None:
             params['latest'] = latest
 
+        if limit is not None:
+            params['limit'] = str(limit)
+
         if oldest is not None:
             params['oldest'] = oldest
 
-        if unreads is not None:
-            params['unreads'] = bool2str(unreads)
+        if cursor is not None:
+            params['cursor'] = cursor
 
         return await self._call('history', params)
 
@@ -56,13 +56,13 @@ class Conversations(Endpoint):
         self,
         channel: Union[Channel, ChannelID],
         ts: Ts,
-        count: Optional[int] = None,
+        cursor: Optional[str] = None,
         inclusive: Optional[bool] = None,
         latest: Optional[Ts] = None,
+        limit: Optional[int] = None,
         oldest: Optional[Ts] = None,
-        unreads: Optional[bool] = None,
     ) -> APIResponse:
-        """	https://slack.com/api/conversations.replies"""
+        """https://slack.com/api/conversations.replies"""
 
         if isinstance(channel, Channel):
             channel_id = channel.id
@@ -74,20 +74,20 @@ class Conversations(Endpoint):
             'ts': ts,
         }
 
-        if count is not None:
-            params['count'] = str(count)
-
         if inclusive is not None:
             params['inclusive'] = bool2str(inclusive)
 
         if latest is not None:
             params['latest'] = latest
 
+        if limit is not None:
+            params['limit'] = str(limit)
+
         if oldest is not None:
             params['oldest'] = oldest
 
-        if unreads is not None:
-            params['unreads'] = bool2str(unreads)
+        if cursor is not None:
+            params['cursor'] = cursor
 
         return await self._call('replies', params)
 
