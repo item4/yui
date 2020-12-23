@@ -10,8 +10,6 @@ box.assert_config_required('OWNER_USER_TOKEN', str)
 box.assert_channels_required('auto_cleanup_targets')
 box.assert_users_required('force_cleanup')
 
-COOLTIME = datetime.timedelta(minutes=5)
-
 
 @box.cron('*/10 * * * *')
 async def cleanup_channels(bot, sess):
