@@ -21,7 +21,7 @@ async def cleanup_channels(bot, sess):
         return
 
     naive_now = datetime.datetime.now()
-    time_limit = naive_now - datetime.timedelta(hours=5)
+    time_limit = naive_now - datetime.timedelta(hours=12)
     ts = str(time.mktime(time_limit.timetuple()))
 
     for channel in channels:
