@@ -89,6 +89,7 @@ async def test_slack_api_conversations_replies():
     assert call.method == 'conversations.replies'
     assert call.data == {
         'channel': channel.id,
+        'ts': ts,
         'cursor': 'asdf',
         'inclusive': bool2str(True),
         'latest': '123',
