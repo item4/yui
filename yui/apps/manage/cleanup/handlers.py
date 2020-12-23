@@ -39,7 +39,6 @@ async def add_missing_logs(bot, sess):
             resp = await bot.api.conversations.history(
                 channel,
                 cursor=cursor,
-                unreads=True,
             )
 
             history = resp.body
