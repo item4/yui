@@ -57,12 +57,12 @@ class CacheMock(Cache):
 class FakeBot(Bot):
     """Fake bot for test"""
 
-    def __init__(self, config: Config = None) -> None:
+    def __init__(self, config: Config = None, loop=None) -> None:
         if config is None:
             config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={}, USERS={})
 
         Namespace._bot = self
-        self.loop = asyncio.get_event_loop()
+        self.loop = loop or asyncio.get_event_loop()
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
         self.channels: list[PublicChannel] = []

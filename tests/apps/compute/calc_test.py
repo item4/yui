@@ -1,3 +1,4 @@
+import asyncio
 import math
 from datetime import date
 from datetime import datetime
@@ -748,6 +749,18 @@ def test_yield_from():
     assert 'x' not in e.symbol_table
 
 
+@pytest.fixture(scope='module')
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope='module')
+async def bot(event_loop):
+    return FakeBot(loop=event_loop)
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     (
@@ -822,14 +835,13 @@ def test_yield_from():
     ],
 )
 async def test_calculate_fine(
+    bot,
     expr: str,
     expected_decimal_result,
     expected_num_result,
     expected_decimal_local: dict,
     expected_num_local: dict,
 ):
-    bot = FakeBot()
-
     decimal_result, decimal_local = await bot.run_in_other_process(
         calculate,
         expr,
