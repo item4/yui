@@ -32,50 +32,53 @@ async def add_missing_logs(bot, sess):
     except KeyError:
         return True
     logs: list[EventLog] = []
-    for channel in channels:
-        has_more = True
-        cursor = None
-        while has_more:
-            resp = await bot.api.conversations.history(
-                channel,
-                cursor=cursor,
-            )
+    try:
+        for channel in channels:
+            has_more = True
+            cursor = None
+            while has_more:
+                resp = await bot.api.conversations.history(
+                    channel,
+                    cursor=cursor,
+                )
 
-            history = resp.body
-            if not history['ok']:
-                break
-            has_more = history['has_more']
-            if has_more:
-                cursor = history['response_metadata']['next_cursor']
-            messages = history['messages']
+                history = resp.body
+                if not history['ok']:
+                    break
+                has_more = history['has_more']
+                if has_more:
+                    cursor = history['response_metadata']['next_cursor']
+                messages = history['messages']
 
-            while messages:
-                message = messages.pop(0)
-                reply_count = message.get('reply_count', 0)
-                if reply_count:
-                    has_more_replies = True
-                    replies_cursor = None
-                    while has_more_replies:
-                        r = await bot.api.conversations.replies(
-                            channel,
-                            cursor=replies_cursor,
-                            ts=message['ts'],
-                        )
-                        replies = r.body
-                        if not replies['ok']:
-                            break
-                        has_more_replies = replies['has_more']
-                        if has_more_replies:
-                            replies_cursor = replies['response_metadata'][
-                                'next_cursor'
-                            ]
-                        messages += replies.get('messages', [])
-                        await asyncio.sleep(random.uniform(1.0, 3.0))
+                while messages:
+                    message = messages.pop(0)
+                    reply_count = message.get('reply_count', 0)
+                    if reply_count:
+                        has_more_replies = True
+                        replies_cursor = None
+                        while has_more_replies:
+                            r = await bot.api.conversations.replies(
+                                channel,
+                                cursor=replies_cursor,
+                                ts=message['ts'],
+                            )
+                            replies = r.body
+                            if not replies['ok']:
+                                break
+                            has_more_replies = replies['has_more']
+                            if has_more_replies:
+                                replies_cursor = replies['response_metadata'][
+                                    'next_cursor'
+                                ]
+                            messages += replies.get('messages', [])
+                            await asyncio.sleep(random.uniform(0.3, 1.0))
 
-                logs.append(EventLog(channel=channel.id, ts=message['ts']))
+                    logs.append(EventLog(channel=channel.id, ts=message['ts']))
 
-            await asyncio.sleep(random.uniform(1.0, 3.0))
-        await asyncio.sleep(random.uniform(5.0, 15.0))
+                await asyncio.sleep(random.uniform(0.3, 1.0))
+            await asyncio.sleep(random.uniform(2.0, 4.0))
+    except:  # noqa
+        pass
 
     if logs:
         with sess.begin():
