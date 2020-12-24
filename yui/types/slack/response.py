@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import Any
 from typing import Union
 
@@ -9,4 +10,4 @@ class APIResponse:
 
     body: Union[dict[str, Any], str]
     status: int
-    headers: dict[str, Any]
+    headers: Mapping[str, Any]
