@@ -1,6 +1,8 @@
 import asyncio
 import random
 
+from sqlalchemy.dialects.postgresql import Insert
+
 from .models import EventLog
 from ....box import box
 from ....command import Cs
@@ -19,9 +21,12 @@ async def make_log(bot, event: Message, sess):
         return True
 
     if event.channel in channels:
-        log = EventLog(channel=event.channel.id, ts=event.ts)
         with sess.begin():
-            sess.add(log)
+            sess.query(
+                Insert(EventLog)
+                .values(channel=event.channel.id, ts=event.ts)
+                .on_conflict_do_nothing()
+            )
     return True
 
 
@@ -31,7 +36,7 @@ async def add_missing_logs(bot, sess):
         channels = Cs.auto_cleanup_targets.gets()
     except KeyError:
         return True
-    logs: list[EventLog] = []
+    logs: list[dict] = []
     try:
         for channel in channels:
             has_more = True
@@ -73,7 +78,7 @@ async def add_missing_logs(bot, sess):
                             messages += replies.get('messages', [])
                             await asyncio.sleep(random.uniform(0.3, 1.0))
 
-                    logs.append(EventLog(channel=channel.id, ts=message['ts']))
+                    logs.append({'channel': channel.id, 'ts': message['ts']})
 
                 await asyncio.sleep(random.uniform(0.3, 1.0))
             await asyncio.sleep(random.uniform(2.0, 4.0))
@@ -82,6 +87,6 @@ async def add_missing_logs(bot, sess):
 
     if logs:
         with sess.begin():
-            sess.add_all(logs)
+            sess.query(Insert(EventLog).values(logs).on_conflict_do_nothing())
 
     return True
