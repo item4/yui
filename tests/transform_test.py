@@ -12,8 +12,6 @@ from yui.transform import get_user
 from yui.transform import str_to_date
 from yui.transform import value_range
 
-from .util import FakeBot
-
 
 def test_str_to_date():
     """Test str_to_date helper."""
@@ -63,10 +61,9 @@ def test_extract_url():
     assert extract_url('<innocent|http://item4.net>') == 'http://item4.net'
 
 
-def test_get_channel():
+def test_get_channel(bot):
     """Test get_channel helper."""
 
-    bot = FakeBot()
     test = bot.add_channel('C1', 'test')
 
     assert get_channel('C1') == test
@@ -84,10 +81,9 @@ def test_get_channel():
         get_channel('not found')
 
 
-def test_get_user():
+def test_get_user(bot):
     """Test get_user helper."""
 
-    bot = FakeBot()
     item4 = bot.add_user('U1', 'item4')
 
     assert get_user('U1') == item4

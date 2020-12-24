@@ -3,12 +3,9 @@ import pytest
 from yui.apps.fun.answer import RESPONSES
 from yui.apps.fun.answer import magic_conch
 
-from ...util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_magic_conch():
-    bot = FakeBot()
+async def test_magic_conch(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 

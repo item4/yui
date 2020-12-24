@@ -1,5 +1,6 @@
 import asyncio
 import math
+from concurrent.futures.process import ProcessPoolExecutor
 from datetime import date
 from datetime import datetime
 
@@ -758,7 +759,10 @@ def event_loop():
 
 @pytest.fixture(scope='module')
 async def bot(event_loop):
-    return FakeBot(loop=event_loop)
+    return FakeBot(
+        loop=event_loop,
+        process_pool_executor=ProcessPoolExecutor(),
+    )
 
 
 @pytest.mark.asyncio

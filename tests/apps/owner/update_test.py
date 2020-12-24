@@ -7,10 +7,10 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_update_command(fx_config):
-    fx_config.USERS['owner'] = 'U1'
-    fx_config.CHANNELS['notice'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_update_command(bot_config):
+    bot_config.USERS['owner'] = 'U1'
+    bot_config.CHANNELS['notice'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
     bot.add_user('U2', 'PoH')

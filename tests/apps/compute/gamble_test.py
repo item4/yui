@@ -3,8 +3,6 @@ import pytest
 from yui.apps.compute.gamble import dice
 from yui.apps.compute.gamble import parse_dice_syntax
 
-from ...util import FakeBot
-
 
 def test_parse_dice_syntax():
     with pytest.raises(SyntaxError) as e:
@@ -44,8 +42,7 @@ def test_parse_dice_syntax():
 
 
 @pytest.mark.asyncio
-async def test_dice_handler():
-    bot = FakeBot()
+async def test_dice_handler(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'user')
     event = bot.create_message('C1', 'U1')

@@ -6,9 +6,9 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_relax_command(fx_config):
-    fx_config.USERS['villain'] = 'U2'
-    bot = FakeBot(fx_config)
+async def test_relax_command(bot_config):
+    bot_config.USERS['villain'] = 'U2'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     bot.add_user('U2', '재벌')

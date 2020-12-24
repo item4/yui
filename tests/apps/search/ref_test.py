@@ -1,3 +1,6 @@
+import asyncio
+from concurrent.futures.process import ProcessPoolExecutor
+
 import pytest
 
 from yui.apps.search.ref import css
@@ -10,9 +13,23 @@ from yui.apps.search.ref import python
 from ...util import FakeBot
 
 
+@pytest.fixture(scope='module')
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest.fixture(scope='module')
+async def bot(event_loop):
+    return FakeBot(
+        loop=event_loop,
+        process_pool_executor=ProcessPoolExecutor(),
+    )
+
+
 @pytest.mark.asyncio
-async def test_css_command():
-    bot = FakeBot()
+async def test_css_command(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')
@@ -45,8 +62,7 @@ async def test_css_command():
 
 
 @pytest.mark.asyncio
-async def test_html_command():
-    bot = FakeBot()
+async def test_html_command(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')
@@ -79,8 +95,7 @@ async def test_html_command():
 
 
 @pytest.mark.asyncio
-async def test_python_command():
-    bot = FakeBot()
+async def test_python_command(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')

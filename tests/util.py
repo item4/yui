@@ -1,6 +1,4 @@
 import asyncio
-from concurrent.futures import ProcessPoolExecutor
-from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 from typing import Any
 from typing import Callable
@@ -38,7 +36,11 @@ class Call:
 class CacheMock(Cache):
     def __init__(self, mc, prefix) -> None:
         super(CacheMock, self).__init__(mc, prefix)
-        self.set_keys = []
+        self.keys = set()
+
+    async def get(self, key: Union[str, bytes], default=None) -> DATA_TYPE:
+        self.keys.add(key)
+        return await super(CacheMock, self).get(key, default)
 
     async def set(
         self,
@@ -46,18 +48,25 @@ class CacheMock(Cache):
         value: DATA_TYPE,
         exptime: int = 0,
     ) -> bool:
-        self.set_keys.append(key)
+        self.keys.add(key)
         return await super(CacheMock, self).set(key, value, exptime)
 
     async def cleanup(self):
-        for key in self.set_keys:
+        for key in self.keys:
             await self.delete(key)
 
 
 class FakeBot(Bot):
     """Fake bot for test"""
 
-    def __init__(self, config: Config = None, loop=None) -> None:
+    def __init__(
+        self,
+        config: Config = None,
+        *,
+        loop=None,
+        process_pool_executor=None,
+        thread_pool_executor=None,
+    ) -> None:
         if config is None:
             config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={}, USERS={})
 
@@ -76,8 +85,8 @@ class FakeBot(Bot):
         self.users: list[User] = [User(id='U0', team_id='T0', name='system')]
         self.responses: dict[str, Callable] = {}
         self.config = config
-        self.process_pool_executor = ProcessPoolExecutor()
-        self.thread_pool_executor = ThreadPoolExecutor()
+        self.process_pool_executor = process_pool_executor
+        self.thread_pool_executor = thread_pool_executor
 
     async def call(
         self,

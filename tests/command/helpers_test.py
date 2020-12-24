@@ -12,10 +12,10 @@ from yui.exceptions import NoUsersError
 from ..util import FakeBot
 
 
-def test_c(fx_config):
-    fx_config.CHANNELS['general'] = 1
-    fx_config.CHANNELS['food'] = 'foodporn'
-    bot = FakeBot(fx_config)
+def test_c(bot_config):
+    bot_config.CHANNELS['general'] = 1
+    bot_config.CHANNELS['food'] = 'foodporn'
+    bot = FakeBot(bot_config)
     foodporn = bot.add_channel('C1', 'foodporn')
 
     ch = C.general
@@ -31,14 +31,14 @@ def test_c(fx_config):
     assert ch.get() == foodporn
 
 
-def test_cs(fx_config):
-    fx_config.CHANNELS['tests1'] = 1
-    fx_config.CHANNELS['tests2'] = []
-    fx_config.CHANNELS['tests3'] = False
-    fx_config.CHANNELS['tests4'] = '*'
-    fx_config.CHANNELS['tests5'] = ['*']
-    fx_config.CHANNELS['food'] = ['foodporn', 'food']
-    bot = FakeBot(fx_config)
+def test_cs(bot_config):
+    bot_config.CHANNELS['tests1'] = 1
+    bot_config.CHANNELS['tests2'] = []
+    bot_config.CHANNELS['tests3'] = False
+    bot_config.CHANNELS['tests4'] = '*'
+    bot_config.CHANNELS['tests5'] = ['*']
+    bot_config.CHANNELS['food'] = ['foodporn', 'food']
+    bot = FakeBot(bot_config)
     foodporn = bot.add_channel('C1', 'foodporn')
     food = bot.add_channel('C2', 'food')
 
@@ -79,10 +79,10 @@ def test_cs(fx_config):
     assert ch.gets() == [foodporn, food]
 
 
-def test_u(fx_config):
-    fx_config.USERS['mob'] = 1
-    fx_config.USERS['admin'] = 'U1'
-    bot = FakeBot(fx_config)
+def test_u(bot_config):
+    bot_config.USERS['mob'] = 1
+    bot_config.USERS['admin'] = 'U1'
+    bot = FakeBot(bot_config)
     item4 = bot.add_user('U1', 'item4')
 
     user = U.mob
@@ -98,15 +98,15 @@ def test_u(fx_config):
     assert user.get() == item4
 
 
-def test_us(fx_config):
-    fx_config.USERS['tests1'] = 1
-    fx_config.USERS['tests2'] = []
-    fx_config.USERS['tests3'] = False
-    fx_config.USERS['tests4'] = '*'
-    fx_config.USERS['tests5'] = ['*']
-    fx_config.USERS['developers'] = ['UA', 'UB', 'UC']
-    fx_config.USERS['designers'] = ['UC', 'UD', 'UE']
-    bot = FakeBot(fx_config)
+def test_us(bot_config):
+    bot_config.USERS['tests1'] = 1
+    bot_config.USERS['tests2'] = []
+    bot_config.USERS['tests3'] = False
+    bot_config.USERS['tests4'] = '*'
+    bot_config.USERS['tests5'] = ['*']
+    bot_config.USERS['developers'] = ['UA', 'UB', 'UC']
+    bot_config.USERS['designers'] = ['UC', 'UD', 'UE']
+    bot = FakeBot(bot_config)
     a = bot.add_user('UA', 'aaa')
     b = bot.add_user('UB', 'bbb')
     c = bot.add_user('UC', 'ccc')

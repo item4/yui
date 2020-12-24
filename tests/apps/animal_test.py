@@ -14,7 +14,6 @@ from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
 from yui.utils import json
 
-from ..util import FakeBot
 
 cat_cooltime_re = re.compile(r'아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!')
 dog_cooltime_re = re.compile(r'아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!')
@@ -184,7 +183,7 @@ async def test_get_fox_image_url(response_mock):
 
 
 @pytest.mark.asyncio
-async def test_cat_command(response_mock):
+async def test_cat_command(bot, response_mock):
     response_mock.get(
         'http://thecatapi.com/api/images/get?format=xml&type=jpg,png',
         body='',
@@ -222,12 +221,11 @@ async def test_cat_command(response_mock):
     response_mock.get('http://cat.com/200.jpg', status=200)
     response_mock.get('http://cat.com/200.jpg', status=200)
 
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)
 
-    event = event = bot.create_message('C1', 'U1')
+    event = bot.create_message('C1', 'U1')
 
     assert cat.last_call.get('C1') is None
 
@@ -305,7 +303,7 @@ async def test_cat_command(response_mock):
 
 
 @pytest.mark.asyncio
-async def test_dog_command(response_mock):
+async def test_dog_command(bot, response_mock):
     response_mock.get(
         'https://dog.ceo/api/breeds/image/random',
         body='',
@@ -333,7 +331,6 @@ async def test_dog_command(response_mock):
     response_mock.get('http://dog.com/200.jpg', status=200)
     response_mock.get('http://dog.com/200.jpg', status=200)
 
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)
@@ -416,7 +413,7 @@ async def test_dog_command(response_mock):
 
 
 @pytest.mark.asyncio
-async def test_fox_command(response_mock):
+async def test_fox_command(bot, response_mock):
     response_mock.get(
         'http://fox-info.net/fox-gallery',
         body='<!doctype html><html></html>',
@@ -450,7 +447,6 @@ async def test_fox_command(response_mock):
         headers={'Content-Type': 'text/html'},
     )
 
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     user = bot.add_user('U1', 'kirito')
     bot.add_dm('D1', user)

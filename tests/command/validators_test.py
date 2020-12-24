@@ -11,13 +11,13 @@ from yui.types.namespace import name_convert
 from ..util import FakeBot
 
 
-def test_get_channel_names(fx_config):
-    fx_config.CHANNELS = {
+def test_get_channel_names(bot_config):
+    bot_config.CHANNELS = {
         'general': 'general',
         'commons': ['general', 'random'],
     }
 
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
@@ -40,14 +40,14 @@ def test_get_channel_names(fx_config):
 
 
 @pytest.mark.asyncio
-async def test_only(fx_config):
-    fx_config.CHANNELS = {
+async def test_only(bot_config):
+    bot_config.CHANNELS = {
         'general': 'general',
         'commons': ['general', 'random'],
         'all': '*',
         'no': None,
     }
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')
@@ -182,15 +182,15 @@ async def test_only(fx_config):
 
 
 @pytest.mark.asyncio
-async def test_not_(fx_config):
-    fx_config.CHANNELS = {
+async def test_not_(bot_config):
+    bot_config.CHANNELS = {
         'general': 'general',
         'commons': ['general', 'random'],
         'all': '*',
         'no': None,
     }
 
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_user('U1', 'item4')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')

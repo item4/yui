@@ -15,6 +15,8 @@ from yui.config import DEFAULT
 from yui.orm import Base
 from yui.orm import make_session
 
+from .util import FakeBot
+
 
 DEFAULT_DATABASE_URL = 'sqlite://'
 
@@ -39,7 +41,7 @@ def fx_engine(request):
         database_url = request.config.getoption('--database-url')
     except ValueError:
         database_url = None
-    config = gen_config()
+    config = gen_config(request)
     if database_url:
         config.DATABASE_URL = database_url
     bot = Bot(config, using_box=Box())
@@ -100,18 +102,21 @@ def fx_sess(fx_engine):
     sess.rollback()
 
 
-def gen_config():
+def gen_config(request):
+    try:
+        database_url = request.config.getoption('--database-url')
+    except ValueError:
+        database_url = 'sqlite:///'
     cfg = copy.deepcopy(DEFAULT)
     cfg.update(
         dict(
             DEBUG=True,
-            DATABASE_URL='sqlite:///',
+            DATABASE_URL=database_url,
             TOKEN='asdf1234',
             REGISTER_CRONTAB=False,
             CHANNELS={},
             USERS={},
             WEBSOCKETDEBUGGERURL='',
-            WEEKEND_LOADING_TIME=[0, 12],
         )
     )
     config = Config(**cfg)
@@ -121,8 +126,13 @@ def gen_config():
 
 
 @pytest.fixture()
-def fx_config():
-    return gen_config()
+def bot():
+    return FakeBot()
+
+
+@pytest.fixture()
+def bot_config(request):
+    return gen_config(request)
 
 
 @pytest.yield_fixture()

@@ -13,7 +13,7 @@ from ...util import FakeBot
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 7))
-async def test_no_packtpub_dotd(response_mock):
+async def test_no_packtpub_dotd(bot, response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
         '?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z',
@@ -21,7 +21,6 @@ async def test_no_packtpub_dotd(response_mock):
         headers={'Content-Type': 'application/json'},
     )
 
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -37,7 +36,7 @@ async def test_no_packtpub_dotd(response_mock):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 7))
-async def test_packtpub_dotd(response_mock):
+async def test_packtpub_dotd(bot, response_mock):
     product_id = '11223344'
     title = 'test book'
     image_url = 'test url'
@@ -53,7 +52,6 @@ async def test_packtpub_dotd(response_mock):
         headers={'Content-Type': 'application/json'},
     )
 
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -78,7 +76,7 @@ async def test_packtpub_dotd(response_mock):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 7))
-async def test_auto_packtpub_dotd(response_mock, fx_config):
+async def test_auto_packtpub_dotd(bot_config, response_mock):
     assert auto_packtpub_dotd.cron.spec == '5 9 * * *'
     product_id = '11223344'
     title = 'test book'
@@ -95,10 +93,10 @@ async def test_auto_packtpub_dotd(response_mock, fx_config):
         headers={'Content-Type': 'application/json'},
     )
 
-    fx_config.CHANNELS = {
+    bot_config.CHANNELS = {
         'general': 'general',
     }
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await auto_packtpub_dotd(bot)

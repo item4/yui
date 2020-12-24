@@ -11,9 +11,9 @@ from ...util import FakeBot
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 9))
-async def test_work_start_monday(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_start_monday(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_start(bot)
@@ -28,9 +28,9 @@ async def test_work_start_monday(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 10, 9))
-async def test_work_start_normal(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_start_normal(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_start(bot)
@@ -45,9 +45,9 @@ async def test_work_start_normal(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 9))
-async def test_work_start_holiday(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_start_holiday(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_start(bot)
@@ -62,9 +62,9 @@ async def test_work_start_holiday(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 18))
-async def test_work_end_18_normal(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_end_18_normal(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_end(bot)
@@ -79,9 +79,9 @@ async def test_work_end_18_normal(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 18))
-async def test_work_end_18_holiday(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_end_18_holiday(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_end(bot)
@@ -96,9 +96,9 @@ async def test_work_end_18_holiday(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 8, 19))
-async def test_work_end_19_normal(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_end_19_normal(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_end(bot)
@@ -113,9 +113,9 @@ async def test_work_end_19_normal(fx_config):
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2018, 10, 9, 19))
-async def test_work_end_19_holiday(fx_config):
-    fx_config.CHANNELS['general'] = 'general'
-    bot = FakeBot(fx_config)
+async def test_work_end_19_holiday(bot_config):
+    bot_config.CHANNELS['general'] = 'general'
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
 
     await work_end(bot)

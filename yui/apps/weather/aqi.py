@@ -90,7 +90,7 @@ async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
         'accept-language': 'ko',
     }
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers) as res:
+        async with session.post(url, headers=headers) as res:
             d2 = await res.json(loads=json.loads)
 
     if d2['rxs']['obs'][0]['status'] != 'ok':

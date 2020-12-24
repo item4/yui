@@ -2,12 +2,9 @@ import pytest
 
 from yui.api.encoder import bool2str
 
-from ..util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_slack_api_conversations_history():
-    bot = FakeBot()
+async def test_slack_api_conversations_history(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
 
@@ -50,8 +47,7 @@ async def test_slack_api_conversations_history():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_conversations_replies():
-    bot = FakeBot()
+async def test_slack_api_conversations_replies(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
     ts = '123456.7'
@@ -99,8 +95,7 @@ async def test_slack_api_conversations_replies():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_conversations_info():
-    bot = FakeBot()
+async def test_slack_api_conversations_info(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
 
@@ -122,14 +117,12 @@ async def test_slack_api_conversations_info():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_conversations_list():
+async def test_slack_api_conversations_list(bot):
     cursor = '1234asdf'
     exclude_archived = False
     exclude_members = False
     limit = 12
     types = 'private_channel'
-
-    bot = FakeBot()
 
     await bot.api.conversations.list(
         cursor,
@@ -150,8 +143,7 @@ async def test_slack_api_conversations_list():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_conversations_open():
-    bot = FakeBot()
+async def test_slack_api_conversations_open(bot):
     channel_id = 'C1234'
     channel = bot.add_channel(channel_id, 'test')
     user_id = 'U1234'

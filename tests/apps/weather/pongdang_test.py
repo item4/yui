@@ -4,7 +4,6 @@ import pytest
 
 from yui.apps.weather.pongdang import pongdang
 
-from ...util import FakeBot
 
 RESPONSE_PATTERN = re.compile(
     r'\d{4}년 \d{2}월 \d{2}일 \d{2}시 \d{2}분' r' 기준 한강 수온은 \d+(?:\.\d+)?°C에요!'
@@ -12,8 +11,7 @@ RESPONSE_PATTERN = re.compile(
 
 
 @pytest.mark.asyncio
-async def test_pongdang():
-    bot = FakeBot()
+async def test_pongdang(bot):
     bot.add_channel('C1', 'test')
     bot.add_user('U1', 'tester')
     event = bot.create_message('C1', 'U1')

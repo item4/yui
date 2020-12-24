@@ -6,12 +6,9 @@ from yui.apps.info.memo.commands import memo_show
 from yui.apps.info.memo.models import Memo
 from yui.orm.utils import get_count
 
-from ....util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_memo_flow(fx_sess):
-    bot = FakeBot()
+async def test_memo_flow(bot, fx_sess):
     keyword1 = '키리토'
     keyword2 = '밥'
     text1 = '키리가야 카즈토의 게임 아이디'
@@ -148,8 +145,7 @@ async def test_memo_flow(fx_sess):
 
 
 @pytest.mark.asyncio
-async def test_length_limit(fx_sess):
-    bot = FakeBot()
+async def test_length_limit(bot, fx_sess):
     bot.add_channel('C1', 'test')
     bot.add_user('U1', 'tester')
     event = bot.create_message('C1', 'U1')

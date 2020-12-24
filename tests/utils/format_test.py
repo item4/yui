@@ -11,8 +11,6 @@ from yui.utils.format import preformatted
 from yui.utils.format import quote
 from yui.utils.format import strike
 
-from ..util import FakeBot
-
 
 def test_escape():
     assert escape('&') == '&amp;'
@@ -31,8 +29,7 @@ def test_format_helpers():
     assert quote('item4') == '>item4'
 
 
-def test_link():
-    bot = FakeBot()
+def test_link(bot):
     user = bot.add_user('U1234', 'tester')
     channel = bot.add_channel('C1234', 'test')
     assert link(channel) == '<#C1234>'

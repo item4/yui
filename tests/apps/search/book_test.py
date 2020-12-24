@@ -15,7 +15,7 @@ book_result_pattern_re = re.compile(
 
 
 @pytest.fixture()
-def fx_naver_client_id():
+def naver_client_id():
     token = os.getenv('NAVER_CLIENT_ID')
     if not token:
         pytest.skip('Can not test this without NAVER_CLIENT_ID envvar')
@@ -23,7 +23,7 @@ def fx_naver_client_id():
 
 
 @pytest.fixture()
-def fx_naver_client_secret():
+def naver_client_secret():
     key = os.getenv('NAVER_CLIENT_SECRET')
     if not key:
         pytest.skip('Can not test this without NAVER_CLIENT_SECRET envvar')
@@ -31,10 +31,14 @@ def fx_naver_client_secret():
 
 
 @pytest.mark.asyncio
-async def test_book(fx_config, fx_naver_client_id, fx_naver_client_secret):
-    fx_config.NAVER_CLIENT_ID = fx_naver_client_id
-    fx_config.NAVER_CLIENT_SECRET = fx_naver_client_secret
-    bot = FakeBot(fx_config)
+async def test_book(
+    bot_config,
+    naver_client_id,
+    naver_client_secret,
+):
+    bot_config.NAVER_CLIENT_ID = naver_client_id
+    bot_config.NAVER_CLIENT_SECRET = naver_client_secret
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 

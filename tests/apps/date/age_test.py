@@ -4,12 +4,9 @@ import pytest
 
 from yui.apps.date.age import age
 
-from ...util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_age_command():
-    bot = FakeBot()
+async def test_age_command(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')

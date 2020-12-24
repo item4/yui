@@ -28,12 +28,10 @@ addr1 = '부천'
 addr1_md5 = md5(addr1.encode()).hexdigest()
 addr2 = '서울'
 addr2_md5 = md5(addr2.encode()).hexdigest()
-addr3 = '🙄  🐰😴😰🏄😋😍🍦😮🐖😫🍭🚬🚪🐳😞😎🚠😖🍲🙉😢🚔🐩👪🐮🚍🐎👱🎿😸👩🚇🍟👧🎺😒'
-addr3_md5 = md5(addr3.encode()).hexdigest()
 
 
 @pytest.fixture()
-def fx_aqi_api_token():
+def aqi_api_token():
     token = os.getenv('AQI_API_TOKEN')
     if not token:
         pytest.skip('Can not test this without AQI_API_TOKEN envvar')
@@ -41,7 +39,7 @@ def fx_aqi_api_token():
 
 
 @pytest.fixture()
-def fx_google_api_key():
+def google_api_key():
     key = os.getenv('GOOGLE_API_KEY')
     if not key:
         pytest.skip('Can not test this without GOOGLE_API_KEY envvar')
@@ -49,10 +47,10 @@ def fx_google_api_key():
 
 
 @pytest.mark.asyncio
-async def test_get_geometric_info_by_address(fx_google_api_key):
+async def test_get_geometric_info_by_address(google_api_key):
     full_address, lat, lng = await get_geometric_info_by_address(
         addr1,
-        fx_google_api_key,
+        google_api_key,
     )
 
     assert full_address == '대한민국 경기도 부천시'
@@ -61,23 +59,38 @@ async def test_get_geometric_info_by_address(fx_google_api_key):
 
     full_address, lat, lng = await get_geometric_info_by_address(
         addr2,
-        fx_google_api_key,
+        google_api_key,
     )
 
     assert full_address == '대한민국 서울특별시'
     assert lat == 37.566535
     assert lng == 126.9779692
 
+
+@pytest.mark.asyncio
+async def test_get_aqi_wrong_geometric_info(response_mock):
+    addr = 'WRONG'
+    key = 'XXX'
+    response_mock.get(
+        'https://maps.googleapis.com/maps/api/geocode/json'
+        f'?region=kr&address={addr}&key=XXX',
+        body=json.dumps(
+            {
+                'results': [],
+            }
+        ),
+        headers={'Content-Type': 'application/json'},
+    )
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
-            addr3,
-            fx_google_api_key,
+            addr,
+            key,
         )
 
 
 @pytest.mark.asyncio
-async def test_get_aqi_idx(fx_aqi_api_token):
-    result = await get_aqi_idx(37.5034138, 126.9779692, fx_aqi_api_token)
+async def test_get_aqi_idx(aqi_api_token):
+    result = await get_aqi_idx(37.5034138, 126.9779692, aqi_api_token)
 
     if result is None:
         pytest.skip('AQI Server problem')
@@ -118,11 +131,11 @@ def test_get_aqi_description():
 
 
 @pytest.mark.asyncio
-async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
-    fx_config.AQI_API_TOKEN = fx_aqi_api_token
-    fx_config.GOOGLE_API_KEY = fx_google_api_key
+async def test_aqi(bot_config, aqi_api_token, google_api_key):
+    bot_config.AQI_API_TOKEN = aqi_api_token
+    bot_config.GOOGLE_API_KEY = google_api_key
 
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -132,7 +145,7 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
         try:
             await aqi(bot, event, addr1)
         except KeyError as e:
-            if e == 'i18n':
+            if 'i18n' in e.args:
                 pytest.skip('AQI Server problem')
 
         said = bot.call_queue.pop(0)
@@ -144,20 +157,9 @@ async def test_aqi(fx_config, fx_aqi_api_token, fx_google_api_key):
         assert result_pattern_re.match(said.data['text'])
         assert said.data['thread_ts'] == '1234.5678'
 
-        await aqi(
-            bot,
-            event,
-            addr3,
-        )
-
-        said = bot.call_queue.pop(0)
-        assert said.method == 'chat.postMessage'
-        assert said.data['channel'] == 'C1'
-        assert said.data['text'] == '해당 주소는 찾을 수 없어요!'
-
 
 @pytest.mark.asyncio
-async def test_aqi_error1(fx_config, response_mock):
+async def test_aqi_error1(bot_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?'
         + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
@@ -179,15 +181,15 @@ async def test_aqi_error1(fx_config, response_mock):
         headers={'Content-Type': 'application/json'},
     )
     response_mock.get(
-        'https://api.waqi.info/feed/geo:' '37.5034138;126.7660309/?token=asdf',
+        'https://api.waqi.info/feed/geo:37.5034138;126.7660309/?token=asdf',
         body='null',
         headers={'Content-Type': 'application/json'},
     )
 
-    fx_config.AQI_API_TOKEN = 'asdf'
-    fx_config.GOOGLE_API_KEY = 'qwer'
+    bot_config.AQI_API_TOKEN = 'asdf'
+    bot_config.GOOGLE_API_KEY = 'qwer'
 
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -199,11 +201,11 @@ async def test_aqi_error1(fx_config, response_mock):
         said = bot.call_queue.pop(0)
         assert said.method == 'chat.postMessage'
         assert said.data['channel'] == 'C1'
-        assert said.data['text'] == ('해당 지역의 AQI 정보를 받아올 수 없어요!')
+        assert said.data['text'] == '해당 지역의 AQI 정보를 받아올 수 없어요!'
 
 
 @pytest.mark.asyncio
-async def test_aqi_error2(fx_config, response_mock):
+async def test_aqi_error2(bot_config, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?'
         + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
@@ -229,16 +231,16 @@ async def test_aqi_error2(fx_config, response_mock):
         body=json.dumps({'data': {'idx': '5511'}}),
         headers={'Content-Type': 'application/json'},
     )
-    response_mock.get(
+    response_mock.post(
         'https://api.waqi.info/api/feed/@5511/obs.en.json',
         body=json.dumps({'rxs': {'obs': [{'status': '404'}]}}),
         headers={'Content-Type': 'application/json'},
     )
 
-    fx_config.AQI_API_TOKEN = 'asdf'
-    fx_config.GOOGLE_API_KEY = 'qwer'
+    bot_config.AQI_API_TOKEN = 'asdf'
+    bot_config.GOOGLE_API_KEY = 'qwer'
 
-    bot = FakeBot(fx_config)
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 

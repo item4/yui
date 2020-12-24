@@ -10,8 +10,8 @@ from ...util import FakeBot
 
 @pytest.mark.asyncio
 @freeze_time(datetime(2019, 2, 4))
-async def test_holiday_command(fx_config):
-    bot = FakeBot(fx_config)
+async def test_holiday_command(bot_config):
+    bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     event = bot.create_message('C1', 'U1')

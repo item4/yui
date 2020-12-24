@@ -9,7 +9,6 @@ from yui.apps.weather.aws import aws
 from yui.apps.weather.aws import clothes_by_temperature
 from yui.utils import json
 
-from ...util import FakeBot
 
 COOLTIME = re.compile(r'아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해주세요!')
 
@@ -29,7 +28,7 @@ def test_clothes_by_temperature():
 
 
 @pytest.mark.asyncio
-async def test_aws(response_mock):
+async def test_aws(bot, response_mock):
     response_mock.get(  # 1
         API_URL,
         exception=client_exceptions.ClientPayloadError(),
@@ -297,7 +296,6 @@ async def test_aws(response_mock):
         ),
         headers={'Content-Type': 'application/json'},
     )
-    bot = FakeBot()
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 

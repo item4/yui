@@ -5,8 +5,6 @@ import pytest
 from yui.apps.compute.gacha import Gacha
 from yui.apps.compute.gacha import to_percent
 
-from ...util import FakeBot
-
 
 def test_class():
     g = Gacha()
@@ -25,8 +23,7 @@ def test_get_full_help():
 
 
 @pytest.mark.asyncio
-async def test_fallback(fx_config):
-    bot = FakeBot(fx_config)
+async def test_fallback(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     g = Gacha()
@@ -42,8 +39,7 @@ async def test_fallback(fx_config):
 
 
 @pytest.mark.asyncio
-async def test_collect(fx_config):
-    bot = FakeBot(fx_config)
+async def test_collect(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     g = Gacha()
@@ -127,8 +123,7 @@ async def test_collect(fx_config):
 
 
 @pytest.mark.asyncio
-async def test_challenge(fx_config):
-    bot = FakeBot(fx_config)
+async def test_challenge(bot):
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
     g = Gacha()

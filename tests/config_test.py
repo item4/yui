@@ -84,12 +84,12 @@ owner = 'U111'
     }
 
 
-def test_config_check(fx_config):
-    del fx_config.TOKEN
+def test_config_check(bot_config):
+    del bot_config.TOKEN
 
     err = 'Required config key was not defined: TOKEN'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {'TOKEN': str},
             set(),
             set(),
@@ -97,10 +97,10 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.TOKEN = 'asdf'
+    bot_config.TOKEN = 'asdf'
     err = 'Wrong config value type: TOKEN'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {'TOKEN': list[int]},
             set(),
             set(),
@@ -108,8 +108,8 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.TOKEN = 'XXXX'
-    assert fx_config.check(
+    bot_config.TOKEN = 'XXXX'
+    assert bot_config.check(
         {'TOKEN': str},
         set(),
         set(),
@@ -117,10 +117,10 @@ def test_config_check(fx_config):
         set(),
     )
 
-    fx_config.CHANNELS = {}
+    bot_config.CHANNELS = {}
     err = 'Required channel key was not defined: general'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             {'general'},
             set(),
@@ -128,10 +128,10 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.CHANNELS = {'general': 1}
+    bot_config.CHANNELS = {'general': 1}
     err = 'Channel config has wrong type: general'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             {'general'},
             set(),
@@ -139,8 +139,8 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.CHANNELS = {'general': '_general'}
-    assert fx_config.check(
+    bot_config.CHANNELS = {'general': '_general'}
+    assert bot_config.check(
         {},
         {'general'},
         set(),
@@ -150,7 +150,7 @@ def test_config_check(fx_config):
 
     err = 'Required channel key was not defined: test'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             {'test'},
@@ -158,20 +158,20 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.CHANNELS = {'test': 1}
+    bot_config.CHANNELS = {'test': 1}
     err = 'Channel config has wrong type: test'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             {'test'},
             set(),
             set(),
         )
-    fx_config.CHANNELS = {'test': [1]}
+    bot_config.CHANNELS = {'test': [1]}
     err = 'Channel config has wrong type: test'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             {'test'},
@@ -179,8 +179,8 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.CHANNELS = {'test': ['aaa', 'bbb']}
-    assert fx_config.check(
+    bot_config.CHANNELS = {'test': ['aaa', 'bbb']}
+    assert bot_config.check(
         {},
         set(),
         {'test'},
@@ -188,8 +188,8 @@ def test_config_check(fx_config):
         set(),
     )
 
-    fx_config.CHANNELS = {'test': '*'}
-    assert fx_config.check(
+    bot_config.CHANNELS = {'test': '*'}
+    assert bot_config.check(
         {},
         set(),
         {'test'},
@@ -197,10 +197,10 @@ def test_config_check(fx_config):
         set(),
     )
 
-    fx_config.USERS = {}
+    bot_config.USERS = {}
     err = 'Required user key was not defined: owner'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             set(),
@@ -208,10 +208,10 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.USERS = {'owner': 1}
+    bot_config.USERS = {'owner': 1}
     err = 'User config has wrong type: owner'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             set(),
@@ -219,8 +219,8 @@ def test_config_check(fx_config):
             set(),
         )
 
-    fx_config.USERS = {'owner': 'U1'}
-    assert fx_config.check(
+    bot_config.USERS = {'owner': 'U1'}
+    assert bot_config.check(
         {},
         set(),
         set(),
@@ -230,7 +230,7 @@ def test_config_check(fx_config):
 
     err = 'Required user key was not defined: tester'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             set(),
@@ -238,10 +238,10 @@ def test_config_check(fx_config):
             {'tester'},
         )
 
-    fx_config.USERS = {'tester': 1}
+    bot_config.USERS = {'tester': 1}
     err = 'User config has wrong type: tester'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             set(),
@@ -249,10 +249,10 @@ def test_config_check(fx_config):
             {'tester'},
         )
 
-    fx_config.USERS = {'tester': [1]}
+    bot_config.USERS = {'tester': [1]}
     err = 'User config has wrong type: tester'
     with pytest.raises(ConfigurationError, match=err):
-        fx_config.check(
+        bot_config.check(
             {},
             set(),
             set(),
@@ -260,8 +260,8 @@ def test_config_check(fx_config):
             {'tester'},
         )
 
-    fx_config.USERS = {'tester': ['aaa', 'bbb']}
-    assert fx_config.check(
+    bot_config.USERS = {'tester': ['aaa', 'bbb']}
+    assert bot_config.check(
         {},
         set(),
         set(),
@@ -269,8 +269,8 @@ def test_config_check(fx_config):
         {'tester'},
     )
 
-    fx_config.USERS = {'tester': '*'}
-    assert fx_config.check(
+    bot_config.USERS = {'tester': '*'}
+    assert bot_config.check(
         {},
         set(),
         set(),

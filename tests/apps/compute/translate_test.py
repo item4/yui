@@ -10,7 +10,7 @@ from ...util import FakeBot
 
 
 @pytest.fixture()
-def fx_naver_client_id():
+def naver_client_id():
     token = os.getenv('NAVER_CLIENT_ID')
     if not token:
         pytest.skip('Can not test this without NAVER_CLIENT_ID envvar')
@@ -18,7 +18,7 @@ def fx_naver_client_id():
 
 
 @pytest.fixture()
-def fx_naver_client_secret():
+def naver_client_secret():
     key = os.getenv('NAVER_CLIENT_SECRET')
     if not key:
         pytest.skip('Can not test this without NAVER_CLIENT_SECRET envvar')
@@ -26,17 +26,17 @@ def fx_naver_client_secret():
 
 
 @pytest.fixture()
-def bot(fx_config, fx_naver_client_id, fx_naver_client_secret):
-    fx_config.NAVER_CLIENT_ID = fx_naver_client_id
-    fx_config.NAVER_CLIENT_SECRET = fx_naver_client_secret
-    return FakeBot(fx_config)
+def bot(bot_config, naver_client_id, naver_client_secret):
+    bot_config.NAVER_CLIENT_ID = naver_client_id
+    bot_config.NAVER_CLIENT_SECRET = naver_client_secret
+    return FakeBot(bot_config)
 
 
 @pytest.fixture()
-def header(fx_naver_client_id, fx_naver_client_secret):
+def header(naver_client_id, naver_client_secret):
     return {
-        'X-Naver-Client-Id': fx_naver_client_id,
-        'X-Naver-Client-Secret': fx_naver_client_secret,
+        'X-Naver-Client-Id': naver_client_id,
+        'X-Naver-Client-Secret': naver_client_secret,
     }
 
 

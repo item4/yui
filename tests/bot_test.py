@@ -11,16 +11,16 @@ from yui.utils import json
 from .util import FakeImportLib
 
 
-def test_bot_init(monkeypatch, fx_config):
+def test_bot_init(monkeypatch, bot_config):
     importlib = FakeImportLib()
 
     monkeypatch.setattr('importlib.import_module', importlib.import_module)
 
-    fx_config.APPS = ['yui.app1', 'yui.app2']
+    bot_config.APPS = ['yui.app1', 'yui.app2']
     box = Box()
-    bot = Bot(fx_config, using_box=box)
+    bot = Bot(bot_config, using_box=box)
 
-    assert bot.config == fx_config
+    assert bot.config == bot_config
     assert bot.channels == []
     assert bot.ims == []
     assert bot.groups == []
@@ -35,7 +35,7 @@ def test_bot_init(monkeypatch, fx_config):
 
 
 @pytest.mark.asyncio
-async def test_call(fx_config, response_mock):
+async def test_call(bot_config, response_mock):
     token = 'asdf1234'
 
     response_mock.post(
@@ -71,7 +71,7 @@ async def test_call(fx_config, response_mock):
     )
 
     box = Box()
-    bot = Bot(fx_config, using_box=box)
+    bot = Bot(bot_config, using_box=box)
 
     res = await bot.call('test11')
     assert res == APIResponse(

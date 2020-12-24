@@ -5,12 +5,9 @@ from yui.types.slack.attachment import Attachment
 from yui.types.slack.attachment import Field
 from yui.types.slack.block import Divider
 
-from ..util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_slack_api_chat_delete():
-    bot = FakeBot()
+async def test_slack_api_chat_delete(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
 
@@ -41,8 +38,7 @@ async def test_slack_api_chat_delete():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_chat_post_ephemeral():
-    bot = FakeBot()
+async def test_slack_api_chat_post_ephemeral(bot):
     channel = bot.add_channel('C4567', 'test')
     user = bot.add_user('U0987', 'kirito')
     channel_id = 'C1234'
@@ -63,8 +59,6 @@ async def test_slack_api_chat_post_ephemeral():
     )
     icon_emoji = ':cake:'
     thread_ts = '12.34'
-
-    bot = FakeBot()
 
     with pytest.raises(TypeError):
         await bot.api.chat.postEphemeral(channel=channel, user=user)
@@ -160,8 +154,7 @@ async def test_slack_api_chat_post_ephemeral():
 
 
 @pytest.mark.asyncio
-async def test_slack_api_chat_post_message():
-    bot = FakeBot()
+async def test_slack_api_chat_post_message(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
     attachments = [
@@ -181,8 +174,6 @@ async def test_slack_api_chat_post_message():
     icon_emoji = ':cake:'
     thread_ts = '12.34'
     mrkdwn = False
-
-    bot = FakeBot()
 
     with pytest.raises(TypeError):
         await bot.api.chat.postMessage(channel=channel)

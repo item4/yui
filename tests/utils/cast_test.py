@@ -9,8 +9,6 @@ from yui.types.namespace import Field
 from yui.types.namespace import namespace
 from yui.utils.cast import cast
 
-from ..util import FakeBot
-
 
 @namespace
 class UserRecord:
@@ -22,8 +20,7 @@ class UserRecord:
     )
 
 
-def test_cast():
-    bot = FakeBot()
+def test_cast(bot):
     bot.add_user('U1', 'kirito')
     bot.add_channel('C1', 'general')
     bot.add_channel('C2', 'random')

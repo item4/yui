@@ -5,7 +5,6 @@ import pytest
 from yui.apps.compute.exchange import exchange
 from yui.utils import json
 
-from ...util import FakeBot
 
 YEN_PATTERN = re.compile(
     r'100 JPY == (?:\.?\d+,?)+ KRW \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\)'
@@ -13,8 +12,7 @@ YEN_PATTERN = re.compile(
 
 
 @pytest.mark.asyncio
-async def test_exchange_command():
-    bot = FakeBot()
+async def test_exchange_command(bot):
     bot.add_channel('C1', 'test')
     bot.add_user('U1', 'tester')
     event = bot.create_message('C1', 'U1')
@@ -56,13 +54,12 @@ async def test_exchange_command():
 
 
 @pytest.mark.asyncio
-async def test_exchange_error(response_mock):
+async def test_exchange_error(bot, response_mock):
     response_mock.get(
         'https://api.manana.kr/exchange/rate.json?base=KRW&code=JPY',
         body=json.dumps([False]),
         headers={'Content-Type': 'application/json'},
     )
-    bot = FakeBot()
     bot.add_channel('C1', 'test')
     bot.add_user('U1', 'tester')
     event = bot.create_message('C1', 'U1')
