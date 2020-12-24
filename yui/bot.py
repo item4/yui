@@ -179,14 +179,22 @@ class Bot:
                     try:
                         await c.handler(**kw)
                     except:  # noqa: E722
-                        logger.error(f'Error: {traceback.format_exc()}')
-                        await self.say(
-                            self.config.USERS['owner'],
-                            '*Traceback*\n```\n{}\n```\n'.format(
-                                traceback.format_exc(),
-                            ),
-                            length_limit=None,
-                        )
+                        traceback_exc = traceback.format_exc()
+
+                        logger.error(f'Error: {traceback_exc}')
+
+                        length = len(traceback_exc)
+                        sent = 0
+                        while length >= sent:
+                            s = slice(sent, sent + 3000)
+                            await self.say(
+                                self.config.USERS['owner'],
+                                '*Traceback*\n```\n{}\n```\n'.format(
+                                    traceback_exc[s],
+                                ),
+                                length_limit=None,
+                            )
+                            sent += 3000
                     finally:
                         sess.close()
                     logger.debug(f'end {c}')
@@ -328,19 +336,28 @@ class Bot:
                 self.restart = True
                 return False
             except:  # noqa: E722
+                traceback_exc = traceback.format_exc()
+
                 logger.error(
-                    f'Event: {event} / ' f'Traceback: {traceback.format_exc()}'
+                    f'Event: {event} / ' f'Traceback: {traceback_exc}'
                 )
-                await self.say(
-                    self.config.USERS['owner'],
-                    (
-                        '*Event*\n```\n{}\n```\n' '*Traceback*\n```\n{}\n```\n'
-                    ).format(
-                        event,
-                        traceback.format_exc(),
-                    ),
-                    length_limit=None,
-                )
+
+                length = len(traceback_exc)
+                sent = 0
+                while length >= sent:
+                    s = slice(sent, sent + 3000)
+                    await self.say(
+                        self.config.USERS['owner'],
+                        (
+                            '*Event*\n```\n{}\n```\n'
+                            '*Traceback*\n```\n{}\n```\n'
+                        ).format(
+                            event,
+                            traceback_exc[s],
+                        ),
+                        length_limit=None,
+                    )
+                    sent += 3000
                 return False
 
         while True:
