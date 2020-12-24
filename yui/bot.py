@@ -11,6 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Any
 from typing import Callable
+from typing import Optional
 from typing import TypeVar
 from typing import Union
 
@@ -184,6 +185,7 @@ class Bot:
                             '*Traceback*\n```\n{}\n```\n'.format(
                                 traceback.format_exc(),
                             ),
+                            length_limit=None,
                         )
                     finally:
                         sess.close()
@@ -294,12 +296,17 @@ class Bot:
         text: str,
         *,
         retry_until_send: bool = False,
+        length_limit: Optional[int] = 2000,
         **kwargs,
     ) -> APIResponse:
         """Shortcut for bot saying."""
 
         coro = self.api.chat.postMessage(
-            channel, text[:2000], as_user=True, link_names=True, **kwargs
+            channel,
+            text[:length_limit],
+            as_user=True,
+            link_names=True,
+            **kwargs,
         )
         if retry_until_send:
             return await retry(coro)
@@ -332,6 +339,7 @@ class Bot:
                         event,
                         traceback.format_exc(),
                     ),
+                    length_limit=None,
                 )
                 return False
 
