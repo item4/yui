@@ -22,7 +22,7 @@ async def make_log(bot, event: Message, sess):
 
     if event.channel in channels:
         with sess.begin():
-            sess.query(
+            sess.execute(
                 Insert(EventLog)
                 .values(channel=event.channel.id, ts=event.ts)
                 .on_conflict_do_nothing()
@@ -87,6 +87,8 @@ async def add_missing_logs(bot, sess):
 
     if logs:
         with sess.begin():
-            sess.query(Insert(EventLog).values(logs).on_conflict_do_nothing())
+            sess.execute(
+                Insert(EventLog).values(logs).on_conflict_do_nothing()
+            )
 
     return True
