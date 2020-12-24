@@ -1,4 +1,5 @@
 from sqlalchemy.schema import Column
+from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy.types import Integer
 from sqlalchemy.types import String
 
@@ -15,3 +16,5 @@ class EventLog(Base):
     ts = Column(String, nullable=False)
 
     channel = Column(String, nullable=False)
+
+    __table_args__ = (UniqueConstraint('ts', 'channel'),)
