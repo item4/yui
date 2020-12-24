@@ -83,12 +83,12 @@ async def add_missing_logs(bot, sess):
                                     'next_cursor'
                                 ]
                             messages += replies.get('messages', [])
-                            await asyncio.sleep(random.uniform(0.3, 1.0))
+                            await asyncio.sleep(random.uniform(2.0, 5.0))
 
                     logs.append({'channel': channel.id, 'ts': message['ts']})
 
-                await asyncio.sleep(random.uniform(0.3, 1.0))
-            await asyncio.sleep(random.uniform(2.0, 4.0))
+                await asyncio.sleep(random.uniform(2.0, 5.0))
+            await asyncio.sleep(random.uniform(2.0, 5.0))
     except:  # noqa
         pass
 
