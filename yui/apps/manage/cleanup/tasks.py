@@ -37,7 +37,7 @@ async def cleanup_channels(bot, sess):
         await asyncio.sleep(5)
 
 
-@box.cron('0 0 * * *')
+@box.cron('0 0,6,12,28 * * *')
 async def add_missing_logs(bot, sess):
     try:
         channels = Cs.auto_cleanup_targets.gets()
@@ -48,7 +48,8 @@ async def add_missing_logs(bot, sess):
         for channel in channels:
             has_more = True
             cursor = None
-            while has_more:
+            count = 0
+            while has_more and count < 1000:
                 resp = await bot.api.conversations.history(
                     channel,
                     cursor=cursor,
@@ -86,9 +87,10 @@ async def add_missing_logs(bot, sess):
                             await asyncio.sleep(random.uniform(2.0, 5.0))
 
                     logs.append({'channel': channel.id, 'ts': message['ts']})
+                    count += 1
 
-                await asyncio.sleep(random.uniform(2.0, 5.0))
-            await asyncio.sleep(random.uniform(2.0, 5.0))
+                await asyncio.sleep(random.uniform(2.5, 7.5))
+            await asyncio.sleep(random.uniform(2.5, 7.5))
     except:  # noqa
         pass
 
