@@ -4,6 +4,7 @@ from typing import Union
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import ChannelID
+from ..types.base import TeamID
 from ..types.base import Ts
 from ..types.base import UserID
 from ..types.channel import Channel
@@ -94,7 +95,8 @@ class Conversations(Endpoint):
     async def info(
         self,
         channel: Union[Channel, ChannelID],
-        include_locale: bool = False,
+        include_locale: Optional[bool] = None,
+        include_num_members: Optional[bool] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.info"""
 
@@ -103,32 +105,44 @@ class Conversations(Endpoint):
         else:
             channel_id = channel
 
-        return await self._call(
-            'info',
-            {
-                'channel': channel_id,
-                'include_locale': bool2str(include_locale),
-            },
-        )
+        params = {
+            'channel': channel_id,
+        }
+
+        if include_locale is not None:
+            params['include_locale'] = bool2str(include_locale)
+
+        if include_num_members is not None:
+            params['include_num_members'] = bool2str(include_num_members)
+
+        return await self._call('info', params)
 
     async def list(
         self,
         cursor: Optional[str] = None,
-        exclude_archived: bool = True,
-        exclude_members: bool = True,
-        limit: int = 0,
-        types: str = 'public_channel',
+        exclude_archived: Optional[bool] = None,
+        limit: Optional[int] = None,
+        team_id: Optional[TeamID] = None,
+        types: Optional[str] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.list"""
 
-        params = {
-            'exclude_archived': bool2str(exclude_archived),
-            'exclude_members': bool2str(exclude_members),
-            'limit': str(limit),
-            'types': types,
-        }
-        if cursor:
+        params = {}
+
+        if cursor is not None:
             params['cursor'] = cursor
+
+        if exclude_archived is not None:
+            params['exclude_archived'] = bool2str(exclude_archived)
+
+        if limit is not None:
+            params['limit'] = str(limit)
+
+        if team_id is not None:
+            params['team_id'] = team_id
+
+        if types is not None:
+            params['types'] = str(types)
 
         return await self._call('list', params)
 
@@ -150,7 +164,7 @@ class Conversations(Endpoint):
         if users is None:
             users = []
         user_ids = [u if isinstance(u, str) else u.id for u in users]
-        channel_id = None
+
         if isinstance(channel, Channel):
             channel_id = channel.id
         else:

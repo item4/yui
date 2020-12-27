@@ -99,20 +99,30 @@ async def test_slack_api_conversations_info(bot):
     channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
 
-    await bot.api.conversations.info(channel_id)
+    await bot.api.conversations.info(
+        channel_id,
+        include_locale=False,
+        include_num_members=True,
+    )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.info'
     assert call.data == {
         'channel': channel_id,
         'include_locale': bool2str(False),
+        'include_num_members': bool2str(True),
     }
 
-    await bot.api.conversations.info(channel)
+    await bot.api.conversations.info(
+        channel,
+        include_locale=False,
+        include_num_members=True,
+    )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.info'
     assert call.data == {
         'channel': channel.id,
         'include_locale': bool2str(False),
+        'include_num_members': bool2str(True),
     }
 
 
@@ -120,24 +130,24 @@ async def test_slack_api_conversations_info(bot):
 async def test_slack_api_conversations_list(bot):
     cursor = '1234asdf'
     exclude_archived = False
-    exclude_members = False
     limit = 12
     types = 'private_channel'
+    team_id = 'T1'
 
     await bot.api.conversations.list(
-        cursor,
-        exclude_archived,
-        exclude_members,
-        limit,
-        types,
+        cursor=cursor,
+        exclude_archived=exclude_archived,
+        limit=limit,
+        team_id=team_id,
+        types=types,
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.list'
     assert call.data == {
         'cursor': cursor,
         'exclude_archived': bool2str(exclude_archived),
-        'exclude_members': bool2str(exclude_members),
-        'limit': '12',
+        'limit': str(limit),
+        'team_id': team_id,
         'types': types,
     }
 
