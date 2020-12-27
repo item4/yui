@@ -15,6 +15,7 @@ from .models import EventLog
 from ....bot import APICallError
 from ....box import box
 from ....command import Cs
+from ....utils.report import report
 
 
 box.assert_config_required('OWNER_USER_TOKEN', str)
@@ -71,7 +72,8 @@ async def add_missing_logs(bot, sess):
                     cursor=cursor,
                     latest=latest,
                 )
-            except APICallError:
+            except APICallError as e:
+                await report(bot, e.tb, exception=e)
                 break
 
             history = resp.body
@@ -96,7 +98,8 @@ async def add_missing_logs(bot, sess):
                                 cursor=replies_cursor,
                                 ts=ts,
                             )
-                        except APICallError:
+                        except APICallError as e:
+                            await report(bot, e.tb, exception=e)
                             break
                         replies = r.body
                         if not replies['ok']:

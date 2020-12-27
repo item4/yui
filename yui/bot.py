@@ -49,6 +49,7 @@ from .types.slack.response import APIResponse
 from .types.user import User
 from .utils import json
 from .utils.api import retry
+from .utils.report import report
 
 
 R = TypeVar('R')
@@ -64,17 +65,17 @@ class APICallError(Exception):
 
     def __init__(
         self,
-        message: str,
-        *,
-        status_code: int = None,
-        result: dict[str, Any] = None,
-        headers: Any = None,
+        method: str,
+        headers: dict[str, str],
+        data: dict[str, str],
+        tb: str,
     ) -> None:
-        super(APICallError, self).__init__(message)
+        super(APICallError, self).__init__()
 
-        self.status_code = status_code
-        self.result = result
+        self.method = method
         self.headers = headers
+        self.data = data
+        self.tb = tb
 
 
 class Bot:
@@ -179,22 +180,7 @@ class Bot:
                     try:
                         await c.handler(**kw)
                     except:  # noqa: E722
-                        traceback_exc = traceback.format_exc()
-
-                        logger.error(f'Error: {traceback_exc}')
-
-                        length = len(traceback_exc)
-                        sent = 0
-                        while length >= sent:
-                            s = slice(sent, sent + 3000)
-                            await self.say(
-                                self.config.USERS['owner'],
-                                '*Traceback*\n```\n{}\n```\n'.format(
-                                    traceback_exc[s],
-                                ),
-                                length_limit=None,
-                            )
-                            sent += 3000
+                        await report(self, traceback.format_exc())
                     finally:
                         sess.close()
                     logger.debug(f'end {c}')
@@ -295,7 +281,10 @@ class Bot:
                     )
             except ClientConnectorError:
                 raise APICallError(
-                    'fail to call {} with {}'.format(method, data)
+                    method=method,
+                    headers=headers,
+                    data=data,
+                    tb=traceback.format_exc(),
                 )
 
     async def say(
@@ -335,29 +324,11 @@ class Bot:
                 logger.info('BotReconnect raised.')
                 self.restart = True
                 return False
+            except APICallError as e:
+                await report(self, e.tb, event=event, exception=e)
+                return False
             except:  # noqa: E722
-                traceback_exc = traceback.format_exc()
-
-                logger.error(
-                    f'Event: {event} / ' f'Traceback: {traceback_exc}'
-                )
-
-                length = len(traceback_exc)
-                sent = 0
-                while length >= sent:
-                    s = slice(sent, sent + 3000)
-                    await self.say(
-                        self.config.USERS['owner'],
-                        (
-                            '*Event*\n```\n{}\n```\n'
-                            '*Traceback*\n```\n{}\n```\n'
-                        ).format(
-                            event,
-                            traceback_exc[s],
-                        ),
-                        length_limit=None,
-                    )
-                    sent += 3000
+                await report(self, traceback.format_exc(), event=event)
                 return False
 
         while True:
