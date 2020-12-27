@@ -2,6 +2,8 @@ import copy
 import os
 import pathlib
 
+import aiomcache
+
 import aioresponses
 
 import pytest
@@ -10,6 +12,7 @@ from sqlalchemy.exc import ProgrammingError
 
 from yui.bot import Bot
 from yui.box import Box
+from yui.cache import Cache
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.orm import Base
@@ -133,6 +136,12 @@ def bot():
 @pytest.fixture()
 def bot_config(request):
     return gen_config(request)
+
+
+@pytest.fixture(scope='module')
+async def cache():
+    mc = aiomcache.Client(host='localhost', port=11211)  # FIXME
+    return Cache(mc, 'YUI_TEST_')
 
 
 @pytest.yield_fixture()

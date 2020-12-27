@@ -1,3 +1,4 @@
+import asyncio
 import os
 import re
 from hashlib import md5
@@ -28,6 +29,13 @@ addr1 = '부천'
 addr1_md5 = md5(addr1.encode()).hexdigest()
 addr2 = '서울'
 addr2_md5 = md5(addr2.encode()).hexdigest()
+
+
+@pytest.fixture(scope='module')
+def event_loop():
+    loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture()
@@ -131,11 +139,11 @@ def test_get_aqi_description():
 
 
 @pytest.mark.asyncio
-async def test_aqi(bot_config, aqi_api_token, google_api_key):
+async def test_aqi(bot_config, cache, aqi_api_token, google_api_key):
     bot_config.AQI_API_TOKEN = aqi_api_token
     bot_config.GOOGLE_API_KEY = google_api_key
 
-    bot = FakeBot(bot_config)
+    bot = FakeBot(bot_config, cache=cache)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -159,7 +167,7 @@ async def test_aqi(bot_config, aqi_api_token, google_api_key):
 
 
 @pytest.mark.asyncio
-async def test_aqi_error1(bot_config, response_mock):
+async def test_aqi_error1(bot_config, cache, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?'
         + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
@@ -189,7 +197,7 @@ async def test_aqi_error1(bot_config, response_mock):
     bot_config.AQI_API_TOKEN = 'asdf'
     bot_config.GOOGLE_API_KEY = 'qwer'
 
-    bot = FakeBot(bot_config)
+    bot = FakeBot(bot_config, cache=cache)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -205,7 +213,7 @@ async def test_aqi_error1(bot_config, response_mock):
 
 
 @pytest.mark.asyncio
-async def test_aqi_error2(bot_config, response_mock):
+async def test_aqi_error2(bot_config, cache, response_mock):
     response_mock.get(
         'https://maps.googleapis.com/maps/api/geocode/json?'
         + urlencode({'region': 'kr', 'address': addr1, 'key': 'qwer'}),
@@ -240,7 +248,7 @@ async def test_aqi_error2(bot_config, response_mock):
     bot_config.AQI_API_TOKEN = 'asdf'
     bot_config.GOOGLE_API_KEY = 'qwer'
 
-    bot = FakeBot(bot_config)
+    bot = FakeBot(bot_config, cache=cache)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'item4')
 
@@ -252,4 +260,4 @@ async def test_aqi_error2(bot_config, response_mock):
         said = bot.call_queue.pop(0)
         assert said.method == 'chat.postMessage'
         assert said.data['channel'] == 'C1'
-        assert said.data['text'] == ('현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!')
+        assert said.data['text'] == '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!'

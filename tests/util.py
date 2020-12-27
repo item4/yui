@@ -5,14 +5,11 @@ from typing import Callable
 from typing import Optional
 from typing import Union
 
-import aiomcache
-
 import attr
 
 from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.cache import Cache
-from yui.cache import DATA_TYPE
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.event import Message
@@ -33,29 +30,6 @@ class Call:
     json_mode: bool = False
 
 
-class CacheMock(Cache):
-    def __init__(self, mc, prefix) -> None:
-        super(CacheMock, self).__init__(mc, prefix)
-        self.keys = set()
-
-    async def get(self, key: Union[str, bytes], default=None) -> DATA_TYPE:
-        self.keys.add(key)
-        return await super(CacheMock, self).get(key, default)
-
-    async def set(
-        self,
-        key: Union[str, bytes],
-        value: DATA_TYPE,
-        exptime: int = 0,
-    ) -> bool:
-        self.keys.add(key)
-        return await super(CacheMock, self).set(key, value, exptime)
-
-    async def cleanup(self):
-        for key in self.keys:
-            await self.delete(key)
-
-
 class FakeBot(Bot):
     """Fake bot for test"""
 
@@ -64,6 +38,7 @@ class FakeBot(Bot):
         config: Config = None,
         *,
         loop=None,
+        cache=None,
         process_pool_executor=None,
         thread_pool_executor=None,
     ) -> None:
@@ -77,11 +52,7 @@ class FakeBot(Bot):
         self.channels: list[PublicChannel] = []
         self.ims: list[DirectMessageChannel] = []
         self.groups: list[PrivateChannel] = []
-        self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'],
-            port=config.CACHE['PORT'],
-        )
-        self.cache: CacheMock = CacheMock(self.mc, 'YUI_TEST_')
+        self.cache: Cache = cache
         self.users: list[User] = [User(id='U0', team_id='T0', name='system')]
         self.responses: dict[str, Callable] = {}
         self.config = config
@@ -106,7 +77,7 @@ class FakeBot(Bot):
         try:
             yield
         finally:
-            await self.cache.cleanup()
+            await self.cache.flush_all()
 
     def response(self, method: str):
         def decorator(func):

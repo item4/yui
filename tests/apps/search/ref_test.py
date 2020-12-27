@@ -21,9 +21,10 @@ def event_loop():
 
 
 @pytest.fixture(scope='module')
-async def bot(event_loop):
+async def bot(event_loop, cache):
     return FakeBot(
         loop=event_loop,
+        cache=cache,
         process_pool_executor=ProcessPoolExecutor(),
     )
 

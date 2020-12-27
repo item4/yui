@@ -54,3 +54,6 @@ class Cache:
     async def delete(self, key: Union[str, bytes]):
         key = self._key(key)
         await self.mc.delete(key)
+
+    async def flush_all(self):
+        await self.mc.flush_all()
