@@ -65,7 +65,7 @@ async def add_missing_logs(bot, sess):
             latest = None
         has_more = True
         cursor = None
-        while has_more and len(logs) < 500:
+        while has_more and len(logs) < 800:
             try:
                 resp = await bot.api.conversations.history(
                     channel,
