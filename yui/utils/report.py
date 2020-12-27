@@ -46,7 +46,7 @@ async def report(
 {preformatted(str(event))}
 """
     if exception:
-        message += f"""
+        message += f"""\
 {bold('Method')}
 {code(exception.method)}
 {bold('Data')}
