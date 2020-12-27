@@ -1,10 +1,14 @@
 import asyncio
 import random
+import traceback
 from typing import Optional
+
+from more_itertools import mark_ends
 
 from .models import EventLog
 from ....bot import APICallError
 from ....types.channel import Channel
+from ....utils.report import report
 
 
 async def cleanup_by_event_logs(
@@ -26,18 +30,24 @@ async def cleanup_by_event_logs(
     )
     if count:
         logs = logs.limit(count)
-    for log in logs:  # type: EventLog
-        resp = await bot.api.chat.delete(
-            log.channel,
-            log.ts,
-            token=token,
-        )
+    for _, is_last, log in mark_ends(logs):  # type: bool, bool, EventLog
+        try:
+            resp = await bot.api.chat.delete(
+                log.channel,
+                log.ts,
+                token=token,
+            )
+        except APICallError as e:
+            await report(bot, traceback.format_exc(), exception=e)
+            return deleted
         ok = resp.body['ok']
         if ok or (not ok and resp.body['error'] == 'message_not_found'):
             deleted += ok
             with sess.begin():
                 sess.delete(log)
-        await asyncio.sleep(random.uniform(0.05, 1.0))
+
+        if not is_last:
+            await asyncio.sleep(random.uniform(0.75, 2.0))
 
     return deleted
 
