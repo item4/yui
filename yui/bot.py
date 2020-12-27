@@ -403,6 +403,10 @@ class Bot:
         sleep = 0
 
         while True:
+            await self.queue.put(create_event('chatterbox_system_start', {}))
+            while not self.is_ready:
+                await asyncio.sleep(0.1)
+
             try:
                 rtm = await self.call('rtm.start')
             except Exception as e:
@@ -418,9 +422,6 @@ class Bot:
             else:
                 sleep = 0
 
-            await self.queue.put(create_event('chatterbox_system_start', {}))
-            while not self.is_ready:
-                await asyncio.sleep(0.01)
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
