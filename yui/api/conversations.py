@@ -62,7 +62,7 @@ class Conversations(Endpoint):
         limit: Optional[int] = None,
         oldest: Optional[Ts] = None,
     ) -> APIResponse:
-        """https://slack.com/api/conversations.replies"""
+        """https://api.slack.com/methods/conversations.replies"""
 
         if isinstance(channel, Channel):
             channel_id = channel.id
