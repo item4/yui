@@ -46,7 +46,7 @@ async def cleanup_channels(bot, sess):
         await asyncio.sleep(5)
 
 
-@box.cron('0 */3 * * *')
+@box.cron('0 */1 * * *')
 async def add_missing_logs(bot, sess):
     try:
         channels = Cs.auto_cleanup_targets.gets()
@@ -65,7 +65,7 @@ async def add_missing_logs(bot, sess):
             latest = None
         has_more = True
         cursor = None
-        while has_more and len(logs) < 800:
+        while has_more and len(logs) < 400:
             try:
                 resp = await bot.api.conversations.history(
                     channel,
