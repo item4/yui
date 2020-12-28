@@ -180,8 +180,10 @@ class Bot:
                     logger.debug(f'hit and start to run {c}')
                     try:
                         await c.handler(**kw)
+                    except APICallError as e:
+                        await report(self, exception=e)
                     except:  # noqa: E722
-                        await report(self, traceback.format_exc())
+                        await report(self)
                     finally:
                         sess.close()
                     logger.debug(f'end {c}')

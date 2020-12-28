@@ -1,6 +1,5 @@
 import asyncio
 import random
-import traceback
 from typing import Optional
 
 from more_itertools import mark_ends
@@ -38,7 +37,7 @@ async def cleanup_by_event_logs(
                 token=token,
             )
         except APICallError as e:
-            await report(bot, traceback.format_exc(), exception=e)
+            await report(bot, exception=e)
             return deleted
         ok = resp.body['ok']
         if ok or (not ok and resp.body['error'] == 'message_not_found'):

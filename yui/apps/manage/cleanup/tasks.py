@@ -73,7 +73,7 @@ async def add_missing_logs(bot, sess):
                     latest=latest,
                 )
             except APICallError as e:
-                await report(bot, e.tb, exception=e)
+                await report(bot, exception=e)
                 break
 
             history = resp.body
@@ -99,7 +99,7 @@ async def add_missing_logs(bot, sess):
                                 ts=ts,
                             )
                         except APICallError as e:
-                            await report(bot, e.tb, exception=e)
+                            await report(bot, exception=e)
                             break
                         replies = r.body
                         if not replies['ok']:
