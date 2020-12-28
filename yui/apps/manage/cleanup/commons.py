@@ -62,37 +62,49 @@ async def cleanup_by_history(
     deleted = 0
     deletable = True
     while deletable and deleted < minimum:
-        history = await bot.api.conversations.history(
-            channel,
-            latest=ts,
-        )
+        try:
+            resp = await bot.api.conversations.history(
+                channel,
+                latest=ts,
+            )
+        except APICallError as e:
+            await report(bot, exception=e)
+            break
+        history = resp.body
         deletable = False
-        if history.body['ok']:
-            messages = history.body['messages']
+        if history['ok']:
+            messages = history['messages']
             while messages:
                 message = messages.pop(0)
                 reply_count = message.get('reply_count', 0)
                 if reply_count:
-                    r = await bot.api.conversations.replies(
-                        channel,
-                        ts=message['ts'],
-                    )
+                    try:
+                        r = await bot.api.conversations.replies(
+                            channel,
+                            ts=message['ts'],
+                        )
+                    except APICallError as e:
+                        await report(bot, exception=e)
+                        break
                     messages += r.body.get('messages', [])
                 try:
-                    r = await bot.api.chat.delete(
+                    res = await bot.api.chat.delete(
                         channel,
                         message['ts'],
                         token=token,
                         as_user=as_user,
                     )
-                    ok = r.body['ok']
-                except APICallError:
+                    ok = res.body['ok']
+                except APICallError as e:
                     ok = False
+                    await report(bot, exception=e)
                 if ok:
                     deletable = True
                     deleted += 1
 
-                await asyncio.sleep(random.uniform(0.05, 1.0))
-            await asyncio.sleep(random.uniform(1.5, 3.5))
+                if messages:
+                    await asyncio.sleep(random.uniform(0.75, 2.0))
+            if deletable:
+                await asyncio.sleep(random.uniform(2.0, 5.0))
 
     return deleted
