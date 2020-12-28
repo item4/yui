@@ -101,8 +101,3 @@ class MessageMessage:
     edited: Optional[MessageMessageEdited] = OptionalField(
         MessageMessageEdited
     )()
-
-
-@namespace
-class MessagePreviousMessage(MessageMessage):
-    """Previous message in Message."""

@@ -34,7 +34,6 @@ from .types.objects import BotObject
 from .types.objects import DnDStatus
 from .types.objects import File
 from .types.objects import MessageMessage
-from .types.objects import MessagePreviousMessage
 from .types.objects import Subteam
 from .types.user import User
 
@@ -615,9 +614,6 @@ class Message(Event):
     attachments: list[dict[str, Any]] = Field()
     hidden: bool = BooleanField()
     message: MessageMessage = OptionalField(MessageMessage)(repr=True)
-    previous_message: MessagePreviousMessage = OptionalField(
-        MessagePreviousMessage
-    )(repr=True)
     subtype: Optional[str] = OptionalField(str)(repr=True)
 
 
