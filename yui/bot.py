@@ -3,6 +3,7 @@ import functools
 import importlib
 import logging
 import logging.config
+import sys
 import traceback
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
@@ -68,14 +69,14 @@ class APICallError(Exception):
         method: str,
         headers: dict[str, str],
         data: dict[str, str],
-        tb: str,
     ) -> None:
         super(APICallError, self).__init__()
 
         self.method = method
         self.headers = headers
         self.data = data
-        self.tb = tb
+        self.exc_info = sys.exc_info()
+        self.frames = traceback.extract_stack()
 
 
 class Bot:
@@ -284,7 +285,6 @@ class Bot:
                     method=method,
                     headers=headers,
                     data=data,
-                    tb=traceback.format_exc(),
                 )
 
     async def say(
@@ -325,10 +325,10 @@ class Bot:
                 self.restart = True
                 return False
             except APICallError as e:
-                await report(self, e.tb, event=event, exception=e)
+                await report(self, event=event, exception=e)
                 return False
             except:  # noqa: E722
-                await report(self, traceback.format_exc(), event=event)
+                await report(self, event=event)
                 return False
 
         while True:
