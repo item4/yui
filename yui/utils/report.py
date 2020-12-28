@@ -36,20 +36,15 @@ def get_simple_tb_text(tb: list[str]) -> list[str]:
 
 def get_call_tree(frames: list[traceback.FrameSummary]) -> str:
     chunks: list[str] = []
-    start = False
-    for f in reversed(frames):
+    for f in frames:
         filename = f.filename
         filename = SITE_PACKAGES.sub('site-packages/', filename)
         filename = BUILTIN_PACKAGES.sub('python/', filename)
         filename = IN_YUI.sub('proj/yui/', filename)
-        if not start and filename == 'proj/yui/bot.py' and f.name == 'call':
-            start = True
-            continue
-        if start:
-            chunks.append(
-                f'File "{filename}", line {f.lineno}, in {f.name}\n  {f.line}'
-            )
-    return '\n'.join(reversed(chunks))
+        chunks.append(
+            f'File "{filename}", line {f.lineno}, in {f.name}\n  {f.line}'
+        )
+    return '\n'.join(chunks)
 
 
 async def report(
