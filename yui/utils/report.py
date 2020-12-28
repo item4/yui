@@ -19,7 +19,7 @@ LIMIT = 3500
 SITE_PACKAGES = re.compile(r'(?:\s*File ")?/.+?/site-packages/')
 BUILTIN_PACKAGES = re.compile(r'(?:\s*File ")?/.+?/lib/python[^/]+?/')
 IN_YUI = re.compile(r'(?:\s*File ")?/.+?/yui/yui/')
-START_SPACE = re.compile(r'\s{4,}')
+START_SPACE = re.compile(r' {4,}')
 
 
 def get_simple_tb_text(tb: list[str]) -> list[str]:
