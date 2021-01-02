@@ -108,7 +108,9 @@ def revision(
 ):
     """Create a new revision file."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -150,7 +152,9 @@ def migrate(
 ):
     """Alias for 'revision --autogenerate'"""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -177,7 +181,9 @@ def migrate(
 def edit(config, revision: str):
     """Edit current revision."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -202,7 +208,10 @@ def merge(
     rev_id=Optional[str],
 ):
     """Merge two revisions together.  Creates a new migration file."""
-    bot = Bot(config)
+
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -223,7 +232,9 @@ def merge(
 def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
     """Upgrade to a later version."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -242,7 +253,9 @@ def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
 def downgrade(config, revision: str, sql: bool, tag: str):
     """Revert to a previous version."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -259,7 +272,9 @@ def downgrade(config, revision: str, sql: bool, tag: str):
 def show(config, revision: str):
     """Show the revision denoted by the given symbol."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -277,7 +292,9 @@ def show(config, revision: str):
 def history(config, verbose: bool, rev_range: Optional[str]):
     """List changeset scripts in chronological order."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -295,7 +312,9 @@ def history(config, verbose: bool, rev_range: Optional[str]):
 def heads(config, verbose: bool, resolve_dependencies: bool):
     """Show current available heads in the script directory."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -314,7 +333,9 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
 def branches(config, verbose: bool):
     """Show current branch points."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -331,7 +352,9 @@ def branches(config, verbose: bool):
 def current(config, verbose: bool):
     """Display the current revision for each database."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
@@ -351,7 +374,9 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 
-    bot = Bot(config)
+    loop = asyncio.new_event_loop()
+    bot = Bot(config, loop)
+    loop.close()
 
     directory = os.path.join('yui', 'migrations')
     c = Config(os.path.join(directory, 'alembic.ini'))
