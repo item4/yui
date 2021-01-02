@@ -85,6 +85,7 @@ class Bot:
     def __init__(
         self,
         config: Config,
+        loop,
         *,
         orm_base=None,
         using_box: Box = None,
@@ -118,7 +119,7 @@ class Bot:
             importlib.import_module(app_name)
 
         self.config = config
-        self.loop = asyncio.new_event_loop()
+        self.loop = loop
         self.loop.set_debug(self.config.DEBUG)
         self.orm_base = orm_base or Base
         self.box = using_box or box

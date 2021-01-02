@@ -62,7 +62,10 @@ def run(config):
     """Run YUI."""
     try:
         while True:
-            asyncio.run(Bot(config).run())
+            loop = asyncio.new_event_loop()
+            bot = Bot(config, loop)
+            loop.run_until_complete(bot.run())
+            loop.close()
     except ConfigurationError as e:
         error(str(e))
 
