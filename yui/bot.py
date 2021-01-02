@@ -3,8 +3,6 @@ import functools
 import importlib
 import logging
 import logging.config
-import sys
-import traceback
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
@@ -19,7 +17,7 @@ from typing import Union
 import aiocron
 
 import aiohttp
-from aiohttp.client_exceptions import ClientConnectorError
+from aiohttp.client_exceptions import ClientError
 from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 
@@ -75,8 +73,6 @@ class APICallError(Exception):
         self.method = method
         self.headers = headers
         self.data = data
-        self.exc_info = sys.exc_info()
-        self.frames = traceback.extract_stack()
 
 
 class Bot:
@@ -282,12 +278,12 @@ class Bot:
                         status=response.status,
                         headers=response.headers,
                     )
-            except ClientConnectorError:
+            except ClientError as e:
                 raise APICallError(
                     method=method,
                     headers=headers,
                     data=data,
-                )
+                ) from e
 
     async def say(
         self,
