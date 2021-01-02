@@ -118,7 +118,7 @@ class Bot:
             importlib.import_module(app_name)
 
         self.config = config
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
         self.loop.set_debug(self.config.DEBUG)
         self.orm_base = orm_base or Base
         self.box = using_box or box
