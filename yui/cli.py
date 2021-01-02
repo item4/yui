@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import os.path
 import pathlib
@@ -60,11 +61,10 @@ def yui():
 def run(config):
     """Run YUI."""
     try:
-        bot = Bot(config)
+        while True:
+            asyncio.run(Bot(config).run())
     except ConfigurationError as e:
         error(str(e))
-    else:
-        bot.run()
 
 
 @yui.command()

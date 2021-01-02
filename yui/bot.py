@@ -81,7 +81,6 @@ class Bot:
 
     api: SlackAPI
     cache: Cache
-    loop: asyncio.AbstractEventLoop
 
     def __init__(
         self,
@@ -119,7 +118,8 @@ class Bot:
             importlib.import_module(app_name)
 
         self.config = config
-
+        self.loop = asyncio.get_event_loop()
+        self.loop.set_debug(self.config.DEBUG)
         self.orm_base = orm_base or Base
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
@@ -132,7 +132,7 @@ class Bot:
         self.is_ready = False
         self.method_last_call: defaultdict[str, datetime] = defaultdict(now)
         self.method_lock: defaultdict[str, asyncio.Lock] = defaultdict(
-            lambda: asyncio.Lock()
+            lambda: asyncio.Lock(loop=self.loop)
         )
 
         self.config.check(
@@ -195,23 +195,17 @@ class Bot:
         for c in self.box.tasks:
             register(c)
 
-    def run(self):
+    async def run(self):
         """Run"""
 
         while True:
-            loop = asyncio.get_event_loop()
-            loop.set_debug(self.config.DEBUG)
-            self.loop = loop
-            loop.run_until_complete(
-                asyncio.wait(
-                    (
-                        self.connect(),
-                        self.process(),
-                    ),
-                    return_when=asyncio.FIRST_EXCEPTION,
-                )
+            await asyncio.wait(
+                (
+                    self.connect(),
+                    self.process(),
+                ),
+                return_when=asyncio.FIRST_EXCEPTION,
             )
-            loop.close()
 
     async def run_in_other_process(
         self,
