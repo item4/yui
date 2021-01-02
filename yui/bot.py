@@ -3,6 +3,8 @@ import functools
 import importlib
 import logging
 import logging.config
+import random
+import string
 from collections import defaultdict
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
@@ -132,9 +134,7 @@ class Bot:
         self.restart = False
         self.is_ready = False
         self.method_last_call: defaultdict[str, datetime] = defaultdict(now)
-        self.method_lock: defaultdict[str, asyncio.Lock] = defaultdict(
-            lambda: asyncio.Lock(loop=self.loop)
-        )
+        self.method_queue: defaultdict[str, list] = defaultdict(list)
 
         self.config.check(
             self.box.config_required,
@@ -239,16 +239,18 @@ class Bot:
             raise
 
     async def throttle(self, method: str):
-        lock = self.method_lock[method]
-        while lock.locked():
-            await asyncio.sleep(0.01)
+        name = ''.join(random.choice(string.printable) for _ in range(16))
+        q = self.method_queue[method]
+        q.append(name)
+        while q and q[0] != name:
+            await asyncio.sleep(0.05)
 
         method_dt = self.method_last_call[method]
         tier_min = self.api.throttle_interval[method]
-        async with lock:
-            if (gap := now() - method_dt) < tier_min:
-                await asyncio.sleep(delay=gap.microseconds / 1_000_000)
-            self.method_last_call[method] = now()
+        if (gap := now() - method_dt) < tier_min:
+            await asyncio.sleep(delay=gap.microseconds / 1_000_000)
+        self.method_last_call[method] = now()
+        q.pop(0)
 
     async def call(
         self,

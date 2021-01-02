@@ -62,7 +62,7 @@ def run(config):
     """Run YUI."""
     try:
         while True:
-            loop = asyncio.new_event_loop()
+            loop = asyncio.get_event_loop()
             bot = Bot(config, loop)
             loop.run_until_complete(bot.run())
             loop.close()
@@ -108,7 +108,7 @@ def revision(
 ):
     """Create a new revision file."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -152,7 +152,7 @@ def migrate(
 ):
     """Alias for 'revision --autogenerate'"""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -181,7 +181,7 @@ def migrate(
 def edit(config, revision: str):
     """Edit current revision."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -209,7 +209,7 @@ def merge(
 ):
     """Merge two revisions together.  Creates a new migration file."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -232,7 +232,7 @@ def merge(
 def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
     """Upgrade to a later version."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -253,7 +253,7 @@ def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
 def downgrade(config, revision: str, sql: bool, tag: str):
     """Revert to a previous version."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -272,7 +272,7 @@ def downgrade(config, revision: str, sql: bool, tag: str):
 def show(config, revision: str):
     """Show the revision denoted by the given symbol."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -292,7 +292,7 @@ def show(config, revision: str):
 def history(config, verbose: bool, rev_range: Optional[str]):
     """List changeset scripts in chronological order."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -312,7 +312,7 @@ def history(config, verbose: bool, rev_range: Optional[str]):
 def heads(config, verbose: bool, resolve_dependencies: bool):
     """Show current available heads in the script directory."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -333,7 +333,7 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
 def branches(config, verbose: bool):
     """Show current branch points."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -352,7 +352,7 @@ def branches(config, verbose: bool):
 def current(config, verbose: bool):
     """Display the current revision for each database."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
@@ -374,7 +374,7 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 
-    loop = asyncio.new_event_loop()
+    loop = asyncio.get_event_loop()
     bot = Bot(config, loop)
     loop.close()
 
