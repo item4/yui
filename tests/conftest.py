@@ -10,12 +10,11 @@ import pytest
 
 from sqlalchemy.exc import ProgrammingError
 
-from yui.bot import Bot
-from yui.box import Box
 from yui.cache import Cache
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.orm import Base
+from yui.orm import get_database_engine
 from yui.orm import make_session
 
 from .util import FakeBot
@@ -47,8 +46,7 @@ def fx_engine(request):
     config = gen_config(request)
     if database_url:
         config.DATABASE_URL = database_url
-    bot = Bot(config, using_box=Box())
-    engine = bot.config.DATABASE_ENGINE
+    engine = get_database_engine(config)
     try:
         metadata = Base.metadata
         metadata.drop_all(bind=engine)
