@@ -3,7 +3,7 @@ import datetime
 from dateutil.tz import UTC
 from dateutil.tz import gettz
 
-from yui.apps.info.subscribe.models import RSSFeedURL
+from yui.apps.info.rss.models import RSSFeedURL
 from yui.utils.datetime import now
 
 

@@ -9,7 +9,7 @@ from ....orm.columns import TimezoneColumn
 
 
 class RSSFeedURL(Base):
-    """RSS Feed URL to subscribe"""
+    """RSS Feed URL"""
 
     __tablename__ = 'rss_feed_url'
 
