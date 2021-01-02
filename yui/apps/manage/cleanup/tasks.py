@@ -1,9 +1,5 @@
-import asyncio
 import datetime
-import random
 import time
-
-from more_itertools import mark_ends
 
 from sqlalchemy.dialects.postgresql import Insert
 from sqlalchemy.orm.exc import NoResultFound
@@ -43,7 +39,6 @@ async def cleanup_channels(bot, sess):
             ts,
             bot.config.OWNER_USER_TOKEN,
         )
-        await asyncio.sleep(5)
 
 
 @box.cron('0 */1 * * *')
@@ -53,7 +48,7 @@ async def add_missing_logs(bot, sess):
     except KeyError:
         return
     all_logs: LOGS = set()
-    for is_first, is_last, channel in mark_ends(channels):
+    for channel in channels:
         logs: LOGS = set()
         try:
             latest = sess.execute(
@@ -113,18 +108,10 @@ async def add_missing_logs(bot, sess):
                             (m.get('reply_count', 0), m['ts'])
                             for m in replies.get('messages', [])
                         }
-                        if has_more_replies:
-                            await asyncio.sleep(random.uniform(2.0, 5.0))
 
                 logs.add((channel.id, ts))
 
-            if has_more:
-                await asyncio.sleep(random.uniform(2.0, 5.0))
-
         all_logs |= logs
-
-        if not is_last:
-            await asyncio.sleep(random.uniform(2.0, 5.0))
 
     if all_logs:
         with sess.begin():

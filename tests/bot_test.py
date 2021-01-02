@@ -1,4 +1,6 @@
 import asyncio
+from collections import defaultdict
+from datetime import timedelta
 
 import pytest
 
@@ -35,7 +37,7 @@ def test_bot_init(monkeypatch, bot_config):
 
 
 @pytest.mark.asyncio
-async def test_call(bot_config, response_mock):
+async def test_call(event_loop, bot_config, response_mock):
     token = 'asdf1234'
 
     response_mock.post(
@@ -72,6 +74,8 @@ async def test_call(bot_config, response_mock):
 
     box = Box()
     bot = Bot(bot_config, using_box=box)
+    bot.loop = event_loop
+    bot.api.throttle_interval = defaultdict(lambda: timedelta(0))
 
     res = await bot.call('test11')
     assert res == APIResponse(

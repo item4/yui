@@ -16,7 +16,6 @@ from ....command import C
 from ....orm import EngineConfig
 from ....orm import subprocess_session_manager
 from ....types.slack.attachment import Attachment
-from ....utils.api import retry
 from ....utils.html import get_root
 
 box.assert_channel_required('saomd')
@@ -229,12 +228,10 @@ async def watch_notice(bot: Bot, engine_config: EngineConfig):
             engine_config,
         )
         if attachments:
-            await retry(
-                bot.api.chat.postMessage(
-                    channel=C.saomd.get(),
-                    attachments=attachments,
-                    as_user=True,
-                )
+            await bot.api.chat.postMessage(
+                channel=C.saomd.get(),
+                attachments=attachments,
+                as_user=True,
             )
 
     await asyncio.wait([watch(Server.japan), watch(Server.worldwide)])

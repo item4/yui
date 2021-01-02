@@ -1,8 +1,4 @@
-import asyncio
-import random
 from typing import Optional
-
-from more_itertools import mark_ends
 
 from .models import EventLog
 from ....bot import APICallError
@@ -29,7 +25,7 @@ async def cleanup_by_event_logs(
     )
     if count:
         logs = logs.limit(count)
-    for _, is_last, log in mark_ends(logs):  # type: bool, bool, EventLog
+    for log in logs:  # type: EventLog
         try:
             resp = await bot.api.chat.delete(
                 log.channel,
@@ -44,9 +40,6 @@ async def cleanup_by_event_logs(
             deleted += ok
             with sess.begin():
                 sess.delete(log)
-
-        if not is_last:
-            await asyncio.sleep(random.uniform(0.75, 2.0))
 
     return deleted
 
@@ -101,10 +94,5 @@ async def cleanup_by_history(
                 if ok:
                     deletable = True
                     deleted += 1
-
-                if messages:
-                    await asyncio.sleep(random.uniform(0.75, 2.0))
-            if deletable:
-                await asyncio.sleep(random.uniform(2.0, 5.0))
 
     return deleted

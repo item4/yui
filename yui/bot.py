@@ -3,6 +3,7 @@ import functools
 import importlib
 import logging
 import logging.config
+from collections import defaultdict
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
@@ -47,7 +48,7 @@ from .types.namespace import Namespace
 from .types.slack.response import APIResponse
 from .types.user import User
 from .utils import json
-from .utils.api import retry
+from .utils.datetime import now
 from .utils.report import report
 
 
@@ -129,6 +130,10 @@ class Bot:
         self.users: list[User] = []
         self.restart = False
         self.is_ready = False
+        self.method_last_call: defaultdict[str, datetime] = defaultdict(now)
+        self.method_lock: defaultdict[str, asyncio.Lock] = defaultdict(
+            lambda: asyncio.Lock()
+        )
 
         self.config.check(
             self.box.config_required,
@@ -149,7 +154,7 @@ class Bot:
 
         def register(c: CronTask):
             logger.info(f'register {c}')
-            lock = asyncio.Lock()
+            lock = asyncio.Lock(loop=self.loop)
             func_params = c.handler.params
             kw: dict[str, Any] = {}
             if 'bot' in func_params:
@@ -238,16 +243,30 @@ class Bot:
             self.thread_pool_executor = ThreadPoolExecutor()
             raise
 
+    async def throttle(self, method: str):
+        lock = self.method_lock[method]
+        while lock.locked():
+            await asyncio.sleep(0.01)
+
+        method_dt = self.method_last_call[method]
+        tier_min = self.api.throttle_interval[method]
+        async with lock:
+            if (gap := now() - method_dt) < tier_min:
+                await asyncio.sleep(delay=gap.microseconds / 1_000_000)
+            self.method_last_call[method] = now()
+
     async def call(
         self,
         method: str,
         data: dict[str, Any] = None,
         *,
+        throttle_check: bool = True,
         token: str = None,
         json_mode: bool = False,
     ) -> APIResponse:
         """Call API methods."""
-
+        if throttle_check:
+            await self.throttle(method)
         async with aiohttp.ClientSession() as session:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -290,22 +309,18 @@ class Bot:
         channel: Union[Channel, ChannelID],
         text: str,
         *,
-        retry_until_send: bool = False,
         length_limit: Optional[int] = 3000,
         **kwargs,
     ) -> APIResponse:
         """Shortcut for bot saying."""
 
-        coro = self.api.chat.postMessage(
+        return await self.api.chat.postMessage(
             channel,
             text[:length_limit],
             as_user=True,
             link_names=True,
             **kwargs,
         )
-        if retry_until_send:
-            return await retry(coro)
-        return await coro
 
     async def process(self):
         """Process messages."""
@@ -398,7 +413,6 @@ class Bot:
     async def connect(self):
         """Connect Slack RTM."""
         logger = logging.getLogger(f'{__name__}.Bot.connect')
-        sleep = 0
 
         while True:
             await self.queue.put(create_event('chatterbox_system_start', {}))
@@ -409,16 +423,9 @@ class Bot:
                 rtm = await self.call('rtm.start')
             except Exception as e:
                 logger.exception(e)
-                await asyncio.sleep((sleep + 1) * 10)
-                sleep += 1
                 continue
-
             if not rtm.body['ok']:
-                await asyncio.sleep((sleep + 1) * 10)
-                sleep += 1
                 continue
-            else:
-                sleep = 0
 
             try:
                 async with aiohttp.ClientSession() as session:
