@@ -291,7 +291,7 @@ class Bot:
         text: str,
         *,
         retry_until_send: bool = False,
-        length_limit: Optional[int] = 2000,
+        length_limit: Optional[int] = 3000,
         **kwargs,
     ) -> APIResponse:
         """Shortcut for bot saying."""
