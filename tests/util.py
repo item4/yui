@@ -1,5 +1,4 @@
 import asyncio
-from collections import defaultdict
 from contextlib import asynccontextmanager
 from typing import Any
 from typing import Callable
@@ -59,7 +58,6 @@ class FakeBot(Bot):
         self.config = config
         self.process_pool_executor = process_pool_executor
         self.thread_pool_executor = thread_pool_executor
-        self.method_lock = defaultdict(lambda: asyncio.Lock(loop=self.loop))
 
     async def call(
         self,

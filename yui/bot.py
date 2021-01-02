@@ -155,7 +155,7 @@ class Bot:
 
         def register(c: CronTask):
             logger.info(f'register {c}')
-            lock = asyncio.Lock(loop=self.loop)
+            is_runnable = [1]
             func_params = c.handler.params
             kw: dict[str, Any] = {}
             if 'bot' in func_params:
@@ -163,32 +163,38 @@ class Bot:
 
             @aiocron.crontab(c.spec, tz=UTC9, *c.args, **c.kwargs)
             async def task():
-                if lock.locked() or not self.is_ready:
+                if not self.is_ready:
                     return
-                async with lock:
-                    if 'loop' in func_params:
-                        kw['loop'] = self.loop
+                logger.debug(f'cron condition hit {c}')
+                if not is_runnable:
+                    logger.debug(f'cron skip(lock) {c}')
+                    return
 
-                    sess = make_session(bind=self.config.DATABASE_ENGINE)
-                    if 'sess' in func_params:
-                        kw['sess'] = sess
+                is_runnable.pop()
+                if 'loop' in func_params:
+                    kw['loop'] = self.loop
 
-                    if 'engine_config' in func_params:
-                        kw['engine_config'] = EngineConfig(
-                            url=self.config.DATABASE_URL,
-                            echo=self.config.DATABASE_ECHO,
-                        )
+                sess = make_session(bind=self.config.DATABASE_ENGINE)
+                if 'sess' in func_params:
+                    kw['sess'] = sess
 
-                    logger.debug(f'hit and start to run {c}')
-                    try:
-                        await c.handler(**kw)
-                    except APICallError as e:
-                        await report(self, exception=e)
-                    except:  # noqa: E722
-                        await report(self)
-                    finally:
-                        sess.close()
-                    logger.debug(f'end {c}')
+                if 'engine_config' in func_params:
+                    kw['engine_config'] = EngineConfig(
+                        url=self.config.DATABASE_URL,
+                        echo=self.config.DATABASE_ECHO,
+                    )
+
+                logger.debug(f'cron run {c}')
+                try:
+                    await c.handler(**kw)
+                except APICallError as e:
+                    await report(self, exception=e)
+                except:  # noqa: E722
+                    await report(self)
+                finally:
+                    sess.close()
+                    is_runnable.append(1)
+                logger.debug(f'cron end {c}')
 
             c.start = task.start
             c.stop = task.stop
@@ -250,7 +256,10 @@ class Bot:
         if (gap := now() - method_dt) < tier_min:
             await asyncio.sleep(delay=gap.microseconds / 1_000_000)
         self.method_last_call[method] = now()
-        q.pop(0)
+        try:
+            q.pop(0)
+        except KeyError:
+            pass
 
     async def call(
         self,
