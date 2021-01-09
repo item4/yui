@@ -1,4 +1,4 @@
-import aiohttp
+from aiohttp.client_exceptions import ClientError
 
 from .utils import get_holiday_names
 from ...box import box
@@ -70,7 +70,7 @@ async def work_start(bot):
     today = now()
     try:
         holidays = await get_holiday_names(today)
-    except aiohttp.client_exceptions.ClientOSError:
+    except ClientError:
         pass
 
     if holidays:
@@ -89,7 +89,7 @@ async def work_end(bot):
     hour = today.hour - 12
     try:
         holidays = await get_holiday_names(today)
-    except aiohttp.client_exceptions.ClientOSError:
+    except ClientError:
         pass
 
     if holidays:
