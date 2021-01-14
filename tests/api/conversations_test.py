@@ -195,6 +195,5 @@ async def test_slack_api_conversations_open(bot):
     )
     call = bot.call_queue.pop()
     assert call.method == 'conversations.open'
-    assert call.data == {
-        'users': f'{user_id},{user2_id}',
-    }
+    assert 'users' in call.data
+    assert set(call.data['users'].split(',')) == {user_id, user2_id}
