@@ -17,7 +17,7 @@ jobs:
 
       # Install Depencencies
       - name: Install Checkers
-        run: pip install black flake8 flake8-import-order zimports mypy
+        run: pip install black flake8 flake8-import-order zimports git+git://github.com/python/mypy.git@master
 
       # Lint
       - name: Check coding convention

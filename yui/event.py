@@ -1277,6 +1277,6 @@ def create_event(type_, source):
     cls = _events.get(type_, UnknownEvent)
 
     try:
-        return cls(type=type_, **source)  # type: ignore
+        return cls(type=type_, **source)
     except TypeError as e:
         raise TypeError(f'Error at creating {cls.__name__}: {e}')

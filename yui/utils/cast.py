@@ -162,7 +162,7 @@ class NoHandleCaster(BaseCaster):
 
 class NoneTypeCaster(BaseCaster):
     def check(self, t, value):
-        return t == NoneType  # type: ignore
+        return t == NoneType
 
     def cast(self, caster_box, t, value):
         return None

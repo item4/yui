@@ -1,5 +1,6 @@
 from typing import Optional
 from typing import Union
+from typing import cast
 
 from .encoder import bool2str
 from .endpoint import Endpoint
@@ -10,6 +11,9 @@ from ..types.base import UserID
 from ..types.channel import Channel
 from ..types.slack.response import APIResponse
 from ..types.user import User
+
+
+USER_LIST = list[Union[User, UserID]]
 
 
 class Conversations(Endpoint):
@@ -151,7 +155,7 @@ class Conversations(Endpoint):
         *,
         channel: Optional[Union[Channel, ChannelID]] = None,
         return_im: Optional[bool] = None,
-        users: Optional['list[Union[User, UserID]]'] = None,
+        users: Optional[USER_LIST] = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.open"""
 
@@ -163,16 +167,19 @@ class Conversations(Endpoint):
 
         if users is None:
             users = []
-        user_ids = [u if isinstance(u, str) else u.id for u in users]
 
-        if isinstance(channel, Channel):
-            channel_id = channel.id
-        else:
-            channel_id = channel
+        user_ids = list(
+            {
+                u.id if isinstance(u, User) else u
+                for u in cast(USER_LIST, users)
+            }
+        )
 
         params = {}
-        if channel_id is not None:
-            params['channel'] = channel_id
+        if isinstance(channel, Channel):
+            params['channel'] = channel.id
+        elif channel is not None:
+            params['channel'] = channel
         if return_im is not None:
             params['return_im'] = bool2str(return_im)
         if user_ids:

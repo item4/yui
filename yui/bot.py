@@ -69,7 +69,7 @@ class APICallError(Exception):
         self,
         method: str,
         headers: dict[str, str],
-        data: dict[str, str],
+        data: Optional[dict[str, str]],
     ) -> None:
         super(APICallError, self).__init__()
 
@@ -365,7 +365,7 @@ class Bot:
             await ws.send_json(
                 {'id': datetime.now().toordinal(), 'type': 'ping'},
                 dumps=json.dumps,
-            )  # type: ignore
+            )
             await asyncio.sleep(60)
 
     async def receive(self, ws: ClientWebSocketResponse):

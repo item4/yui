@@ -82,7 +82,7 @@ class Handler:
             if o.type_ is None:
                 type_ = self.params[o.dest].annotation
 
-                if type_ == inspect._empty:  # type: ignore
+                if type_ == inspect._empty:
                     type_ = str
                 else:
                     if o.transform_func:
@@ -94,7 +94,7 @@ class Handler:
             if a.type_ is None:
                 type_ = self.params[a.dest].annotation
 
-                if type_ == inspect._empty:  # type: ignore
+                if type_ == inspect._empty:
                     type_ = str
                 else:
                     if a.transform_func:
