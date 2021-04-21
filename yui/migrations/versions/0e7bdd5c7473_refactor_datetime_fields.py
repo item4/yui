@@ -158,7 +158,10 @@ def upgrade():
         ),
         sa.Column('updated_timezone', TimezoneType(), nullable=True),
         sa.Column('is_deleted', sa.Boolean(), nullable=False),
-        sa.ForeignKeyConstraint(['genre_id'], ['toranoana_genre.id'],),
+        sa.ForeignKeyConstraint(
+            ['genre_id'],
+            ['toranoana_genre.id'],
+        ),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('code'),
     )
@@ -173,47 +176,80 @@ def upgrade():
         sa.Column(
             'female', ChoiceType(Target, impl=sa.Integer()), nullable=False
         ),
-        sa.ForeignKeyConstraint(['genre_id'], ['toranoana_genre.id'],),
+        sa.ForeignKeyConstraint(
+            ['genre_id'],
+            ['toranoana_genre.id'],
+        ),
         sa.PrimaryKeyConstraint('id'),
     )
     op.create_table(
         'toranoana_itemauthor',
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('author_id', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['author_id'], ['toranoana_author.id'],),
-        sa.ForeignKeyConstraint(['item_id'], ['toranoana_item.id'],),
+        sa.ForeignKeyConstraint(
+            ['author_id'],
+            ['toranoana_author.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['item_id'],
+            ['toranoana_item.id'],
+        ),
         sa.PrimaryKeyConstraint('item_id', 'author_id'),
     )
     op.create_table(
         'toranoana_itemcharacter',
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('character_id', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['character_id'], ['toranoana_character.id'],),
-        sa.ForeignKeyConstraint(['item_id'], ['toranoana_item.id'],),
+        sa.ForeignKeyConstraint(
+            ['character_id'],
+            ['toranoana_character.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['item_id'],
+            ['toranoana_item.id'],
+        ),
         sa.PrimaryKeyConstraint('item_id', 'character_id'),
     )
     op.create_table(
         'toranoana_itemcircle',
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('circle_id', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['circle_id'], ['toranoana_circle.id'],),
-        sa.ForeignKeyConstraint(['item_id'], ['toranoana_item.id'],),
+        sa.ForeignKeyConstraint(
+            ['circle_id'],
+            ['toranoana_circle.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['item_id'],
+            ['toranoana_item.id'],
+        ),
         sa.PrimaryKeyConstraint('item_id', 'circle_id'),
     )
     op.create_table(
         'toranoana_itemcoupling',
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('coupling_id', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['coupling_id'], ['toranoana_coupling.id'],),
-        sa.ForeignKeyConstraint(['item_id'], ['toranoana_item.id'],),
+        sa.ForeignKeyConstraint(
+            ['coupling_id'],
+            ['toranoana_coupling.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['item_id'],
+            ['toranoana_item.id'],
+        ),
         sa.PrimaryKeyConstraint('item_id', 'coupling_id'),
     )
     op.create_table(
         'toranoana_itemtag',
         sa.Column('item_id', sa.Integer(), nullable=False),
         sa.Column('tag_id', sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(['item_id'], ['toranoana_item.id'],),
-        sa.ForeignKeyConstraint(['tag_id'], ['toranoana_tag.id'],),
+        sa.ForeignKeyConstraint(
+            ['item_id'],
+            ['toranoana_item.id'],
+        ),
+        sa.ForeignKeyConstraint(
+            ['tag_id'],
+            ['toranoana_tag.id'],
+        ),
         sa.PrimaryKeyConstraint('item_id', 'tag_id'),
     )
 
