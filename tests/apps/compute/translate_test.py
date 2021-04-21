@@ -102,7 +102,7 @@ async def test_translate_command(bot):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n' '일본어 번역: こんにちは。私の名前はYUIです。'
+        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n일본어 번역: こんにちは。私の名前はYUIです。'
     )
 
     await translate(bot, event, 'ko', 'ko', '안녕하세요. 제 이름은 YUI에요.')
@@ -110,5 +110,5 @@ async def test_translate_command(bot):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n' '영어 번역: Hello. My name is YUI.'
+        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n영어 번역: Hello, my name is YUI.'
     )
