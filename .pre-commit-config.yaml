@@ -1,7 +1,7 @@
 fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v3.4.0
     hooks:
     - id: check-ast
     - id: check-byte-order-marker
@@ -18,7 +18,7 @@ repos:
     - id: end-of-file-fixer
     - id: trailing-whitespace
   - repo: https://github.com/sqlalchemyorg/zimports/
-    rev: 0.2.0
+    rev: 0.3.0
     hooks:
     - id: zimports
       args:
@@ -33,7 +33,7 @@ repos:
     hooks:
     - id: black
   - repo: https://gitlab.com/PyCQA/flake8
-    rev: 3.8.4
+    rev: 3.9.1
     hooks:
       - id: flake8
   - repo: local
