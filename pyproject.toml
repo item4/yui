@@ -7,7 +7,7 @@ force-exclude = '(/templates/)'
 name = "yui"
 version = "0.0.0"
 description = "YUI is Multi-purpose Slack Bot."
-authors = ["Kim Jin Su <item4_hun@hotmail.com>"]
+authors = ["Kim, Jin Su <item4hun@gmail.com>"]
 license = "AGPL-3.0-or-later"
 
 [tool.poetry.dependencies]
