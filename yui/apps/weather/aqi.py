@@ -1,4 +1,3 @@
-import datetime
 from hashlib import md5
 from typing import Optional
 from urllib.parse import urlencode
@@ -9,12 +8,12 @@ import attr
 
 from fake_useragent import UserAgent
 
-import tzlocal
-
 from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
+from ...utils.datetime import fromtimestamp
+
 
 box.assert_config_required('GOOGLE_API_KEY', str)
 box.assert_config_required('AQI_API_TOKEN', str)
@@ -189,10 +188,7 @@ async def aqi(bot, event: Message, address: str):
         await bot.say(event.channel, '현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!')
         return
 
-    time = datetime.datetime.fromtimestamp(result.time)
-    offset = tzlocal.get_localzone().utcoffset(time)
-    if offset:
-        time -= offset
+    time = fromtimestamp(result.time)
 
     ftime = time.strftime('%Y년 %m월 %d일 %H시')
     text = (
