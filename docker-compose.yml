@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - ./docker/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=DEV_ONLY
+    healthcheck:
+      test: "pg_isready -h localhost -p 5432 -q -U postgres"
+      interval: 3s
+      timeout: 1s
+      retries: 10
+    ports:
+      - "5432:5432"
+  headless_chrome:
+    image: yukinying/chrome-headless-browser
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - "9222:9222"
+  memcached:
+    image: memcached:latest
+    ports:
+      - "11211:11211"

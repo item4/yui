@@ -187,6 +187,7 @@ Temporary Items
 *.iml
 .idea
 *.config.toml
+!example.config.toml
 log
 .project
 docker
