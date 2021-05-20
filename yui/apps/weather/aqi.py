@@ -6,13 +6,12 @@ import aiohttp
 
 import attr
 
-from fake_useragent import UserAgent
-
 from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
 from ...utils.datetime import fromtimestamp
+from ...utils.http import USER_AGENT
 
 
 box.assert_config_required('GOOGLE_API_KEY', str)
@@ -85,7 +84,7 @@ async def get_aqi_idx(lat: float, lng: float, token: str) -> str:
 async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
     url = f'https://api.waqi.info/api/feed/@{idx}/obs.en.json'
     headers = {
-        'User-Agent': UserAgent().chrome,
+        'User-Agent': USER_AGENT,
         'accept-language': 'ko',
     }
     async with aiohttp.ClientSession() as session:

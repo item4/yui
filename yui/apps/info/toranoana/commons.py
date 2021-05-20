@@ -1,11 +1,10 @@
-from fake_useragent import FakeUserAgent
-
 from .models import Target
+from ....utils.http import USER_AGENT
 
 
 HEADERS = {
     'Cookie': 'adflg=0',
-    'User-Agent': FakeUserAgent().chrome,
+    'User-Agent': USER_AGENT,
 }
 
 

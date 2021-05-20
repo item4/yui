@@ -4,8 +4,6 @@ from urllib.parse import urlencode
 
 import aiohttp
 
-from fake_useragent import FakeUserAgent
-
 from ...bot import Bot
 from ...box import box
 from ...command import argument
@@ -16,9 +14,10 @@ from ...types.slack.attachment import Attachment
 from ...utils.html import USELESS_TAGS
 from ...utils.html import get_root
 from ...utils.html import strip_tags
+from ...utils.http import USER_AGENT
 
 headers: dict[str, str] = {
-    'User-Agent': FakeUserAgent().chrome,
+    'User-Agent': USER_AGENT,
 }
 DICS: dict[str, str] = {
     '영어': 'eng',

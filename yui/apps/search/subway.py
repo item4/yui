@@ -5,8 +5,6 @@ from urllib.parse import urlencode
 
 import aiohttp
 
-from fake_useragent import UserAgent
-
 import tossi
 
 from ...box import box
@@ -18,13 +16,14 @@ from ...transform import choice
 from ...utils import json
 from ...utils.datetime import now
 from ...utils.fuzz import ratio
+from ...utils.http import USER_AGENT
 
 PARENTHESES = re.compile(r'\(.+?\)')
 
 logger = logging.getLogger(__name__)
 
 headers: dict[str, str] = {
-    'User-Agent': UserAgent().chrome,
+    'User-Agent': USER_AGENT,
 }
 TEMPLATE = '{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}'
 REGION_TABLE: dict[str, tuple[str, str]] = {
