@@ -9,6 +9,7 @@ services:
     depends_on:
       - db
       - headless_chrome
+      - memcached
     links:
       - db
       - headless_chrome
@@ -42,7 +43,7 @@ services:
     image: memcached:latest
     networks:
       yuinet:
-      ipv4_address: 10.5.0.4
+        ipv4_address: 10.5.0.4
 
 networks:
   yuinet:
