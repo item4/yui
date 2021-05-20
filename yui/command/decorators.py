@@ -12,7 +12,9 @@ from ..types.handler import Option
 from ..utils.handler import get_handler
 
 if TYPE_CHECKING:
-    from ..types.handler import DECORATOR_ARGS_TYPE, DECORATOR_TYPE
+    from ..types.handler import DECORATOR_ARGS_TYPE
+    from ..types.handler import DECORATOR_TYPE
+
 
 ARGUMENT_TYPE_ERROR = '{name}: invalid type of argument value({e})'
 ARGUMENT_COUNT_ERROR = (
