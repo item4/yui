@@ -182,6 +182,7 @@ class Toranoana(route.RouteApp):
                 .text_content()
                 .replace('ジャンル：', '')
                 .replace(' 作品一覧', '')
+                .replace(' の同人誌一覧', '')
                 .strip()
             )
 
