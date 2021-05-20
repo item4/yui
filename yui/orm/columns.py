@@ -10,8 +10,6 @@ from sqlalchemy.schema import Column
 from sqlalchemy.sql.expression import func
 from sqlalchemy.types import DateTime
 
-from tzlocal import get_localzone
-
 from .types import TimezoneType
 
 
@@ -92,13 +90,10 @@ def DateTimeAtColumn(prefix: str) -> hybrid_property:
     timezone_key = f'{prefix}_timezone'
 
     def getter(self) -> Optional[datetime.datetime]:
-        local = get_localzone()
         dt: Optional[datetime.datetime] = getattr(self, datetime_key)
         tz: Optional[datetime.tzinfo] = getattr(self, timezone_key)
         if dt and tz:
-            return local.localize(dt.replace(tzinfo=None)).astimezone(tz)
-        if dt:
-            return local.localize(dt.replace(tzinfo=None)).replace(tzinfo=None)
+            return dt.astimezone(tz)
         return dt
 
     def setter(self, dt: datetime.datetime):

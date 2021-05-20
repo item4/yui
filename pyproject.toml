@@ -38,7 +38,6 @@ scipy = "^1.6.3"
 sympy = "^1.8"
 toml = "^0.10.2"
 tossi = "^0.3.1"
-tzlocal = "^2.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.812"

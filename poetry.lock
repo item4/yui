@@ -952,7 +952,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "369cb2eb7b063a51badc28dd9ec30860610edf856df03cb4703fe27b525a0fda"
+content-hash = "95b21875b630697417d5553e52ffd0257c54b1a559d5a61956d6100387ef80e8"
 
 [metadata.files]
 aiocron = [
