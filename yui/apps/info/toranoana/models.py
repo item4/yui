@@ -270,10 +270,6 @@ class ItemTag(Base):
 
     tag_id = Column(Integer, ForeignKey(Tag.id), primary_key=True)
 
-    item = relationship(Item)
-
-    tag = relationship(Tag)
-
 
 class ItemAuthor(Base):
     """Item : Author M:N"""
@@ -283,10 +279,6 @@ class ItemAuthor(Base):
     item_id = Column(Integer, ForeignKey(Item.id), primary_key=True)
 
     author_id = Column(Integer, ForeignKey(Author.id), primary_key=True)
-
-    item = relationship(Item)
-
-    author = relationship(Author)
 
 
 class ItemCircle(Base):
@@ -298,10 +290,6 @@ class ItemCircle(Base):
 
     circle_id = Column(Integer, ForeignKey(Circle.id), primary_key=True)
 
-    item = relationship(Item)
-
-    circle = relationship(Circle)
-
 
 class ItemCoupling(Base):
     """Item : Coupling M:N"""
@@ -312,10 +300,6 @@ class ItemCoupling(Base):
 
     coupling_id = Column(Integer, ForeignKey(Coupling.id), primary_key=True)
 
-    item = relationship(Item)
-
-    coupling = relationship(Coupling)
-
 
 class ItemCharacter(Base):
     """Item : Label M:N"""
@@ -325,7 +309,3 @@ class ItemCharacter(Base):
     item_id = Column(Integer, ForeignKey(Item.id), primary_key=True)
 
     character_id = Column(Integer, ForeignKey(Character.id), primary_key=True)
-
-    item = relationship(Item)
-
-    character = relationship(Character)
