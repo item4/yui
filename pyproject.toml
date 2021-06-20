@@ -51,6 +51,11 @@ freezegun = "^1.0.0,!=1.1.0"
 pre-commit = "^2.12.1"
 zimports = "^0.4.0"
 black = "^21.5b1"
+types-python-dateutil = "^0.1.4"
+types-tzlocal = "^0.1.1"
+types-toml = "^0.1.3"
+types-six = "^0.1.7"
+types-orjson = "^0.1.1"
 
 [tool.poetry.scripts]
 yui = "yui.cli:main"
