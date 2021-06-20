@@ -15,7 +15,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
 
-      # Install Depencencies
+      # Install Dependencies
       - name: Install Checkers
         run: pip install black flake8 flake8-import-order zimports
 
@@ -64,7 +64,7 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
 
-      # Install Depencencies
+      # Install Dependencies
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v2
