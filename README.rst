@@ -357,8 +357,7 @@ So you must run ``poetry install`` first and install pre-commit hook by below co
 License
 -------
 
-Currently, YUI is under AGPLv3 or higher.
-But I have a plan to make slack bot framework from code of yui and switch it to MIT.
+MIT
 
 
 Become a Sponsor
