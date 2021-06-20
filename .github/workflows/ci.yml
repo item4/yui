@@ -17,7 +17,7 @@ jobs:
 
       # Install Depencencies
       - name: Install Checkers
-        run: pip install black flake8 flake8-import-order zimports mypy
+        run: pip install black flake8 flake8-import-order zimports
 
       # Lint
       - name: Check coding convention
@@ -26,12 +26,6 @@ jobs:
         run: black --check .
       - name: Check import convention
         run: ./check_zimports.sh
-
-      # Type Check
-      - name: Edit mypy.ini for disable color output
-        run: echo "color_output=False" >> mypy.ini
-      - name: Check static types
-        run: mypy yui
 
   test-program:
     name: Test Program
@@ -84,6 +78,12 @@ jobs:
       # Fix PATH
       - name: Fix PATH
         run: echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
+
+      # Type Check
+      - name: Edit mypy.ini for disable color output
+        run: echo "color_output=False" >> mypy.ini
+      - name: Check static types
+        run: mypy yui
 
       # Test
       - name: Run test cases
