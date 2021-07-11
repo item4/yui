@@ -19,7 +19,6 @@ async def welcome_item4(bot, event: TeamJoin):
         f'- #_notice - 공지사항이 올라오는 곳이에요. 여기는 읽기만 가능해요.\n'
         f'- #dev - 개발/개발자에 대한 이야기를 하는 곳이에요.\n'
         f'- #gender - 성별 이슈, 성 소수자 등에 대한 주제들을 위한 특별 채널이에요.\n'
-        f'- #shopping - 지름신을 유혹하는 물건들을 서로 주고받는 곳이에요\n'
         f'- #subculture - 서브컬쳐 덕질은 여기서 하면 됩니다.\n'
         f'- #suggest - 슬랙 운영에 대한 건의는 여기서 해주세요\n'
         f'- #test - 제게 이것저것 시켜보고 싶으실 땐 이곳에서 해주세요!\n\n'
