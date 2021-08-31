@@ -110,5 +110,5 @@ async def test_translate_command(bot):
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == (
-        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n영어 번역: Hello, my name is Yui.'
+        '한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n영어 번역: Hello, my name is YUI.'
     )
