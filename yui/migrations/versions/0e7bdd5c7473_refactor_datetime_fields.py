@@ -6,6 +6,8 @@ Create Date: 2020-05-10 17:28:07.620112
 
 """
 
+import enum
+
 from alembic import op
 
 import sqlalchemy as sa
@@ -13,7 +15,6 @@ import sqlalchemy as sa
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import URLType
 
-from yui.apps.info.saomd.models import Server
 from yui.apps.info.toranoana.models import Stock
 from yui.apps.info.toranoana.models import Target
 from yui.orm.types import JSONType
@@ -24,6 +25,11 @@ revision = '0e7bdd5c7473'
 down_revision = None
 branch_labels = None
 depends_on = None
+
+
+@enum.unique
+class Server(enum.IntEnum):
+    pass
 
 
 def upgrade():
