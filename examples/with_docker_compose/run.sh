@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-poetry run yui upgrade head
-poetry run yui run
+python -m yui.cli upgrade head
+python -m yui.cli run

@@ -1,9 +1,8 @@
-FROM python:3.9
+FROM python:3.10
 
 MAINTAINER item4 <item4@localhost>
 
 ENV HOME="/home/kazuto"
-ENV PATH="${HOME}/.poetry/bin:${PATH}"
 ENV TZ="Asia/Seoul"
 
 RUN apt-get update -q \
@@ -22,12 +21,10 @@ RUN pip install --upgrade pip setuptools wheel
 RUN groupadd --gid 1007 kirigaya && useradd --create-home --uid 1007 --gid 1007 kazuto && mkdir -p $HOME/yui/data && chown -R kazuto:kirigaya $HOME
 USER kazuto
 
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-
-COPY --chown=kazuto:kirigaya ./pyproject.toml ./poetry.lock ${HOME}/yui/
+COPY --chown=kazuto:kirigaya ./requirements.txt ${HOME}/yui/
 
 WORKDIR ${HOME}/yui/
 
-RUN poetry install --no-dev --no-ansi
+RUN pip install -r requirements.txt
 
 COPY --chown=kazuto:kirigaya . ${HOME}/yui/
