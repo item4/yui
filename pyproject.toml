@@ -11,7 +11,7 @@ authors = ["Kim, Jin Su <item4hun@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = ">=3.7,<3.11"
+python = ">=3.10,<3.11"
 Babel = "^2.9.1"
 SQLAlchemy = "^1.4.19"
 SQLAlchemy-Utils = "^0.38.1"
@@ -37,9 +37,25 @@ scipy = "^1.7.3"
 sympy = "^1.9"
 toml = "^0.10.2"
 tossi = "^0.3.1"
-
-[tool.poetry.group.dev.dependencies]
-types-six = "^1.16.4"
+# workarounds
+aiosignal = "^1.2.0"
+atomicwrites = "^1.4.0"
+appdirs = "^1.4.4"
+"backports.entry-points-selectable" = "^1.1.1"
+"backports.zoneinfo" = "^0.2.1"
+charset-normalizer = "^2.0.9"
+colorama = "^0.4.4"
+croniter = "^1.1.0"
+frozenlist = "^1.2.0"
+idna = "^3.3"
+importlib-metadata = "^4.2.0"
+importlib-resources = "^5.4.0"
+Mako = "^1.1.6"
+markupsafe = "^2.0.1"
+multidict = "^5.2.0"
+sgmllib3k = "^1.0.0"
+typing-extensions = "^4.0.1"
+yarl = "^1.7.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.930"
@@ -56,6 +72,10 @@ black = "^21.12b0"
 types-python-dateutil = "^2.8.4"
 types-toml = "^0.10.1"
 types-orjson = "^3.6.1"
+types-six = "^1.16.4"
+# workarounds
+mypy-extensions = "^0.4.3"
+pycodestyle = "^2.8.0"
 
 [tool.poetry.scripts]
 yui = "yui.cli:main"
