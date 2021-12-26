@@ -100,7 +100,7 @@ jobs:
           NAVER_CLIENT_SECRET: ${{ secrets.TEST_NAVER_CLIENT_SECRET }}
 
       # After jobs
-      - name: Export Python dependencies for build Docker image
+      - name: Export requirements.txt for docker build
         run: |
           poetry export -o requirements.txt --dev --without-hashes
       - name: Archive requirements.txt file
@@ -128,7 +128,7 @@ jobs:
         with:
           username: item4
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Get stored requirements.txt
+      - name: Fetch stored requirements.txt
         uses: actions/download-artifact@v2
         with:
           name: python-deps
