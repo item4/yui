@@ -926,6 +926,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-pytz"
+version = "2021.3.3"
+description = "Typing stubs for pytz"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-six"
 version = "1.16.4"
 description = "Typing stubs for six"
@@ -940,6 +948,17 @@ description = "Typing stubs for toml"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "types-tzlocal"
+version = "3.0.0"
+description = "Typing stubs for tzlocal"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+types-pytz = "*"
 
 [[package]]
 name = "typing-extensions"
@@ -1052,7 +1071,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.10,<3.11"
-content-hash = "4c5301372855f93a3c5363184e755bfcebf48e46ec23a4eb94a89675fd4971b5"
+content-hash = "2fbf5c8d95996982b4d1802a8b548d9a959fd12ae999c79e16b3e5333deb4ea1"
 
 [metadata.files]
 aiocron = [
@@ -1996,6 +2015,10 @@ types-python-dateutil = [
     {file = "types-python-dateutil-2.8.4.tar.gz", hash = "sha256:29b85e25b832170f8d5ed383bf68cf5d9ee9066e2354221c6e9dd381dab71c5c"},
     {file = "types_python_dateutil-2.8.4-py3-none-any.whl", hash = "sha256:82a6160961d7b24418eeb383a5356f262229bd1450e0ccd82ad40f8a67baaafd"},
 ]
+types-pytz = [
+    {file = "types-pytz-2021.3.3.tar.gz", hash = "sha256:f6d21d6687935a1615db464b1e1df800d19502c36bc0486f43be7dfd2c404947"},
+    {file = "types_pytz-2021.3.3-py3-none-any.whl", hash = "sha256:75859c64c9a97d68259af6da208e8f5aaf4be4536e4d431a82a6e8b848fc183d"},
+]
 types-six = [
     {file = "types-six-1.16.4.tar.gz", hash = "sha256:e244c0547e0adf99b4004688b2b12542b5f0374fd2e3ecc4c801d637209fa758"},
     {file = "types_six-1.16.4-py2.py3-none-any.whl", hash = "sha256:389ba1f87a3e97bdd7945dcb36c64d0dd349c49e64a57fd2ffdb3c8fc2e4dd9d"},
@@ -2003,6 +2026,10 @@ types-six = [
 types-toml = [
     {file = "types-toml-0.10.1.tar.gz", hash = "sha256:5c1f8f8d57692397c8f902bf6b4d913a0952235db7db17d2908cc110e70610cb"},
     {file = "types_toml-0.10.1-py3-none-any.whl", hash = "sha256:8cdfd2b7c89bed703158b042dd5cf04255dae77096db66f4a12ca0a93ccb07a5"},
+]
+types-tzlocal = [
+    {file = "types-tzlocal-3.0.0.tar.gz", hash = "sha256:fb54ecee32b880f9eb39954c5b4a37cd5c564a0f0a9bb684c0c69309f317e30d"},
+    {file = "types_tzlocal-3.0.0-py3-none-any.whl", hash = "sha256:641336d1c3acde073adbf44f1f912870d5a6597a3fbbe006649a0a3ea6b3817a"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.0.1-py3-none-any.whl", hash = "sha256:7f001e5ac290a0c0401508864c7ec868be4e701886d5b573a9528ed3973d9d3b"},
