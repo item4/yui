@@ -143,29 +143,33 @@ async def aqi(bot, event: Message, address: str):
 
     addr = md5(address.encode()).hexdigest()
 
-    cached = await bot.cache.multi_get(
-        f'AQI_ADDRESS_{addr}_full_address',
-        f'AQI_ADDRESS_{addr}_lat',
-        f'AQI_ADDRESS_{addr}_lng',
+    full_address_key = f'AQI_ADDRESS_{addr}_full_address'
+    lat_key = f'AQI_ADDRESS_{addr}_lat'
+    lng_key = f'AQI_ADDRESS_{addr}_lng'
+    cached = await bot.cache.get_many(
+        full_address_key,
+        lat_key,
+        lng_key,
     )
-    if cached[0] and cached[1] and cached[2]:
-        full_address, lat, lng = cached
-    else:
+    full_address = cached.get(full_address_key)
+    lat = cached.get(lat_key)
+    lng = cached.get(lng_key)
+    if not all([full_address, lat, lng]):
         try:
             full_address, lat, lng = await get_geometric_info_by_address(
                 address,
                 bot.config.GOOGLE_API_KEY,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_full_address',
+                full_address_key,
                 full_address,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lat',
+                lat_key,
                 lat,
             )
             await bot.cache.set(
-                f'AQI_ADDRESS_{addr}_lng',
+                lng_key,
                 lng,
             )
         except IndexError:

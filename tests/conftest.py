@@ -2,9 +2,9 @@ import copy
 import os
 import pathlib
 
-import aiomcache
-
 import aioresponses
+
+import emcache
 
 import pytest
 
@@ -138,7 +138,9 @@ def bot_config(request):
 
 @pytest.fixture(scope='module')
 async def cache():
-    mc = aiomcache.Client(host='localhost', port=11211)  # FIXME
+    mc = await emcache.create_client(
+        [emcache.MemcachedHostAddress('localhost', 11211)]
+    )  # FIXME
     return Cache(mc, 'YUI_TEST_')
 
 

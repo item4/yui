@@ -24,11 +24,11 @@ from aiohttp.client_exceptions import ClientError
 from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 
-import aiomcache
-
 import async_timeout
 
 from dateutil.tz import tzoffset
+
+import emcache
 
 from .api import SlackAPI
 from .box import Box
@@ -82,6 +82,7 @@ class Bot:
     """Yui."""
 
     api: SlackAPI
+    mc: emcache.Client
     cache: Cache
 
     def __init__(
@@ -109,11 +110,6 @@ class Bot:
         config.DATABASE_ENGINE = get_database_engine(config)
 
         logger.info('connect to memcache')
-        self.mc = aiomcache.Client(
-            host=config.CACHE['HOST'],
-            port=config.CACHE['PORT'],
-        )
-        self.cache = Cache(self.mc, config.CACHE.get('PREFIX', 'YUI_'))
 
         logger.info('import apps')
         for app_name in config.APPS:
@@ -204,6 +200,15 @@ class Bot:
 
     async def run(self):
         """Run"""
+        self.mc = await emcache.create_client(
+            [
+                emcache.MemcachedHostAddress(
+                    self.config.CACHE['HOST'],
+                    self.config.CACHE['PORT'],
+                )
+            ]
+        )
+        self.cache = Cache(self.mc, self.config.CACHE.get('PREFIX', 'YUI_'))
 
         while True:
             await asyncio.wait(

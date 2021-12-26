@@ -43,7 +43,12 @@ class FakeBot(Bot):
         thread_pool_executor=None,
     ) -> None:
         if config is None:
-            config = Config(**DEFAULT, TOKEN='asdf', CHANNELS={}, USERS={})
+            config = Config(
+                **DEFAULT,
+                TOKEN='asdf',  # type: ignore
+                CHANNELS={},
+                USERS={},
+            )
 
         Namespace._bot = self
         self.loop = loop or asyncio.get_event_loop()
@@ -53,7 +58,9 @@ class FakeBot(Bot):
         self.ims: list[DirectMessageChannel] = []
         self.groups: list[PrivateChannel] = []
         self.cache: Cache = cache
-        self.users: list[User] = [User(id='U0', team_id='T0', name='system')]
+        self.users: list[User] = [
+            User(id='U0', team_id='T0', name='system'),  # type: ignore
+        ]
         self.responses: dict[str, Callable] = {}
         self.config = config
         self.process_pool_executor = process_pool_executor
@@ -95,7 +102,7 @@ class FakeBot(Bot):
         last_read: int = 0,
     ):
         channel = PublicChannel(
-            id=id,
+            id=id,  # type: ignore
             name=name,
             creator=creator,
             last_read=last_read,
@@ -111,7 +118,7 @@ class FakeBot(Bot):
         last_read: int = 0,
     ):
         channel = PrivateChannel(
-            id=id,
+            id=id,  # type: ignore
             name=name,
             creator=creator,
             last_read=last_read,
@@ -124,12 +131,16 @@ class FakeBot(Bot):
             user_id = user.id
         else:
             user_id = user
-        dm = DirectMessageChannel(id=id, user=user_id, last_read=last_read)
+        dm = DirectMessageChannel(
+            id=id,  # type: ignore
+            user=user_id,
+            last_read=last_read,
+        )
         self.ims.append(dm)
         return dm
 
     def add_user(self, id: str, name: str, team_id: str = 'T0'):
-        user = User(id=id, name=name, team_id=team_id)
+        user = User(id=id, name=name, team_id=team_id)  # type: ignore
         self.users.append(user)
         return user
 
@@ -155,7 +166,7 @@ class FakeBot(Bot):
         else:
             user_id = user.id
         return Message(
-            channel=channel_id,
+            channel=channel_id,  # type: ignore
             user=user_id,
             ts=ts,
             event_ts=event_ts,
