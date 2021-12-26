@@ -166,7 +166,7 @@ class App(BaseApp):
                     kw['raw'] = raw
                 if 'remain_chunks' in func_params:
                     annotation = func_params['remain_chunks'].annotation
-                    if annotation in [str, inspect._empty]:  # type: ignore
+                    if annotation in [str, inspect._empty]:
                         kw['remain_chunks'] = ' '.join(remain_chunks)
                     else:
                         kw['remain_chunks'] = remain_chunks

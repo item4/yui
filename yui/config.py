@@ -187,7 +187,7 @@ def load(path: pathlib.Path) -> Config:
     config_dict.update(toml.load(path.open()))
 
     try:
-        config = Config(**config_dict)  # type: ignore
+        config = Config(**config_dict)
     except TypeError as e:  # pragma: no cover
         error(str(e))
         raise
