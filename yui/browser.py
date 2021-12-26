@@ -1,4 +1,4 @@
-from aiocontext import async_contextmanager
+from contextlib import asynccontextmanager
 
 import aiohttp
 
@@ -7,7 +7,7 @@ from pyppeteer.launcher import connect
 from .utils import json
 
 
-@async_contextmanager
+@asynccontextmanager
 async def new_page(bot):
     async with aiohttp.ClientSession() as session:
         async with session.get(bot.config.WEBSOCKETDEBUGGERURL) as resp:

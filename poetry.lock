@@ -102,14 +102,6 @@ python-versions = ">=3.6"
 typing-extensions = {version = ">=3.6.5", markers = "python_version < \"3.8\""}
 
 [[package]]
-name = "asyncio-contextmanager"
-version = "1.0.1"
-description = "Decorator that turns async generator functions into async context managers."
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "asynctest"
 version = "0.13.0"
 description = "Enhance the standard unittest package with features for testing asyncio libraries"
@@ -1134,7 +1126,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "d006486196e32eb0101a8efdeb34a8b0719609bf4ffb5f463114dd465c6fe3de"
+content-hash = "2d4d4384c06aa827f5c763ab959f295d2f94e3cbd0d5d500a7928df022b81a28"
 
 [metadata.files]
 aiocron = [
@@ -1238,9 +1230,6 @@ appdirs = [
 async-timeout = [
     {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
     {file = "async_timeout-4.0.2-py3-none-any.whl", hash = "sha256:8ca1e4fcf50d07413d66d1a5e416e42cfdf5851c981d679a09851a6853383b3c"},
-]
-asyncio-contextmanager = [
-    {file = "asyncio-contextmanager-1.0.1.tar.gz", hash = "sha256:93b4620cd79623c3988c9f43e6f502263968645cd13aed3327a7ec8be43221d5"},
 ]
 asynctest = [
     {file = "asynctest-0.13.0-py3-none-any.whl", hash = "sha256:5da6118a7e6d6b54d83a8f7197769d046922a44d2a99c21382f0a6e4fadae676"},
