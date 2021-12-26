@@ -90,7 +90,7 @@ async def on_start(bot):
 async def on_team_join(bot, event: TeamJoin):
     logger.info('on team join start')
     res = await bot.api.users.info(event.user)
-    bot.users.append(User(**res.body['user']))  # type: ignore
+    bot.users.append(User(**res.body['user']))
     logger.info('on team join end')
 
     return True
@@ -105,7 +105,7 @@ async def on_user_change(bot, event: UserChange):
     res = await bot.api.users.info(event.user)
 
     bot.users[:] = [u for u in bot.users if u.id != event.user.id] + [
-        User(**res.body['user'])  # type: ignore
+        User(**res.body['user'])
     ]
     logger.info('on user change end')
 

@@ -42,7 +42,7 @@ async def get_cat_image_url(timeout: float) -> str:
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(timeout=timeout):
+                async with async_timeout.timeout(delay=timeout):
                     async with session.get(url) as res:
                         async with res:
                             if res.status == 200:
@@ -65,7 +65,7 @@ async def get_dog_image_url(timeout: float) -> str:
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(timeout=timeout):
+                async with async_timeout.timeout(delay=timeout):
                     async with session.get(url) as res:
                         async with res:
                             if res.status == 200:
@@ -76,7 +76,7 @@ async def get_dog_image_url(timeout: float) -> str:
 
 async def get_fox_image_url(timeout: float) -> str:
     url = 'http://fox-info.net/fox-gallery'
-    async with async_timeout.timeout(timeout=timeout):
+    async with async_timeout.timeout(delay=timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.text()
