@@ -74,6 +74,8 @@ jobs:
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
+          python -m venv ./.venv
+          ./.venv/bin/activate
           poetry export -o requirements.txt --dev --without-hashes
           pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
