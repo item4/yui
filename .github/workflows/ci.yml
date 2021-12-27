@@ -1,4 +1,4 @@
-name: Run test, lint check and deploy
+name: CI
 
 on:
   - push

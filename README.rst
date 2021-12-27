@@ -1,7 +1,7 @@
 YUI
 ===
 
-.. image:: https://github.com/item4/yui/workflows/Run%20test,%20lint%20check%20and%20deploy/badge.svg
+.. image:: https://github.com/item4/yui/workflows/CI/badge.svg
    :alt: CI Status
 
 .. image:: https://codecov.io/gh/item4/yui/branch/main/graph/badge.svg
