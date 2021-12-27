@@ -32,8 +32,8 @@ If you did not have Poetry, Install it by below command.
 
 .. code-block:: bash
 
-   $ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-   # or see https://poetry.eustace.io/docs/#installation for details
+   $ curl -sSL https://install.python-poetry.org | python3 -
+   # or see https://python-poetry.org/docs/master/#installing-with-the-official-installer for details
 
 
 You can install yui by poetry without development requirements.
