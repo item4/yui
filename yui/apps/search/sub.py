@@ -194,26 +194,38 @@ async def get_annissia_caption_list_json(
 
 
 def select_animes_from_ohli(title, ohli_all):
+    title = title.lower()
     data = []
     for w, weekday_list in enumerate(ohli_all):
         for ani in weekday_list:
             ani['week'] = w
             ani['ratio'] = max(
                 [
-                    match(title.lower(), ani['s']),
-                    max(
-                        match(title.lower(), a['s'].lower()) for a in ani['n']
-                    ),
+                    match(title, ani['s'].lower()),
+                    max(match(title, a['s'].lower()) for a in ani['n']),
                 ]
             )
+
+            if any(
+                [
+                    title in ani['s'].lower(),
+                    *[title in a['s'].lower() for a in ani['n']],
+                ]
+            ):
+                ani['ratio'] += 10
             data.append(ani)
 
-    return list(
-        sorted(
-            filter(lambda x: x['ratio'] > MIN_RATIO, data),
-            key=lambda x: x['ratio'],
-        )
-    )
+    results = []
+    first = 0
+    for ani in sorted(data, key=lambda x: x['ratio']):
+        if ani['ratio'] > MIN_RATIO:
+            break
+        if not first:
+            first = ani['ratio']
+        elif first - 20 > ani['ratio']:
+            break
+        results.append(ani)
+    return results
 
 
 def select_one_anime_from_anissia(ohli_ani, anissia_week):
