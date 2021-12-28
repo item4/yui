@@ -22,6 +22,7 @@ from ...utils import json
 from ...utils.fuzz import match
 
 
+MIN_RATIO = 60
 DOW = [
     '일요일',
     '월요일',
@@ -209,7 +210,7 @@ def select_animes_from_ohli(title, ohli_all):
 
     return list(
         sorted(
-            filter(lambda x: x['ratio'] > 75, data),
+            filter(lambda x: x['ratio'] > MIN_RATIO, data),
             key=lambda x: x['ratio'],
         )
     )
@@ -267,7 +268,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
                 ohli_ani,
                 anissia_week,
             )
-            if anissia_ani['ratio'] > 75:
+            if anissia_ani['ratio'] > MIN_RATIO:
                 try:
                     anissia_subs = await get_annissia_caption_list_json(
                         anissia_ani['animeNo'],
