@@ -217,8 +217,8 @@ def select_animes_from_ohli(title, ohli_all):
 
     results = []
     first = 0
-    for ani in sorted(data, key=lambda x: x['ratio']):
-        if ani['ratio'] > MIN_RATIO:
+    for ani in sorted(data, key=lambda x: -x['ratio']):
+        if ani['ratio'] < MIN_RATIO:
             break
         if not first:
             first = ani['ratio']
