@@ -46,6 +46,7 @@ def fix_url(url: str) -> str:
 
 
 def convert_released_dt(input: str) -> str:
+    input = input.replace('-', '').replace('T', '').replace(':', '')
     try:
         return datetime.strptime(input, '%Y%m%d%H%M%S').strftime(DATE_FORMAT)
     except ValueError:
@@ -56,7 +57,7 @@ def convert_released_dt(input: str) -> str:
 class Sub:
 
     maker: str
-    episode_num: float
+    episode_num: str
     url: str = attr.ib(converter=fix_url)
     released_at: str = attr.ib(converter=convert_released_dt)
 
@@ -137,9 +138,9 @@ async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                'https://ohli.moe/timetable/list/now'
+                'https://api.OHLI.moe/timetable/list/now'
             ) as resp:
-                return json.loads(await resp.text())
+                return await resp.json(loads=json.loads)
 
 
 async def get_ohli_caption_list(i, timeout: float) -> set[Sub]:
@@ -147,7 +148,7 @@ async def get_ohli_caption_list(i, timeout: float) -> set[Sub]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'https://ohli.moe/timetable/cap?i={i}'
+                f'https://api.OHLI.moe/timetable/cap?i={i}'
             ) as resp:
                 data = await resp.json(loads=json.loads)
 
@@ -158,7 +159,7 @@ async def get_ohli_caption_list(i, timeout: float) -> set[Sub]:
         result.add(
             Sub(
                 maker=sub['n'],
-                episode_num=episode_num,
+                episode_num=str(episode_num),
                 url=sub['a'],
                 released_at=sub['d'],
             )
@@ -167,26 +168,69 @@ async def get_ohli_caption_list(i, timeout: float) -> set[Sub]:
     return result
 
 
-async def get_annissa_weekly_json(w, timeout: float) -> list[dict[str, Any]]:
+async def get_anissia_weekly_json(
+    week: int,
+    timeout: float,
+) -> list[dict[str, Any]]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'https://www.anissia.net/anitime/list?w={w}'
+                f'https://anissia.net/api/anime/schedule/{week}'
             ) as resp:
-                return json.loads(await resp.text())
+                return await resp.json(loads=json.loads)
 
 
-async def get_annissia_caption_list_json(i, timeout: float) -> list[dict]:
+async def get_annissia_caption_list_json(
+    anime_no: int,
+    timeout: float,
+) -> list[dict]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f'https://www.anissia.net/anitime/cap?i={i}'
+                f'https://anissia.net/api/anime/caption/animeNo/{anime_no}'
             ) as resp:
-                return json.loads(await resp.text())
+                return await resp.json(loads=json.loads)
+
+
+def select_animes_from_ohli(title, ohli_all):
+    data = []
+    for w, weekday_list in enumerate(ohli_all):
+        for ani in weekday_list:
+            ani['week'] = w
+            ani['ratio'] = max(
+                [
+                    match(title.lower(), ani['s']),
+                    max(
+                        match(title.lower(), a['s'].lower()) for a in ani['n']
+                    ),
+                ]
+            )
+            data.append(ani)
+
+    return list(
+        sorted(
+            filter(lambda x: x['ratio'] > 75, data),
+            key=lambda x: x['ratio'],
+        )
+    )
+
+
+def select_one_anime_from_anissia(ohli_ani, anissia_week):
+    for ani in anissia_week:
+        ani['ratio'] = max(
+            match(alias['s'].lower(), ani['subject'].lower())
+            for alias in ohli_ani['n']
+        )
+
+        if ani['subject'] == ohli_ani['t']:
+            ani['ratio'] += 5
+        if fuzz.ratio(ani['website'], ohli_ani['l']) > 90:
+            ani['ratio'] += 10
+
+    return max(anissia_week, key=lambda x: x['ratio'])
 
 
 async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
-
     try:
         ohli_all = await get_ohli_now_json(timeout)
     except asyncio.TimeoutError:
@@ -196,91 +240,64 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         )
         return
 
-    o_data: list[dict[str, Any]] = []
+    matched = select_animes_from_ohli(title, ohli_all)
 
-    for w, weekday_list in enumerate(ohli_all):
-        for ani in weekday_list:
-            ani['week'] = w
-            ani['ratio'] = max(
-                match(
-                    title.lower(),
-                    a['s'].lower(),
-                )
-                for a in ani['n']
-            )
-            o_data.append(ani)
+    if not matched:
+        await bot.say(event.channel, '해당 제목의 애니는 찾을 수 없어요!')
+        return
 
-    o_ani = max(o_data, key=lambda x: x['ratio'])
-
-    if o_ani['ratio'] > 10:
+    for ohli_ani in matched:
         try:
-            a_data = await get_annissa_weekly_json(o_ani['week'], timeout)
+            captions = await get_ohli_caption_list(ohli_ani['i'], timeout)
         except asyncio.TimeoutError:
-            a_data = []
+            captions = set()
 
-        captions = await get_ohli_caption_list(o_ani['i'], timeout)
+        try:
+            anissia_week = await get_anissia_weekly_json(
+                ohli_ani['week'],
+                timeout,
+            )
+        except asyncio.TimeoutError:
+            anissia_week = []
 
         use_anissia = False
-        a_ani = None
-        if a_data:
-            for ani in a_data:
-                ani['ratio'] = max(
-                    match(alias['s'].lower(), ani['s'].lower())
-                    for alias in o_ani['n']
-                )
-
-                if o_ani['t'] == ani['t']:
-                    ani['ratio'] += 5
-                if fuzz.ratio(ani['l'], o_ani['l']) > 90:
-                    ani['ratio'] += 10
-
-            a_ani = max(a_data, key=lambda x: x['ratio'])
-
-            if a_ani['ratio'] > 75:
-                use_anissia = True
-
+        anissia_ani = None
+        if anissia_week:
+            anissia_ani = select_one_anime_from_anissia(
+                ohli_ani,
+                anissia_week,
+            )
+            if anissia_ani['ratio'] > 75:
                 try:
-                    a_subs = await get_annissia_caption_list_json(
-                        a_ani['i'],
+                    anissia_subs = await get_annissia_caption_list_json(
+                        anissia_ani['animeNo'],
                         timeout,
                     )
                 except asyncio.TimeoutError:
-                    a_subs = []
-                    use_anissia = False
-
-                for sub in a_subs:
-                    url = encode_url(sub['a'])
-                    episode_num = int(sub['s']) / 10
-                    if int(math.ceil(episode_num)) == int(episode_num):
-                        episode_num = int(episode_num)
+                    anissia_subs = []
+                use_anissia = bool(anissia_subs)
+                for sub in anissia_subs:
+                    url = encode_url(sub['website'])
                     captions.add(
                         Sub(
-                            maker=sub['n'],
-                            episode_num=episode_num,
+                            maker=sub['name'],
+                            episode_num=sub['episode'],
                             url=url,
-                            released_at=sub['d'],
+                            released_at=sub['updDt'],
                         )
                     )
 
-        title = o_ani['s']
-        dow = DOW[o_ani['week']]
-        time = print_time(o_ani['t'])
-        url = fix_url(o_ani['l'])
-        if use_anissia and a_ani:
-            pretext = (
-                '애니시아와 OHLI의 자막 DB에서 요청하신것과 가장 비슷한 제목의 애니메이션을 '
-                '찾았어요! 양측의 DB의 내용을 종합해서 알려드릴게요!'
-            )
-            genre = a_ani['g'].replace(' ', '')
-            fallback = f'*{title}* ({dow} {time} / {genre} / {url})'
-            text = f'{dow} {time} / {genre}'
+        title = ohli_ani['s']
+        dow = DOW[ohli_ani['week']]
+        time = print_time(ohli_ani['t'])
+        url = fix_url(ohli_ani['l'])
+        if use_anissia and anissia_ani:
+            genres = anissia_ani['genres']
+            fallback = f'*{title}* ({dow} {time} / {genres} / {url})'
+            text = f'{dow} {time} / {genres} / Source: OHLI & Anissia'
         else:
-            pretext = (
-                'OHLI의 자막 DB에서 요청하신것과 가장 비슷한 제목의 애니메이션을 '
-                '찾았어요! 아쉽지만 애니시아에선 찾지 못했어요. OHLI DB의 내용을 알려드릴게요!'
-            )
             fallback = f'*{title}* ({dow} {time} / {url})'
-            text = f'{dow} {time}'
+            text = f'{dow} {time} / Source: OHLI'
 
         attachments: list[Attachment] = [
             Attachment(
@@ -288,8 +305,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
                 title=title,
                 title_link=url,
                 text=text,
-                thumb_url=o_ani['img'] or None,
-                pretext=pretext,
+                thumb_url=ohli_ani['img'] or None,
             ),
         ]
         attachments.extend(make_sub_list(captions))
@@ -300,9 +316,6 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
             as_user=True,
             thread_ts=event.ts,
         )
-
-    else:
-        await bot.say(event.channel, '해당 제목의 애니는 찾을 수 없어요!')
 
 
 async def search_finished(
@@ -326,7 +339,7 @@ async def search_finished(
     if data:
         await bot.say(
             event.channel,
-            (f'완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의' ' 애니가 검색되었어요!'),
+            f'완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의 애니가 검색되었어요!',
             thread_ts=event.event_ts,
         )
         for ani in data:
