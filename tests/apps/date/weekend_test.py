@@ -1,6 +1,6 @@
-from freezegun import freeze_time
-
 import pytest
+
+from time_machine import travel
 
 from yui.apps.date.weekend import auto_weekend_loading
 from yui.utils.datetime import datetime
@@ -9,7 +9,7 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2018, 10, 8, 0))
+@travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_weekend_start(bot_config):
     bot_config.CHANNELS['general'] = 'general'
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
@@ -21,11 +21,11 @@ async def test_weekend_start(bot_config):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == ('주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%')
+    assert said.data['text'] == '주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%'
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2018, 10, 10, 12))
+@travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_weekend_half(bot_config):
     bot_config.CHANNELS['general'] = 'general'
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
@@ -37,4 +37,4 @@ async def test_weekend_half(bot_config):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == ('주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%')
+    assert said.data['text'] == '주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%'

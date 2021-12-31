@@ -1,6 +1,6 @@
-from freezegun import freeze_time
-
 import pytest
+
+from time_machine import travel
 
 from yui.apps.date.day import holiday
 from yui.utils.datetime import datetime
@@ -9,7 +9,7 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2019, 2, 4))
+@travel(datetime(2019, 2, 4), tick=False)
 async def test_holiday_command(bot_config):
     bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')

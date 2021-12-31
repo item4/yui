@@ -1,6 +1,6 @@
-from freezegun import freeze_time
-
 import pytest
+
+from time_machine import travel
 
 from yui.apps.info.packtpub import PACKTPUB_URL
 from yui.apps.info.packtpub import auto_packtpub_dotd
@@ -12,7 +12,7 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2018, 10, 7))
+@travel(datetime(2018, 10, 7), tick=False)
 async def test_no_packtpub_dotd(bot, response_mock):
     response_mock.get(
         'https://services.packtpub.com/free-learning-v1/offers'
@@ -35,7 +35,7 @@ async def test_no_packtpub_dotd(bot, response_mock):
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2018, 10, 7))
+@travel(datetime(2018, 10, 7), tick=False)
 async def test_packtpub_dotd(bot, response_mock):
     product_id = '11223344'
     title = 'test book'
@@ -75,7 +75,7 @@ async def test_packtpub_dotd(bot, response_mock):
 
 
 @pytest.mark.asyncio
-@freeze_time(datetime(2018, 10, 7))
+@travel(datetime(2018, 10, 7), tick=False)
 async def test_auto_packtpub_dotd(bot_config, response_mock):
     assert auto_packtpub_dotd.cron.spec == '5 9 * * *'
     product_id = '11223344'
