@@ -1,8 +1,8 @@
-"""Refactor datetime fields
+"""Drop toranoana
 
-Revision ID: 0e7bdd5c7473
-Revises:
-Create Date: 2020-05-10 17:28:07.620112
+Revision ID: 75c91e7af605
+Revises: fbbdf21dcebe
+Create Date: 2022-01-08 14:41:53.252409
 
 """
 import enum
@@ -11,16 +11,15 @@ from alembic import op
 
 import sqlalchemy as sa
 
-from sqlalchemy_utils import ChoiceType
-from sqlalchemy_utils import URLType
+from sqlalchemy_utils.types import ChoiceType
+from sqlalchemy_utils.types import URLType
 
-from yui.orm.types import JSONType
 from yui.orm.types import TimezoneType
 
 
 # revision identifiers, used by Alembic.
-revision = '0e7bdd5c7473'
-down_revision = None
+revision = '75c91e7af605'
+down_revision = 'fbbdf21dcebe'
 branch_labels = None
 depends_on = None
 
@@ -44,67 +43,23 @@ class Target(enum.IntEnum):
     wildcard = 3
 
 
-@enum.unique
-class Server(enum.IntEnum):
-    pass
-
-
 def upgrade():
-    op.create_table(
-        'event_log',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('ts', sa.String(), nullable=False),
-        sa.Column('channel', sa.String(), nullable=False),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_table(
-        'json_cache',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.String(), nullable=False),
-        sa.Column('body', JSONType(), nullable=True),
-        sa.Column(
-            'created_datetime', sa.DateTime(timezone=True), nullable=False
-        ),
-        sa.Column('created_timezone', TimezoneType(), nullable=True),
-        sa.PrimaryKeyConstraint('id'),
-        sa.UniqueConstraint('name'),
-    )
-    op.create_table(
-        'memo',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('keyword', sa.String(), nullable=False),
-        sa.Column('text', sa.Text(), nullable=False),
-        sa.Column('author', sa.String(), nullable=False),
-        sa.Column(
-            'created_datetime', sa.DateTime(timezone=True), nullable=False
-        ),
-        sa.Column('created_timezone', TimezoneType(), nullable=True),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_table(
-        'rss_feed_url',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('url', sa.String(), nullable=False),
-        sa.Column('channel', sa.String(), nullable=False),
-        sa.Column(
-            'updated_datetime', sa.DateTime(timezone=True), nullable=False
-        ),
-        sa.Column('updated_timezone', TimezoneType(), nullable=True),
-        sa.PrimaryKeyConstraint('id'),
-    )
-    op.create_table(
-        'saomd_notice',
-        sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('notice_id', sa.Integer(), nullable=False),
-        sa.Column(
-            'server', ChoiceType(Server, impl=sa.Integer()), nullable=False
-        ),
-        sa.Column('title', sa.String(), nullable=False),
-        sa.Column('duration', sa.String(), nullable=True),
-        sa.Column('short_description', sa.String(), nullable=True),
-        sa.Column('is_deleted', sa.Boolean(), nullable=True),
-        sa.PrimaryKeyConstraint('id'),
-    )
+    op.drop_table('toranoana_itemauthor')
+    op.drop_table('toranoana_itemcharacter')
+    op.drop_table('toranoana_itemcircle')
+    op.drop_table('toranoana_itemcoupling')
+    op.drop_table('toranoana_itemtag')
+    op.drop_table('toranoana_author')
+    op.drop_table('toranoana_character')
+    op.drop_table('toranoana_circle')
+    op.drop_table('toranoana_coupling')
+    op.drop_table('toranoana_tag')
+    op.drop_table('toranoana_item')
+    op.drop_table('toranoana_watch')
+    op.drop_table('toranoana_genre')
+
+
+def downgrade():
     op.create_table(
         'toranoana_author',
         sa.Column('id', sa.Integer(), nullable=False),
@@ -275,24 +230,3 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint('item_id', 'tag_id'),
     )
-
-
-def downgrade():
-    op.drop_table('toranoana_itemtag')
-    op.drop_table('toranoana_itemcoupling')
-    op.drop_table('toranoana_itemcircle')
-    op.drop_table('toranoana_itemcharacter')
-    op.drop_table('toranoana_itemauthor')
-    op.drop_table('toranoana_watch')
-    op.drop_table('toranoana_item')
-    op.drop_table('toranoana_tag')
-    op.drop_table('toranoana_genre')
-    op.drop_table('toranoana_coupling')
-    op.drop_table('toranoana_circle')
-    op.drop_table('toranoana_character')
-    op.drop_table('toranoana_author')
-    op.drop_table('saomd_notice')
-    op.drop_table('rss_feed_url')
-    op.drop_table('memo')
-    op.drop_table('json_cache')
-    op.drop_table('event_log')

@@ -5,13 +5,13 @@ Revises: 59c36093b2ed
 Create Date: 2021-01-02 10:59:32.722200
 
 """
-
 from alembic import op
 
 import sqlalchemy as sa
 
 from yui.orm.types import JSONType
 from yui.orm.types import TimezoneType
+
 
 # revision identifiers, used by Alembic.
 revision = '2d8d76d94b27'
