@@ -210,7 +210,7 @@ def test_binop():
         e.run('2 @ 3')
     assert e.run('3 * 2') == 3 * 2
     assert e.run('33 % 4') == 33 % 4
-    assert e.run('3 ** 2') == 3 ** 2
+    assert e.run('3 ** 2') == 3**2
     assert e.run('100 >> 2') == 100 >> 2
     assert e.run('3 - 1') == 3 - 1
 
@@ -532,12 +532,12 @@ def test_listcomp():
     assert e.run('[x ** 2 for x in [1, 2, 3]]') == [1, 4, 9]
     assert 'x' not in e.symbol_table
     assert e.run('[x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]]') == (
-        [x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]]
+        [x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]]
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
     assert e.run('[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]') == (
-        [y ** 2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
+        [y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
@@ -601,12 +601,12 @@ def test_setcomp():
     assert e.run('{x ** 2 for x in [1, 2, 3, 3]}') == {1, 4, 9}
     assert 'x' not in e.symbol_table
     assert e.run('{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}') == (
-        {x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
+        {x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table
     assert e.run('{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}') == (
-        {y ** 2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
+        {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
     )
     assert 'x' not in e.symbol_table
     assert 'y' not in e.symbol_table

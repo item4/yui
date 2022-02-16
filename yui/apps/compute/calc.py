@@ -298,7 +298,7 @@ BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     _ast.MatMult: lambda a, b: a @ b,
     _ast.Mult: lambda a, b: a * b,
     _ast.Mod: lambda a, b: a % b,
-    _ast.Pow: lambda a, b: a ** b,
+    _ast.Pow: lambda a, b: a**b,
     _ast.RShift: lambda a, b: a >> b,
     _ast.Sub: lambda a, b: a - b,
 }
