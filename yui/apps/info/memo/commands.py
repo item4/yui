@@ -45,7 +45,7 @@ async def memo_add(
     memo.text = text
     memo.created_at = now()
 
-    async with sess.begin():
+    async with sess.begin_nested():
         sess.add(memo)
 
     await bot.say(
@@ -99,7 +99,7 @@ async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
 
     """
 
-    async with sess.begin():
+    async with sess.begin_nested():
         await sess.execute(delete(Memo).where(Memo.keyword == keyword))
 
     await bot.say(
