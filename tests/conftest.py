@@ -85,7 +85,7 @@ async def fx_sess(fx_engine):
                 error = True
 
         try:
-            conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
+            await conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
         except ProgrammingError:
             error = True
 
