@@ -18,7 +18,7 @@ async def make_log(bot, event: Message, sess: AsyncSession):
         return True
 
     if event.channel in channels:
-        async with sess.begin():
+        async with sess.begin_nested():
             await sess.execute(
                 Insert(EventLog)
                 .values(channel=event.channel.id, ts=event.ts)

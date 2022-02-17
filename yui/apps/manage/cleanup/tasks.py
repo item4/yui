@@ -74,7 +74,7 @@ async def get_old_history(bot, sess: AsyncSession):
                         pass
                     else:
                         messages += r.body.get('messages', [])
-                async with sess.begin():
+                async with sess.begin_nested():
                     await sess.execute(
                         Insert(EventLog)
                         .values(channel=channel.id, ts=message['ts'])
