@@ -76,15 +76,17 @@ async def fx_sess(fx_engine):
         for table in reversed(metadata.sorted_tables):
             try:
                 await conn.execute(
-                    'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;'.format(
-                        table.name,
+                    text(
+                        'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;'.format(
+                            table.name,
+                        )
                     )
                 )
             except ProgrammingError:
                 error = True
 
         try:
-            conn.execute('SET CONSTRAINTS ALL IMMEDIATE;')
+            conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
         except ProgrammingError:
             error = True
 
