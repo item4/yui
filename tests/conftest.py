@@ -31,7 +31,7 @@ def pytest_addoption(parser):
         '--database-url',
         type=str,
         default=os.getenv('YUI_TEST_DATABASE_URL', DEFAULT_DATABASE_URL),
-        help='Database URL for testing.' '[default: %default]',
+        help='Database URL for testing.' '[default: %(default)s]',
     )
 
 
