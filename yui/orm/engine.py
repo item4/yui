@@ -1,8 +1,8 @@
 from typing import Optional
 from typing import Type
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import Pool
 
 from ..config import Config
@@ -12,8 +12,8 @@ def create_database_engine(
     url: str,
     echo: bool,
     poolclass: Optional[Type[Pool]] = None,
-) -> Engine:
-    return create_engine(
+) -> AsyncEngine:
+    return create_async_engine(
         url,
         echo=echo,
         poolclass=poolclass,
@@ -24,7 +24,7 @@ def create_database_engine(
 def get_database_engine(
     config: Config,
     poolclass: Optional[Type[Pool]] = None,
-) -> Engine:
+) -> AsyncEngine:
     try:
         engine = config.DATABASE_ENGINE
     except AttributeError:

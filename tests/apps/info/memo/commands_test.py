@@ -1,10 +1,12 @@
 import pytest
 
+from sqlalchemy.sql.expression import func
+from sqlalchemy.sql.expression import select
+
 from yui.apps.info.memo.commands import memo_add
 from yui.apps.info.memo.commands import memo_delete
 from yui.apps.info.memo.commands import memo_show
 from yui.apps.info.memo.models import Memo
-from yui.orm.utils import get_count
 
 
 @pytest.mark.asyncio
@@ -27,8 +29,8 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword1}`란 이름을 가진 기억 레코드가 없어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword1),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
         )
         == 0
     )
@@ -41,8 +43,8 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword2}`이란 이름을 가진 기억 레코드가 없어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword2),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
         )
         == 0
     )
@@ -55,8 +57,8 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword1}`로 기억 레코드를 생성했어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword1),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
         )
         == 1
     )
@@ -69,8 +71,8 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword2}`으로 기억 레코드를 생성했어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword2),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
         )
         == 1
     )
@@ -83,8 +85,8 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword1}`로 기억 레코드를 생성했어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword1),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
         )
         == 2
     )
@@ -111,14 +113,14 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword1}`에 관한 기억 레코드를 모두 삭제했어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword1),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
         )
         == 0
     )
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword2),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
         )
         == 1
     )
@@ -131,14 +133,14 @@ async def test_memo_flow(bot, fx_sess):
     assert said.data['text'] == f'`{keyword2}`에 관한 기억 레코드를 모두 삭제했어요!'
 
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword1),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
         )
         == 0
     )
     assert (
-        get_count(
-            fx_sess.query(Memo).filter_by(keyword=keyword2),
+        await fx_sess.scalar(
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
         )
         == 0
     )

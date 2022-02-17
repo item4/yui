@@ -41,8 +41,8 @@ class BaseApp:
     async def run(self, bot: Bot, event: Event):
         raise NotImplementedError
 
-    @contextlib.contextmanager
-    def prepare_kwargs(
+    @contextlib.asynccontextmanager
+    async def prepare_kwargs(
         self,
         *,
         bot: Bot,
@@ -70,4 +70,4 @@ class BaseApp:
         try:
             yield kwargs
         finally:
-            sess.close()
+            await sess.close()

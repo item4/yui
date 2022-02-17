@@ -62,27 +62,10 @@ def run(config):
     """Run YUI."""
     try:
         while True:
-            loop = asyncio.get_event_loop()
-            bot = Bot(config, loop)
-            loop.run_until_complete(bot.run())
-            loop.close()
+            bot = Bot(config)
+            asyncio.run(bot.run())
     except ConfigurationError as e:
         error(str(e))
-
-
-@yui.command()
-@load_config
-def init_db(config):
-    """Creates a new migration repository."""
-
-    directory = os.path.join('yui', 'migrations')
-    c = Config()
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', config.DATABASE_URL)
-
-    c.config_file_name = os.path.join(directory, 'alembic.ini')
-
-    command.init(c, directory, 'chatterbox')
 
 
 @yui.command()
@@ -108,27 +91,31 @@ def revision(
 ):
     """Create a new revision file."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.revision(
+            c,
+            message,
+            autogenerate=autogenerate,
+            sql=sql,
+            head=head,
+            splice=splice,
+            branch_label=branch_label,
+            version_path=version_path,
+            rev_id=rev_id,
+        )
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.revision(
-        c,
-        message,
-        autogenerate=autogenerate,
-        sql=sql,
-        head=head,
-        splice=splice,
-        branch_label=branch_label,
-        version_path=version_path,
-        rev_id=rev_id,
-    )
+    asyncio.run(main())
 
 
 @yui.command()
@@ -152,27 +139,31 @@ def migrate(
 ):
     """Alias for 'revision --autogenerate'"""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.revision(
+            c,
+            message,
+            autogenerate=True,
+            sql=sql,
+            head=head,
+            splice=splice,
+            branch_label=branch_label,
+            version_path=version_path,
+            rev_id=rev_id,
+        )
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.revision(
-        c,
-        message,
-        autogenerate=True,
-        sql=sql,
-        head=head,
-        splice=splice,
-        branch_label=branch_label,
-        version_path=version_path,
-        rev_id=rev_id,
-    )
+    asyncio.run(main())
 
 
 @yui.command()
@@ -181,17 +172,21 @@ def migrate(
 def edit(config, revision: str):
     """Edit current revision."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.edit(c, revision)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.edit(c, revision)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -209,19 +204,27 @@ def merge(
 ):
     """Merge two revisions together.  Creates a new migration file."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.merge(
+            c,
+            revisions,
+            message=message,
+            branch_label=branch_label,
+            rev_id=rev_id,
+        )
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.merge(
-        c, revisions, message=message, branch_label=branch_label, rev_id=rev_id
-    )
+    asyncio.run(main())
 
 
 @yui.command()
@@ -232,17 +235,21 @@ def merge(
 def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
     """Upgrade to a later version."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.upgrade(c, revision, sql=sql, tag=tag)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.upgrade(c, revision, sql=sql, tag=tag)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -253,17 +260,21 @@ def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
 def downgrade(config, revision: str, sql: bool, tag: str):
     """Revert to a previous version."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.downgrade(c, revision, sql=sql, tag=tag)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.downgrade(c, revision, sql=sql, tag=tag)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -272,17 +283,21 @@ def downgrade(config, revision: str, sql: bool, tag: str):
 def show(config, revision: str):
     """Show the revision denoted by the given symbol."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.show(c, revision)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.show(c, revision)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -292,17 +307,21 @@ def show(config, revision: str):
 def history(config, verbose: bool, rev_range: Optional[str]):
     """List changeset scripts in chronological order."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.history(c, rev_range, verbose=verbose)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.history(c, rev_range, verbose=verbose)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -312,19 +331,23 @@ def history(config, verbose: bool, rev_range: Optional[str]):
 def heads(config, verbose: bool, resolve_dependencies: bool):
     """Show current available heads in the script directory."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.heads(
+            c, verbose=verbose, resolve_dependencies=resolve_dependencies
+        )
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.heads(
-        c, verbose=verbose, resolve_dependencies=resolve_dependencies
-    )
+    asyncio.run(main())
 
 
 @yui.command()
@@ -333,17 +356,21 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
 def branches(config, verbose: bool):
     """Show current branch points."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.branches(c, verbose=verbose)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.branches(c, verbose=verbose)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -352,17 +379,21 @@ def branches(config, verbose: bool):
 def current(config, verbose: bool):
     """Display the current revision for each database."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.current(c, verbose=verbose)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.current(c, verbose=verbose)
+    asyncio.run(main())
 
 
 @yui.command()
@@ -374,17 +405,21 @@ def stamp(config, revision: str, sql: bool, tag: Optional[str]):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 
-    loop = asyncio.get_event_loop()
-    bot = Bot(config, loop)
-    loop.close()
+    def op(connection, c):
+        c.attributes['connection'] = connection
+        command.stamp(c, revision, sql=sql, tag=tag)
 
-    directory = os.path.join('yui', 'migrations')
-    c = Config(os.path.join(directory, 'alembic.ini'))
-    c.set_main_option('script_location', directory)
-    c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
-    c.attributes['Base'] = bot.orm_base
+    async def main():
+        bot = Bot(config)
+        directory = os.path.join('yui', 'migrations')
+        c = Config(os.path.join(directory, 'alembic.ini'))
+        c.set_main_option('script_location', directory)
+        c.set_main_option('sqlalchemy.url', bot.config.DATABASE_URL)
+        c.attributes['Base'] = bot.orm_base
+        async with bot.config.DATABASE_ENGINE.begin() as conn:
+            await conn.run_sync(op, c)
 
-    command.stamp(c, revision, sql=sql, tag=tag)
+    asyncio.run(main())
 
 
 main = yui

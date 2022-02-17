@@ -112,7 +112,7 @@ class RouteApp(BaseApp):
             except SyntaxError as e:
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
                 return False
-            with self.prepare_kwargs(
+            async with self.prepare_kwargs(
                 bot=bot,
                 event=event,
                 func_params=func_params,

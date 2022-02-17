@@ -1,3 +1,7 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import delete
+from sqlalchemy.sql.expression import select
+
 import tossi
 
 from .models import Memo
@@ -11,7 +15,9 @@ from ....utils.datetime import now
 @box.command('기억')
 @argument('keyword')
 @argument('text')
-async def memo_add(bot, event: Message, sess, keyword: str, text: str):
+async def memo_add(
+    bot, event: Message, sess: AsyncSession, keyword: str, text: str
+):
     """
     기억 레코드 생성
 
@@ -39,7 +45,7 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
     memo.text = text
     memo.created_at = now()
 
-    with sess.begin():
+    async with sess.begin():
         sess.add(memo)
 
     await bot.say(
@@ -53,7 +59,7 @@ async def memo_add(bot, event: Message, sess, keyword: str, text: str):
 
 @box.command('알려')
 @argument('keyword', nargs=-1, concat=True)
-async def memo_show(bot, event: Message, sess, keyword: str):
+async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
     """
     기억 레코드 출력
 
@@ -62,12 +68,12 @@ async def memo_show(bot, event: Message, sess, keyword: str):
     """
 
     memos = (
-        sess.query(Memo)
-        .filter_by(keyword=keyword)
-        .order_by(Memo.created_at.asc())
-        .all()
-    )
-
+        await sess.scalars(
+            select(Memo)
+            .where(Memo.keyword == keyword)
+            .order_by(Memo.created_at.asc())
+        )
+    ).all()
     if memos:
         await bot.say(
             event.channel,
@@ -85,7 +91,7 @@ async def memo_show(bot, event: Message, sess, keyword: str):
 
 @box.command('잊어')
 @argument('keyword', nargs=-1, concat=True)
-async def memo_delete(bot, event: Message, sess, keyword: str):
+async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
     """
     기억 레코드 삭제
 
@@ -93,7 +99,8 @@ async def memo_delete(bot, event: Message, sess, keyword: str):
 
     """
 
-    sess.query(Memo).filter_by(keyword=keyword).delete()
+    async with sess.begin():
+        await sess.execute(delete(Memo).where(Memo.keyword == keyword))
 
     await bot.say(
         event.channel, f'{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!'

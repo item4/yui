@@ -1,5 +1,8 @@
 from typing import Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import select
+
 from .models import EventLog
 from ....bot import APICallError
 from ....types.channel import Channel
@@ -8,24 +11,28 @@ from ....utils.report import report
 
 async def cleanup_by_event_logs(
     bot,
-    sess,
+    sess: AsyncSession,
     channel: Channel,
     ts: str,
     token: Optional[str],
     count: Optional[int] = None,
 ) -> int:
     deleted = 0
-    logs = (
-        sess.query(EventLog)
-        .filter(
+    stmt = (
+        select(EventLog)
+        .where(
             EventLog.channel == channel.id,
             EventLog.ts <= ts,
         )
         .order_by(EventLog.ts.desc())
     )
+
     if count:
-        logs = logs.limit(count)
-    for log in logs:  # type: EventLog
+        stmt = stmt.limit(count)
+
+    query = await sess.stream_scalars(stmt)
+
+    async for log in query:  # type: EventLog
         try:
             resp = await bot.api.chat.delete(
                 log.channel,
@@ -38,8 +45,8 @@ async def cleanup_by_event_logs(
         ok = resp.body['ok']
         if ok or (not ok and resp.body['error'] == 'message_not_found'):
             deleted += ok
-            with sess.begin():
-                sess.delete(log)
+            async with sess.begin():
+                await sess.delete(log)
 
     return deleted
 

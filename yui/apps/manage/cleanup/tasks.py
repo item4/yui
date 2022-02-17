@@ -2,16 +2,13 @@ import datetime
 import time
 
 from sqlalchemy.dialects.postgresql import Insert
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql import Select
-from sqlalchemy.sql.expression import func
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .commons import cleanup_by_event_logs
 from .models import EventLog
 from ....bot import APICallError
 from ....box import box
 from ....command import Cs
-from ....utils.report import report
 
 
 box.assert_config_required('OWNER_USER_TOKEN', str)
@@ -21,7 +18,7 @@ LOGS = set[tuple[str, str]]
 
 
 @box.cron('*/10 * * * *')
-async def cleanup_channels(bot, sess):
+async def cleanup_channels(bot, sess: AsyncSession):
     try:
         channels = Cs.auto_cleanup_targets.gets()
     except KeyError:
@@ -41,82 +38,51 @@ async def cleanup_channels(bot, sess):
         )
 
 
-@box.cron('0 */1 * * *')
-async def add_missing_logs(bot, sess):
+@box.cron('0 * * * *')
+async def get_old_history(bot, sess: AsyncSession):
     try:
         channels = Cs.auto_cleanup_targets.gets()
     except KeyError:
-        return
-    all_logs: LOGS = set()
+        return True
+
     for channel in channels:
-        logs: LOGS = set()
-        try:
-            latest = sess.execute(
-                Select([func.min(EventLog.ts)]).where(
-                    EventLog.channel == channel.id
-                )
-            ).scalar()
-        except NoResultFound:
-            latest = None
-        has_more = True
-        cursor = None
-        while has_more and len(logs) < 1600:
+        ts = None
+        while True:
             try:
                 resp = await bot.api.conversations.history(
-                    channel,
-                    cursor=cursor,
-                    latest=latest,
+                    channel.id,
+                    latest=ts,
                 )
-            except APICallError as e:
-                await report(bot, exception=e)
+            except APICallError:
                 break
 
             history = resp.body
             if not history['ok']:
                 break
-            has_more = history['has_more']
-            if has_more:
-                cursor = history['response_metadata']['next_cursor']
-            messages = {
-                (m.get('reply_count', 0), m['ts']) for m in history['messages']
-            }
 
+            messages = history['messages']
             while messages:
-                reply_count, ts = messages.pop()
+                message = messages.pop(0)
+                reply_count = message.get('reply_count', 0)
                 if reply_count:
-                    has_more_replies = True
-                    replies_cursor = None
-                    while has_more_replies:
-                        try:
-                            r = await bot.api.conversations.replies(
-                                channel,
-                                cursor=replies_cursor,
-                                ts=ts,
-                            )
-                        except APICallError as e:
-                            await report(bot, exception=e)
-                            break
-                        replies = r.body
-                        if not replies['ok']:
-                            break
-                        has_more_replies = replies['has_more']
-                        if has_more_replies:
-                            replies_cursor = replies['response_metadata'][
-                                'next_cursor'
-                            ]
-                        messages |= {
-                            (m.get('reply_count', 0), m['ts'])
-                            for m in replies.get('messages', [])
-                        }
+                    try:
+                        r = await bot.api.conversations.replies(
+                            channel,
+                            ts=message['ts'],
+                        )
+                    except APICallError:
+                        pass
+                    else:
+                        messages += r.body.get('messages', [])
+                async with sess.begin():
+                    await sess.execute(
+                        Insert(EventLog)
+                        .values(channel=channel.id, ts=message['ts'])
+                        .on_conflict_do_nothing()
+                    )
+                if ts is None:
+                    ts = message['ts']
+                else:
+                    ts = min(ts, message['ts'])
 
-                logs.add((channel.id, ts))
-
-        all_logs |= logs
-
-    if all_logs:
-        with sess.begin():
-            sess.execute(
-                Insert(EventLog)
-                .values([{'channel': c, 'ts': t} for c, t in all_logs])
-                .on_conflict_do_nothing()
-            )
+    return True

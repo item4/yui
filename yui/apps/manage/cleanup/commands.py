@@ -1,5 +1,7 @@
 import datetime
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from .commons import cleanup_by_event_logs
 from .commons import cleanup_by_history
 from ....box import box
@@ -25,7 +27,7 @@ COOLTIME = datetime.timedelta(minutes=5)
     ),
     default='log',
 )
-async def cleanup(bot, sess, event: Message, mode: str):
+async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
     """
     채널 청소
 

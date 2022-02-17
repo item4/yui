@@ -9,6 +9,9 @@ from dateutil.tz import UTC
 
 import feedparser
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import select
+
 from .models import RSSFeedURL
 from ....box import box
 from ....box import route
@@ -58,7 +61,7 @@ class RSS(route.RouteApp):
         await bot.say(event.channel, f'Usage: `{bot.config.PREFIX}help rss`')
 
     @argument('url', nargs=-1, concat=True, transform_func=extract_url)
-    async def add(self, bot, event: Message, sess, url: str):
+    async def add(self, bot, event: Message, sess: AsyncSession, url: str):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url) as res:
@@ -90,21 +93,21 @@ class RSS(route.RouteApp):
             ]
         )
 
-        with sess.begin():
+        async with sess.begin():
             sess.add(feed)
 
         await bot.say(
             event.channel, f'<#{event.channel.id}> 채널에서 `{url}`을 구독하기 시작했어요!'
         )
 
-    async def list(self, bot, event: Message, sess):
+    async def list(self, bot, event: Message, sess: AsyncSession):
         feeds = (
-            sess.query(RSSFeedURL)
-            .filter_by(
-                channel=event.channel.id,
+            await sess.scalars(
+                select(RSSFeedURL).where(
+                    RSSFeedURL.channel == event.channel.id
+                )
             )
-            .all()
-        )
+        ).all()
 
         if feeds:
             feed_list = '\n'.join(f'{feed.id} - {feed.url}' for feed in feeds)
@@ -121,7 +124,7 @@ class RSS(route.RouteApp):
 
     @argument('id')
     async def delete(self, bot, event: Message, sess, id: int):
-        feed = sess.query(RSSFeedURL).get(id)
+        feed = await sess.get(RSSFeedURL, id)
 
         if feed is None:
             await bot.say(event.channel, f'{id}번 RSS 구독 레코드는 존재하지 않아요!')
@@ -132,16 +135,16 @@ class RSS(route.RouteApp):
             f'<#{feed.channel}>에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!',
         )
 
-        with sess.begin():
-            sess.delete(feed)
+        async with sess.begin():
+            await sess.delete(feed)
 
 
 @box.cron('*/1 * * * *')
-async def crawl(bot, sess):
-    feeds = sess.query(RSSFeedURL).all()
+async def crawl(bot, sess: AsyncSession):
+    feeds = (await sess.scalars(select(RSSFeedURL))).all()
 
     for feed in feeds:  # type: RSSFeedURL
-        data = ''
+        data = b''
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(feed.url) as res:
@@ -199,7 +202,7 @@ async def crawl(bot, sess):
                 as_user=True,
             )
 
-            with sess.begin():
+            async with sess.begin():
                 sess.add(feed)
 
 

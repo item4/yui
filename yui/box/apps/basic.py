@@ -105,7 +105,7 @@ class App(BaseApp):
             validation = await self.channel_validator(self, event)
 
         if validation:
-            with self.prepare_kwargs(
+            async with self.prepare_kwargs(
                 bot=bot,
                 event=event,
                 func_params=self.handler.params,
@@ -170,7 +170,7 @@ class App(BaseApp):
                         kw['remain_chunks'] = ' '.join(remain_chunks)
                     else:
                         kw['remain_chunks'] = remain_chunks
-                with self.prepare_kwargs(
+                async with self.prepare_kwargs(
                     bot=bot,
                     event=event,
                     func_params=func_params,

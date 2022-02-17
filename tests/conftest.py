@@ -8,7 +8,10 @@ import emcache
 
 import pytest
 
+import pytest_asyncio
+
 from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.sql.expression import text
 
 from yui.cache import Cache
 from yui.config import Config
@@ -37,8 +40,8 @@ def fx_tmpdir(tmpdir):
     return pathlib.Path(tmpdir)
 
 
-@pytest.yield_fixture(scope='session')
-def fx_engine(request):
+@pytest_asyncio.fixture()
+async def fx_engine(request):
     try:
         database_url = request.config.getoption('--database-url')
     except ValueError:
@@ -49,58 +52,51 @@ def fx_engine(request):
     engine = get_database_engine(config)
     try:
         metadata = Base.metadata
-        metadata.drop_all(bind=engine)
-        metadata.create_all(bind=engine)
+        async with engine.begin() as conn:
+            await conn.run_sync(metadata.drop_all)
+            await conn.run_sync(metadata.create_all)
         yield engine
+        async with engine.begin() as conn:
+            await conn.run_sync(metadata.drop_all)
         metadata.drop_all(bind=engine)
     finally:
-        engine.dispose()
+        await engine.dispose()
 
 
-@pytest.yield_fixture()
-def fx_sess(fx_engine):
+@pytest_asyncio.fixture()
+async def fx_sess(fx_engine):
     metadata = Base.metadata
-    foreign_key_turn_off = {
-        'mysql': 'SET FOREIGN_KEY_CHECKS=0;',
-        'postgresql': 'SET CONSTRAINTS ALL DEFERRED;',
-        'sqlite': 'PRAGMA foreign_keys = OFF;',
-    }
-    foreign_key_turn_on = {
-        'mysql': 'SET FOREIGN_KEY_CHECKS=1;',
-        'postgresql': 'SET CONSTRAINTS ALL IMMEDIATE;',
-        'sqlite': 'PRAGMA foreign_keys = ON;',
-    }
-    truncate_query = {
-        'mysql': 'TRUNCATE TABLE {};',
-        'postgresql': 'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;',
-        'sqlite': 'DELETE FROM {};',
-    }
     error = False
-    with fx_engine.begin() as conn:
+    async with fx_engine.begin() as conn:
         try:
-            conn.execute(foreign_key_turn_off[fx_engine.name])
+            await conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
         except ProgrammingError:
             error = True
 
         for table in reversed(metadata.sorted_tables):
             try:
-                conn.execute(truncate_query[fx_engine.name].format(table.name))
+                await conn.execute(
+                    'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;'.format(
+                        table.name,
+                    )
+                )
             except ProgrammingError:
                 error = True
 
         try:
-            conn.execute(foreign_key_turn_on[fx_engine.name])
+            conn.execute('SET CONSTRAINTS ALL IMMEDIATE;')
         except ProgrammingError:
             error = True
 
     if error:
         metadata = Base.metadata
-        metadata.drop_all(bind=fx_engine)
-        metadata.create_all(bind=fx_engine)
+        async with fx_engine.begin() as conn:
+            await conn.run_sync(metadata.drop_all)
+            await conn.run_sync(metadata.create_all)
 
     sess = make_session(bind=fx_engine)
     yield sess
-    sess.rollback()
+    await sess.rollback()
 
 
 def gen_config(request):

@@ -2,7 +2,7 @@ import contextlib
 from typing import Iterator
 from typing import NamedTuple
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.pool import NullPool
 
 from .engine import create_database_engine
@@ -14,9 +14,9 @@ class EngineConfig(NamedTuple):
     echo: bool
 
 
-def make_session(*args, **kwargs) -> Session:
-    kwargs['autocommit'] = True
-    return Session(*args, **kwargs)
+def make_session(*args, **kwargs) -> AsyncSession:
+    kwargs['expire_on_commit'] = False
+    return AsyncSession(*args, **kwargs)
 
 
 @contextlib.contextmanager
@@ -24,7 +24,7 @@ def subprocess_session_manager(
     engine_config: EngineConfig,
     *args,
     **kwargs,
-) -> Iterator[Session]:
+) -> Iterator[AsyncSession]:
     engine = create_database_engine(
         engine_config.url,
         engine_config.echo,

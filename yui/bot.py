@@ -88,7 +88,6 @@ class Bot:
     def __init__(
         self,
         config: Config,
-        loop,
         *,
         orm_base=None,
         using_box: Box = None,
@@ -117,7 +116,7 @@ class Bot:
             importlib.import_module(app_name)
 
         self.config = config
-        self.loop = loop
+        self.loop = asyncio.get_event_loop()
         self.loop.set_debug(self.config.DEBUG)
         self.orm_base = orm_base or Base
         self.box = using_box or box
@@ -188,7 +187,7 @@ class Bot:
                 except:  # noqa: E722
                     await report(self)
                 finally:
-                    sess.close()
+                    await sess.close()
                     is_runnable.append(1)
                 logger.debug(f'cron end {c}')
 
