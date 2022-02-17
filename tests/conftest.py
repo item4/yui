@@ -141,7 +141,7 @@ async def cache():
     return Cache(mc, 'YUI_TEST_')
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def response_mock():
     with aioresponses.aioresponses() as m:
         yield m
