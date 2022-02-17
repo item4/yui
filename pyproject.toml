@@ -3,6 +3,9 @@ line-length = 79
 skip_string_normalization = true
 force-exclude = '(/templates/)'
 
+[tool.pytest.ini_options]
+asyncio_mode = 'auto'
+
 [tool.poetry]
 name = "yui"
 version = "0.0.0"
