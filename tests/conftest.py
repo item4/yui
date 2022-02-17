@@ -58,7 +58,6 @@ async def fx_engine(request):
         yield engine
         async with engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)
-        metadata.drop_all(bind=engine)
     finally:
         await engine.dispose()
 
