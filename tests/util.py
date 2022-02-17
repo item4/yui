@@ -51,7 +51,12 @@ class FakeBot(Bot):
             )
 
         Namespace._bot = self
-        self.loop = loop or asyncio.get_event_loop()
+
+        try:
+            self.loop = loop or asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
         self.channels: list[PublicChannel] = []

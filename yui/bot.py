@@ -115,8 +115,12 @@ class Bot:
             logger.debug('import apps: %s', app_name)
             importlib.import_module(app_name)
 
+        try:
+            self.loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self.loop = asyncio.new_event_loop()
+
         self.config = config
-        self.loop = asyncio.get_event_loop()
         self.loop.set_debug(self.config.DEBUG)
         self.orm_base = orm_base or Base
         self.box = using_box or box
