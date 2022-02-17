@@ -13,14 +13,14 @@ from yui.utils import json
 from .util import FakeImportLib
 
 
-def test_bot_init(event_loop, monkeypatch, bot_config):
+def test_bot_init(monkeypatch, bot_config):
     importlib = FakeImportLib()
 
     monkeypatch.setattr('importlib.import_module', importlib.import_module)
 
     bot_config.APPS = ['yui.app1', 'yui.app2']
     box = Box()
-    bot = Bot(bot_config, event_loop, using_box=box)
+    bot = Bot(bot_config, using_box=box)
 
     assert bot.config == bot_config
     assert bot.channels == []
@@ -37,7 +37,7 @@ def test_bot_init(event_loop, monkeypatch, bot_config):
 
 
 @pytest.mark.asyncio
-async def test_call(event_loop, bot_config, response_mock):
+async def test_call(bot_config, response_mock):
     token = 'asdf1234'
 
     response_mock.post(
@@ -73,7 +73,7 @@ async def test_call(event_loop, bot_config, response_mock):
     )
 
     box = Box()
-    bot = Bot(bot_config, event_loop, using_box=box)
+    bot = Bot(bot_config, using_box=box)
     bot.api.throttle_interval = defaultdict(lambda: timedelta(0))
 
     res = await bot.call('test11')
