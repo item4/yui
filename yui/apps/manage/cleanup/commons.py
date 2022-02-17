@@ -1,5 +1,6 @@
 from typing import Optional
 
+from sqlalchemy.dialects.postgresql import Insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 
@@ -103,3 +104,53 @@ async def cleanup_by_history(
                     deleted += 1
 
     return deleted
+
+
+async def collect_history_from_channel(
+    bot,
+    channel: Channel,
+    sess: AsyncSession,
+) -> int:
+    ts = None
+    collected = 0
+    while True:
+        try:
+            resp = await bot.api.conversations.history(
+                channel.id,
+                latest=ts,
+            )
+        except APICallError as e:
+            await report(bot, exception=e)
+            return collected
+
+        history = resp.body
+        if not history['ok']:
+            return collected
+
+        messages = history['messages']
+        while messages:
+            message = messages.pop(0)
+            reply_count = message.get('reply_count', 0)
+            if reply_count:
+                try:
+                    r = await bot.api.conversations.replies(
+                        channel,
+                        ts=message['ts'],
+                    )
+                except APICallError as e:
+                    await report(bot, exception=e)
+                else:
+                    messages += r.body.get('messages', [])
+            await sess.execute(
+                Insert(EventLog)
+                .values(channel=channel.id, ts=message['ts'])
+                .on_conflict_do_nothing()
+            )
+            await sess.commit()
+            if ts is None:
+                ts = message['ts']
+            else:
+                ts = min(ts, message['ts'])
+            collected += 1
+
+        return collected

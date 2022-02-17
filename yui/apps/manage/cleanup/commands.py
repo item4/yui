@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .commons import cleanup_by_event_logs
 from .commons import cleanup_by_history
+from .commons import collect_history_from_channel
 from ....box import box
 from ....command import Cs
 from ....command import Us
@@ -109,3 +110,57 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
     )
 
     cleanup.last_call[event.channel.id] = now_dt
+
+
+@box.command('수집')
+async def collect(bot, sess: AsyncSession, event: Message):
+    """
+    채널 메시지 수집
+
+    해당 채널의 메시지를 수집합니다.
+    권한이 있는 사용자가 자동 청소 대상 채널에서만 사용 가능합니다.
+    """
+
+    now_dt = now()
+    try:
+        channels = Cs.auto_cleanup_targets.gets()
+        force_cleanup = Us.force_cleanup.gets()
+    except KeyError:
+        await bot.say(
+            event.channel,
+            '권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!',
+        )
+        return
+
+    if event.user not in force_cleanup:
+        await bot.say(
+            event.channel,
+            '이 명령어를 사용할 수 있는 권한이 없어요!',
+        )
+        return
+
+    if event.channel not in channels:
+        await bot.say(
+            event.channel,
+            '이 명령어를 사용할 수 없는 채널이에요!',
+        )
+        return
+
+    if event.channel.id in collect.last_call:
+        last_call = collect.last_call[event.channel.id]
+        if now_dt - last_call < COOLTIME:
+            fine = (last_call + COOLTIME).strftime('%H시 %M분')
+            await bot.say(
+                event.channel,
+                f'아직 쿨타임이에요! {fine} 이후로 다시 시도해주세요!',
+            )
+            return
+
+    collected = await collect_history_from_channel(bot, event.channel, sess)
+
+    await bot.say(
+        event.channel,
+        f'본 채널에서 최근 {collected:,}개의 메시지를 수집했어요!',
+    )
+
+    collect.last_call[event.channel.id] = now_dt
