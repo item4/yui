@@ -6,4 +6,3 @@ exclude_lines =
     if TYPE_CHECKING:
 omit =
     yui/migrations
-    yui/templates
