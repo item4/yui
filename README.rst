@@ -16,7 +16,7 @@ Requirements
 
 - Git
 - Slack bot permission for bot account
-- Python 3.9 or higher
+- Python 3.10.2 or higher
 - PostgreSQL
 - memcached
 - Poetry_
@@ -28,22 +28,12 @@ Requirements
 Installation
 ------------
 
-If you did not have Poetry, Install it by below command.
-
-.. code-block:: bash
-
-   $ curl -sSL https://install.python-poetry.org | python3 -
-   # or see https://python-poetry.org/docs/master/#installing-with-the-official-installer for details
-
-
-You can install yui by poetry without development requirements.
-
 .. code-block:: bash
 
    $ git clone https://github.com/item4/yui.git
    $ cd yui
    $ mkdir log
-   $ poetry install --no-dev
+   $ poetry install
 
 
 Configuration
@@ -260,11 +250,10 @@ CLI for Database
 ----------------
 
 Yui CLI support most of command of Alembic_\.
-You can use command with ``yui`` such as ``pipenv run yui revision --autogenerate -m "Test"``.
+You can use command with ``yui`` such as ``yui revision --autogenerate -m "Test"``.
 
 List of commands are below.
 
-* ``init-db``
 * ``revision``
 * ``migrate`` (same as ``revision`` with ``--autogenerate``
 * ``edit``
@@ -288,7 +277,7 @@ You can launch yui on docker-compose easily.
 
 1. Install Docker-compose.
 
-2. Craete ``docker-compose.yml`` file.
+2. Create ``docker-compose.yml`` file.
 
    .. code-block:: yml
 
