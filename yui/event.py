@@ -108,7 +108,7 @@ TeamProfileReorderType = Literal['team_profile_reorder']
 TeamRenameType = Literal['team_rename']
 UserChangeType = Literal['user_change']
 UserTypingType = Literal['user_typing']
-ChatterboxSystemStartType = Literal['chatterbox_system_start']
+YuiSystemStartType = Literal['yui_system_start']
 
 EventType = Literal[
     AccountsChangedType,
@@ -181,7 +181,7 @@ EventType = Literal[
     TeamRenameType,
     UserChangeType,
     UserTypingType,
-    ChatterboxSystemStartType,
+    YuiSystemStartType,
 ]
 Source = dict[str, Any]
 
@@ -856,10 +856,10 @@ class UserTyping(Event):
 
 
 @event
-class ChatterboxSystemStart(Event):
+class YuiSystemStart(Event):
     """System event for start system."""
 
-    type: ClassVar[str] = 'chatterbox_system_start'
+    type: ClassVar[str] = 'yui_system_start'
 
 
 @overload
@@ -1255,9 +1255,7 @@ def create_event(type_: UserTypingType, source: Source) -> UserTyping:
 
 
 @overload
-def create_event(
-    type_: ChatterboxSystemStartType, source: Source
-) -> ChatterboxSystemStart:
+def create_event(type_: YuiSystemStartType, source: Source) -> YuiSystemStart:
     ...
 
 

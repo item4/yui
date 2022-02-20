@@ -8,8 +8,8 @@ from fuzzywuzzy import fuzz
 from ...bot import Bot
 from ...box import box
 from ...command import argument
-from ...event import ChatterboxSystemStart
 from ...event import Message
+from ...event import YuiSystemStart
 from ...utils.html import get_root
 
 logger = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ async def fetch_python_ref(bot: Bot):
     logger.info('fetch python ref end')
 
 
-@box.on(ChatterboxSystemStart)
+@box.on(YuiSystemStart)
 async def on_start(bot):
     logger.info('on_start ref')
     tasks = [

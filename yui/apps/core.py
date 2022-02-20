@@ -12,7 +12,6 @@ from ..event import ChannelLeft
 from ..event import ChannelMarked
 from ..event import ChannelRename
 from ..event import ChannelUnarchive
-from ..event import ChatterboxSystemStart
 from ..event import GroupArchive
 from ..event import GroupClose
 from ..event import GroupHistoryChanged
@@ -30,6 +29,7 @@ from ..event import IMOpen
 from ..event import TeamJoin
 from ..event import TeamMigrationStarted
 from ..event import UserChange
+from ..event import YuiSystemStart
 from ..types.channel import DirectMessageChannel
 from ..types.channel import PrivateChannel
 from ..types.channel import PublicChannel
@@ -38,7 +38,7 @@ from ..types.user import User
 logger = logging.getLogger(__name__)
 
 
-@box.on(ChatterboxSystemStart)
+@box.on(YuiSystemStart)
 async def on_start(bot):
     async def channels():
         cursor = None

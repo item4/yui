@@ -429,7 +429,7 @@ class Bot:
         logger = logging.getLogger(f'{__name__}.Bot.connect')
 
         while True:
-            await self.queue.put(create_event('chatterbox_system_start', {}))
+            await self.queue.put(create_event('yui_system_start', {}))
             while not self.is_ready:
                 await asyncio.sleep(0.1)
 

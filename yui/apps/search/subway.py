@@ -10,8 +10,8 @@ import tossi
 from ...box import box
 from ...command import argument
 from ...command import option
-from ...event import ChatterboxSystemStart
 from ...event import Message
+from ...event import YuiSystemStart
 from ...transform import choice
 from ...utils import json
 from ...utils.datetime import now
@@ -60,7 +60,7 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     logger.info(f'fetch {name} end')
 
 
-@box.on(ChatterboxSystemStart)
+@box.on(YuiSystemStart)
 async def on_start(bot):
     logger.info('on_start subway')
     tasks = []
