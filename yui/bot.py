@@ -115,13 +115,14 @@ class Bot:
             logger.debug('import apps: %s', app_name)
             importlib.import_module(app_name)
 
-        try:
-            self.loop = asyncio.get_running_loop()
-        except RuntimeError:
-            self.loop = asyncio.new_event_loop()
-
         self.config = config
-        self.loop.set_debug(self.config.DEBUG)
+
+        try:
+            loop = asyncio.get_running_loop()
+            loop.set_debug(self.config.DEBUG)
+        except RuntimeError:
+            pass
+
         self.orm_base = orm_base or Base
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
@@ -171,7 +172,7 @@ class Bot:
 
                 is_runnable.pop()
                 if 'loop' in func_params:
-                    kw['loop'] = self.loop
+                    kw['loop'] = asyncio.get_running_loop()
 
                 sess = make_session(bind=self.config.DATABASE_ENGINE)
                 if 'sess' in func_params:
@@ -228,8 +229,9 @@ class Bot:
         *args,
         **kwargs,
     ) -> R:
+        loop = asyncio.get_running_loop()
         try:
-            return await self.loop.run_in_executor(
+            return await loop.run_in_executor(
                 executor=self.process_pool_executor,
                 func=functools.partial(f, *args, **kwargs),
             )
@@ -243,8 +245,9 @@ class Bot:
         *args,
         **kwargs,
     ) -> R:
+        loop = asyncio.get_running_loop()
         try:
-            return await self.loop.run_in_executor(
+            return await loop.run_in_executor(
                 executor=self.thread_pool_executor,
                 func=functools.partial(f, *args, **kwargs),
             )

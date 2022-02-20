@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import inspect
 from typing import Mapping
@@ -56,7 +57,7 @@ class BaseApp:
         if 'bot' in func_params:
             kwargs['bot'] = bot
         if 'loop' in func_params:
-            kwargs['loop'] = bot.loop
+            kwargs['loop'] = asyncio.get_running_loop()
         if 'event' in func_params:
             kwargs['event'] = event
         if 'sess' in func_params:
