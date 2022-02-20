@@ -121,7 +121,6 @@ async def collect(bot, sess: AsyncSession, event: Message):
     권한이 있는 사용자가 자동 청소 대상 채널에서만 사용 가능합니다.
     """
 
-    now_dt = now()
     try:
         channels = Cs.auto_cleanup_targets.gets()
         force_cleanup = Us.force_cleanup.gets()
@@ -146,21 +145,9 @@ async def collect(bot, sess: AsyncSession, event: Message):
         )
         return
 
-    if event.channel.id in collect.last_call:
-        last_call = collect.last_call[event.channel.id]
-        if now_dt - last_call < COOLTIME:
-            fine = (last_call + COOLTIME).strftime('%H시 %M분')
-            await bot.say(
-                event.channel,
-                f'아직 쿨타임이에요! {fine} 이후로 다시 시도해주세요!',
-            )
-            return
-
     collected = await collect_history_from_channel(bot, event.channel, sess)
 
     await bot.say(
         event.channel,
         f'본 채널에서 최근 {collected:,}개의 메시지를 수집했어요!',
     )
-
-    collect.last_call[event.channel.id] = now_dt
