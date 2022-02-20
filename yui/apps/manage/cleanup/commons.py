@@ -46,8 +46,8 @@ async def cleanup_by_event_logs(
         ok = resp.body['ok']
         if ok or (not ok and resp.body['error'] == 'message_not_found'):
             deleted += ok
-            async with sess.begin_nested():
-                await sess.delete(log)
+            await sess.delete(log)
+            await sess.commit()
 
     return deleted
 

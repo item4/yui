@@ -45,8 +45,8 @@ async def memo_add(
     memo.text = text
     memo.created_at = now()
 
-    async with sess.begin_nested():
-        sess.add(memo)
+    sess.add(memo)
+    await sess.commit()
 
     await bot.say(
         event.channel,
@@ -99,8 +99,8 @@ async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
 
     """
 
-    async with sess.begin_nested():
-        await sess.execute(delete(Memo).where(Memo.keyword == keyword))
+    await sess.execute(delete(Memo).where(Memo.keyword == keyword))
+    await sess.commit()
 
     await bot.say(
         event.channel, f'{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!'

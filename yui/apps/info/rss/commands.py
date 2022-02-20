@@ -93,8 +93,8 @@ class RSS(route.RouteApp):
             ]
         )
 
-        async with sess.begin():
-            sess.add(feed)
+        sess.add(feed)
+        await sess.commit()
 
         await bot.say(
             event.channel, f'<#{event.channel.id}> 채널에서 `{url}`을 구독하기 시작했어요!'
@@ -123,7 +123,7 @@ class RSS(route.RouteApp):
             )
 
     @argument('id')
-    async def delete(self, bot, event: Message, sess, id: int):
+    async def delete(self, bot, event: Message, sess: AsyncSession, id: int):
         feed = await sess.get(RSSFeedURL, id)
 
         if feed is None:
@@ -135,8 +135,8 @@ class RSS(route.RouteApp):
             f'<#{feed.channel}>에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!',
         )
 
-        async with sess.begin():
-            await sess.delete(feed)
+        await sess.delete(feed)
+        await sess.commit()
 
 
 @box.cron('*/1 * * * *')
@@ -202,8 +202,8 @@ async def crawl(bot, sess: AsyncSession):
                 as_user=True,
             )
 
-            async with sess.begin():
-                sess.add(feed)
+            sess.add(feed)
+            await sess.commit()
 
 
 box.register(RSS())
