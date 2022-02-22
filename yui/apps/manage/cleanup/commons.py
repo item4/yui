@@ -111,13 +111,13 @@ async def collect_history_from_channel(
     channel: Channel,
     sess: AsyncSession,
 ) -> int:
-    ts = None
+    cursor = None
     collected = 0
     while True:
         try:
             resp = await bot.api.conversations.history(
                 channel.id,
-                latest=ts,
+                cursor=cursor,
             )
         except APICallError as e:
             await report(bot, exception=e)
@@ -126,6 +126,9 @@ async def collect_history_from_channel(
         history = resp.body
         if not history['ok']:
             return collected
+
+        if 'response_metadata' in history:
+            cursor = history['response_metadata']['next_cursor']
 
         messages = history['messages']
         while messages:
@@ -147,10 +150,6 @@ async def collect_history_from_channel(
                 .on_conflict_do_nothing()
             )
             await sess.commit()
-            if ts is None:
-                ts = message['ts']
-            else:
-                ts = min(ts, message['ts'])
             collected += 1
 
         return collected
