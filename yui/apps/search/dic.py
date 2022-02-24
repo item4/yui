@@ -49,7 +49,7 @@ BLANK_RE = re.compile(r'^\s+', re.MULTILINE)
 
 
 def fix_url(url: str) -> str:
-    return f'http://dic.daum.net{url}'
+    return f'https://dic.daum.net{url}'
 
 
 def fix_blank(text: str) -> str:
@@ -103,7 +103,7 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
 
     """
 
-    url = 'http://dic.daum.net/search.do?{}'.format(
+    url = 'https://dic.daum.net/search.do?{}'.format(
         urlencode({'q': keyword, 'dic': DICS[category]})
     )
     html = ''
