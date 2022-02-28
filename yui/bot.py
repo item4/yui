@@ -153,17 +153,18 @@ class Bot:
 
         logger = logging.getLogger(f'{__name__}.Bot.register_tasks')
 
-        def register(c: CronTask):
+        def register(bot, c: CronTask):
             logger.info(f'register {c}')
             is_runnable = [1]
             func_params = c.handler.params
             kw: dict[str, Any] = {}
             if 'bot' in func_params:
-                kw['bot'] = self
+                kw['bot'] = bot
 
             @aiocron.crontab(c.spec, tz=UTC9, *c.args, **c.kwargs)
             async def task():
-                if not self.is_ready:
+                if not bot.is_ready:
+                    logger.debug(f'cron condition hit but not ready {c}')
                     return
                 logger.debug(f'cron condition hit {c}')
                 if not is_runnable:
@@ -174,14 +175,14 @@ class Bot:
                 if 'loop' in func_params:
                     kw['loop'] = asyncio.get_running_loop()
 
-                sess = make_session(bind=self.config.DATABASE_ENGINE)
+                sess = make_session(bind=bot.config.DATABASE_ENGINE)
                 if 'sess' in func_params:
                     kw['sess'] = sess
 
                 if 'engine_config' in func_params:
                     kw['engine_config'] = EngineConfig(
-                        url=self.config.DATABASE_URL,
-                        echo=self.config.DATABASE_ECHO,
+                        url=bot.config.DATABASE_URL,
+                        echo=bot.config.DATABASE_ECHO,
                     )
 
                 logger.debug(f'cron run {c}')
@@ -200,7 +201,7 @@ class Bot:
             c.stop = task.stop
 
         for c in self.box.tasks:
-            register(c)
+            register(self, c)
 
     async def run(self):
         """Run"""
