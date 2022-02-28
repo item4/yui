@@ -152,6 +152,7 @@ class Bot:
         """Register cronjob to bot from box."""
 
         logger = logging.getLogger(f'{__name__}.Bot.register_tasks')
+        loop = asyncio.get_running_loop()
 
         def register(bot, c: CronTask):
             logger.info(f'register {c}')
@@ -161,7 +162,7 @@ class Bot:
             if 'bot' in func_params:
                 kw['bot'] = bot
 
-            @aiocron.crontab(c.spec, tz=UTC9, *c.args, **c.kwargs)
+            @aiocron.crontab(c.spec, tz=UTC9, loop=loop, *c.args, **c.kwargs)
             async def task():
                 if not bot.is_ready:
                     logger.debug(f'cron condition hit but not ready {c}')
