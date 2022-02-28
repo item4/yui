@@ -31,9 +31,9 @@ async def cleanup_by_event_logs(
     if count:
         stmt = stmt.limit(count)
 
-    query = await sess.stream_scalars(stmt)
+    result = await sess.stream(stmt)
 
-    async for log in query:  # type: EventLog
+    async for log in result.scalars():  # type: EventLog
         try:
             resp = await bot.api.chat.delete(
                 log.channel,
