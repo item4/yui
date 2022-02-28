@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 @box.on(YuiSystemStart)
 async def on_start(bot):
     async def channels():
+        logger.info('on yui system start - channels start')
         cursor = None
         bot.channels.clear()
         while True:
@@ -64,12 +65,17 @@ async def on_start(bot):
                     bot.groups.append(PrivateChannel(**channel))
             if not cursor:
                 break
+        logger.info('on yui system start - channels end')
 
     async def users():
+        logger.info('on yui system start - users start')
         bot.users.clear()
         result = await bot.api.users.list(presence=False)
         for u in result.body['members']:
             bot.users.append(User(**u))
+        logger.info('on yui system start - users end')
+
+    logger.info('on yui system start start')
 
     bot.is_ready = False
 
@@ -82,6 +88,8 @@ async def on_start(bot):
     )
 
     bot.is_ready = True
+
+    logger.info('on yui system start end')
 
     return True
 
