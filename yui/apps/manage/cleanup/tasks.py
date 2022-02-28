@@ -15,7 +15,7 @@ box.assert_channels_required('auto_cleanup_targets')
 LOGS = set[tuple[str, str]]
 
 
-@box.cron('*/10 * * * *')
+@box.cron('0,10,20,30,40,50 * * * *')
 async def cleanup_channels(bot, sess: AsyncSession):
     try:
         channels = Cs.auto_cleanup_targets.gets()
