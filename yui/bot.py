@@ -144,11 +144,7 @@ class Bot:
             self.box.users_required,
         )
 
-        if self.config.REGISTER_CRONTAB:
-            logger.info('register crontab')
-            self.register_tasks()
-
-    def register_tasks(self):
+    async def register_tasks(self):
         """Register cronjob to bot from box."""
 
         logger = logging.getLogger(f'{__name__}.Bot.register_tasks')
@@ -206,17 +202,27 @@ class Bot:
 
     async def run(self):
         """Run"""
-        self.mc = await emcache.create_client(
-            [
-                emcache.MemcachedHostAddress(
-                    self.config.CACHE['HOST'],
-                    self.config.CACHE['PORT'],
-                )
-            ]
-        )
-        self.cache = Cache(self.mc, self.config.CACHE.get('PREFIX', 'YUI_'))
+
+        logger = logging.getLogger(f'{__name__}.Bot.run')
+
+        if self.config.REGISTER_CRONTAB:
+            logger.info('register crontab')
+            await self.register_tasks()
 
         while True:
+            self.mc = await emcache.create_client(
+                [
+                    emcache.MemcachedHostAddress(
+                        self.config.CACHE['HOST'],
+                        self.config.CACHE['PORT'],
+                    )
+                ]
+            )
+            self.cache = Cache(
+                self.mc,
+                self.config.CACHE.get('PREFIX', 'YUI_'),
+            )
+
             await asyncio.wait(
                 (
                     self.connect(),
