@@ -9,7 +9,6 @@ from .cast import KnownTypesCaster
 from .cast import ListCaster
 from .cast import NewTypeCaster
 from .cast import NoHandleCaster
-from .cast import NoneType
 from .cast import NoneTypeCaster
 from .cast import SetCaster
 from .cast import TupleCaster
