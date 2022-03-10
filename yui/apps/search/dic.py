@@ -1,5 +1,4 @@
 import re
-from typing import Optional
 from urllib.parse import urlencode
 
 import aiohttp
@@ -56,7 +55,7 @@ def fix_blank(text: str) -> str:
     return BLANK_RE.sub('', text)
 
 
-def parse(html: str) -> tuple[Optional[str], list[Attachment]]:
+def parse(html: str) -> tuple[str | None, list[Attachment]]:
     h = get_root(html, useless_tags=list(USELESS_TAGS - {'head'}))
     meta = h.cssselect('meta[http-equiv=Refresh]')
     if meta:

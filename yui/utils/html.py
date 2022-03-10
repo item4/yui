@@ -1,5 +1,4 @@
 from typing import AnyStr
-from typing import Optional
 
 from lxml.etree import strip_elements
 from lxml.html import HTMLParser
@@ -20,7 +19,7 @@ USELESS_TAGS = frozenset(
 def get_root(
     html: AnyStr,
     *,
-    useless_tags: Optional[list[str]] = None,
+    useless_tags: list[str] | None = None,
     remove_comments: bool = True,
 ):
     """Get root of DOM Tree without useless data"""

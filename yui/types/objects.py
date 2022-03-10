@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from .base import AppID
 from .base import BotID
@@ -75,8 +74,8 @@ class Subteam:
     date_update: datetime = DateTimeField()
     date_delete: datetime = DateTimeField()
     auto_type: str = StringField()
-    updated_by: Optional[User] = OptionalUserField()
-    deleted_by: Optional[User] = OptionalUserField()
+    updated_by: User | None = OptionalUserField()
+    deleted_by: User | None = OptionalUserField()
     perfs: SubteamPrefs = Field(converter=SubteamPrefs)
     users: list[User] = UserListField()
     user_count: str = StringField()
@@ -98,6 +97,4 @@ class MessageMessage:
     ts: Ts = TsField()
     type: str = StringField()
     text: str = StringField()
-    edited: Optional[MessageMessageEdited] = OptionalField(
-        MessageMessageEdited
-    )()
+    edited: MessageMessageEdited | None = OptionalField(MessageMessageEdited)()

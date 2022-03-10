@@ -6,16 +6,14 @@ import logging.config
 import random
 import string
 from collections import defaultdict
+from collections.abc import Callable
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
-from typing import Callable
-from typing import Optional
 from typing import TypeVar
-from typing import Union
 
 import aiocron
 
@@ -69,7 +67,7 @@ class APICallError(Exception):
         self,
         method: str,
         headers: dict[str, str],
-        data: Optional[dict[str, str]],
+        data: dict[str, str] | None,
     ) -> None:
         super(APICallError, self).__init__()
 
@@ -296,7 +294,7 @@ class Bot:
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
-            payload: Union[str, aiohttp.FormData]
+            payload: str | aiohttp.FormData
             if json_mode:
                 payload = json.dumps(data)
                 headers['Content-Type'] = 'application/json'
@@ -331,10 +329,10 @@ class Bot:
 
     async def say(
         self,
-        channel: Union[Channel, ChannelID],
+        channel: Channel | ChannelID,
         text: str,
         *,
-        length_limit: Optional[int] = 3000,
+        length_limit: int | None = 3000,
         **kwargs,
     ) -> APIResponse:
         """Shortcut for bot saying."""

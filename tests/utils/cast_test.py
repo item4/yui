@@ -1,7 +1,5 @@
 from typing import Any
 from typing import NewType
-from typing import Optional
-from typing import Union
 
 import pytest
 
@@ -35,9 +33,9 @@ def test_cast(bot):
     assert cast(list[int], ('1', '2', '3')) == [1, 2, 3]
     assert cast(tuple[int, float, str], ['1', '2', '3']) == (1, 2.0, '3')
     assert cast(set[int], ['1', '1', '2']) == {1, 2}
-    assert cast(Optional[int], 3) == 3
-    assert cast(Optional[int], None) is None
-    assert cast(Union[int, float], '3.2') == 3.2
+    assert cast(int | None, 3) == 3
+    assert cast(int | None, None) is None
+    assert cast(int | float, '3.2') == 3.2
     assert cast(list[ID], [1, 2, 3]) == [ID('1'), ID('2'), ID('3')]
     assert cast(dict[str, Any], {1: 1, 2: 2.2}) == {'1': 1, '2': 2.2}
     assert cast(dict[str, str], {1: 1, 2: 2.2}) == {'1': '1', '2': '2.2'}
@@ -68,4 +66,4 @@ def test_cast(bot):
     assert users[1].addresses == ['1', '2']
 
     with pytest.raises(ValueError):
-        cast(Union[int, float], 'asdf')
+        cast(int | float, 'asdf')

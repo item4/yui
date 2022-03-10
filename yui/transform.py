@@ -1,10 +1,9 @@
 import datetime
 import re
+from collections.abc import Callable
+from collections.abc import Sequence
 from decimal import Decimal
 from typing import Any
-from typing import Callable
-from typing import Optional
-from typing import Sequence
 from typing import TypeVar
 
 from .types.namespace import channel_id_convert
@@ -20,7 +19,7 @@ DATE_FORMAT_RE = re.compile(
 
 
 def str_to_date(
-    fallback: Optional[Callable[[], datetime.date]] = None,
+    fallback: Callable[[], datetime.date] | None = None,
 ) -> Callable[[str], Any]:
     """Helper to make date object from given string."""
 
@@ -93,7 +92,7 @@ def get_user(text: str):
 def enum_getitem(
     cls,
     *,
-    fallback: Optional[str] = None,
+    fallback: str | None = None,
 ) -> Callable[[str], Any]:
     """
     Helper to transform item to enum object by name from given enum
@@ -129,9 +128,9 @@ def enum_getitem(
 def choice(
     items: Sequence[str],
     *,
-    fallback: Optional[str] = None,
+    fallback: str | None = None,
     case_insensitive: bool = False,
-    case: Optional[str] = None,
+    case: str | None = None,
 ) -> Callable[[str], str]:
     """
     Helper to constraint value to in items or raise error.

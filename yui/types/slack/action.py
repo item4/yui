@@ -1,6 +1,4 @@
 import enum
-from typing import Optional
-from typing import Union
 
 import attr
 
@@ -19,9 +17,9 @@ class Confirmation:
     """Confirmation of Action"""
 
     text: str
-    dismiss_text: Optional[str] = None
-    ok_text: Optional[str] = None
-    title: Optional[str] = None
+    dismiss_text: str | None = None
+    ok_text: str | None = None
+    title: str | None = None
 
 
 @attr.dataclass(slots=True)
@@ -30,7 +28,7 @@ class OptionField:
 
     text: str
     value: str
-    description: Optional[str] = None
+    description: str | None = None
 
 
 @attr.dataclass(slots=True)
@@ -70,23 +68,23 @@ class Action:
 
     name: str
     text: str
-    type: Union[str, ActionType] = attr.ib(converter=ActionType)
-    style: Optional[Union[str, ActionStyle]] = attr.ib(
+    type: str | ActionType = attr.ib(converter=ActionType)
+    style: str | ActionStyle | None = attr.ib(
         converter=call_or_none(ActionStyle),  # type: ignore
         default=None,
     )
-    data_source: Optional[Union[str, ActionDataSource]] = attr.ib(
+    data_source: str | ActionDataSource | None = attr.ib(
         converter=call_or_none(ActionDataSource),  # type: ignore
         default=None,
     )
-    id: Optional[str] = None
-    confirm: Optional[Confirmation] = None
-    min_query_length: Optional[int] = None
-    options: Optional[list[OptionField]] = None
-    option_groups: Optional[list[OptionFieldGroup]] = None
-    selected_options: Optional[list[OptionField]] = None
-    value: Optional[str] = None
-    url: Optional[str] = None
+    id: str | None = None
+    confirm: Confirmation | None = None
+    min_query_length: int | None = None
+    options: list[OptionField] | None = None
+    option_groups: list[OptionFieldGroup] | None = None
+    selected_options: list[OptionField] | None = None
+    value: str | None = None
+    url: str | None = None
 
     def __attrs_post_init__(self):
         if self.data_source != ActionDataSource.external:

@@ -1,5 +1,4 @@
 from hashlib import md5
-from typing import Optional
 from urllib.parse import urlencode
 
 import aiohttp
@@ -42,12 +41,12 @@ class AQIRecord:
     name: str
     aqi: int
     time: int
-    pm25: Optional[Field] = None  # PM2.5
-    pm10: Optional[Field] = None  # PM10
-    o3: Optional[Field] = None  # 오존(Ozone)
-    no2: Optional[Field] = None  # 이산화 질소 (Nitrogen Dioxide)
-    so2: Optional[Field] = None  # 이산화 황 (Sulphur Dioxide)
-    co: Optional[Field] = None  # 일산화 탄소 (Carbon Monoxide)
+    pm25: Field | None = None  # PM2.5
+    pm10: Field | None = None  # PM10
+    o3: Field | None = None  # 오존(Ozone)
+    no2: Field | None = None  # 이산화 질소 (Nitrogen Dioxide)
+    so2: Field | None = None  # 이산화 황 (Sulphur Dioxide)
+    co: Field | None = None  # 일산화 탄소 (Carbon Monoxide)
 
 
 async def get_geometric_info_by_address(
@@ -81,7 +80,7 @@ async def get_aqi_idx(lat: float, lng: float, token: str) -> str:
         return 'wrong'
 
 
-async def get_aqi_result(idx: str) -> Optional[AQIRecord]:
+async def get_aqi_result(idx: str) -> AQIRecord | None:
     url = f'https://api.waqi.info/api/feed/@{idx}/obs.en.json'
     headers = {
         'User-Agent': USER_AGENT,

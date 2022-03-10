@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy.dialects.postgresql import Insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
@@ -15,8 +13,8 @@ async def cleanup_by_event_logs(
     sess: AsyncSession,
     channel: Channel,
     ts: str,
-    token: Optional[str],
-    count: Optional[int] = None,
+    token: str | None,
+    count: int | None = None,
 ) -> int:
     deleted = 0
     stmt = (
@@ -56,7 +54,7 @@ async def cleanup_by_history(
     bot,
     channel: Channel,
     ts: str,
-    token: Optional[str],
+    token: str | None,
     minimum: int = 100,
     as_user: bool = False,
 ) -> int:

@@ -2,7 +2,6 @@ import copy
 import pathlib
 import sys
 from typing import Any
-from typing import Optional
 
 import attr
 
@@ -81,7 +80,7 @@ class Config:
     CHANNELS: dict[str, Any]
     USERS: dict[str, Any]
     CACHE: dict[str, Any]
-    WEBSOCKETDEBUGGERURL: Optional[str] = None
+    WEBSOCKETDEBUGGERURL: str | None = None
     DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
 
     def check(

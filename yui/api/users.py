@@ -1,6 +1,3 @@
-from typing import Optional
-from typing import Union
-
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import UserID
@@ -12,7 +9,7 @@ class Users(Endpoint):
 
     name = 'users'
 
-    async def info(self, user: Union[User, UserID]) -> APIResponse:
+    async def info(self, user: User | UserID) -> APIResponse:
         """https://api.slack.com/methods/users.info"""
 
         if isinstance(user, User):
@@ -24,10 +21,10 @@ class Users(Endpoint):
 
     async def list(
         self,
-        curser: Optional[str] = None,
-        include_locale: Optional[bool] = None,
+        curser: str | None = None,
+        include_locale: bool | None = None,
         limit: int = 0,
-        presence: Optional[bool] = None,
+        presence: bool | None = None,
     ) -> APIResponse:
         params = {}
 

@@ -1,4 +1,3 @@
-from typing import Optional
 from typing import Type
 
 from sqlalchemy.ext.asyncio import AsyncEngine
@@ -11,7 +10,7 @@ from ..config import Config
 def create_database_engine(
     url: str,
     echo: bool,
-    poolclass: Optional[Type[Pool]] = None,
+    poolclass: Type[Pool] | None = None,
 ) -> AsyncEngine:
     return create_async_engine(
         url,
@@ -23,7 +22,7 @@ def create_database_engine(
 
 def get_database_engine(
     config: Config,
-    poolclass: Optional[Type[Pool]] = None,
+    poolclass: Type[Pool] | None = None,
 ) -> AsyncEngine:
     try:
         engine = config.DATABASE_ENGINE

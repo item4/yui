@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import inspect
+from collections.abc import Callable
+from collections.abc import Coroutine
+from collections.abc import Mapping
 from typing import Any
-from typing import Callable
-from typing import Coroutine
-from typing import Mapping
-from typing import Optional
 from typing import TYPE_CHECKING
 from typing import Type
-from typing import Union
 
 import attr
 
@@ -16,7 +14,7 @@ if TYPE_CHECKING:
     from ..box.tasks import CronTask
 
 
-HANDLER_CALL_RETURN_TYPE = Coroutine[Any, Any, Optional[bool]]
+HANDLER_CALL_RETURN_TYPE = Coroutine[Any, Any, bool | None]
 HANDLER_CALL_TYPE = Callable[..., HANDLER_CALL_RETURN_TYPE]
 
 
@@ -27,9 +25,9 @@ class Argument:
     name: str
     dest: str
     nargs: int
-    transform_func: Optional[Callable]
-    type_: Optional[Type]
-    container_cls: Optional[Type]
+    transform_func: Callable | None
+    type_: Type | None
+    container_cls: Type | None
     concat: bool
     type_error: str
     count_error: str
@@ -47,10 +45,10 @@ class Option:
     dest: str
     nargs: int
     multiple: bool
-    container_cls: Optional[Type]
+    container_cls: Type | None
     required: bool
-    transform_func: Optional[Callable]
-    type_: Optional[Type]
+    transform_func: Callable | None
+    type_: Type | None
     value: Any
     type_error: str
     count_error: str
@@ -62,9 +60,9 @@ class Handler:
     f: HANDLER_CALL_TYPE
     arguments: list[Argument] = attr.ib(init=False)
     options: list[Option] = attr.ib(init=False)
-    cron: Optional[CronTask] = attr.ib(init=False, default=None)
+    cron: CronTask | None = attr.ib(init=False, default=None)
     last_call: Any = attr.ib(init=False)
-    doc: Optional[str] = attr.ib(init=False)
+    doc: str | None = attr.ib(init=False)
     params: Mapping[str, inspect.Parameter] = attr.ib(init=False)
     is_prepared: bool = attr.ib(init=False, default=False)
 
@@ -113,5 +111,5 @@ class Handler:
         return self.f(*args, **kwargs)
 
 
-DECORATOR_ARGS_TYPE = Union[HANDLER_CALL_TYPE, Handler]
+DECORATOR_ARGS_TYPE = HANDLER_CALL_TYPE | Handler
 DECORATOR_TYPE = Callable[[DECORATOR_ARGS_TYPE], Handler]

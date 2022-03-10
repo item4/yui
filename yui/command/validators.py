@@ -1,10 +1,9 @@
+from collections.abc import Awaitable
+from collections.abc import Callable
+from collections.abc import Sequence
 from typing import Any
-from typing import Awaitable
-from typing import Callable
-from typing import Optional
-from typing import Sequence
 from typing import Type
-from typing import Union
+from typing import TypeAlias
 
 from .helpers import C
 from .helpers import Cs
@@ -19,16 +18,11 @@ class DM:
     """Direct Message"""
 
 
-ACCEPTABLE_CHANNEL_TYPES = Union[
-    Type[DM],
-    PrivateChannel,
-    PublicChannel,
-    C,
-    Cs,
-    str,
-]
+ACCEPTABLE_CHANNEL_TYPES: TypeAlias = (
+    Type[DM] | PrivateChannel | PublicChannel | C | Cs | str
+)
 
-VALIDATOR_TYPE = Callable[[Any, Message], Awaitable[bool]]
+VALIDATOR_TYPE: TypeAlias = Callable[[Any, Message], Awaitable[bool]]
 
 
 def get_channel_names(
@@ -61,7 +55,7 @@ def get_channel_names(
 
 def only(
     *channels: ACCEPTABLE_CHANNEL_TYPES,
-    error: Optional[str] = None,
+    error: str | None = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to allow to use handler."""
 
@@ -98,7 +92,7 @@ def only(
 
 def not_(
     *channels: ACCEPTABLE_CHANNEL_TYPES,
-    error: Optional[str] = None,
+    error: str | None = None,
 ) -> VALIDATOR_TYPE:
     """Mark channel to deny to use handler."""
 

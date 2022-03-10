@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ..types.channel import PublicChannel
 from ..types.user import User
 
@@ -62,7 +60,7 @@ def link(x) -> str:
     return f'<{x}>'
 
 
-def link_url(url: str, text: Optional[str] = None) -> str:
+def link_url(url: str, text: str | None = None) -> str:
     if text:
         return f'<{url}|{escape(text)}>'
     return f'<{url}>'

@@ -9,11 +9,9 @@ import math
 import operator
 import random
 import statistics
-from collections import abc
+from collections.abc import Callable
+from collections.abc import Iterable
 from typing import Any
-from typing import Callable
-from typing import Optional
-from typing import Union
 
 import _ast
 
@@ -816,9 +814,7 @@ class Evaluator:
             'statistics': statistics,
         }
         self.symbol_table: dict[str, Any] = {}
-        self.current_interrupt: Optional[
-            Union[_ast.Break, _ast.Continue]
-        ] = None
+        self.current_interrupt: _ast.Break | _ast.Continue | None = None
 
     def run(self, expr: str):
         h = ast.parse(expr, mode='exec')
@@ -841,7 +837,7 @@ class Evaluator:
         if cls == _ast.Name:
             self.symbol_table[node.id] = val
         elif cls in (_ast.Tuple, _ast.List):
-            if not isinstance(val, abc.Iterable):
+            if not isinstance(val, Iterable):
                 raise TypeError(
                     'cannot unpack non-iterable {} object'.format(
                         type(val).__name__,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import inspect
-from typing import Mapping
+from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from ...event import Event

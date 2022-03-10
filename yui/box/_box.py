@@ -1,7 +1,5 @@
 from typing import Any
-from typing import Optional
 from typing import Type
-from typing import Union
 
 from .apps.base import BaseApp
 from .apps.basic import App
@@ -61,13 +59,13 @@ class Box:
     def command(
         self,
         name: str,
-        aliases: Optional[list[str]] = None,
+        aliases: list[str] | None = None,
         *,
-        subtype: Optional[str] = None,
-        short_help: Optional[str] = None,
-        help: Optional[str] = None,
+        subtype: str | None = None,
+        short_help: str | None = None,
+        help: str | None = None,
         use_shlex: bool = True,
-        channels: Optional[VALIDATOR_TYPE] = None,
+        channels: VALIDATOR_TYPE | None = None,
     ) -> DECORATOR_TYPE:
         """Shortcut decorator for make command easily."""
 
@@ -95,10 +93,10 @@ class Box:
 
     def on(
         self,
-        type_: Union[str, Type[Event]],
+        type_: str | Type[Event],
         *,
-        subtype: Optional[str] = None,
-        channels: Optional[VALIDATOR_TYPE] = None,
+        subtype: str | None = None,
+        channels: VALIDATOR_TYPE | None = None,
     ) -> DECORATOR_TYPE:
         """Decorator for make app."""
 

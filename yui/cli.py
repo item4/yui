@@ -2,7 +2,6 @@ import asyncio
 import functools
 import os.path
 import pathlib
-from typing import Optional
 
 from alembic import command
 from alembic.config import Config as AlembicConfig
@@ -80,14 +79,14 @@ def run(config):
 @load_config
 def revision(
     config,
-    message: Optional[str],
+    message: str | None,
     autogenerate: bool,
     sql: bool,
     head: str,
     splice: bool,
-    branch_label: Optional[str],
-    version_path: Optional[str],
-    rev_id: Optional[str],
+    branch_label: str | None,
+    version_path: str | None,
+    rev_id: str | None,
 ):
     """Create a new revision file."""
 
@@ -129,13 +128,13 @@ def revision(
 @load_config
 def migrate(
     config,
-    message: Optional[str],
+    message: str | None,
     sql: bool,
     head: str,
     splice: bool,
-    branch_label: Optional[str],
-    version_path: Optional[str],
-    rev_id: Optional[str],
+    branch_label: str | None,
+    version_path: str | None,
+    rev_id: str | None,
 ):
     """Alias for 'revision --autogenerate'"""
 
@@ -198,9 +197,9 @@ def edit(config, revision: str):
 def merge(
     config,
     revisions: str,
-    message: Optional[str],
-    branch_label=Optional[str],
-    rev_id=Optional[str],
+    message: str | None,
+    branch_label=str | None,
+    rev_id=str | None,
 ):
     """Merge two revisions together.  Creates a new migration file."""
 
@@ -232,7 +231,7 @@ def merge(
 @click.option('--sql', is_flag=True, default=False)
 @click.argument('revision', default='head')
 @load_config
-def upgrade(config, revision: str, sql: bool, tag: Optional[str]):
+def upgrade(config, revision: str, sql: bool, tag: str | None):
     """Upgrade to a later version."""
 
     def op(connection, c):
@@ -304,7 +303,7 @@ def show(config, revision: str):
 @click.option('--verbose', '-v', is_flag=True, default=False)
 @click.option('--rev-range', '-r')
 @load_config
-def history(config, verbose: bool, rev_range: Optional[str]):
+def history(config, verbose: bool, rev_range: str | None):
     """List changeset scripts in chronological order."""
 
     def op(connection, c):
@@ -401,7 +400,7 @@ def current(config, verbose: bool):
 @click.option('--sql', is_flag=True, default=False)
 @click.argument('revision', default='head')
 @load_config
-def stamp(config, revision: str, sql: bool, tag: Optional[str]):
+def stamp(config, revision: str, sql: bool, tag: str | None):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 

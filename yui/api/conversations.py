@@ -1,5 +1,4 @@
-from typing import Optional
-from typing import Union
+from typing import TypeAlias
 from typing import cast
 
 from .encoder import bool2str
@@ -13,7 +12,7 @@ from ..types.slack.response import APIResponse
 from ..types.user import User
 
 
-USER_LIST = list[Union[User, UserID]]
+USER_LIST: TypeAlias = list[User | UserID]
 
 
 class Conversations(Endpoint):
@@ -22,12 +21,12 @@ class Conversations(Endpoint):
 
     async def history(
         self,
-        channel: Union[Channel, ChannelID],
-        cursor: Optional[str] = None,
-        inclusive: Optional[bool] = None,
-        latest: Optional[Ts] = None,
-        limit: Optional[int] = None,
-        oldest: Optional[Ts] = None,
+        channel: Channel | ChannelID,
+        cursor: str | None = None,
+        inclusive: bool | None = None,
+        latest: Ts | None = None,
+        limit: int | None = None,
+        oldest: Ts | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.history"""
 
@@ -59,13 +58,13 @@ class Conversations(Endpoint):
 
     async def replies(
         self,
-        channel: Union[Channel, ChannelID],
+        channel: Channel | ChannelID,
         ts: Ts,
-        cursor: Optional[str] = None,
-        inclusive: Optional[bool] = None,
-        latest: Optional[Ts] = None,
-        limit: Optional[int] = None,
-        oldest: Optional[Ts] = None,
+        cursor: str | None = None,
+        inclusive: bool | None = None,
+        latest: Ts | None = None,
+        limit: int | None = None,
+        oldest: Ts | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.replies"""
 
@@ -98,9 +97,9 @@ class Conversations(Endpoint):
 
     async def info(
         self,
-        channel: Union[Channel, ChannelID],
-        include_locale: Optional[bool] = None,
-        include_num_members: Optional[bool] = None,
+        channel: Channel | ChannelID,
+        include_locale: bool | None = None,
+        include_num_members: bool | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.info"""
 
@@ -123,11 +122,11 @@ class Conversations(Endpoint):
 
     async def list(
         self,
-        cursor: Optional[str] = None,
-        exclude_archived: Optional[bool] = None,
-        limit: Optional[int] = None,
-        team_id: Optional[TeamID] = None,
-        types: Optional[str] = None,
+        cursor: str | None = None,
+        exclude_archived: bool | None = None,
+        limit: int | None = None,
+        team_id: TeamID | None = None,
+        types: str | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.list"""
 
@@ -153,9 +152,9 @@ class Conversations(Endpoint):
     async def open(
         self,
         *,
-        channel: Optional[Union[Channel, ChannelID]] = None,
-        return_im: Optional[bool] = None,
-        users: Optional[USER_LIST] = None,
+        channel: Channel | ChannelID | None = None,
+        return_im: bool | None = None,
+        users: USER_LIST | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.open"""
 

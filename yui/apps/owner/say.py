@@ -1,5 +1,3 @@
-from typing import Optional
-
 from ...box import box
 from ...command import U
 from ...command import argument
@@ -20,8 +18,8 @@ box.assert_user_required('owner')
 async def say(
     bot,
     event: Message,
-    channel: Optional[Channel],
-    user: Optional[User],
+    channel: Channel | None,
+    user: User | None,
     message: str,
 ):
     """

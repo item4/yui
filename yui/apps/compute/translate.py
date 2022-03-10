@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Optional
 
 import aiohttp
 
@@ -12,7 +11,7 @@ from ...utils import json
 box.assert_config_required('NAVER_CLIENT_ID', str)
 box.assert_config_required('NAVER_CLIENT_SECRET', str)
 
-LANGUAGE_MAP: dict[Optional[str], Optional[str]] = {
+LANGUAGE_MAP: dict[str | None, str | None] = {
     None: None,
     'auto': None,
     '자동': None,

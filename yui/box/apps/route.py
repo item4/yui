@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import html
-from typing import Optional
 from typing import TYPE_CHECKING
-from typing import Union
 
 from .base import BaseApp
 from ..parsers import parse_option_and_arguments
@@ -21,15 +19,15 @@ if TYPE_CHECKING:
 
 class Route:
 
-    name: Optional[str]
+    name: str | None
     handler: Handler
-    subtype: Optional[str] = None
+    subtype: str | None = None
 
     def __init__(
         self,
-        name: Optional[str],
-        callback: Union[HANDLER_CALL_TYPE, Handler],
-        subtype: Optional[str] = None,
+        name: str | None,
+        callback: HANDLER_CALL_TYPE | Handler,
+        subtype: str | None = None,
     ) -> None:
         self.name = name
         self.handler = get_handler(callback)

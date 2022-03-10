@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from dateutil.tz import UTC
 from dateutil.tz import tzfile
@@ -89,9 +88,9 @@ def DateTimeAtColumn(prefix: str) -> hybrid_property:
     datetime_key = f'{prefix}_datetime'
     timezone_key = f'{prefix}_timezone'
 
-    def getter(self) -> Optional[datetime.datetime]:
-        dt: Optional[datetime.datetime] = getattr(self, datetime_key)
-        tz: Optional[datetime.tzinfo] = getattr(self, timezone_key)
+    def getter(self) -> datetime.datetime | None:
+        dt: datetime.datetime | None = getattr(self, datetime_key)
+        tz: datetime.tzinfo | None = getattr(self, timezone_key)
         if dt and tz:
             return dt.astimezone(tz)
         return dt

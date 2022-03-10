@@ -1,6 +1,4 @@
 import enum
-from typing import Optional
-from typing import Union
 
 import attr
 
@@ -75,10 +73,10 @@ class ButtonElement(InteractiveElement):
 
     text: TextField
     action_id: str
-    url: Optional[str] = None
-    value: Optional[str] = None
-    style: Optional[ButtonStyle] = ButtonStyle.default
-    confirm: Optional[ConfirmationDialog] = None
+    url: str | None = None
+    value: str | None = None
+    style: ButtonStyle | None = ButtonStyle.default
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='button', init=False)
 
 
@@ -103,8 +101,8 @@ class StaticSelectElement(InteractiveElement):
     action_id: str
     options: list[Option] = attr.Factory(list)
     option_groups: list[OptionGroup] = attr.Factory(list)
-    initial_option: Optional[Option] = None
-    confirm: Optional[ConfirmationDialog] = None
+    initial_option: Option | None = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='static_select', init=False)
 
 
@@ -113,9 +111,9 @@ class ExternalSelectElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    initial_option: Optional[Option] = None
-    confirm: Optional[ConfirmationDialog] = None
-    min_query_length: Optional[int] = None
+    initial_option: Option | None = None
+    confirm: ConfirmationDialog | None = None
+    min_query_length: int | None = None
     type: str = attr.ib(default='external_select', init=False)
 
 
@@ -124,8 +122,8 @@ class UsersSelectElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    initial_user: Optional[UserID] = None
-    confirm: Optional[ConfirmationDialog] = None
+    initial_user: UserID | None = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='users_select', init=False)
 
 
@@ -134,8 +132,8 @@ class ConversationsSelectElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    initial_conversation: Optional[ChannelID] = None
-    confirm: Optional[ConfirmationDialog] = None
+    initial_conversation: ChannelID | None = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='conversations_select', init=False)
 
 
@@ -144,8 +142,8 @@ class ChannelsSelectElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    initial_channel: Optional[PublicChannelID] = None
-    confirm: Optional[ConfirmationDialog] = None
+    initial_channel: PublicChannelID | None = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='channels_select', init=False)
 
 
@@ -155,7 +153,7 @@ class OverflowElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
     options: list[Option] = attr.Factory(list)
-    confirm: Optional[ConfirmationDialog] = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='overflow', init=False)
 
 
@@ -164,8 +162,8 @@ class DatepickerElement(InteractiveElement):
 
     placeholder: PlainTextField
     action_id: str
-    initial_date: Optional[str] = None
-    confirm: Optional[ConfirmationDialog] = None
+    initial_date: str | None = None
+    confirm: ConfirmationDialog | None = None
     type: str = attr.ib(default='datepicker', init=False)
 
 
@@ -173,7 +171,7 @@ class Block:
     """Slack Block Structure"""
 
     type: str = ''
-    block_id: Optional[str] = None
+    block_id: str | None = None
 
 
 @attr.dataclass(slots=True)
@@ -183,7 +181,7 @@ class Section(Block):
     text: TextField
     type: str = attr.ib(default='section', init=False)
     fields: list[TextField] = attr.Factory(list)
-    accessory: Optional[Element] = None
+    accessory: Element | None = None
 
 
 @attr.dataclass(slots=True)
@@ -200,7 +198,7 @@ class Image(Block):
     image_url: str
     alt_text: str
     type: str = attr.ib(default='image', init=False)
-    title: Optional[TextField] = None
+    title: TextField | None = None
 
 
 @attr.dataclass(slots=True)
@@ -214,4 +212,4 @@ class Context(Block):
     """Context Block"""
 
     type: str = attr.ib(default='context', init=False)
-    elements: list[Union[TextField, ImageElement]] = attr.Factory(list)
+    elements: list[TextField | ImageElement] = attr.Factory(list)

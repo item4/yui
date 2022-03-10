@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
-from typing import Optional
 from typing import TYPE_CHECKING
 from typing import Type
 
@@ -32,11 +31,11 @@ OPTION_TRANSFORM_ERROR = '{name}: fail to transform option value ({e})'
 
 def argument(
     name: str,
-    dest: Optional[str] = None,
+    dest: str | None = None,
     nargs: int = 1,
-    transform_func: Optional[Callable] = None,
-    type_: Optional[Type] = None,
-    container_cls: Optional[Type] = None,
+    transform_func: Callable | None = None,
+    type_: Type | None = None,
+    container_cls: Type | None = None,
     concat: bool = False,
     type_error: str = ARGUMENT_TYPE_ERROR,
     count_error: str = ARGUMENT_COUNT_ERROR,
@@ -114,16 +113,16 @@ def argument(
 
 def option(
     *args: str,
-    default: Optional[Any] = None,
-    dest: Optional[str] = None,
+    default: Any | None = None,
+    dest: str | None = None,
     is_flag: bool = False,
     nargs: int = 1,
     multiple: bool = False,
-    container_cls: Optional[Type] = None,
+    container_cls: Type | None = None,
     required: bool = False,
-    transform_func: Optional[Callable] = None,
-    type_: Optional[Type] = None,
-    value: Optional[Any] = None,
+    transform_func: Callable | None = None,
+    type_: Type | None = None,
+    value: Any | None = None,
     type_error: str = OPTION_TYPE_ERROR,
     count_error: str = OPTION_COUNT_ERROR,
     transform_error: str = OPTION_TRANSFORM_ERROR,

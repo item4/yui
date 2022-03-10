@@ -1,6 +1,4 @@
 from typing import Any
-from typing import Optional
-from typing import Union
 
 from .encoder import bool2str
 from .endpoint import Endpoint
@@ -20,11 +18,11 @@ class Chat(Endpoint):
 
     async def delete(
         self,
-        channel: Union[Channel, ChannelID],
+        channel: Channel | ChannelID,
         ts: Ts,
-        as_user: Optional[bool] = None,
+        as_user: bool | None = None,
         *,
-        token: Optional[str] = None,
+        token: str | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.delete"""
 
@@ -45,20 +43,20 @@ class Chat(Endpoint):
 
     async def postEphemeral(
         self,
-        channel: Union[Channel, User, ChannelID],
-        user: Union[User, UserID],
-        text: Optional[str] = None,
+        channel: Channel | User | ChannelID,
+        user: User | UserID,
+        text: str | None = None,
         *,
-        attachments: Optional[list[Attachment]] = None,
-        as_user: Optional[bool] = None,
-        blocks: Optional[list[Block]] = None,
-        icon_emoji: Optional[str] = None,
-        icon_url: Optional[str] = None,
-        link_names: Optional[bool] = None,
-        parse: Optional[str] = None,
-        thread_ts: Optional[Ts] = None,
-        username: Optional[str] = None,
-        token: Optional[str] = None,
+        attachments: list[Attachment] | None = None,
+        as_user: bool | None = None,
+        blocks: list[Block] | None = None,
+        icon_emoji: str | None = None,
+        icon_url: str | None = None,
+        link_names: bool | None = None,
+        parse: str | None = None,
+        thread_ts: Ts | None = None,
+        username: str | None = None,
+        token: str | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postEphemeral"""
 
@@ -119,23 +117,23 @@ class Chat(Endpoint):
 
     async def postMessage(
         self,
-        channel: Union[Channel, User, ChannelID],
-        text: Optional[str] = None,
+        channel: Channel | User | ChannelID,
+        text: str | None = None,
         *,
-        as_user: Optional[bool] = None,
-        attachments: Optional[list[Attachment]] = None,
-        blocks: Optional[list[Block]] = None,
-        icon_emoji: Optional[str] = None,
-        icon_url: Optional[str] = None,
-        link_names: Optional[bool] = None,
+        as_user: bool | None = None,
+        attachments: list[Attachment] | None = None,
+        blocks: list[Block] | None = None,
+        icon_emoji: str | None = None,
+        icon_url: str | None = None,
+        link_names: bool | None = None,
         mrkdwn: bool = True,
-        parse: Optional[str] = None,
-        reply_broadcast: Optional[bool] = None,
-        thread_ts: Optional[Ts] = None,
-        unfurl_links: Optional[bool] = None,
-        unfurl_media: Optional[bool] = None,
-        username: Optional[str] = None,
-        token: Optional[str] = None,
+        parse: str | None = None,
+        reply_broadcast: bool | None = None,
+        thread_ts: Ts | None = None,
+        unfurl_links: bool | None = None,
+        unfurl_media: bool | None = None,
+        username: str | None = None,
+        token: str | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postMessage"""
 

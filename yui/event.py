@@ -2,9 +2,7 @@ from typing import Any
 from typing import ClassVar
 from typing import Literal
 from typing import NoReturn
-from typing import Optional
 from typing import Type
-from typing import Union
 from typing import overload
 
 from .types.base import ChannelID
@@ -194,7 +192,7 @@ class Event(BaseEvent):
     """Event."""
 
     type: ClassVar[str]
-    subtype: Optional[str] = None
+    subtype: str | None = None
 
 
 _events: dict[EventType, Type[BaseEvent]] = {}
@@ -586,7 +584,7 @@ class MemberJoinedChannel(Event):
 
     type: ClassVar[str] = 'member_joined_channel'
     user: User = UserField()
-    channel: Union[PublicChannel, PrivateChannel] = ChannelField()
+    channel: PublicChannel | PrivateChannel = ChannelField()
     inviter: User = UserField()
     channel_type: str = StringField()
 
@@ -597,7 +595,7 @@ class MemberLeftChannel(Event):
 
     type: ClassVar[str] = 'member_left_channel'
     user: User = UserField()
-    channel: Union[PublicChannel, PrivateChannel] = ChannelField()
+    channel: PublicChannel | PrivateChannel = ChannelField()
     channel_type: str = StringField()
 
 
@@ -614,7 +612,7 @@ class Message(Event):
     attachments: list[dict[str, Any]] = Field()
     hidden: bool = BooleanField()
     message: MessageMessage = OptionalField(MessageMessage)(repr=True)
-    subtype: Optional[str] = OptionalField(str)(repr=True)
+    subtype: str | None = OptionalField(str)(repr=True)
 
 
 @event

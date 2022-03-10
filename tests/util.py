@@ -1,9 +1,7 @@
 import asyncio
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
-from typing import Callable
-from typing import Optional
-from typing import Union
 
 import attr
 
@@ -25,8 +23,8 @@ class Call:
     """API Call from bot"""
 
     method: str
-    data: Optional[dict[str, Any]]
-    token: Optional[str] = None
+    data: dict[str, Any] | None
+    token: str | None = None
     json_mode: bool = False
 
 
@@ -74,10 +72,10 @@ class FakeBot(Bot):
     async def call(
         self,
         method: str,
-        data: Optional[dict[str, Any]] = None,
+        data: dict[str, Any] | None = None,
         *,
         throttle_check: bool = False,
-        token: Optional[str] = None,
+        token: str | None = None,
         json_mode: bool = False,
     ):
         self.call_queue.append(Call(method, data, token, json_mode))
@@ -131,7 +129,7 @@ class FakeBot(Bot):
         self.groups.append(channel)
         return channel
 
-    def add_dm(self, id: str, user: Union[User, str], last_read: int = 0):
+    def add_dm(self, id: str, user: User | str, last_read: int = 0):
         if isinstance(user, User):
             user_id = user.id
         else:
@@ -151,13 +149,8 @@ class FakeBot(Bot):
 
     def create_message(
         self,
-        channel: Union[
-            PublicChannel,
-            PrivateChannel,
-            DirectMessageChannel,
-            str,
-        ],
-        user: Union[User, str],
+        channel: PublicChannel | PrivateChannel | DirectMessageChannel | str,
+        user: User | str,
         ts: str = '',
         event_ts: str = '',
         **kwargs,

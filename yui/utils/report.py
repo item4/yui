@@ -2,7 +2,6 @@ import json
 import re
 import sys
 import traceback
-from typing import Optional
 from typing import TYPE_CHECKING
 
 from .format import bold
@@ -37,8 +36,8 @@ def get_simple_tb_text(tb: list[str]) -> list[str]:
 async def report(
     bot: 'Bot',
     *,
-    event: Optional[Event] = None,
-    exception: Optional['APICallError'] = None,
+    event: Event | None = None,
+    exception: 'APICallError' | None = None,
 ):
     tb_lines = get_simple_tb_text(traceback.format_exception(*sys.exc_info()))
     messages: list[str] = []

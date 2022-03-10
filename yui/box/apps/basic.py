@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import html
 import inspect
-from typing import Optional
 from typing import TYPE_CHECKING
 
 from .base import BaseApp
@@ -25,16 +24,16 @@ class App(BaseApp):
     def __init__(
         self,
         type: str,
-        subtype: Optional[str],
+        subtype: str | None,
         handler: Handler,
         *,
-        name: Optional[str] = None,
-        aliases: Optional[list[str]] = None,
-        short_help: Optional[str] = None,
-        help: Optional[str] = None,
+        name: str | None = None,
+        aliases: list[str] | None = None,
+        short_help: str | None = None,
+        help: str | None = None,
         use_shlex: bool = False,
         is_command: bool = False,
-        channel_validator: Optional[VALIDATOR_TYPE] = None,
+        channel_validator: VALIDATOR_TYPE | None = None,
     ) -> None:
         """Initialize"""
         self.type = type
@@ -99,7 +98,7 @@ class App(BaseApp):
         return True
 
     async def _run(self, bot: Bot, event: Event):
-        res: Optional[bool] = True
+        res: bool | None = True
         validation = True
         if self.channel_validator and isinstance(event, Message):
             validation = await self.channel_validator(self, event)
@@ -115,7 +114,7 @@ class App(BaseApp):
         return bool(res)
 
     async def _run_message_event(self, bot: Bot, event: Message):
-        res: Optional[bool] = True
+        res: bool | None = True
         call = ''
         args = ''
         if event.text:
