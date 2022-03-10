@@ -4,9 +4,6 @@ from typing import TypeVar
 from typing import get_origin
 
 
-NoneType = type(None)
-
-
 KNOWN_TYPES = {
     bytes,
     float,
@@ -161,7 +158,7 @@ class NoHandleCaster(BaseCaster):
 
 class NoneTypeCaster(BaseCaster):
     def check(self, t, value):
-        return t == NoneType
+        return t is types.NoneType  # noqa: E721
 
     def cast(self, caster_box, t, value):
         return None
