@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import re
 import sys
@@ -37,7 +39,7 @@ async def report(
     bot: 'Bot',
     *,
     event: Event | None = None,
-    exception: 'APICallError' | None = None,
+    exception: APICallError | None = None,
 ):
     tb_lines = get_simple_tb_text(traceback.format_exception(*sys.exc_info()))
     messages: list[str] = []
