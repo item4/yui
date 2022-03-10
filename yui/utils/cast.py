@@ -1,6 +1,7 @@
 import types
 from typing import Any
 from typing import TypeVar
+from typing import get_args
 from typing import get_origin
 
 
@@ -84,7 +85,7 @@ class UnionCaster(BaseCaster):
         return get_origin(t) is types.UnionType  # noqa: E721
 
     def cast(self, caster_box, t, value):
-        types = caster_box.sort(t.__args__, value)
+        types = caster_box.sort(get_args(t), value)
         for ty in types:
             try:
                 return caster_box.cast(ty, value)
@@ -98,10 +99,8 @@ class TupleCaster(BaseCaster):
         return t == tuple or get_origin(t) == tuple
 
     def cast(self, caster_box, t, value):
-        if hasattr(t, '__args__') and t.__args__:
-            return tuple(
-                caster_box.cast(ty, x) for ty, x in zip(t.__args__, value)
-            )
+        if args := get_args(t):
+            return tuple(caster_box.cast(ty, x) for ty, x in zip(args, value))
         else:
             return tuple(value)
 
@@ -111,8 +110,8 @@ class SetCaster(BaseCaster):
         return t == set or get_origin(t) == set
 
     def cast(self, caster_box, t, value):
-        if hasattr(t, '__args__') and t.__args__:
-            return {caster_box.cast(t.__args__[0], x) for x in value}
+        if args := get_args(t):
+            return {caster_box.cast(args[0], x) for x in value}
         else:
             return set(value)
 
@@ -122,8 +121,8 @@ class ListCaster(BaseCaster):
         return t == list or get_origin(t) == list
 
     def cast(self, caster_box, t, value):
-        if hasattr(t, '__args__') and t.__args__:
-            return [caster_box.cast(t.__args__[0], x) for x in value]
+        if args := get_args(t):
+            return [caster_box.cast(args[0], x) for x in value]
         else:
             return list(value)
 
@@ -133,12 +132,12 @@ class DictCaster(BaseCaster):
         return t == dict or get_origin(t) == dict
 
     def cast(self, caster_box, t, value):
-        if hasattr(t, '__args__') and t.__args__:
+        if args := get_args(t):
             return {
                 caster_box.cast(
-                    t.__args__[0],
+                    args[0],
                     k,
-                ): caster_box.cast(t.__args__[1], v)
+                ): caster_box.cast(args[1], v)
                 for k, v in value.items()
             }
         else:
