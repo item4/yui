@@ -15,7 +15,6 @@ from .cast import SetCaster
 from .cast import TupleCaster
 from .cast import TypeVarCaster
 from .cast import UnionCaster
-from .cast import UnionType
 from .cast import cast
 from .datetime import datetime
 from .datetime import now

@@ -1,11 +1,10 @@
+import types
 from typing import Any
 from typing import TypeVar
-from typing import Union
 from typing import get_origin
 
 
 NoneType = type(None)
-UnionType = type(Union)
 
 
 KNOWN_TYPES = {
@@ -85,7 +84,7 @@ class AnyCaster(BaseCaster):
 
 class UnionCaster(BaseCaster):
     def check(self, t, value):
-        return get_origin(t) == Union
+        return get_origin(t) is types.UnionType  # noqa: E721
 
     def cast(self, caster_box, t, value):
         types = caster_box.sort(t.__args__, value)
