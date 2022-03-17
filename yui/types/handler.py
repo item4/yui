@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 from typing import TYPE_CHECKING
 from typing import Type
+from typing import TypeAlias
 
 import attr
 
@@ -14,8 +15,8 @@ if TYPE_CHECKING:
     from ..box.tasks import CronTask
 
 
-HANDLER_CALL_RETURN_TYPE = Coroutine[Any, Any, bool | None]
-HANDLER_CALL_TYPE = Callable[..., HANDLER_CALL_RETURN_TYPE]
+HANDLER_CALL_RETURN_TYPE: TypeAlias = Coroutine[Any, Any, bool | None]
+HANDLER_CALL_TYPE: TypeAlias = Callable[..., HANDLER_CALL_RETURN_TYPE]
 
 
 @attr.dataclass(slots=True)
@@ -111,5 +112,5 @@ class Handler:
         return self.f(*args, **kwargs)
 
 
-DECORATOR_ARGS_TYPE = HANDLER_CALL_TYPE | Handler
-DECORATOR_TYPE = Callable[[DECORATOR_ARGS_TYPE], Handler]
+DECORATOR_ARGS_TYPE: TypeAlias = HANDLER_CALL_TYPE | Handler
+DECORATOR_TYPE: TypeAlias = Callable[[DECORATOR_ARGS_TYPE], Handler]

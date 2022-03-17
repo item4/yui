@@ -1,41 +1,43 @@
+from typing import TypeAlias
+
 #: :type:`type` User ID type. It must start with 'U' or 'W'.
-UserID = str
+UserID: TypeAlias = str
 
 #: :type:`type` Public Channel ID type. It must start with 'C'.
-PublicChannelID = str
+PublicChannelID: TypeAlias = str
 
 #: :type:`type` IM(as known as Direct Message) Channel ID type.
 #: It must start with 'D'.
-DirectMessageChannelID = str
+DirectMessageChannelID: TypeAlias = str
 
 #: :type:`type` Group(as known as Private Channel) ID type.
 #: It must start with 'G'.
-PrivateChannelID = str
+PrivateChannelID: TypeAlias = str
 
-ChannelID = str
+ChannelID: TypeAlias = str
 
 #: :type:`type` File ID type. It must start with 'F'.
-FileID = str
+FileID: TypeAlias = str
 
-Comment = dict
+Comment: TypeAlias = dict
 
 #: :type:`type` Comment ID type.
-CommentID = str
+CommentID: TypeAlias = str
 
 #: :type:`type` Type for slack event unique ID.
-Ts = str
+Ts: TypeAlias = str
 
 #: :type:`type` Team ID type. It must start with 'T'.
-TeamID = str
+TeamID: TypeAlias = str
 
 #: :type:`type` Sub-team ID type. It must start with 'S'.
-SubteamID = str
+SubteamID: TypeAlias = str
 
 #: :type:`type` App ID type. IT must start with 'A'.
-AppID = str
+AppID: TypeAlias = str
 
 #: :type:`type` Bot ID type. It must start with 'B'.
-BotID = str
+BotID: TypeAlias = str
 
 #: :type:`type` Type for store UnixTimestamp.
-UnixTimestamp = int
+UnixTimestamp: TypeAlias = int

@@ -3,6 +3,7 @@ from typing import ClassVar
 from typing import Literal
 from typing import NoReturn
 from typing import Type
+from typing import TypeAlias
 from typing import overload
 
 from .types.base import ChannelID
@@ -181,7 +182,7 @@ EventType = Literal[
     UserTypingType,
     YuiSystemStartType,
 ]
-Source = dict[str, Any]
+Source: TypeAlias = dict[str, Any]
 
 
 class BaseEvent:
