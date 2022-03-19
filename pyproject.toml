@@ -1,7 +1,6 @@
 [tool.black]
 line-length = 79
 skip_string_normalization = true
-force-exclude = '(/templates/)'
 
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'

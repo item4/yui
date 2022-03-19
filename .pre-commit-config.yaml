@@ -25,10 +25,6 @@ repos:
     hooks:
       - id: zimports
         name: zimports
-        exclude: |
-          (?x)^(
-            .*/templates/.*
-          )$
         entry: zimports
         args: ['--expand-stars', '--keep-unused']
         language: system
@@ -40,19 +36,11 @@ repos:
         types: [ python ]
       - id: flake8
         name: flake8
-        exclude: |
-          (?x)^(
-            .*/templates/.*
-          )$
         entry: flake8
         language: system
         types: [ python ]
       - id: mypy
         name: mypy
-        exclude: |
-          (?x)^(
-            .*/templates/.*
-          )$
         entry: mypy
         language: system
         types: [ python ]

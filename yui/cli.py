@@ -4,19 +4,13 @@ import os.path
 import pathlib
 
 from alembic import command
-from alembic.config import Config as AlembicConfig
+from alembic.config import Config
 
 import click
 
 from .bot import Bot
 from .config import ConfigurationError
 from .config import load
-
-
-class Config(AlembicConfig):
-    def get_template_directory(self):
-        package_dir = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(package_dir, 'templates')
 
 
 def error(message: str):
