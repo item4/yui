@@ -1,10 +1,9 @@
 fail_fast: true
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.1.0
     hooks:
     - id: check-ast
-    - id: check-byte-order-marker
     - id: check-case-conflict
     - id: check-json
     - id: check-merge-conflict
@@ -14,11 +13,11 @@ repos:
     - id: check-yaml
     - id: debug-statements
     - id: detect-private-key
-    - id: double-quote-string-fixer
     - id: end-of-file-fixer
+    - id: fix-byte-order-marker
     - id: trailing-whitespace
   - repo: https://github.com/asottile/yesqa
-    rev: v1.2.2
+    rev: v1.3.0
     hooks:
     - id: yesqa
   - repo: local
