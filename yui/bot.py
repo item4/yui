@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
+from typing import ParamSpec
 from typing import TypeVar
 
 import aiocron
@@ -52,6 +53,7 @@ from .utils.datetime import now
 from .utils.report import report
 
 
+P = ParamSpec('P')
 R = TypeVar('R')
 UTC9 = tzoffset('UTC9', timedelta(hours=9))
 
@@ -231,9 +233,9 @@ class Bot:
 
     async def run_in_other_process(
         self,
-        f: Callable[..., R],
-        *args,
-        **kwargs,
+        f: Callable[P, R],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> R:
         loop = asyncio.get_running_loop()
         try:
@@ -247,9 +249,9 @@ class Bot:
 
     async def run_in_other_thread(
         self,
-        f: Callable[..., R],
-        *args,
-        **kwargs,
+        f: Callable[P, R],
+        *args: P.args,
+        **kwargs: P.kwargs,
     ) -> R:
         loop = asyncio.get_running_loop()
         try:
