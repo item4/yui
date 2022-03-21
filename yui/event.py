@@ -2,7 +2,6 @@ from typing import Any
 from typing import ClassVar
 from typing import Literal
 from typing import NoReturn
-from typing import Type
 from typing import TypeAlias
 from typing import overload
 
@@ -196,7 +195,7 @@ class Event(BaseEvent):
     subtype: str | None = None
 
 
-_events: dict[EventType, Type[BaseEvent]] = {}
+_events: dict[EventType, type[BaseEvent]] = {}
 
 
 def event(cls):

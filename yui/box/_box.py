@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Type
 
 from .apps.base import BaseApp
 from .apps.basic import App
@@ -93,7 +92,7 @@ class Box:
 
     def on(
         self,
-        type_: str | Type[Event],
+        type_: str | type[Event],
         *,
         subtype: str | None = None,
         channels: VALIDATOR_TYPE | None = None,

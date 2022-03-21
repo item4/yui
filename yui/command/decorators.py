@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 from typing import TYPE_CHECKING
-from typing import Type
 
 from ..types.handler import Argument
 from ..types.handler import Handler
@@ -34,8 +33,8 @@ def argument(
     dest: str | None = None,
     nargs: int = 1,
     transform_func: Callable | None = None,
-    type_: Type | None = None,
-    container_cls: Type | None = None,
+    type_: type | None = None,
+    container_cls: type | None = None,
     concat: bool = False,
     type_error: str = ARGUMENT_TYPE_ERROR,
     count_error: str = ARGUMENT_COUNT_ERROR,
@@ -118,10 +117,10 @@ def option(
     is_flag: bool = False,
     nargs: int = 1,
     multiple: bool = False,
-    container_cls: Type | None = None,
+    container_cls: type | None = None,
     required: bool = False,
     transform_func: Callable | None = None,
-    type_: Type | None = None,
+    type_: type | None = None,
     value: Any | None = None,
     type_error: str = OPTION_TYPE_ERROR,
     count_error: str = OPTION_COUNT_ERROR,

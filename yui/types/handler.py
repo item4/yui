@@ -6,7 +6,6 @@ from collections.abc import Coroutine
 from collections.abc import Mapping
 from typing import Any
 from typing import TYPE_CHECKING
-from typing import Type
 from typing import TypeAlias
 
 import attr
@@ -27,8 +26,8 @@ class Argument:
     dest: str
     nargs: int
     transform_func: Callable | None
-    type_: Type | None
-    container_cls: Type | None
+    type_: type | None
+    container_cls: type | None
     concat: bool
     type_error: str
     count_error: str
@@ -46,10 +45,10 @@ class Option:
     dest: str
     nargs: int
     multiple: bool
-    container_cls: Type | None
+    container_cls: type | None
     required: bool
     transform_func: Callable | None
-    type_: Type | None
+    type_: type | None
     value: Any
     type_error: str
     count_error: str
