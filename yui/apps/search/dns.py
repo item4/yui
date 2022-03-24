@@ -152,7 +152,7 @@ async def dns(bot, event: Message, server_list: list[str], domain: str):
         await bot.say(
             event.channel,
             '<@{}>, `{}`에 대해 {} DNS에 조회한 결과에요!\n\n{}'.format(
-                event.user.id,
+                event.user,
                 domain,
                 '주어진' if server_list else '많이 쓰이는',
                 '\n'.join(

@@ -1,5 +1,4 @@
 from ...box import box
-from ...command.helpers import U
 from ...event import Message
 from ...utils import format
 
@@ -24,7 +23,7 @@ async def relax(bot, event: Message):
     """세계를 지키는 수호자를 소환하는 명령어"""
 
     message = '유이에게 나쁜 것을 주입하려는 사악한'
-    jv = format.link(U.villain.get())
+    jv = format.link(bot.config.USERS['villain'])
     for key, m in RESPONSE.items():
         if key in event.text:
             message = m

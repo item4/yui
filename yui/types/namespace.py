@@ -186,8 +186,8 @@ def list_convert(values, conv):
 namespace = Namespace()
 
 SlackObjectField = partial(attr.ib, converter=id_convert)
-ChannelField = partial(attr.ib, converter=channel_id_convert)
-UserField = partial(attr.ib, converter=user_id_convert)
+ChannelField = partial(attr.ib, converter=str)
+UserField = partial(attr.ib, converter=str)
 NameField = partial(attr.ib, repr=True, converter=str)
 IDField = partial(attr.ib, repr=True, converter=str)
 TsField = partial(attr.ib, repr=True, converter=str, default='')
@@ -203,12 +203,12 @@ def OptionalField(conv):
 IntegerField = OptionalField(int)
 StringField = OptionalField(str)
 DateTimeField = OptionalField(fromtimestamp)
-OptionalUserField = OptionalField(user_id_convert)
+OptionalUserField = OptionalField(str)
 
 
 def ListField(conv):
     return partial(Field, converter=lambda x: list_convert(x, conv))
 
 
-ChannelListField = ListField(channel_id_convert)
-UserListField = ListField(user_id_convert)
+ChannelListField = ListField(str)
+UserListField = ListField(str)

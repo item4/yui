@@ -17,7 +17,7 @@ HI_RE2 = re.compile(
 async def hi(bot, event: Message):
     if HI_RE1.search(event.text) or HI_RE2.search(event.text):
         try:
-            await bot.say(event.channel, '안녕하세요! @{}'.format(event.user.name))
+            await bot.say(event.channel, '안녕하세요! <@{}>'.format(event.user))
         except AttributeError:
             pass
         return False

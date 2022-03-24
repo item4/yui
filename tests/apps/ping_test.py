@@ -13,4 +13,4 @@ async def test_ping_command(bot):
     said = bot.call_queue.pop()
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '@item4, pong!'
+    assert said.data['text'] == '<@U1>, pong!'

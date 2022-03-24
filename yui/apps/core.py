@@ -3,32 +3,8 @@ import logging
 
 from ..bot import BotReconnect
 from ..box import box
-from ..event import ChannelArchive
-from ..event import ChannelCreated
-from ..event import ChannelDeleted
-from ..event import ChannelHistoryChanged
-from ..event import ChannelJoined
-from ..event import ChannelLeft
-from ..event import ChannelMarked
-from ..event import ChannelRename
-from ..event import ChannelUnarchive
-from ..event import GroupArchive
-from ..event import GroupClose
-from ..event import GroupHistoryChanged
-from ..event import GroupJoined
-from ..event import GroupLeft
-from ..event import GroupMarked
-from ..event import GroupOpen
-from ..event import GroupRename
-from ..event import GroupUnarchive
-from ..event import IMClose
-from ..event import IMCreated
-from ..event import IMHistoryChanged
-from ..event import IMMarked
-from ..event import IMOpen
 from ..event import TeamJoin
 from ..event import TeamMigrationStarted
-from ..event import UserChange
 from ..event import YuiSystemStart
 from ..types.channel import DirectMessageChannel
 from ..types.channel import PrivateChannel
@@ -101,108 +77,6 @@ async def on_team_join(bot, event: TeamJoin):
     bot.users.append(User(**res.body['user']))
     logger.info('on team join end')
 
-    return True
-
-
-@box.on(UserChange)
-async def on_user_change(bot, event: UserChange):
-    if not (event.user.id and event.user.team_id):
-        return True
-
-    logger.info('on user change start')
-    res = await bot.api.users.info(event.user)
-
-    bot.users[:] = [u for u in bot.users if u.id != event.user.id] + [
-        User(**res.body['user'])
-    ]
-    logger.info('on user change end')
-
-    return True
-
-
-@box.on(ChannelArchive)
-@box.on(ChannelCreated)
-@box.on(ChannelDeleted)
-@box.on(ChannelHistoryChanged)
-@box.on(ChannelJoined)
-@box.on(ChannelLeft)
-@box.on(ChannelMarked)
-@box.on(ChannelUnarchive)
-@box.on(ChannelRename)
-async def public_channel_mutation_detected(bot):
-    logger.info('public_channel_mutation_detected start')
-    cursor = None
-    new_channels = []
-    while True:
-        result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='public_channel',
-        )
-        cursor = result.body.get('response_metadata', {}).get('next_cursor')
-        for c in result.body['channels']:
-            res = await bot.api.conversations.info(c['id'])
-            new_channels.append(PublicChannel(**res.body['channel']))
-        if not cursor:
-            break
-
-    bot.channels[:] = new_channels
-    logger.info('public_channel_mutation_detected end')
-    return True
-
-
-@box.on(GroupArchive)
-@box.on(GroupClose)
-@box.on(GroupHistoryChanged)
-@box.on(GroupJoined)
-@box.on(GroupLeft)
-@box.on(GroupMarked)
-@box.on(GroupOpen)
-@box.on(GroupRename)
-@box.on(GroupUnarchive)
-async def private_channel_mutation_detected(bot):
-    logger.info('private_channel_mutation_detected start')
-    new_groups = []
-    cursor = None
-    while True:
-        result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='private_channel',
-        )
-        cursor = result.body.get('response_metadata', {}).get('next_cursor')
-        for c in result.body['channels']:
-            res = await bot.api.conversations.info(c['id'])
-            new_groups.append(PrivateChannel(**res.body['channel']))
-        if not cursor:
-            break
-
-    bot.groups[:] = new_groups
-    logger.info('private_channel_mutation_detected end')
-    return True
-
-
-@box.on(IMClose)
-@box.on(IMCreated)
-@box.on(IMHistoryChanged)
-@box.on(IMMarked)
-@box.on(IMOpen)
-async def direct_message_channel_mutation_detected(bot):
-    logger.info('direct_message_channel_mutation_detected start')
-    new_ims = []
-    cursor = None
-    while True:
-        result = await bot.api.conversations.list(
-            cursor=cursor,
-            types='im',
-        )
-        cursor = result.body.get('response_metadata', {}).get('next_cursor')
-        for c in result.body['channels']:
-            res = await bot.api.conversations.info(c['id'])
-            new_ims.append(DirectMessageChannel(**res.body['channel']))
-        if not cursor:
-            break
-
-    bot.ims[:] = new_ims
-    logger.info('direct_message_channel_mutation_detected end')
     return True
 
 

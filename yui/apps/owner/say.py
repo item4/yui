@@ -1,25 +1,24 @@
 from ...box import box
-from ...command import U
 from ...command import argument
 from ...command import option
 from ...event import Message
-from ...transform import get_channel
-from ...transform import get_user
-from ...types.channel import Channel
-from ...types.user import User
+from ...transform import get_channel_id
+from ...transform import get_user_id
+from ...types.base import ChannelID
+from ...types.base import UserID
 
 box.assert_user_required('owner')
 
 
 @box.command('say', aliases=['말', '말해'])
-@option('--channel', '-c', transform_func=get_channel)
-@option('--user', '-u', transform_func=get_user)
+@option('--channel', '-c', transform_func=get_channel_id)
+@option('--user', '-u', transform_func=get_user_id)
 @argument('message', nargs=-1, concat=True)
 async def say(
     bot,
     event: Message,
-    channel: Channel | None,
-    user: User | None,
+    channel: ChannelID | None,
+    user: UserID | None,
     message: str,
 ):
     """
@@ -32,9 +31,8 @@ async def say(
     봇 주인만 사용 가능합니다.
 
     """
-
-    target: Channel = event.channel
-    if event.user == U.owner.get():
+    target: ChannelID | UserID = event.channel
+    if event.user == bot.config.USERS['owner']:
         if channel and user:
             text = '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
         else:
@@ -45,7 +43,7 @@ async def say(
                 resp = await bot.api.conversations.open(users=[user])
                 target = resp.body['channel']['id']
     else:
-        text = '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name)
+        text = '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user)
 
     await bot.say(
         target,

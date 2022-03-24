@@ -9,7 +9,7 @@ from ...util import FakeBot
 @pytest.mark.asyncio
 async def test_update_command(bot_config):
     bot_config.USERS['owner'] = 'U1'
-    bot_config.CHANNELS['notice'] = 'general'
+    bot_config.CHANNELS['notice'] = 'C1'
     bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
     bot.add_user('U1', 'kirito')
@@ -108,4 +108,4 @@ TITLE=타이틀만 있음
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '<@PoH> 이 명령어는 아빠만 사용할 수 있어요!'
+    assert said.data['text'] == '<@U2> 이 명령어는 아빠만 사용할 수 있어요!'

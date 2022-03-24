@@ -41,6 +41,7 @@ from .orm import EngineConfig
 from .orm import get_database_engine
 from .orm import make_session
 from .types.base import ChannelID
+from .types.base import UserID
 from .types.channel import Channel
 from .types.channel import DirectMessageChannel
 from .types.channel import PrivateChannel
@@ -470,3 +471,9 @@ class Bot:
             except:  # noqa
                 logger.exception('Unexpected Exception raised')
                 continue
+
+    async def get_user(self, user_id: UserID) -> User:
+        resp = await self.api.users.info(user=user_id)
+        if isinstance(resp.body, dict):
+            return User(**resp.body['user'])
+        raise ValueError('Unexpected response')

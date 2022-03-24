@@ -2,12 +2,12 @@ import functools
 import random
 
 import aiohttp
+import aiohttp.client_exceptions
 
 import tossi
 
 from .utils import get_holiday_names
 from ...box import box
-from ...command import C
 from ...utils.datetime import now
 
 box.assert_channel_required('general')
@@ -23,7 +23,7 @@ async def monday_dog(bot):
     )
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,
-        channel=C.general.get(),
+        channel=bot.config.CHANNEL['general'],
         as_user=False,
         username=name,
         icon_url=icon,

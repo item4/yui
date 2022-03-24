@@ -1,7 +1,6 @@
 from .utils import weekend_loading_box
 from .utils import weekend_loading_percent
 from ...box import box
-from ...command import C
 from ...event import Message
 from ...utils.datetime import now
 
@@ -15,12 +14,15 @@ async def auto_weekend_loading(bot):
     if now_dt.hour in bot.config.WEEKEND_LOADING_TIME:
         percent = weekend_loading_percent(now_dt)
         blocks = weekend_loading_box(percent)
-        await bot.say(C.general.get(), f'주말로딩… {blocks} {percent:.2f}%')
+        await bot.say(
+            bot.config.CHANNELS['general'],
+            f'주말로딩… {blocks} {percent:.2f}%',
+        )
 
 
 @box.cron('0 0 * * 6')
 async def auto_weekend_start(bot):
-    await bot.say(C.general.get(), '주말이에요! 즐거운 주말 되세요!')
+    await bot.say(bot.config.CHANNELS['general'], '주말이에요! 즐거운 주말 되세요!')
 
 
 @box.command('주말로딩')

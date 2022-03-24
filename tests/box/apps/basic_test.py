@@ -29,7 +29,6 @@ def test_basic_app():
     assert app.aliases == ['tttt']
     assert app.names == ['tttt', 'test']
     assert app.handler == test
-    assert app.channel_validator is None
     assert app.is_command
     assert app.use_shlex
     assert app.has_short_help

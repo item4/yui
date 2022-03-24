@@ -4,14 +4,14 @@ from sqlalchemy.sql.expression import select
 
 from .models import EventLog
 from ....bot import APICallError
-from ....types.channel import Channel
+from ....types.base import ChannelID
 from ....utils.report import report
 
 
 async def cleanup_by_event_logs(
     bot,
     sess: AsyncSession,
-    channel: Channel,
+    channel_id: ChannelID,
     ts: str,
     token: str | None,
     count: int | None = None,
@@ -20,7 +20,7 @@ async def cleanup_by_event_logs(
     stmt = (
         select(EventLog)
         .where(
-            EventLog.channel == channel.id,
+            EventLog.channel == channel_id,
             EventLog.ts <= ts,
         )
         .order_by(EventLog.ts.desc())
@@ -52,7 +52,7 @@ async def cleanup_by_event_logs(
 
 async def cleanup_by_history(
     bot,
-    channel: Channel,
+    channel_id: ChannelID,
     ts: str,
     token: str | None,
     minimum: int = 100,
@@ -63,7 +63,7 @@ async def cleanup_by_history(
     while deletable and deleted < minimum:
         try:
             resp = await bot.api.conversations.history(
-                channel,
+                channel_id,
                 latest=ts,
             )
         except APICallError as e:
@@ -79,7 +79,7 @@ async def cleanup_by_history(
                 if reply_count:
                     try:
                         r = await bot.api.conversations.replies(
-                            channel,
+                            channel_id,
                             ts=message['ts'],
                         )
                     except APICallError as e:
@@ -88,7 +88,7 @@ async def cleanup_by_history(
                     messages += r.body.get('messages', [])
                 try:
                     res = await bot.api.chat.delete(
-                        channel,
+                        channel_id,
                         message['ts'],
                         token=token,
                         as_user=as_user,
@@ -106,7 +106,7 @@ async def cleanup_by_history(
 
 async def collect_history_from_channel(
     bot,
-    channel: Channel,
+    channel_id: ChannelID,
     sess: AsyncSession,
 ) -> int:
     cursor = None
@@ -114,7 +114,7 @@ async def collect_history_from_channel(
     while True:
         try:
             resp = await bot.api.conversations.history(
-                channel.id,
+                channel_id,
                 cursor=cursor,
             )
         except APICallError as e:
@@ -135,7 +135,7 @@ async def collect_history_from_channel(
             if reply_count:
                 try:
                     r = await bot.api.conversations.replies(
-                        channel,
+                        channel_id,
                         ts=message['ts'],
                     )
                 except APICallError as e:
@@ -144,7 +144,7 @@ async def collect_history_from_channel(
                     messages += r.body.get('messages', [])
             await sess.execute(
                 Insert(EventLog)
-                .values(channel=channel.id, ts=message['ts'])
+                .values(channel=channel_id, ts=message['ts'])
                 .on_conflict_do_nothing()
             )
             await sess.commit()

@@ -4,7 +4,6 @@ import aiohttp
 
 from ...bot import Bot
 from ...box import box
-from ...command import C
 from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json
@@ -77,4 +76,4 @@ async def packtpub_dotd(bot, event: Message):
 
 @box.cron('5 9 * * *')
 async def auto_packtpub_dotd(bot):
-    await say_packtpub_dotd(bot, C.general.get())
+    await say_packtpub_dotd(bot, bot.config.CHANNELS['general'])

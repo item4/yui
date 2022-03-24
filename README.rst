@@ -68,7 +68,7 @@ APPS
      ]
 
 CHANNELS
-  dictionary of str. Channel names used in code.
+  dictionary of str. Channel IDs used in code.
   it used for support same handler code with different server envrionment.
 
   For example,
@@ -76,31 +76,8 @@ CHANNELS
   .. code-block:: toml
 
      [CHANNELS]
-     general = '_general'
-     do_not_use_gif = ['dev', '_notice']
-
-  This config setting make you use ``yui.command.C`` and ``yui.command.Cs``
-  like this.
-
-  .. code-block:: python3
-
-     @box.comamnd('only-general', channel=only(C.general))
-     async def only_general():
-        # this will run only 'general'
-
-     @box.command('gif', channel=not_(Cs.do_not_use_gif))
-     async def gif():
-        # this will not run at 'do_not_use_gif'
-
-  For using yui without change codes, You must set these channel keys like it.
-
-  .. code-block:: toml
-
-     [CHANNELS]
-     general = '_general'
-     game = 'game'
-     game_and_test = ['game', 'test']
-     welcome = '_general'
+     general = 'C111111'
+     do_not_use_gif = ['C222222', 'C333333']
 
 
 USERS
@@ -114,14 +91,6 @@ USERS
      [CHANNELS]
      owner = 'U1111'
      force_cleanup = ['U1111', 'U2222']
-
-  This config setting make you use ``yui.command.U`` and ``yui.command.Us``
-  like this.
-
-  .. code-block:: python3
-
-     owner_user_object = U.owner.get()
-     force_cleanup_user_list = Us.force_cleanup.gets()
 
   .. warning::
 

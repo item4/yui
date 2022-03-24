@@ -12,7 +12,6 @@ from lxml import etree
 from ..box import box
 from ..command import option
 from ..event import Message
-from ..types.channel import DirectMessageChannel
 from ..utils import json
 from ..utils.datetime import now
 from ..utils.html import get_root
@@ -107,9 +106,9 @@ async def cat(bot, event: Message, timeout: float):
     )
 
     now_dt = now()
-    if event.channel.id in cat.last_call:
-        last_call = cat.last_call[event.channel.id]
-        if isinstance(event.channel, DirectMessageChannel):
+    if event.channel in cat.last_call:
+        last_call = cat.last_call[event.channel]
+        if event.channel.startswith('D'):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -128,7 +127,7 @@ async def cat(bot, event: Message, timeout: float):
         await cat_say(text='냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!')
         return
 
-    cat.last_call[event.channel.id] = now_dt
+    cat.last_call[event.channel] = now_dt
 
     await cat_say(text=url)
 
@@ -154,9 +153,9 @@ async def dog(bot, event: Message, timeout: float):
     )
 
     now_dt = now()
-    if event.channel.id in dog.last_call:
-        last_call = dog.last_call[event.channel.id]
-        if isinstance(event.channel, DirectMessageChannel):
+    if event.channel in dog.last_call:
+        last_call = dog.last_call[event.channel]
+        if event.channel.startswith('D'):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -175,7 +174,7 @@ async def dog(bot, event: Message, timeout: float):
         await dog_say(text='멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!')
         return
 
-    dog.last_call[event.channel.id] = now_dt
+    dog.last_call[event.channel] = now_dt
 
     await dog_say(text=url)
 
@@ -200,9 +199,9 @@ async def fox(bot, event: Message, timeout: float = 1.5):
     )
 
     now_dt = now()
-    if event.channel.id in fox.last_call:
-        last_call = fox.last_call[event.channel.id]
-        if isinstance(event.channel, DirectMessageChannel):
+    if event.channel in fox.last_call:
+        last_call = fox.last_call[event.channel]
+        if event.channel.startswith('D'):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -221,6 +220,6 @@ async def fox(bot, event: Message, timeout: float = 1.5):
         await fox_say(text='여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!')
         return
 
-    fox.last_call[event.channel.id] = now_dt
+    fox.last_call[event.channel] = now_dt
 
     await fox_say(text=url)

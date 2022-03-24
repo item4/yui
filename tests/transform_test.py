@@ -7,8 +7,8 @@ import pytest
 from yui.transform import choice
 from yui.transform import enum_getitem
 from yui.transform import extract_url
-from yui.transform import get_channel
-from yui.transform import get_user
+from yui.transform import get_channel_id
+from yui.transform import get_user_id
 from yui.transform import str_to_date
 from yui.transform import value_range
 
@@ -56,49 +56,31 @@ def test_enum_getitem():
 def test_extract_url():
     """Test extract_url helper."""
 
-    assert extract_url('http://item4.net') == 'http://item4.net'
-    assert extract_url('<http://item4.net>') == 'http://item4.net'
-    assert extract_url('<innocent|http://item4.net>') == 'http://item4.net'
+    assert extract_url('https://item4.net') == 'https://item4.net'
+    assert extract_url('<https://item4.net>') == 'https://item4.net'
+    assert extract_url('<https://item4.net|innocent>') == 'https://item4.net'
 
 
-def test_get_channel(bot):
+def test_get_channel_id(bot):
     """Test get_channel helper."""
 
     test = bot.add_channel('C1', 'test')
 
-    assert get_channel('C1') == test
-    assert get_channel('test') == test
-    assert get_channel('#C1') == test
-    assert get_channel('#test') == test
-    assert get_channel('<C1>') == test
-    assert get_channel('<test>') == test
-    assert get_channel('<#C1>') == test
-    assert get_channel('<#test>') == test
-    assert get_channel('<C1|test>') == test
-    assert get_channel('<#C1|test>') == test
-
-    with pytest.raises(ValueError):
-        get_channel('not found')
+    assert get_channel_id('<C1>') == test.id
+    assert get_channel_id('<#C1>') == test.id
+    assert get_channel_id('<C1|test>') == test.id
+    assert get_channel_id('<#C1|test>') == test.id
 
 
-def test_get_user(bot):
+def test_get_user_id(bot):
     """Test get_user helper."""
 
     item4 = bot.add_user('U1', 'item4')
 
-    assert get_user('U1') == item4
-    assert get_user('item4') == item4
-    assert get_user('@U1') == item4
-    assert get_user('@item4') == item4
-    assert get_user('<U1>') == item4
-    assert get_user('<item4>') == item4
-    assert get_user('<@U1>') == item4
-    assert get_user('<@item4>') == item4
-    assert get_user('<U1|item4>') == item4
-    assert get_user('<@U1|item4>') == item4
-
-    with pytest.raises(ValueError):
-        get_user('not found')
+    assert get_user_id('<U1>') == item4.id
+    assert get_user_id('<@U1>') == item4.id
+    assert get_user_id('<U1|item4>') == item4.id
+    assert get_user_id('<@U1|item4>') == item4.id
 
 
 @pytest.mark.parametrize(

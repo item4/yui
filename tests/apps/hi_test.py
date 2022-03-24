@@ -14,7 +14,7 @@ async def test_hi_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '안녕하세요! @kirito'
+    assert said.data['text'] == '안녕하세요! <@U1>'
 
     event = bot.create_message('C1', 'U1', text='유이 안녕')
 
@@ -23,7 +23,7 @@ async def test_hi_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C1'
-    assert said.data['text'] == '안녕하세요! @kirito'
+    assert said.data['text'] == '안녕하세요! <@U1>'
 
     event = bot.create_message('C1', 'U1', text='아무말 대잔치')
 

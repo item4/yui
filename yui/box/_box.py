@@ -3,7 +3,6 @@ from typing import Any
 from .apps.base import BaseApp
 from .apps.basic import App
 from .tasks import CronTask
-from ..command.validators import VALIDATOR_TYPE
 from ..event import Event
 from ..types.handler import DECORATOR_ARGS_TYPE
 from ..types.handler import DECORATOR_TYPE
@@ -64,7 +63,6 @@ class Box:
         short_help: str | None = None,
         help: str | None = None,
         use_shlex: bool = True,
-        channels: VALIDATOR_TYPE | None = None,
     ) -> DECORATOR_TYPE:
         """Shortcut decorator for make command easily."""
 
@@ -82,7 +80,6 @@ class Box:
                     help=help,
                     is_command=True,
                     use_shlex=use_shlex,
-                    channel_validator=channels,
                 )
             )
 
@@ -95,7 +92,6 @@ class Box:
         type_: str | type[Event],
         *,
         subtype: str | None = None,
-        channels: VALIDATOR_TYPE | None = None,
     ) -> DECORATOR_TYPE:
         """Decorator for make app."""
 
@@ -112,7 +108,6 @@ class Box:
                     event_type,
                     subtype,
                     handler,
-                    channel_validator=channels,
                 )
             )
 

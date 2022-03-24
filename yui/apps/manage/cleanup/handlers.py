@@ -3,14 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import EventLog
 from ....box import box
-from ....command import Cs
 from ....event import Message
 
 
 @box.on(Message, subtype='*')
 async def make_log(bot, event: Message, sess: AsyncSession):
     try:
-        channels = Cs.auto_cleanup_targets.gets()
+        channels = bot.config.CHANNELS['auto_cleanup_targets']
     except KeyError:
         return True
 
@@ -20,7 +19,7 @@ async def make_log(bot, event: Message, sess: AsyncSession):
     if event.channel in channels:
         await sess.execute(
             Insert(EventLog)
-            .values(channel=event.channel.id, ts=event.ts)
+            .values(channel=event.channel, ts=event.ts)
             .on_conflict_do_nothing()
         )
         await sess.commit()

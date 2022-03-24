@@ -41,7 +41,7 @@ async def memo_add(
 
     memo = Memo()
     memo.keyword = keyword
-    memo.author = event.user.id
+    memo.author = event.user
     memo.text = text
     memo.created_at = now()
 

@@ -41,9 +41,9 @@ async def write_code_review(bot, event: Message, *, seed=None):
 async def code_review(bot, event: Message):
     if PATTERN.search(event.text.upper()):
         now_dt = now()
-        last_call = code_review.last_call.get(event.channel.id)
+        last_call = code_review.last_call.get(event.channel)
         if last_call is None or last_call + COOLTIME <= now_dt:
             await write_code_review(bot, event)
-            code_review.last_call[event.channel.id] = now_dt
+            code_review.last_call[event.channel] = now_dt
             return False
     return True

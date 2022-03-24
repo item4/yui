@@ -6,8 +6,6 @@ from .commons import cleanup_by_event_logs
 from .commons import cleanup_by_history
 from .commons import collect_history_from_channel
 from ....box import box
-from ....command import Cs
-from ....command import Us
 from ....command import option
 from ....event import Message
 from ....transform import choice
@@ -39,7 +37,7 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
 
     count = 100
     now_dt = now()
-    is_dm = event.channel.id.startswith('D')
+    is_dm = event.channel.startswith('D')
     if is_dm:
         mode = 'history'
         token = None
@@ -58,8 +56,8 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
             return
 
         try:
-            channels = Cs.auto_cleanup_targets.gets()
-            force_cleanup = Us.force_cleanup.gets()
+            channels = bot.config.CHANNELS['auto_cleanup_targets']
+            force_cleanup = bot.config.USERS['force_cleanup']
         except KeyError:
             await bot.say(
                 event.channel,
@@ -76,8 +74,8 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
             return
         count = 100
 
-        if event.channel.id in cleanup.last_call:
-            last_call = cleanup.last_call[event.channel.id]
+        if event.channel in cleanup.last_call:
+            last_call = cleanup.last_call[event.channel]
             if now_dt - last_call < COOLTIME:
                 fine = (last_call + COOLTIME).strftime('%H시 %M분')
                 await bot.say(
@@ -109,7 +107,7 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
         f'본 채널에서 최근 {deleted:,}개의 메시지를 삭제했어요!',
     )
 
-    cleanup.last_call[event.channel.id] = now_dt
+    cleanup.last_call[event.channel] = now_dt
 
 
 @box.command('수집')
@@ -122,8 +120,8 @@ async def collect(bot, sess: AsyncSession, event: Message):
     """
 
     try:
-        channels = Cs.auto_cleanup_targets.gets()
-        force_cleanup = Us.force_cleanup.gets()
+        channels = bot.config.CHANNELS['auto_cleanup_targets']
+        force_cleanup = bot.config.USERS['force_cleanup']
     except KeyError:
         await bot.say(
             event.channel,

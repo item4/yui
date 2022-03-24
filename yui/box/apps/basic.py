@@ -8,7 +8,6 @@ from .base import BaseApp
 from ..parsers import parse_option_and_arguments
 from ..utils import SPACE_RE
 from ..utils import split_chunks
-from ...command.validators import VALIDATOR_TYPE
 from ...event import Event
 from ...event import Message
 from ...types.handler import Handler
@@ -33,7 +32,6 @@ class App(BaseApp):
         help: str | None = None,
         use_shlex: bool = False,
         is_command: bool = False,
-        channel_validator: VALIDATOR_TYPE | None = None,
     ) -> None:
         """Initialize"""
         self.type = type
@@ -59,7 +57,6 @@ class App(BaseApp):
         self.help = help
         self.is_command = is_command
         self.use_shlex = use_shlex
-        self.channel_validator = channel_validator
 
     @property
     def has_short_help(self) -> bool:
@@ -99,17 +96,13 @@ class App(BaseApp):
 
     async def _run(self, bot: Bot, event: Event):
         res: bool | None = True
-        validation = True
-        if self.channel_validator and isinstance(event, Message):
-            validation = await self.channel_validator(self, event)
 
-        if validation:
-            async with self.prepare_kwargs(
-                bot=bot,
-                event=event,
-                func_params=self.handler.params,
-            ) as kwargs:
-                res = await self.handler(**kwargs)
+        async with self.prepare_kwargs(
+            bot=bot,
+            event=event,
+            func_params=self.handler.params,
+        ) as kwargs:
+            res = await self.handler(**kwargs)
 
         return bool(res)
 
@@ -155,26 +148,20 @@ class App(BaseApp):
                 await bot.say(event.channel, '*Error*\n{}'.format(e))
                 return False
 
-            validation = True
-
-            if self.channel_validator:
-                validation = await self.channel_validator(self, event)
-
-            if validation:
-                if 'raw' in func_params:
-                    kw['raw'] = raw
-                if 'remain_chunks' in func_params:
-                    annotation = func_params['remain_chunks'].annotation
-                    if annotation in [str, inspect._empty]:
-                        kw['remain_chunks'] = ' '.join(remain_chunks)
-                    else:
-                        kw['remain_chunks'] = remain_chunks
-                async with self.prepare_kwargs(
-                    bot=bot,
-                    event=event,
-                    func_params=func_params,
-                    **kw,
-                ) as kwargs:
-                    res = await self.handler(**kwargs)
+            if 'raw' in func_params:
+                kw['raw'] = raw
+            if 'remain_chunks' in func_params:
+                annotation = func_params['remain_chunks'].annotation
+                if annotation in [str, inspect._empty]:
+                    kw['remain_chunks'] = ' '.join(remain_chunks)
+                else:
+                    kw['remain_chunks'] = remain_chunks
+            async with self.prepare_kwargs(
+                bot=bot,
+                event=event,
+                func_params=func_params,
+                **kw,
+            ) as kwargs:
+                res = await self.handler(**kwargs)
 
         return bool(res)

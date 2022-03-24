@@ -67,8 +67,8 @@ async def aws(
     """
 
     now_dt = now()
-    if event.channel.id in aws.last_call:
-        last_call = aws.last_call[event.channel.id]
+    if event.channel in aws.last_call:
+        last_call = aws.last_call[event.channel]
         cooltime = timedelta(minutes=2)
         if last_call and now_dt - last_call < cooltime:
             fine = last_call + cooltime
@@ -192,11 +192,11 @@ async def aws(
                 thread_ts=event.ts if len(records) > 1 else None,
             )
 
-        if event.channel.id:
+        if event.channel:
             if len(records) > 5:
-                aws.last_call[event.channel.id] = now_dt
+                aws.last_call[event.channel] = now_dt
             else:
-                aws.last_call[event.channel.id] = None
+                aws.last_call[event.channel] = None
     else:
         await bot.say(
             event.channel,

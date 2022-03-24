@@ -94,7 +94,7 @@ async def test_auto_packtpub_dotd(bot_config, response_mock):
     )
 
     bot_config.CHANNELS = {
-        'general': 'general',
+        'general': 'C1',
     }
     bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')

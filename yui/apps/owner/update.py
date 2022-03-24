@@ -1,8 +1,6 @@
 from typing import Any
 
 from ...box import box
-from ...command import C
-from ...command import U
 from ...event import Message
 from ...transform import extract_url
 from ...types.slack.attachment import Attachment
@@ -58,7 +56,7 @@ async def update(bot, event: Message, raw: str):
 
     """
 
-    if event.user == U.owner.get():
+    if event.user == bot.config.USERS['owner']:
         lines = raw.splitlines()
         attachments: list[Attachment] = []
         kw: dict[str, Any] = {}
@@ -91,7 +89,7 @@ async def update(bot, event: Message, raw: str):
             attachments.append(Attachment(**kw))
 
         await bot.api.chat.postMessage(
-            channel=C.notice.get(),
+            channel=bot.config.CHANNELS['notice'],
             text=pretext,
             attachments=attachments,
             as_user=True,
@@ -99,5 +97,5 @@ async def update(bot, event: Message, raw: str):
     else:
         await bot.say(
             event.channel,
-            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user.name),
+            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user),
         )

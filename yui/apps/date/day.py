@@ -1,13 +1,13 @@
 import re
 
 import aiohttp
+import aiohttp.client_exceptions
 
 import tossi
 
 from .utils import APIDoesNotSupport
 from .utils import get_holiday_names
 from ...box import box
-from ...command import C
 from ...event import Message
 from ...transform import str_to_date
 from ...utils.datetime import now
@@ -29,7 +29,7 @@ async def holiday_message(bot):
 
     if holidays:
         await bot.say(
-            C.general.get(),
+            bot.config.CHANNELS['general'],
             '오늘은 {}! 즐거운 휴일 되세요!'.format(
                 tossi.postfix(holidays[0], '(이)에요'),
             ),

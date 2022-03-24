@@ -84,7 +84,7 @@ class RSS(route.RouteApp):
             return
 
         feed = RSSFeedURL()
-        feed.channel = event.channel.id
+        feed.channel = event.channel
         feed.url = url
         feed.updated_at = max(
             [
@@ -97,15 +97,13 @@ class RSS(route.RouteApp):
         await sess.commit()
 
         await bot.say(
-            event.channel, f'<#{event.channel.id}> 채널에서 `{url}`을 구독하기 시작했어요!'
+            event.channel, f'<#{event.channel}> 채널에서 `{url}`을 구독하기 시작했어요!'
         )
 
     async def list(self, bot, event: Message, sess: AsyncSession):
         feeds = (
             await sess.scalars(
-                select(RSSFeedURL).where(
-                    RSSFeedURL.channel == event.channel.id
-                )
+                select(RSSFeedURL).where(RSSFeedURL.channel == event.channel)
             )
         ).all()
 
@@ -114,12 +112,12 @@ class RSS(route.RouteApp):
 
             await bot.say(
                 event.channel,
-                f'<#{event.channel.id}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
+                f'<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
                 f'\n```\n{feed_list}\n```',
             )
         else:
             await bot.say(
-                event.channel, f'<#{event.channel.id}> 채널에서 구독중인 RSS가 없어요!'
+                event.channel, f'<#{event.channel}> 채널에서 구독중인 RSS가 없어요!'
             )
 
     @argument('id')

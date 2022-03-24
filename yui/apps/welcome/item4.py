@@ -1,5 +1,4 @@
 from ...box import box
-from ...command import C
 from ...event import TeamJoin
 
 box.assert_channel_required('welcome')
@@ -8,8 +7,8 @@ box.assert_channel_required('welcome')
 @box.on(TeamJoin)
 async def welcome_item4(bot, event: TeamJoin):
     await bot.say(
-        C.welcome.get(),
-        f'<@{event.user.id}>님 item4 개인 Slack에 오신걸 환영합니다! :tada:\n'
+        bot.config.CHANNELS['welcome'],
+        f'<@{event.user}>님 item4 개인 Slack에 오신걸 환영합니다! :tada:\n'
         f'갑자기 알림이 울려서 놀라셨죠? 저는 Slack 봇 유이라고 해요. '
         f'제 도움이 필요하면 언제든지 `{bot.config.PREFIX}도움`을 입력해서 '
         f'도움말을 확인해주세요!\n\n'

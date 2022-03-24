@@ -11,7 +11,7 @@ from ...util import FakeBot
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_weekend_start(bot_config):
-    bot_config.CHANNELS['general'] = 'general'
+    bot_config.CHANNELS['general'] = 'C1'
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')
@@ -27,7 +27,7 @@ async def test_weekend_start(bot_config):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_weekend_half(bot_config):
-    bot_config.CHANNELS['general'] = 'general'
+    bot_config.CHANNELS['general'] = 'C1'
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
     bot.add_channel('C1', 'general')

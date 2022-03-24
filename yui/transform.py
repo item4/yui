@@ -6,11 +6,6 @@ from decimal import Decimal
 from typing import Any
 from typing import TypeVar
 
-from .types.namespace import channel_id_convert
-from .types.namespace import name_convert
-from .types.namespace import user_id_convert
-from .types.namespace import user_name_convert
-
 T = TypeVar('T', int, float, Decimal)
 
 DATE_FORMAT_RE = re.compile(
@@ -45,7 +40,7 @@ def str_to_date(
 def _extract(text: str) -> str:
     if text.startswith('<') and text.endswith('>'):
         if '|' in text:
-            return text[1:-1].split('|', 1)[1]
+            return text[1:-1].split('|', 1)[0]
         else:
             return text[1:-1]
     return text
@@ -57,36 +52,16 @@ def extract_url(text: str) -> str:
     return _extract(text)
 
 
-def get_channel(text: str):
+def get_channel_id(text: str) -> str:
     """Helper to get Channel from given text."""
 
-    result = _extract(text)
-
-    if result.startswith('#'):
-        result = result[1:]
-    try:
-        return channel_id_convert(result)
-    except KeyError:
-        try:
-            return name_convert(result)
-        except KeyError:
-            raise ValueError('Given channel was not found')
+    return _extract(text).lstrip('#')
 
 
-def get_user(text: str):
+def get_user_id(text: str) -> str:
     """Helper to get User from given text."""
 
-    result = _extract(text)
-
-    if result.startswith('@'):
-        result = result[1:]
-    try:
-        return user_id_convert(result)
-    except KeyError:
-        try:
-            return user_name_convert(result)
-        except KeyError:
-            raise ValueError('Given user was not found')
+    return _extract(text).lstrip('@')
 
 
 def enum_getitem(
