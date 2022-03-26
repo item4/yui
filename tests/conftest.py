@@ -138,7 +138,8 @@ async def cache():
     mc = await emcache.create_client(
         [emcache.MemcachedHostAddress('localhost', 11211)]
     )  # FIXME
-    return Cache(mc, 'YUI_TEST_')
+    yield Cache(mc, 'YUI_TEST_')
+    await mc.close()
 
 
 @pytest.fixture()
