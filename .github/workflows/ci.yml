@@ -75,9 +75,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv .venv
-          poetry export -o requirements.txt --dev --without-hashes
           .venv/bin/pip install --upgrade pip setuptools wheel
-          .venv/bin/pip install -r requirements.txt
+          poetry install
         if: steps.cache.outputs.cache-hit != 'true'
 
       # Fix PATH
