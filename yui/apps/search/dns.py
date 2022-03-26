@@ -1,10 +1,11 @@
 import asyncio
-from typing import NamedTuple
 from urllib.parse import urlencode
 
 import aiohttp
 from aiohttp.client_exceptions import ClientConnectionError
 from aiohttp.client_exceptions import ContentTypeError
+
+from attrs import define
 
 from ...box import box
 from ...command import argument
@@ -14,14 +15,16 @@ from ...transform import extract_url
 from ...utils import json
 
 
-class DNSServer(NamedTuple):
+@define
+class DNSServer:
     """DNS Server info."""
 
     name: str
     ip: str
 
 
-class Result(NamedTuple):
+@define
+class Result:
 
     server_name: str
     server_ip: str

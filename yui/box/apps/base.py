@@ -7,7 +7,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from ...event import Event
-from ...orm import EngineConfig
 from ...orm import make_session
 
 if TYPE_CHECKING:
@@ -62,11 +61,6 @@ class BaseApp:
             kwargs['event'] = event
         if 'sess' in func_params:
             kwargs['sess'] = sess
-        if 'engine_config' in func_params:
-            kwargs['engine_config'] = EngineConfig(
-                url=bot.config.DATABASE_URL,
-                echo=bot.config.DATABASE_ECHO,
-            )
 
         try:
             yield kwargs

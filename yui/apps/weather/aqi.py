@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 import aiohttp
 
-import attr
+from attrs import define
 
 from ...box import box
 from ...command import argument
@@ -27,7 +27,7 @@ LABELS = {
 }
 
 
-@attr.dataclass(slots=True)
+@define
 class Field:
 
     current: int
@@ -35,7 +35,7 @@ class Field:
     max: int
 
 
-@attr.dataclass(slots=True)
+@define
 class AQIRecord:
 
     name: str

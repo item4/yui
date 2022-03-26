@@ -1,108 +1,107 @@
 from datetime import datetime
 
+from .base import DirectMessageChannelID
+from .base import PrivateChannelID
+from .base import PublicChannelID
 from .base import Ts
-from .namespace import BooleanField
-from .namespace import DateTimeField
-from .namespace import Field
-from .namespace import IDField
-from .namespace import IntegerField
-from .namespace import ListField
-from .namespace import NameField
-from .namespace import StringField
-from .namespace import TsField
-from .namespace import UserField
-from .namespace import UserListField
-from .namespace import namespace
-from .user import User
+from .base import UserID
+from ..utils.attrs import channel_id_field
+from ..utils.attrs import define
+from ..utils.attrs import field
+from ..utils.attrs import name_field
+from ..utils.attrs import ts_field
+from ..utils.attrs import user_id_field
 
 
-@namespace
+@define
 class ChannelTopic:
     """Topic of Channel."""
 
-    creator: User = UserField()
-    value: str = StringField()
-    last_set: datetime = DateTimeField()
+    creator: UserID = user_id_field()
+    value: str = field()
+    last_set: datetime = field()
 
 
-@namespace
+@define
 class ChannelPurpose:
     """Purpose of Channel."""
 
-    creator: User = UserField()
-    value: str = StringField()
-    last_set: datetime = DateTimeField()
+    creator: UserID = user_id_field()
+    value: str = field()
+    last_set: datetime = field()
 
 
-@namespace
-class Channel:
+@define
+class PublicChannel:
 
-    id: str = IDField()
-    last_read: Ts = TsField()
-    created: datetime = DateTimeField()
-    is_org_shared: bool = BooleanField()
-    has_pins: bool = BooleanField()
-    is_unknown: bool = BooleanField(init=False, repr=True, default=False)
-
-
-@namespace
-class PublicChannel(Channel):
-
-    id: str = IDField()
-    name: str = NameField()
-    creator: User = UserField()
-    last_read: Ts = TsField()
-    members: list[User] = UserListField()
-    created: datetime = DateTimeField()
-    is_org_shared: bool = BooleanField()
-    has_pins: bool = BooleanField()
-    is_channel: bool = BooleanField()
-    is_archived: bool = BooleanField()
-    is_general: bool = BooleanField()
-    unlinked: int = IntegerField()
-    name_normalized: str = StringField()
-    is_shared: bool = BooleanField()
-    is_member: bool = BooleanField()
-    is_private: bool = BooleanField()
-    is_mpim: bool = BooleanField()
-    topic: ChannelTopic = Field(converter=ChannelTopic)
-    purpose: ChannelPurpose = Field(converter=ChannelPurpose)
-    previous_names: list[str] = ListField(str)()
+    id: PublicChannelID = channel_id_field()
+    name: str = name_field()
+    is_channel: bool = field()
+    is_group: bool = field()
+    is_im: bool = field()
+    created: datetime = field()
+    creator: UserID = user_id_field()
+    is_archived: bool = field()
+    is_general: bool = field()
+    unlinked: int = field()
+    name_normalized: str = field()
+    is_read_only: bool = field()
+    is_shared: bool = field()
+    parent_conversation: object = field()
+    is_ext_shared: bool = field()
+    is_org_shared: bool = field()
+    is_pending_ext_shared: bool = field()
+    is_member: bool = field()
+    is_private: bool = field()
+    is_mpim: bool = field()
+    last_read: Ts = ts_field()
+    topic: ChannelTopic = field()
+    purpose: ChannelPurpose = field()
+    locale: str = field()
 
 
-@namespace
-class DirectMessageChannel(Channel):
+@define
+class DirectMessageChannel:
 
-    id: str = IDField()
-    user: User = UserField()
-    last_read: Ts = TsField()
-    is_im: bool = BooleanField()
-    created: datetime = DateTimeField()
-    is_org_shared: bool = BooleanField()
-    has_pins: bool = BooleanField()
-    is_open: bool = BooleanField()
-
-
-@namespace
-class PrivateChannel(Channel):
-
-    id: str = IDField()
-    name: str = NameField()
-    creator: User = UserField()
-    last_read: Ts = TsField()
-    members: list[User] = UserListField()
-    created: datetime = DateTimeField()
-    is_org_shared: bool = BooleanField()
-    has_pins: bool = BooleanField()
-    is_group: bool = BooleanField()
-    is_archived: bool = BooleanField()
-    topic: ChannelTopic = Field(converter=ChannelTopic)
-    purpose: ChannelPurpose = Field(converter=ChannelPurpose)
+    id: DirectMessageChannelID = channel_id_field()
+    created: datetime = field()
+    is_im: bool = field()
+    is_org_shared: bool = field()
+    user: UserID = user_id_field()
+    last_read: Ts = ts_field()
+    latest: object = field()
+    unread_count: int = field()
+    unread_count_display: int = field()
+    is_open: bool = field()
+    locale: str = field()
+    priority: float = field()
+    num_members: int = field()
 
 
-def create_unknown_channel(**kwargs):
-    if 'last_read' not in kwargs:
-        kwargs['last_read'] = ''
-    channel = Channel(**kwargs)
-    channel.is_unknown = True
-    return channel
+@define
+class PrivateChannel:
+
+    id: PrivateChannelID = channel_id_field()
+    name: str = field()
+    is_channel: bool = field()
+    is_group: bool = field()
+    is_im: bool = field()
+    created: datetime = field()
+    creator: UserID = user_id_field()
+    is_archived: bool = field()
+    is_general: bool = field()
+    unlinked: int = field()
+    name_normalized: str = field()
+    is_read_only: bool = field()
+    is_shared: bool = field()
+    parent_conversation: object = field()
+    is_ext_shared: bool = field()
+    is_org_shared: bool = field()
+    is_pending_ext_shared: bool = field()
+    is_member: bool = field()
+    is_private: bool = field()
+    is_mpim: bool = field()
+    last_read: Ts = ts_field()
+    topic: ChannelTopic = field()
+    purpose: ChannelPurpose = field()
+    locale: str = field()

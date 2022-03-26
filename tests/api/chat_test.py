@@ -8,7 +8,6 @@ from yui.types.slack.block import Divider
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_delete(bot):
-    channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
 
     ts = '1234.56'
@@ -25,12 +24,12 @@ async def test_slack_api_chat_delete(bot):
     }
     assert call.token is None
 
-    await bot.api.chat.delete(channel, ts, True, token=alternative_token)
+    await bot.api.chat.delete(channel_id, ts, True, token=alternative_token)
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.delete'
     assert call.data == {
-        'channel': channel.id,
+        'channel': channel_id,
         'ts': ts,
         'as_user': bool2str(True),
     }
@@ -39,8 +38,6 @@ async def test_slack_api_chat_delete(bot):
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_post_ephemeral(bot):
-    channel = bot.add_channel('C4567', 'test')
-    user = bot.add_user('U0987', 'kirito')
     channel_id = 'C1234'
     user_id = 'U5555'
     attachments = [
@@ -61,19 +58,19 @@ async def test_slack_api_chat_post_ephemeral(bot):
     thread_ts = '12.34'
 
     with pytest.raises(TypeError):
-        await bot.api.chat.postEphemeral(channel=channel, user=user)
+        await bot.api.chat.postEphemeral(channel=channel_id, user=user_id)
 
     await bot.api.chat.postEphemeral(
-        channel=channel,
-        user=user,
+        channel=channel_id,
+        user=user_id,
         text=text,
     )
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.postEphemeral'
     assert call.data == {
-        'channel': channel.id,
-        'user': user.id,
+        'channel': channel_id,
+        'user': user_id,
         'text': text,
     }
     assert call.json_mode
@@ -109,14 +106,14 @@ async def test_slack_api_chat_post_ephemeral(bot):
         as_user=False,
         attachments=attachments,
         blocks=blocks,
-        channel=channel,
+        channel=channel_id,
         icon_emoji=icon_emoji,
         icon_url=icon_url,
         link_names=True,
         parse=parse,
         text=text,
         thread_ts=thread_ts,
-        user=user,
+        user=user_id,
         username=username,
         token='KIRITO',
     )
@@ -124,8 +121,8 @@ async def test_slack_api_chat_post_ephemeral(bot):
     call = bot.call_queue.pop()
     assert call.method == 'chat.postEphemeral'
     assert call.data == {
-        'channel': channel.id,
-        'user': user.id,
+        'channel': channel_id,
+        'user': user_id,
         'text': text,
         'parse': parse,
         'link_names': True,
@@ -155,7 +152,6 @@ async def test_slack_api_chat_post_ephemeral(bot):
 
 @pytest.mark.asyncio
 async def test_slack_api_chat_post_message(bot):
-    channel = bot.add_channel('C4567', 'test')
     channel_id = 'C1234'
     attachments = [
         Attachment(
@@ -176,14 +172,14 @@ async def test_slack_api_chat_post_message(bot):
     mrkdwn = False
 
     with pytest.raises(TypeError):
-        await bot.api.chat.postMessage(channel=channel)
+        await bot.api.chat.postMessage(channel=channel_id)
 
-    await bot.api.chat.postMessage(channel=channel, text=text, as_user=True)
+    await bot.api.chat.postMessage(channel=channel_id, text=text, as_user=True)
 
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
     assert call.data == {
-        'channel': channel.id,
+        'channel': channel_id,
         'text': text,
         'as_user': True,
         'mrkdwn': True,
@@ -217,7 +213,7 @@ async def test_slack_api_chat_post_message(bot):
         as_user=False,
         attachments=attachments,
         blocks=blocks,
-        channel=channel,
+        channel=channel_id,
         icon_emoji=icon_emoji,
         icon_url=icon_url,
         link_names=True,
@@ -235,7 +231,7 @@ async def test_slack_api_chat_post_message(bot):
     call = bot.call_queue.pop()
     assert call.method == 'chat.postMessage'
     assert call.data == {
-        'channel': channel.id,
+        'channel': channel_id,
         'text': text,
         'parse': parse,
         'link_names': True,

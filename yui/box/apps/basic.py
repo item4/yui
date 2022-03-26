@@ -85,9 +85,10 @@ class App(BaseApp):
         return help
 
     async def run(self, bot: Bot, event: Event):
-        subtype = hasattr(event, 'subtype') and (
-            event.subtype == self.subtype or self.subtype == '*'
-        )
+        subtype = (
+            self.subtype
+            and (event.subtype == self.subtype or self.subtype == '*')
+        ) or not self.subtype
         if event.type == self.type and subtype:
             if isinstance(event, Message):
                 return await self._run_message_event(bot, event)

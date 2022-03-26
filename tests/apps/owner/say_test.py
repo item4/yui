@@ -39,14 +39,14 @@ async def test_say_command(bot_config):
     assert said.data['channel'] == 'C1'
     assert said.data['text'] == text
 
-    await say(bot, event, test, None, text)
+    await say(bot, event, test.id, None, text)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'
     assert said.data['channel'] == 'C2'
     assert said.data['text'] == text
 
-    await say(bot, event, None, poh, text)
+    await say(bot, event, None, poh.id, text)
 
     conversations_open = bot.call_queue.pop(0)
     assert conversations_open.method == 'conversations.open'
@@ -56,7 +56,7 @@ async def test_say_command(bot_config):
     assert said.data['channel'] == 'D2'
     assert said.data['text'] == text
 
-    await say(bot, event, test, poh, text)
+    await say(bot, event, test.id, poh.id, text)
 
     said = bot.call_queue.pop(0)
     assert said.method == 'chat.postMessage'

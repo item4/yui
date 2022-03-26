@@ -1,6 +1,6 @@
 import enum
 
-import attr
+import attrs
 
 from ..utils import json
 
@@ -23,8 +23,8 @@ def encode(obj):
     elif isinstance(obj, bool):
         return bool2str(obj)
     try:
-        return encode(attr.asdict(obj))
-    except attr.exceptions.NotAnAttrsClassError:
+        return encode(attrs.asdict(obj))
+    except attrs.exceptions.NotAnAttrsClassError:
         pass
     return obj
 

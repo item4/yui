@@ -61,6 +61,7 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
         f.write(
             '''
 TOKEN = 'asdf'
+DATABASE_URL = 'sqlite:///:memory:'
 DEBUG = true
 PREFIX = '.'
 APPS = ['a', 'b']

@@ -1,22 +1,19 @@
 from typing import Any
 from typing import ClassVar
 from typing import Literal
-from typing import NoReturn
 from typing import TypeAlias
 from typing import overload
 
 from .types.base import ChannelID
 from .types.base import Ts
 from .types.base import UserID
-from .types.namespace import BooleanField
-from .types.namespace import ChannelField
-from .types.namespace import Field
-from .types.namespace import OptionalField
-from .types.namespace import StringField
-from .types.namespace import TsField
-from .types.namespace import UserField
-from .types.namespace import namespace
 from .types.objects import MessageMessage
+from .utils.attrs import channel_id_field
+from .utils.attrs import define
+from .utils.attrs import field
+from .utils.attrs import make_instance
+from .utils.attrs import ts_field
+from .utils.attrs import user_id_field
 
 
 GoodByeType = Literal['goodbye']
@@ -39,34 +36,30 @@ EventType = Literal[
 Source: TypeAlias = dict[str, Any]
 
 
-class BaseEvent:
+class Event:
     """Base class of Event."""
 
-
-class Event(BaseEvent):
-    """Event."""
-
     type: ClassVar[str]
-    subtype: str | None = None
+    subtype: str | None
 
 
-_events: dict[EventType, type[BaseEvent]] = {}
+_events: dict[EventType, type[Event]] = {}
 
 
 def event(cls):
-    cls = namespace(cls)
     _events[cls.type] = cls
     return cls
 
 
-@namespace
-class UnknownEvent(BaseEvent):
+@define
+class UnknownEvent:
     """Unknown Event."""
 
     type: str
 
 
 @event
+@define
 class GoodBye(Event):
     """The server intends to close the connection soon."""
 
@@ -74,6 +67,7 @@ class GoodBye(Event):
 
 
 @event
+@define
 class Hello(Event):
     """The client has successfully connected to the server."""
 
@@ -81,37 +75,41 @@ class Hello(Event):
 
 
 @event
+@define
 class Message(Event):
     """A message was sent to a channel."""
 
     type: ClassVar[str] = 'message'
-    channel: ChannelID = ChannelField()
-    ts: Ts = TsField(repr=True)
-    event_ts: Ts = TsField()
-    user: UserID = UserField(default=None)
-    text: str = StringField(repr=True)
-    attachments: list[dict[str, Any]] = Field()
-    hidden: bool = BooleanField()
-    message: MessageMessage = OptionalField(MessageMessage)(repr=True)
-    subtype: str | None = OptionalField(str)(repr=True)
+    channel: ChannelID = channel_id_field()
+    ts: Ts = ts_field()
+    event_ts: Ts = ts_field(repr=False)
+    user: UserID = user_id_field(default=None)
+    text: str = field(repr=True)
+    attachments: list[dict[str, Any]] | None = field()
+    hidden: bool = field()
+    message: MessageMessage | None = field(repr=True)
+    subtype: str | None = field(repr=True)
 
 
 @event
-class Pong(BaseEvent):
+@define
+class Pong(Event):
     """Ping-Pong"""
 
     type: ClassVar[str] = 'pong'
 
 
 @event
+@define
 class TeamJoin(Event):
     """A new team member has joined."""
 
     type: ClassVar[str] = 'team_join'
-    user: UserID = UserField()
+    user: UserID = user_id_field()
 
 
 @event
+@define
 class TeamMigrationStarted(Event):
     """The team is being migrated between servers."""
 
@@ -119,6 +117,7 @@ class TeamMigrationStarted(Event):
 
 
 @event
+@define
 class YuiSystemStart(Event):
     """System event for start system."""
 
@@ -162,22 +161,14 @@ def create_event(type_: YuiSystemStartType, source: Source) -> YuiSystemStart:
     ...
 
 
-@overload
-def create_event(type_: str, source: Source) -> BaseEvent:
-    ...
-
-
-@overload
-def create_event(type_: str, source: None) -> NoReturn:
-    ...
-
-
 def create_event(type_, source):
     """Create Event"""
 
     cls = _events.get(type_, UnknownEvent)
 
     try:
-        return cls(type=type_, **source)
+        if cls is UnknownEvent:
+            source['type'] = type_
+        return make_instance(cls, **source)
     except TypeError as e:
         raise TypeError(f'Error at creating {cls.__name__}: {e}')

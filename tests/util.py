@@ -3,7 +3,7 @@ from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
 
-import attr
+from attrs import define
 
 from yui.api import SlackAPI
 from yui.bot import Bot
@@ -11,14 +11,18 @@ from yui.cache import Cache
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.event import Message
+from yui.types.base import DirectMessageChannelID
+from yui.types.base import PrivateChannelID
+from yui.types.base import PublicChannelID
+from yui.types.base import Ts
+from yui.types.base import UserID
 from yui.types.channel import DirectMessageChannel
 from yui.types.channel import PrivateChannel
 from yui.types.channel import PublicChannel
-from yui.types.namespace import Namespace
 from yui.types.user import User
 
 
-@attr.dataclass(slots=True)
+@define
 class Call:
     """API Call from bot"""
 
@@ -43,12 +47,10 @@ class FakeBot(Bot):
         if config is None:
             config = Config(
                 **DEFAULT,
-                TOKEN='asdf',  # type: ignore
+                TOKEN='asdf',
                 CHANNELS={},
                 USERS={},
             )
-
-        Namespace._bot = self
 
         try:
             self.loop = loop or asyncio.get_running_loop()
@@ -62,7 +64,7 @@ class FakeBot(Bot):
         self.groups: list[PrivateChannel] = []
         self.cache: Cache = cache
         self.users: list[User] = [
-            User(id='U0', team_id='T0', name='system'),  # type: ignore
+            User(id=UserID('U0'), name='system'),
         ]
         self.responses: dict[str, Callable] = {}
         self.config = config
@@ -102,13 +104,13 @@ class FakeBot(Bot):
         id: str,
         name: str,
         creator: str = 'U0',
-        last_read: int = 0,
+        last_read: str = '0',
     ):
         channel = PublicChannel(
-            id=id,  # type: ignore
+            id=PublicChannelID(id),
             name=name,
-            creator=creator,
-            last_read=last_read,
+            creator=UserID(creator),
+            last_read=Ts(last_read),
         )
         self.channels.append(channel)
         return channel
@@ -118,56 +120,44 @@ class FakeBot(Bot):
         id: str,
         name: str,
         creator: str = 'U0',
-        last_read: int = 0,
+        last_read: str = '0',
     ):
         channel = PrivateChannel(
-            id=id,  # type: ignore
+            id=PrivateChannelID(id),
             name=name,
-            creator=creator,
-            last_read=last_read,
+            creator=UserID(creator),
+            last_read=Ts(last_read),
         )
         self.groups.append(channel)
         return channel
 
-    def add_dm(self, id: str, user: User | str, last_read: int = 0):
-        if isinstance(user, User):
-            user_id = user.id
-        else:
-            user_id = user
+    def add_dm(self, id: str, user: str, last_read: str = '0'):
         dm = DirectMessageChannel(
-            id=id,  # type: ignore
-            user=user_id,
-            last_read=last_read,
+            id=DirectMessageChannelID(id),
+            user=UserID(user),
+            last_read=Ts(last_read),
         )
         self.ims.append(dm)
         return dm
 
-    def add_user(self, id: str, name: str, team_id: str = 'T0'):
-        user = User(id=id, name=name, team_id=team_id)  # type: ignore
+    def add_user(self, id: str, name: str):
+        user = User(id=UserID(id), name=name)
         self.users.append(user)
         return user
 
     def create_message(
         self,
-        channel: PublicChannel | PrivateChannel | DirectMessageChannel | str,
-        user: User | str,
+        channel: str,
+        user: str,
         ts: str = '',
         event_ts: str = '',
         **kwargs,
     ) -> Message:
-        if isinstance(channel, str):
-            channel_id = channel
-        else:
-            channel_id = channel.id
-        if isinstance(user, str):
-            user_id = user
-        else:
-            user_id = user.id
         return Message(
-            channel=channel_id,  # type: ignore
-            user=user_id,
-            ts=ts,
-            event_ts=event_ts,
+            channel=PublicChannelID(channel),
+            user=UserID(user),
+            ts=Ts(ts),
+            event_ts=Ts(event_ts),
             **kwargs,
         )
 

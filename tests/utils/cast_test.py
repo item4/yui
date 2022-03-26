@@ -3,19 +3,15 @@ from typing import NewType
 
 import pytest
 
-from yui.types.namespace import Field
-from yui.types.namespace import namespace
+from yui.utils.attrs import define
 from yui.utils.cast import cast
 
 
-@namespace
+@define
 class UserRecord:
 
     id: str
     pw: str
-    addresses: list[str] = Field(
-        converter=lambda v: None if v is None else [str(i) for i in v],
-    )
 
 
 def test_cast(bot):
@@ -50,7 +46,6 @@ def test_cast(bot):
     user = cast(UserRecord, {'id': 'item4', 'pw': 'supersecret'})
     assert user.id == 'item4'
     assert user.pw == 'supersecret'
-    assert user.addresses is None
     users = cast(
         list[UserRecord],
         [
@@ -60,10 +55,8 @@ def test_cast(bot):
     )
     assert users[0].id == 'item4'
     assert users[0].pw == 'supersecret'
-    assert users[0].addresses is None
     assert users[1].id == 'item2'
     assert users[1].pw == 'weak'
-    assert users[1].addresses == ['1', '2']
 
     with pytest.raises(ValueError):
         cast(int | float, 'asdf')

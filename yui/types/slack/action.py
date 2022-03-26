@@ -1,6 +1,8 @@
 import enum
 
-import attr
+from attrs import field
+
+from ...utils.attrs import define
 
 
 def call_or_none(c):
@@ -12,7 +14,7 @@ def call_or_none(c):
     return converter
 
 
-@attr.dataclass(slots=True)
+@define
 class Confirmation:
     """Confirmation of Action"""
 
@@ -22,7 +24,7 @@ class Confirmation:
     title: str | None = None
 
 
-@attr.dataclass(slots=True)
+@define
 class OptionField:
     """Optional Option Field on Action"""
 
@@ -31,7 +33,7 @@ class OptionField:
     description: str | None = None
 
 
-@attr.dataclass(slots=True)
+@define
 class OptionFieldGroup:
     """Optional Option Group on Action"""
 
@@ -62,18 +64,18 @@ class ActionDataSource(enum.Enum):
     external = 'external'
 
 
-@attr.dataclass(slots=True)
+@define
 class Action:
     """Action of Attachment"""
 
     name: str
     text: str
-    type: str | ActionType = attr.ib(converter=ActionType)
-    style: str | ActionStyle | None = attr.ib(
+    type: str | ActionType = field(converter=ActionType)
+    style: str | ActionStyle | None = field(
         converter=call_or_none(ActionStyle),  # type: ignore
         default=None,
     )
-    data_source: str | ActionDataSource | None = attr.ib(
+    data_source: str | ActionDataSource | None = field(
         converter=call_or_none(ActionDataSource),  # type: ignore
         default=None,
     )

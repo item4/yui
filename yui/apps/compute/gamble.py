@@ -1,6 +1,7 @@
 import random
 import re
-from typing import NamedTuple
+
+from attrs import define
 
 from ...box import box
 from ...event import Message
@@ -23,7 +24,8 @@ DICE_SYNTAX = re.compile(
 )
 
 
-class DiceResult(NamedTuple):
+@define
+class DiceResult:
 
     query: str
     result: str

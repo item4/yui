@@ -74,7 +74,10 @@ class RouteApp(BaseApp):
 
         if root_call == bot.config.PREFIX + self.name:
             for c in self.route_list:
-                if c.subtype == event.subtype or c.subtype == '*':
+                if (
+                    c.subtype
+                    and (c.subtype == event.subtype or c.subtype == '*')
+                ) or not c.subtype:
                     if root_args is None:
                         if c.name is None:
                             handler = c.handler
@@ -89,7 +92,7 @@ class RouteApp(BaseApp):
                             handler = c.handler
                             break
             else:
-                handler = Handler(self.fallback)
+                handler = Handler(f=self.fallback)
 
         if handler:
             raw = html.unescape(args)

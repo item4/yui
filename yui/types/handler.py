@@ -8,7 +8,8 @@ from typing import Any
 from typing import TYPE_CHECKING
 from typing import TypeAlias
 
-import attr
+from ..utils.attrs import define
+from ..utils.attrs import field
 
 if TYPE_CHECKING:
     from ..box.tasks import CronTask
@@ -18,7 +19,7 @@ HANDLER_CALL_RETURN_TYPE: TypeAlias = Coroutine[Any, Any, bool | None]
 HANDLER_CALL_TYPE: TypeAlias = Callable[..., HANDLER_CALL_RETURN_TYPE]
 
 
-@attr.dataclass(slots=True)
+@define
 class Argument:
     """Argument"""
 
@@ -32,10 +33,10 @@ class Argument:
     type_error: str
     count_error: str
     transform_error: str
-    typing_has_container: bool = attr.ib(init=False, default=False)
+    typing_has_container: bool = field(init=False, default=False)
 
 
-@attr.dataclass(slots=True)
+@define
 class Option:
     """Option"""
 
@@ -55,16 +56,16 @@ class Option:
     transform_error: str
 
 
-@attr.dataclass(slots=True)
+@define
 class Handler:
     f: HANDLER_CALL_TYPE
-    arguments: list[Argument] = attr.ib(init=False)
-    options: list[Option] = attr.ib(init=False)
-    cron: CronTask | None = attr.ib(init=False, default=None)
-    last_call: Any = attr.ib(init=False)
-    doc: str | None = attr.ib(init=False)
-    params: Mapping[str, inspect.Parameter] = attr.ib(init=False)
-    is_prepared: bool = attr.ib(init=False, default=False)
+    arguments: list[Argument] = field(init=False)
+    options: list[Option] = field(init=False)
+    cron: CronTask | None = field(init=False, default=None)
+    last_call: Any = field(init=False)
+    doc: str | None = field(init=False)
+    params: Mapping[str, inspect.Parameter] = field(init=False)
+    is_prepared: bool = field(init=False, default=False)
 
     def __attrs_post_init__(self):
         self.doc = inspect.getdoc(self.f)

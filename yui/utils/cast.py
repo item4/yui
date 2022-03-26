@@ -4,6 +4,8 @@ from typing import TypeVar
 from typing import get_args
 from typing import get_origin
 
+from ..utils.attrs import make_instance
+
 
 KNOWN_TYPES = {
     bytes,
@@ -168,7 +170,7 @@ class AttrCaster(BaseCaster):
         return hasattr(t, '__attrs_attrs__')
 
     def cast(self, caster_box, t, value):
-        return t(**value)
+        return make_instance(t, **value)
 
 
 class CasterBox:

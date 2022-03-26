@@ -9,7 +9,8 @@ import aiohttp.client_exceptions
 
 import async_timeout
 
-import attr
+from attrs import define
+from attrs import field
 
 from fuzzywuzzy import fuzz
 
@@ -54,13 +55,13 @@ def convert_released_dt(input: str) -> str:
         return str(input)
 
 
-@attr.dataclass(frozen=True, hash=True, slots=True, cmp=True)
+@define(frozen=True, hash=True, eq=True)
 class Sub:
 
     maker: str
     episode_num: str
-    url: str = attr.ib(converter=fix_url)
-    released_at: str = attr.ib(converter=convert_released_dt)
+    url: str = field(converter=fix_url)
+    released_at: str = field(converter=convert_released_dt)
 
 
 def print_time(t: str) -> str:

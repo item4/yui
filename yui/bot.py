@@ -37,16 +37,13 @@ from .cache import Cache
 from .config import Config
 from .event import create_event
 from .orm import Base
-from .orm import EngineConfig
 from .orm import get_database_engine
 from .orm import make_session
 from .types.base import ChannelID
 from .types.base import UserID
-from .types.channel import Channel
 from .types.channel import DirectMessageChannel
 from .types.channel import PrivateChannel
 from .types.channel import PublicChannel
-from .types.namespace import Namespace
 from .types.slack.response import APIResponse
 from .types.user import User
 from .utils import json
@@ -100,8 +97,6 @@ class Bot:
         logger = logging.getLogger(f'{__name__}.Bot.__init__')
 
         logger.info('start')
-
-        Namespace._bot = self
 
         self.process_pool_executor = ProcessPoolExecutor()
         self.thread_pool_executor = ThreadPoolExecutor()
@@ -176,12 +171,6 @@ class Bot:
                 sess = make_session(bind=bot.config.DATABASE_ENGINE)
                 if 'sess' in func_params:
                     kw['sess'] = sess
-
-                if 'engine_config' in func_params:
-                    kw['engine_config'] = EngineConfig(
-                        url=bot.config.DATABASE_URL,
-                        echo=bot.config.DATABASE_ECHO,
-                    )
 
                 logger.debug(f'cron run {c}')
                 try:
@@ -332,7 +321,7 @@ class Bot:
 
     async def say(
         self,
-        channel: Channel | ChannelID,
+        channel: ChannelID,
         text: str,
         *,
         length_limit: int | None = 3000,
@@ -454,6 +443,7 @@ class Bot:
                 continue
 
             try:
+                logger.info('Connected to Slack RTM.')
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(rtm.body['url']) as ws:
                         await asyncio.wait(

@@ -1,17 +1,22 @@
 import copy
 import pathlib
 import sys
+from types import SimpleNamespace
 from typing import Any
-
-import attr
 
 from sqlalchemy.engine import Engine
 
 import toml
 
-from .types.namespace import namespace
 from .utils.cast import CastError
 from .utils.cast import cast
+
+
+REQUIRED = {
+    'APPS',
+    'DATABASE_URL',
+    'TOKEN',
+}
 
 
 DEFAULT = {
@@ -65,8 +70,7 @@ class ConfigurationError(Exception):
     pass
 
 
-@namespace
-class Config:
+class Config(SimpleNamespace):
 
     TOKEN: str
     RECEIVE_TIMEOUT: int
@@ -80,8 +84,8 @@ class Config:
     CHANNELS: dict[str, Any]
     USERS: dict[str, Any]
     CACHE: dict[str, Any]
-    WEBSOCKETDEBUGGERURL: str | None = None
-    DATABASE_ENGINE: Engine = attr.ib(init=False, repr=False, cmp=False)
+    WEBSOCKETDEBUGGERURL: str | None
+    DATABASE_ENGINE: Engine
 
     def check(
         self,
@@ -183,12 +187,11 @@ def load(path: pathlib.Path) -> Config:
         error('File suffix must be *.config.toml')
 
     config_dict = copy.deepcopy(DEFAULT)
-    config_dict.update(toml.load(path.open()))
+    data = toml.load(path.open())
 
-    try:
-        config = Config(**config_dict)
-    except TypeError as e:  # pragma: no cover
-        error(str(e))
-        raise
+    if missing := REQUIRED - set(data.keys()):
+        error(f'Missing required keys: {", ".join(missing)}')
 
-    return config
+    config_dict.update(data)
+
+    return Config(**config_dict)

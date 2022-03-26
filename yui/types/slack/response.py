@@ -1,10 +1,10 @@
 from collections.abc import Mapping
 from typing import Any
 
-import attr
+from ...utils.attrs import define
 
 
-@attr.dataclass(slots=True)
+@define
 class APIResponse:
 
     body: dict[str, Any] | str

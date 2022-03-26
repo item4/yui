@@ -1,10 +1,11 @@
-import attr
+from attrs import Factory
 
 from .action import Action
 from .block import Block
+from ...utils.attrs import define
 
 
-@attr.dataclass(slots=True)
+@define(kw_only=False)
 class Field:
     """Field on Attachment"""
 
@@ -13,7 +14,7 @@ class Field:
     short: bool
 
 
-@attr.dataclass(slots=True)
+@define
 class Attachment:
     """Slack Attachment"""
 
@@ -27,7 +28,7 @@ class Attachment:
     title_link: str | None = None
     text: str | None = None
     blocks: list[Block] | None = None
-    fields: list[Field] = attr.Factory(list)
+    fields: list[Field] = Factory(list)
     actions: list[Action] | None = None
     image_url: str | None = None
     thumb_url: str | None = None

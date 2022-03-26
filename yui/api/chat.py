@@ -5,11 +5,9 @@ from .endpoint import Endpoint
 from ..types.base import ChannelID
 from ..types.base import Ts
 from ..types.base import UserID
-from ..types.channel import Channel
 from ..types.slack.attachment import Attachment
 from ..types.slack.block import Block
 from ..types.slack.response import APIResponse
-from ..types.user import User
 
 
 class Chat(Endpoint):
@@ -18,7 +16,7 @@ class Chat(Endpoint):
 
     async def delete(
         self,
-        channel: Channel | ChannelID,
+        channel: ChannelID,
         ts: Ts,
         as_user: bool | None = None,
         *,
@@ -26,14 +24,9 @@ class Chat(Endpoint):
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.delete"""
 
-        if isinstance(channel, Channel):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
         params = {
-            'channel': channel_id,
-            'ts': ts,
+            'channel': str(channel),
+            'ts': str(ts),
         }
 
         if as_user is not None:
@@ -43,8 +36,8 @@ class Chat(Endpoint):
 
     async def postEphemeral(
         self,
-        channel: Channel | User | ChannelID,
-        user: User | UserID,
+        channel: ChannelID,
+        user: UserID,
         text: str | None = None,
         *,
         attachments: list[Attachment] | None = None,
@@ -60,19 +53,9 @@ class Chat(Endpoint):
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postEphemeral"""
 
-        if isinstance(channel, (Channel, User)):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
-        if isinstance(user, User):
-            user_id = user.id
-        else:
-            user_id = user
-
         params: dict[str, Any] = {
-            'channel': channel_id,
-            'user': user_id,
+            'channel': channel,
+            'user': user,
         }
 
         if text is None and blocks is None and attachments is None:
@@ -117,7 +100,7 @@ class Chat(Endpoint):
 
     async def postMessage(
         self,
-        channel: Channel | User | ChannelID,
+        channel: ChannelID,
         text: str | None = None,
         *,
         as_user: bool | None = None,
@@ -137,13 +120,8 @@ class Chat(Endpoint):
     ) -> APIResponse:
         """https://api.slack.com/methods/chat.postMessage"""
 
-        if isinstance(channel, (Channel, User)):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
         params: dict[str, Any] = {
-            'channel': channel_id,
+            'channel': channel,
         }
 
         if text is None and blocks is None and attachments is None:

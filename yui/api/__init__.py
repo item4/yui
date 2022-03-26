@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from .chat import Chat
 from .conversations import Conversations
-from .endpoint import Endpoint
 from .users import Users
 
 

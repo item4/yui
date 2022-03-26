@@ -1,7 +1,7 @@
 import enum
 from typing import Any
 
-import attr
+import attrs
 
 from ..types.slack.response import APIResponse
 
@@ -21,8 +21,8 @@ def prepare_for_json(obj):
     elif isinstance(obj, str):
         return obj
     try:
-        return prepare_for_json(attr.asdict(obj))
-    except attr.exceptions.NotAnAttrsClassError:
+        return prepare_for_json(attrs.asdict(obj))
+    except attrs.exceptions.NotAnAttrsClassError:
         pass
     return obj
 

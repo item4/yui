@@ -1,18 +1,11 @@
-from typing import TypeAlias
-from typing import cast
+from typing import List
 
 from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import ChannelID
-from ..types.base import TeamID
 from ..types.base import Ts
 from ..types.base import UserID
-from ..types.channel import Channel
 from ..types.slack.response import APIResponse
-from ..types.user import User
-
-
-USER_LIST: TypeAlias = list[User | UserID]
 
 
 class Conversations(Endpoint):
@@ -21,7 +14,7 @@ class Conversations(Endpoint):
 
     async def history(
         self,
-        channel: Channel | ChannelID,
+        channel: ChannelID,
         cursor: str | None = None,
         inclusive: bool | None = None,
         latest: Ts | None = None,
@@ -30,13 +23,8 @@ class Conversations(Endpoint):
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.history"""
 
-        if isinstance(channel, Channel):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
         params = {
-            'channel': channel_id,
+            'channel': str(channel),
         }
 
         if inclusive is not None:
@@ -58,7 +46,7 @@ class Conversations(Endpoint):
 
     async def replies(
         self,
-        channel: Channel | ChannelID,
+        channel: ChannelID,
         ts: Ts,
         cursor: str | None = None,
         inclusive: bool | None = None,
@@ -68,14 +56,9 @@ class Conversations(Endpoint):
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.replies"""
 
-        if isinstance(channel, Channel):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
         params = {
-            'channel': channel_id,
-            'ts': ts,
+            'channel': str(channel),
+            'ts': str(ts),
         }
 
         if inclusive is not None:
@@ -97,19 +80,14 @@ class Conversations(Endpoint):
 
     async def info(
         self,
-        channel: Channel | ChannelID,
+        channel: ChannelID,
         include_locale: bool | None = None,
         include_num_members: bool | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.info"""
 
-        if isinstance(channel, Channel):
-            channel_id = channel.id
-        else:
-            channel_id = channel
-
         params = {
-            'channel': channel_id,
+            'channel': str(channel),
         }
 
         if include_locale is not None:
@@ -125,7 +103,7 @@ class Conversations(Endpoint):
         cursor: str | None = None,
         exclude_archived: bool | None = None,
         limit: int | None = None,
-        team_id: TeamID | None = None,
+        team_id: str | None = None,
         types: str | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.list"""
@@ -152,9 +130,9 @@ class Conversations(Endpoint):
     async def open(
         self,
         *,
-        channel: Channel | ChannelID | None = None,
+        channel: ChannelID | None = None,
         return_im: bool | None = None,
-        users: USER_LIST | None = None,
+        users: List[UserID] | None = None,
     ) -> APIResponse:
         """https://api.slack.com/methods/conversations.open"""
 
@@ -167,21 +145,13 @@ class Conversations(Endpoint):
         if users is None:
             users = []
 
-        user_ids = list(
-            {
-                u.id if isinstance(u, User) else u
-                for u in cast(USER_LIST, users)
-            }
-        )
-
         params = {}
-        if isinstance(channel, Channel):
-            params['channel'] = channel.id
-        elif channel is not None:
-            params['channel'] = channel
+        if channel is not None:
+            params['channel'] = str(channel)
+
         if return_im is not None:
             params['return_im'] = bool2str(return_im)
-        if user_ids:
-            params['users'] = ','.join(user_ids)
+        if users:
+            params['users'] = ','.join(map(str, users))
 
         return await self._call('open', params)
