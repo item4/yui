@@ -10,8 +10,8 @@ from yui.utils import json
 
 
 def test_bool2str():
-    assert bool2str(True) == '1'
-    assert bool2str(False) == '0'
+    assert bool2str(True) == "1"
+    assert bool2str(False) == "0"
 
 
 def to_test_type(o):
@@ -19,50 +19,50 @@ def to_test_type(o):
 
 
 def test_to_json():
-    field = to_test_type(Field('title val', 'value val', True))
+    field = to_test_type(Field("title val", "value val", True))
     assert field == {
-        'title': 'title val',
-        'value': 'value val',
-        'short': '1',
+        "title": "title val",
+        "value": "value val",
+        "short": "1",
     }
 
     attachment = to_test_type(
         Attachment(
-            fallback='fallback val',
-            title='title val',
-            fields=[Field('field title1', 'field value1', False)],
+            fallback="fallback val",
+            title="title val",
+            fields=[Field("field title1", "field value1", False)],
             actions=[
                 Action(
-                    name='action1 name',
-                    text='action1 text',
-                    type='button',
-                    data_source='external',
+                    name="action1 name",
+                    text="action1 text",
+                    type="button",
+                    data_source="external",
                     options=[
-                        OptionField(text='a1 o1 text', value='a1 o1 value')
+                        OptionField(text="a1 o1 text", value="a1 o1 value")
                     ],
-                    style='danger',
+                    style="danger",
                     min_query_length=100,
-                    confirm=Confirmation(text='confirm text'),
+                    confirm=Confirmation(text="confirm text"),
                     selected_options=[
                         OptionField(
-                            text='a1 so1 text',
-                            value='a1 so1 value',
+                            text="a1 so1 text",
+                            value="a1 so1 value",
                         )
                     ],
-                    value='action1 value',
-                    url='action1 url',
+                    value="action1 value",
+                    url="action1 url",
                 ),
                 Action(
-                    name='action2 name',
-                    text='action2 text',
-                    type='select',
+                    name="action2 name",
+                    text="action2 text",
+                    type="select",
                     option_groups=[
                         OptionFieldGroup(
-                            text='a2 og1 text',
+                            text="a2 og1 text",
                             options=[
                                 OptionField(
-                                    text='a2 og1 o1 text',
-                                    value='a2 og1 o1 value',
+                                    text="a2 og1 o1 text",
+                                    value="a2 og1 o1 value",
                                 ),
                             ],
                         )
@@ -72,38 +72,38 @@ def test_to_json():
         )
     )
     assert attachment == {
-        'fallback': 'fallback val',
-        'title': 'title val',
-        'fields': [
-            {'title': 'field title1', 'value': 'field value1', 'short': '0'}
+        "fallback": "fallback val",
+        "title": "title val",
+        "fields": [
+            {"title": "field title1", "value": "field value1", "short": "0"}
         ],
-        'actions': [
+        "actions": [
             {
-                'name': 'action1 name',
-                'text': 'action1 text',
-                'type': 'button',
-                'data_source': 'external',
-                'options': [{'text': 'a1 o1 text', 'value': 'a1 o1 value'}],
-                'style': 'danger',
-                'min_query_length': 100,
-                'confirm': {'text': 'confirm text'},
-                'selected_options': [
-                    {'text': 'a1 so1 text', 'value': 'a1 so1 value'},
+                "name": "action1 name",
+                "text": "action1 text",
+                "type": "button",
+                "data_source": "external",
+                "options": [{"text": "a1 o1 text", "value": "a1 o1 value"}],
+                "style": "danger",
+                "min_query_length": 100,
+                "confirm": {"text": "confirm text"},
+                "selected_options": [
+                    {"text": "a1 so1 text", "value": "a1 so1 value"},
                 ],
-                'value': 'action1 value',
-                'url': 'action1 url',
+                "value": "action1 value",
+                "url": "action1 url",
             },
             {
-                'name': 'action2 name',
-                'text': 'action2 text',
-                'type': 'select',
-                'option_groups': [
+                "name": "action2 name",
+                "text": "action2 text",
+                "type": "select",
+                "option_groups": [
                     {
-                        'text': 'a2 og1 text',
-                        'options': [
+                        "text": "a2 og1 text",
+                        "options": [
                             {
-                                'text': 'a2 og1 o1 text',
-                                'value': 'a2 og1 o1 value',
+                                "text": "a2 og1 o1 text",
+                                "value": "a2 og1 o1 value",
                             },
                         ],
                     },

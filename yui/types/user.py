@@ -54,8 +54,8 @@ class User:
 
 
 def create_unknown_user(**kwargs):
-    if 'name' not in kwargs:
-        kwargs['name'] = ''
+    if "name" not in kwargs:
+        kwargs["name"] = ""
     user = User(**kwargs)
     user.is_unknown = True
     return user

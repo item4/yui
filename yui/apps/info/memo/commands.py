@@ -12,9 +12,9 @@ from ....utils import format
 from ....utils.datetime import now
 
 
-@box.command('기억')
-@argument('keyword')
-@argument('text')
+@box.command("기억")
+@argument("keyword")
+@argument("text")
 async def memo_add(
     bot, event: Message, sess: AsyncSession, keyword: str, text: str
 ):
@@ -29,13 +29,13 @@ async def memo_add(
     if len(keyword) > 20:
         await bot.say(
             event.channel,
-            '기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!',
+            "기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!",
         )
         return
     if len(text) > 500:
         await bot.say(
             event.channel,
-            '기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!',
+            "기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!",
         )
         return
 
@@ -50,15 +50,15 @@ async def memo_add(
 
     await bot.say(
         event.channel,
-        '{}{} 기억 레코드를 생성했어요!'.format(
+        "{}{} 기억 레코드를 생성했어요!".format(
             format.code(keyword),
-            tossi.pick(keyword, '(으)로'),
+            tossi.pick(keyword, "(으)로"),
         ),
     )
 
 
-@box.command('알려')
-@argument('keyword', nargs=-1, concat=True)
+@box.command("알려")
+@argument("keyword", nargs=-1, concat=True)
 async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
     """
     기억 레코드 출력
@@ -77,20 +77,20 @@ async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
     if memos:
         await bot.say(
             event.channel,
-            f'{format.code(keyword)}: ' + ' | '.join(x.text for x in memos),
+            f"{format.code(keyword)}: " + " | ".join(x.text for x in memos),
         )
     else:
         await bot.say(
             event.channel,
-            '{}{} 이름을 가진 기억 레코드가 없어요!'.format(
+            "{}{} 이름을 가진 기억 레코드가 없어요!".format(
                 format.code(keyword),
-                tossi.pick(keyword, '(이)란'),
+                tossi.pick(keyword, "(이)란"),
             ),
         )
 
 
-@box.command('잊어')
-@argument('keyword', nargs=-1, concat=True)
+@box.command("잊어")
+@argument("keyword", nargs=-1, concat=True)
 async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
     """
     기억 레코드 삭제
@@ -103,5 +103,5 @@ async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
     await sess.commit()
 
     await bot.say(
-        event.channel, f'{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!'
+        event.channel, f"{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!"
     )

@@ -9,20 +9,20 @@ from ...event import Message
 from ...transform import str_to_date
 
 
-@box.command('나이', ['age'])
+@box.command("나이", ["age"])
 @option(
-    '--at',
-    dest='today',
+    "--at",
+    dest="today",
     default=datetime.date.today,
     transform_func=str_to_date(datetime.date.today),
 )
 @argument(
-    'birthday',
+    "birthday",
     nargs=-1,
     concat=True,
-    count_error='생일을 입력해주세요',
+    count_error="생일을 입력해주세요",
     transform_func=str_to_date(),
-    transform_error='인식할 수 있는 날짜가 아니에요!',
+    transform_error="인식할 수 있는 날짜가 아니에요!",
 )
 async def age(
     bot, event: Message, today: datetime.date, birthday: datetime.date
@@ -41,7 +41,7 @@ async def age(
     """
 
     if today < birthday:
-        await bot.say(event.channel, '기준일 기준으로 아직 태어나지 않았어요!')
+        await bot.say(event.channel, "기준일 기준으로 아직 태어나지 않았어요!")
         return
 
     global_age = relativedelta(today, birthday).years
@@ -57,15 +57,15 @@ async def age(
     await bot.say(
         event.channel,
         (
-            '{} 출생자는 {} 기준으로 다음과 같아요!\n\n'
-            '* 세는 나이(한국식 나이) {}세\n'
-            '* 연 나이(한국 일부 법령상 나이) {}세\n'
-            '* 만 나이(전세계 표준) {}세\n\n'
-            '출생일로부터 {:,}일 지났어요.'
-            ' 다음 생일까지 {}일 남았어요.'
+            "{} 출생자는 {} 기준으로 다음과 같아요!\n\n"
+            "* 세는 나이(한국식 나이) {}세\n"
+            "* 연 나이(한국 일부 법령상 나이) {}세\n"
+            "* 만 나이(전세계 표준) {}세\n\n"
+            "출생일로부터 {:,}일 지났어요."
+            " 다음 생일까지 {}일 남았어요."
         ).format(
-            birthday.strftime('%Y년 %m월 %d일'),
-            today.strftime('%Y년 %m월 %d일'),
+            birthday.strftime("%Y년 %m월 %d일"),
+            today.strftime("%Y년 %m월 %d일"),
             korean_age,
             year_age,
             global_age,

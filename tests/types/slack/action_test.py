@@ -10,32 +10,32 @@ from yui.types.slack.action import OptionFieldGroup
 def test_action_class():
     id = None
     confirm = Confirmation(
-        dismiss_text='dismiss',
-        ok_text='ok',
-        text='some text',
-        title='some title',
+        dismiss_text="dismiss",
+        ok_text="ok",
+        text="some text",
+        title="some title",
     )
-    data_source = 'default'
+    data_source = "default"
     min_query_length = 100
-    name = 'Test Button'
+    name = "Test Button"
     options = [
         OptionField(
-            text='test',
-            value='test',
+            text="test",
+            value="test",
         )
     ]
     selected_options = [
         OptionField(
-            text='text',
-            value='value',
-            description='some description',
+            text="text",
+            value="value",
+            description="some description",
         )
     ]
-    style = 'danger'
-    text = 'Test Text'
-    type = 'button'
-    value = ''
-    url = 'https://item4.github.io'
+    style = "danger"
+    text = "Test Text"
+    type = "button"
+    value = ""
+    url = "https://item4.github.io"
 
     action = Action(
         id=id,
@@ -71,14 +71,14 @@ def test_action_class():
         type=type,
         options=[
             OptionField(
-                text='test',
-                value='test',
+                text="test",
+                value="test",
             )
         ],
         option_groups=[
             OptionFieldGroup(
-                text='text',
-                options=[OptionField(text='test2', value='test2')],
+                text="text",
+                options=[OptionField(text="test2", value="test2")],
             )
         ],
     )
@@ -86,6 +86,6 @@ def test_action_class():
     assert action.options is None
     assert action.option_groups == [
         OptionFieldGroup(
-            text='text', options=[OptionField(text='test2', value='test2')]
+            text="text", options=[OptionField(text="test2", value="test2")]
         ),
     ]

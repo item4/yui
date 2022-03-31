@@ -25,7 +25,7 @@ class BaseApp:
     @property
     def has_short_help(self) -> bool:
         try:
-            self.get_short_help('')
+            self.get_short_help("")
         except NotImplementedError:
             return False
         return True
@@ -33,7 +33,7 @@ class BaseApp:
     @property
     def has_full_help(self) -> bool:
         try:
-            self.get_full_help('')
+            self.get_full_help("")
         except NotImplementedError:
             return False
         return True
@@ -51,16 +51,16 @@ class BaseApp:
         **kwargs,
     ):
         sess = make_session(bind=bot.config.DATABASE_ENGINE)
-        if 'self' in func_params:
-            kwargs['_self'] = self
-        if 'bot' in func_params:
-            kwargs['bot'] = bot
-        if 'loop' in func_params:
-            kwargs['loop'] = asyncio.get_running_loop()
-        if 'event' in func_params:
-            kwargs['event'] = event
-        if 'sess' in func_params:
-            kwargs['sess'] = sess
+        if "self" in func_params:
+            kwargs["_self"] = self
+        if "bot" in func_params:
+            kwargs["bot"] = bot
+        if "loop" in func_params:
+            kwargs["loop"] = asyncio.get_running_loop()
+        if "event" in func_params:
+            kwargs["event"] = event
+        if "sess" in func_params:
+            kwargs["sess"] = sess
 
         try:
             yield kwargs

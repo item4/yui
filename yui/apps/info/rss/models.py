@@ -11,7 +11,7 @@ from ....orm.columns import TimezoneColumn
 class RSSFeedURL(Base):
     """RSS Feed URL"""
 
-    __tablename__ = 'rss_feed_url'
+    __tablename__ = "rss_feed_url"
 
     id = Column(Integer, primary_key=True)
 
@@ -23,4 +23,4 @@ class RSSFeedURL(Base):
 
     updated_timezone = TimezoneColumn()
 
-    updated_at = DateTimeAtColumn('updated')
+    updated_at = DateTimeAtColumn("updated")

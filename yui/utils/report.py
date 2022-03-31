@@ -20,7 +20,7 @@ LIMIT = 3500
 SITE_PACKAGES = re.compile(r'(?:\s*File ")?/.+?/site-packages/')
 BUILTIN_PACKAGES = re.compile(r'(?:\s*File ")?/.+?/lib/python[^/]+?/')
 IN_YUI = re.compile(r'(?:\s*File ")?/.+?/yui/yui/')
-START_SPACE = re.compile(r' {4,}')
+START_SPACE = re.compile(r" {4,}")
 
 
 def get_simple_tb_text(tb: list[str]) -> list[str]:
@@ -29,21 +29,21 @@ def get_simple_tb_text(tb: list[str]) -> list[str]:
         line = SITE_PACKAGES.sub('File "site-packages/', line)
         line = BUILTIN_PACKAGES.sub('File "python/', line)
         line = IN_YUI.sub('File "proj/yui/', line)
-        line = START_SPACE.sub('  ', line)
+        line = START_SPACE.sub("  ", line)
         result.append(line)
 
     return result
 
 
 async def report(
-    bot: 'Bot',
+    bot: "Bot",
     *,
     event: Event | None = None,
     exception: APICallError | None = None,
 ):
     tb_lines = get_simple_tb_text(traceback.format_exception(*sys.exc_info()))
     messages: list[str] = []
-    message = ''
+    message = ""
     if event:
         message += f"""\
 {bold('Event')}
@@ -57,24 +57,24 @@ async def report(
 {bold('Headers')}
 {preformatted(json.dumps(exception.headers, ensure_ascii=False, indent=2))}
 """
-    message += bold('Traceback')
-    message += '\n'
+    message += bold("Traceback")
+    message += "\n"
     length = len(message) + 6
 
-    block = ''
+    block = ""
     for line in tb_lines:
         if length + len(block) >= LIMIT:
             message += preformatted(block)
             messages.append(message)
-            message = ''
-            block = ''
+            message = ""
+            block = ""
             length = 6
         block += line
         length += len(line)
 
     for message in messages:
         await bot.say(
-            bot.config.USERS['owner'],
+            bot.config.USERS["owner"],
             message,
             length_limit=None,
         )

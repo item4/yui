@@ -7,11 +7,11 @@ from lxml.html import fromstring
 
 USELESS_TAGS = frozenset(
     {
-        'head',
-        'script',
-        'style',
-        'iframe',
-        'noscript',
+        "head",
+        "script",
+        "style",
+        "iframe",
+        "noscript",
     }
 )
 

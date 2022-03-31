@@ -12,13 +12,13 @@ from ...event import Message
 from ...transform import str_to_date
 from ...utils.datetime import now
 
-box.assert_channel_required('general')
+box.assert_channel_required("general")
 
-YEAR_PATTERN = re.compile(r'^(\d{4})년$')
-YEAR_MONTH_PATTERN = re.compile(r'^(\d{4})년\s*(\d{1,2})월$')
+YEAR_PATTERN = re.compile(r"^(\d{4})년$")
+YEAR_MONTH_PATTERN = re.compile(r"^(\d{4})년\s*(\d{1,2})월$")
 
 
-@box.cron('0 0 * * 0,2,3,4,5,6')
+@box.cron("0 0 * * 0,2,3,4,5,6")
 async def holiday_message(bot):
     holidays = None
     today = now()
@@ -29,14 +29,14 @@ async def holiday_message(bot):
 
     if holidays:
         await bot.say(
-            bot.config.CHANNELS['general'],
-            '오늘은 {}! 즐거운 휴일 되세요!'.format(
-                tossi.postfix(holidays[0], '(이)에요'),
+            bot.config.CHANNELS["general"],
+            "오늘은 {}! 즐거운 휴일 되세요!".format(
+                tossi.postfix(holidays[0], "(이)에요"),
             ),
         )
 
 
-@box.command('공휴일', ['휴일', 'holiday'])
+@box.command("공휴일", ["휴일", "holiday"])
 async def holiday(bot, event: Message, raw: str):
     """
     공휴일 조회
@@ -57,7 +57,7 @@ async def holiday(bot, event: Message, raw: str):
         except ValueError:
             await bot.say(
                 event.channel,
-                '인식할 수 없는 날짜 표현식이에요!',
+                "인식할 수 없는 날짜 표현식이에요!",
             )
             return
     else:
@@ -68,17 +68,17 @@ async def holiday(bot, event: Message, raw: str):
     except APIDoesNotSupport:
         await bot.say(
             event.channel,
-            'API가 해당 년월일시의 자료를 제공하지 않아요!',
+            "API가 해당 년월일시의 자료를 제공하지 않아요!",
         )
         return
 
     if holidays:
         await bot.say(
             event.channel,
-            '{}: {}'.format(dt.strftime('%Y년 %m월 %d일'), ', '.join(holidays)),
+            "{}: {}".format(dt.strftime("%Y년 %m월 %d일"), ", ".join(holidays)),
         )
     else:
         await bot.say(
             event.channel,
-            '{}: 평일'.format(dt.strftime('%Y년 %m월 %d일')),
+            "{}: 평일".format(dt.strftime("%Y년 %m월 %d일")),
         )

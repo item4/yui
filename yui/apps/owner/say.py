@@ -7,13 +7,13 @@ from ...transform import get_user_id
 from ...types.base import ChannelID
 from ...types.base import UserID
 
-box.assert_user_required('owner')
+box.assert_user_required("owner")
 
 
-@box.command('say', aliases=['말', '말해'])
-@option('--channel', '-c', transform_func=get_channel_id)
-@option('--user', '-u', transform_func=get_user_id)
-@argument('message', nargs=-1, concat=True)
+@box.command("say", aliases=["말", "말해"])
+@option("--channel", "-c", transform_func=get_channel_id)
+@option("--user", "-u", transform_func=get_user_id)
+@argument("message", nargs=-1, concat=True)
 async def say(
     bot,
     event: Message,
@@ -32,18 +32,18 @@ async def say(
 
     """
     target: ChannelID | UserID = event.channel
-    if event.user == bot.config.USERS['owner']:
+    if event.user == bot.config.USERS["owner"]:
         if channel and user:
-            text = '`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!'
+            text = "`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!"
         else:
             text = message
             if channel:
                 target = channel
             elif user:
                 resp = await bot.api.conversations.open(users=[user])
-                target = resp.body['channel']['id']
+                target = resp.body["channel"]["id"]
     else:
-        text = '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user)
+        text = "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user)
 
     await bot.say(
         target,

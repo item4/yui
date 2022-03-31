@@ -10,7 +10,7 @@ from ..types.slack.response import APIResponse
 
 class Conversations(Endpoint):
 
-    name = 'conversations'
+    name = "conversations"
 
     async def history(
         self,
@@ -24,25 +24,25 @@ class Conversations(Endpoint):
         """https://api.slack.com/methods/conversations.history"""
 
         params = {
-            'channel': str(channel),
+            "channel": str(channel),
         }
 
         if inclusive is not None:
-            params['inclusive'] = bool2str(inclusive)
+            params["inclusive"] = bool2str(inclusive)
 
         if latest is not None:
-            params['latest'] = latest
+            params["latest"] = latest
 
         if limit is not None:
-            params['limit'] = str(limit)
+            params["limit"] = str(limit)
 
         if oldest is not None:
-            params['oldest'] = oldest
+            params["oldest"] = oldest
 
         if cursor is not None:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
 
-        return await self._call('history', params)
+        return await self._call("history", params)
 
     async def replies(
         self,
@@ -57,26 +57,26 @@ class Conversations(Endpoint):
         """https://api.slack.com/methods/conversations.replies"""
 
         params = {
-            'channel': str(channel),
-            'ts': str(ts),
+            "channel": str(channel),
+            "ts": str(ts),
         }
 
         if inclusive is not None:
-            params['inclusive'] = bool2str(inclusive)
+            params["inclusive"] = bool2str(inclusive)
 
         if latest is not None:
-            params['latest'] = latest
+            params["latest"] = latest
 
         if limit is not None:
-            params['limit'] = str(limit)
+            params["limit"] = str(limit)
 
         if oldest is not None:
-            params['oldest'] = oldest
+            params["oldest"] = oldest
 
         if cursor is not None:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
 
-        return await self._call('replies', params)
+        return await self._call("replies", params)
 
     async def info(
         self,
@@ -87,16 +87,16 @@ class Conversations(Endpoint):
         """https://api.slack.com/methods/conversations.info"""
 
         params = {
-            'channel': str(channel),
+            "channel": str(channel),
         }
 
         if include_locale is not None:
-            params['include_locale'] = bool2str(include_locale)
+            params["include_locale"] = bool2str(include_locale)
 
         if include_num_members is not None:
-            params['include_num_members'] = bool2str(include_num_members)
+            params["include_num_members"] = bool2str(include_num_members)
 
-        return await self._call('info', params)
+        return await self._call("info", params)
 
     async def list(
         self,
@@ -111,21 +111,21 @@ class Conversations(Endpoint):
         params = {}
 
         if cursor is not None:
-            params['cursor'] = cursor
+            params["cursor"] = cursor
 
         if exclude_archived is not None:
-            params['exclude_archived'] = bool2str(exclude_archived)
+            params["exclude_archived"] = bool2str(exclude_archived)
 
         if limit is not None:
-            params['limit'] = str(limit)
+            params["limit"] = str(limit)
 
         if team_id is not None:
-            params['team_id'] = team_id
+            params["team_id"] = team_id
 
         if types is not None:
-            params['types'] = str(types)
+            params["types"] = str(types)
 
-        return await self._call('list', params)
+        return await self._call("list", params)
 
     async def open(
         self,
@@ -147,11 +147,11 @@ class Conversations(Endpoint):
 
         params = {}
         if channel is not None:
-            params['channel'] = str(channel)
+            params["channel"] = str(channel)
 
         if return_im is not None:
-            params['return_im'] = bool2str(return_im)
+            params["return_im"] = bool2str(return_im)
         if users:
-            params['users'] = ','.join(map(str, users))
+            params["users"] = ",".join(map(str, users))
 
-        return await self._call('open', params)
+        return await self._call("open", params)

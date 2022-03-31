@@ -14,7 +14,7 @@ async def new_page(bot):
             data = await resp.json(loads=json.loads)
 
     browser = await connect(
-        {'browserWSEndpoint': data['webSocketDebuggerUrl']}
+        {"browserWSEndpoint": data["webSocketDebuggerUrl"]}
     )
 
     page = await browser.newPage()

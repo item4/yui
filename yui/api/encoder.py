@@ -9,8 +9,8 @@ def bool2str(value: bool) -> str:
     """Return bool as str."""
 
     if value:
-        return '1'
-    return '0'
+        return "1"
+    return "0"
 
 
 def encode(obj):

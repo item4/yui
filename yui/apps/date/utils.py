@@ -10,10 +10,10 @@ class APIDoesNotSupport(Exception):
 
 
 async def get_holiday_names(dt: datetime.datetime) -> list[str]:
-    url = 'https://item4.net/api/holiday'
+    url = "https://item4.net/api/holiday"
     async with aiohttp.ClientSession() as session:
         async with session.get(
-            '{}/{}'.format(url, dt.strftime('%Y/%m/%d'))
+            "{}/{}".format(url, dt.strftime("%Y/%m/%d"))
         ) as resp:
             if resp.status == 200:
                 return await resp.json(loads=json.loads)
@@ -37,8 +37,8 @@ def weekend_loading_percent(dt: datetime.datetime) -> float:
 def weekend_loading_box(percent: float) -> str:
     total_block_count = 20
     if percent >= 100:
-        return '[' + '■' * total_block_count + ']'
+        return "[" + "■" * total_block_count + "]"
 
-    black_blocks = '■' * int(percent // 5)
-    white_blocks = '□' * (total_block_count - len(black_blocks))
-    return '[' + black_blocks + white_blocks + ']'
+    black_blocks = "■" * int(percent // 5)
+    white_blocks = "□" * (total_block_count - len(black_blocks))
+    return "[" + black_blocks + white_blocks + "]"

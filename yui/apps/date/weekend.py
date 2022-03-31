@@ -4,28 +4,28 @@ from ...box import box
 from ...event import Message
 from ...utils.datetime import now
 
-box.assert_config_required('WEEKEND_LOADING_TIME', list[int])
-box.assert_channel_required('general')
+box.assert_config_required("WEEKEND_LOADING_TIME", list[int])
+box.assert_channel_required("general")
 
 
-@box.cron('0 * * * 1-5')
+@box.cron("0 * * * 1-5")
 async def auto_weekend_loading(bot):
     now_dt = now()
     if now_dt.hour in bot.config.WEEKEND_LOADING_TIME:
         percent = weekend_loading_percent(now_dt)
         blocks = weekend_loading_box(percent)
         await bot.say(
-            bot.config.CHANNELS['general'],
-            f'주말로딩… {blocks} {percent:.2f}%',
+            bot.config.CHANNELS["general"],
+            f"주말로딩… {blocks} {percent:.2f}%",
         )
 
 
-@box.cron('0 0 * * 6')
+@box.cron("0 0 * * 6")
 async def auto_weekend_start(bot):
-    await bot.say(bot.config.CHANNELS['general'], '주말이에요! 즐거운 주말 되세요!')
+    await bot.say(bot.config.CHANNELS["general"], "주말이에요! 즐거운 주말 되세요!")
 
 
-@box.command('주말로딩')
+@box.command("주말로딩")
 async def weekend_loading(bot, event: Message):
     """
     주말로딩
@@ -40,6 +40,6 @@ async def weekend_loading(bot, event: Message):
     percent = weekend_loading_percent(now_dt)
     blocks = weekend_loading_box(percent)
     if percent == 100.0:
-        await bot.say(event.channel, '주말이에요! 즐거운 주말 되세요!')
+        await bot.say(event.channel, "주말이에요! 즐거운 주말 되세요!")
     else:
-        await bot.say(event.channel, f'주말로딩… {blocks} {percent:.2f}%')
+        await bot.say(event.channel, f"주말로딩… {blocks} {percent:.2f}%")

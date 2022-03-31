@@ -17,7 +17,7 @@ MESSAGE = """\
 """
 
 
-@box.command('about', ['봇소개', '자기소개'])
+@box.command("about", ["봇소개", "자기소개"])
 async def about(bot, event: Message):
     """
     봇 소개

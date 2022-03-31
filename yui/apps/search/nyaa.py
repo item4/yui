@@ -17,22 +17,22 @@ from ...utils.url import b64_redirect
 
 
 CATEGORIES = {
-    'all': '0_0',
-    'anime': '1_0',
-    'anime-amv': '1_1',
-    'anime-et': '1_2',
-    'anime-net': '1_3',
-    'anime-raw': '1_4',
-    'audio': '2_0',
-    'audio-lossless': '2_1',
-    'audio-lossy': '2_2',
-    'literature': '3_0',
-    'literature-et': '3_1',
-    'literature-net': '3_2',
-    'literature-raw': '3_3',
+    "all": "0_0",
+    "anime": "1_0",
+    "anime-amv": "1_1",
+    "anime-et": "1_2",
+    "anime-net": "1_3",
+    "anime-raw": "1_4",
+    "audio": "2_0",
+    "audio-lossless": "2_1",
+    "audio-lossy": "2_2",
+    "literature": "3_0",
+    "literature-et": "3_1",
+    "literature-net": "3_2",
+    "literature-raw": "3_3",
 }
 
-SCRIPT = '''
+SCRIPT = """
 (tr_list) => {
     return tr_list.map((tr) => {
         const title_td = tr.children[1];
@@ -59,25 +59,25 @@ SCRIPT = '''
         }
     });
 }
-'''
+"""
 
-CONTAINER_SELECTOR = 'div.container'
-NOT_FOUND_SELECTOR = 'div.container h3'
-TABLE_ROW_SELECTOR = 'table.torrent-list > tbody > tr'
+CONTAINER_SELECTOR = "div.container"
+NOT_FOUND_SELECTOR = "div.container h3"
+TABLE_ROW_SELECTOR = "table.torrent-list > tbody > tr"
 
 
-@box.command('nyaa')
+@box.command("nyaa")
 @option(
-    '--category',
-    '-c',
-    dest='category_name',
-    default='anime-raw',
-    transform_error='지원되지 않는 카테고리에요!',
+    "--category",
+    "-c",
+    dest="category_name",
+    default="anime-raw",
+    transform_error="지원되지 않는 카테고리에요!",
     transform_func=choice(
-        list(CATEGORIES.keys()), case_insensitive=True, case='lower'
+        list(CATEGORIES.keys()), case_insensitive=True, case="lower"
     ),
 )
-@argument('keyword', nargs=-1, concat=True, count_error='검색어를 입력해주세요')
+@argument("keyword", nargs=-1, concat=True, count_error="검색어를 입력해주세요")
 async def nyaa(bot, event: Message, category_name: str, keyword: str):
     """
     일본 서브컬처 토렌트 사이트 냐토렌트에서 주어진 검색어로 파일을 찾습니다
@@ -100,8 +100,8 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
 
     category = CATEGORIES[category_name]
 
-    url = 'https://nyaa.si/?{}'.format(
-        urlencode({'f': '0', 'c': category, 'q': keyword})
+    url = "https://nyaa.si/?{}".format(
+        urlencode({"f": "0", "c": category, "q": keyword})
     )
 
     async with new_page(bot) as page:
@@ -109,7 +109,7 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
         try:
             await page.waitForSelector(CONTAINER_SELECTOR)
         except TimeoutError:
-            await bot.say(event.channel, 'nyaa 접속에 실패했어요!')
+            await bot.say(event.channel, "nyaa 접속에 실패했어요!")
             return
 
         not_found_tag = await page.querySelector(NOT_FOUND_SELECTOR)
@@ -126,36 +126,36 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
     for row in results:
         actions: list[Action] = [
             Action(
-                name='dl',
-                type='button',
-                text='Download',
-                url=row['download_url'],
+                name="dl",
+                type="button",
+                text="Download",
+                url=row["download_url"],
             ),
             Action(
-                name='mg',
-                type='button',
-                text='Magnet Link',
-                url=b64_redirect(row['magnet_url']),
+                name="mg",
+                type="button",
+                text="Magnet Link",
+                url=b64_redirect(row["magnet_url"]),
             ),
         ]
 
         attachments.append(
             Attachment(
-                fallback='{} - {}'.format(row['title'], row['download_url']),
-                title=row['title'],
-                title_link=row['page_url'],
+                fallback="{} - {}".format(row["title"], row["download_url"]),
+                title=row["title"],
+                title_link=row["page_url"],
                 actions=actions,
                 text=(
-                    '{} / {}\n' 'Seeders: {} / Leechers: {} / Downloads: {}'
+                    "{} / {}\n" "Seeders: {} / Leechers: {} / Downloads: {}"
                 ).format(
-                    row['size'],
+                    row["size"],
                     datetime.datetime.fromtimestamp(
-                        row['uploaded_at'],
+                        row["uploaded_at"],
                         tz=tzlocal.get_localzone(),
-                    ).strftime('%Y-%m-%d %H:%M'),
-                    row['seeders'],
-                    row['leechers'],
-                    row['downloads'],
+                    ).strftime("%Y-%m-%d %H:%M"),
+                    row["seeders"],
+                    row["leechers"],
+                    row["downloads"],
                 ),
             )
         )
@@ -170,5 +170,5 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
     else:
         await bot.say(
             event.channel,
-            '검색결과가 없어요!',
+            "검색결과가 없어요!",
         )

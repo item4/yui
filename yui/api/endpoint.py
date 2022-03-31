@@ -47,7 +47,7 @@ class Endpoint:
             data = prepare_for_json(data)
 
         return await self.bot.call(
-            f'{self.name}.{method}',
+            f"{self.name}.{method}",
             data,
             token=token,
             json_mode=json_mode,

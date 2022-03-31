@@ -14,18 +14,18 @@ if TYPE_CHECKING:
     from ..types.handler import DECORATOR_TYPE
 
 
-ARGUMENT_TYPE_ERROR = '{name}: invalid type of argument value({e})'
+ARGUMENT_TYPE_ERROR = "{name}: invalid type of argument value({e})"
 ARGUMENT_COUNT_ERROR = (
-    '{name}: incorrect argument value count.'
-    ' expected {expected}, {given} given.'
+    "{name}: incorrect argument value count."
+    " expected {expected}, {given} given."
 )
-ARGUMENT_TRANSFORM_ERROR = '{name}: fail to transform argument value ({e})'
-OPTION_TYPE_ERROR = '{name}: invalid type of option value({e})'
+ARGUMENT_TRANSFORM_ERROR = "{name}: fail to transform argument value ({e})"
+OPTION_TYPE_ERROR = "{name}: invalid type of option value({e})"
 OPTION_COUNT_ERROR = (
-    '{name}: incorrect option value count.'
-    ' expected {expected}, {given} given.'
+    "{name}: incorrect option value count."
+    " expected {expected}, {given} given."
 )
-OPTION_TRANSFORM_ERROR = '{name}: fail to transform option value ({e})'
+OPTION_TRANSFORM_ERROR = "{name}: fail to transform option value ({e})"
 
 
 def argument(
@@ -88,7 +88,7 @@ def argument(
         handler = get_handler(target)
 
         if nargs < 0 and any(a.nargs < 0 for a in handler.arguments):
-            raise TypeError('can not have two nargs<0')
+            raise TypeError("can not have two nargs<0")
 
         handler.arguments.insert(
             0,
@@ -168,16 +168,16 @@ def option(
     elif (multiple or nargs != 1) and container_cls is None:
         container_cls = tuple
 
-    key: str = ' '.join(args)
+    key: str = " ".join(args)
 
     if dest is None:
-        _dest = args[0].lstrip('-').split('/')[0].replace('-', '_')
+        _dest = args[0].lstrip("-").split("/")[0].replace("-", "_")
     else:
         _dest = dest
 
     for name in args:
-        if '/' in name:
-            true_case, false_case = name.split('/')
+        if "/" in name:
+            true_case, false_case = name.split("/")
             options.append(
                 Option(
                     key=key,

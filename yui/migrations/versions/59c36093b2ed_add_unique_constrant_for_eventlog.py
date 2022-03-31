@@ -9,15 +9,15 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = '59c36093b2ed'
-down_revision = '0e7bdd5c7473'
+revision = "59c36093b2ed"
+down_revision = "0e7bdd5c7473"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.create_unique_constraint(None, 'event_log', ['ts', 'channel'])
+    op.create_unique_constraint(None, "event_log", ["ts", "channel"])
 
 
 def downgrade():
-    op.drop_constraint(None, 'event_log', type_='unique')
+    op.drop_constraint(None, "event_log", type_="unique")

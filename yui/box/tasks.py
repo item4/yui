@@ -18,8 +18,8 @@ class CronTask:
     def __init__(self, box: Box, spec: str, args: tuple, kwargs: dict) -> None:
         """Initialize."""
 
-        if 'start' not in kwargs:
-            kwargs['start'] = True
+        if "start" not in kwargs:
+            kwargs["start"] = True
 
         self.box = box
         self.spec = spec
@@ -40,10 +40,10 @@ class CronTask:
 
     def __repr__(self) -> str:
         return (
-            'CronTask('
-            f'spec={self.spec!r}, '
-            f'func={self.handler.f.__module__}.{self.handler.f.__name__}'
-            ')'
+            "CronTask("
+            f"spec={self.spec!r}, "
+            f"func={self.handler.f.__module__}.{self.handler.f.__name__}"
+            ")"
         )
 
     __str__ = __repr__

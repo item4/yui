@@ -36,24 +36,24 @@ class SlackAPI:
         )
 
         # chat tier 3
-        self.throttle_interval['chat.delete'] = TIER3
+        self.throttle_interval["chat.delete"] = TIER3
         # chat tier 4
-        self.throttle_interval['chat.postEphemeral'] = TIER4
+        self.throttle_interval["chat.postEphemeral"] = TIER4
         # chat special
-        self.throttle_interval['chat.postMessage'] = POST_MESSAGE
+        self.throttle_interval["chat.postMessage"] = POST_MESSAGE
 
         # conversations tier 2
-        self.throttle_interval['conversations.list'] = TIER2
+        self.throttle_interval["conversations.list"] = TIER2
         # conversations tier 3
-        self.throttle_interval['conversations.history'] = TIER3
-        self.throttle_interval['conversations.info'] = TIER3
-        self.throttle_interval['conversations.open'] = TIER3
-        self.throttle_interval['conversations.replies'] = TIER3
+        self.throttle_interval["conversations.history"] = TIER3
+        self.throttle_interval["conversations.info"] = TIER3
+        self.throttle_interval["conversations.open"] = TIER3
+        self.throttle_interval["conversations.replies"] = TIER3
 
         # users tier 2
-        self.throttle_interval['users.list'] = TIER2
+        self.throttle_interval["users.list"] = TIER2
         # users tier 4
-        self.throttle_interval['users.info'] = TIER4
+        self.throttle_interval["users.info"] = TIER4
 
         # rtm tier 1
-        self.throttle_interval['rtm.start'] = TIER1
+        self.throttle_interval["rtm.start"] = TIER1

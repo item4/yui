@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 REF_URLS: dict[str, str] = {
-    'html': 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element',
-    'css': 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference',
-    'python': 'https://docs.python.org/3/library/',
+    "html": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+    "css": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference",
+    "python": "https://docs.python.org/3/library/",
 }
 
 
@@ -44,9 +44,9 @@ def parse(
 
 
 async def fetch_css_ref(bot: Bot):
-    logger.info('fetch css ref start')
+    logger.info("fetch css ref start")
 
-    url = 'https://developer.mozilla.org/en-US/docs/Web/CSS/Reference'
+    url = "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
@@ -54,19 +54,19 @@ async def fetch_css_ref(bot: Bot):
     body = await bot.run_in_other_process(
         parse,
         blob,
-        'a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]',
-        'https://developer.mozilla.org',
+        "a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]",
+        "https://developer.mozilla.org",
     )
 
-    await bot.cache.set('REF_CSS', body)
+    await bot.cache.set("REF_CSS", body)
 
-    logger.info('fetch css ref end')
+    logger.info("fetch css ref end")
 
 
 async def fetch_html_ref(bot: Bot):
-    logger.info('fetch html ref start')
+    logger.info("fetch html ref start")
 
-    url = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element'
+    url = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
@@ -74,21 +74,21 @@ async def fetch_html_ref(bot: Bot):
     body = await bot.run_in_other_process(
         parse,
         blob,
-        'a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]',
-        'https://developer.mozilla.org',
+        "a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]",
+        "https://developer.mozilla.org",
     )
-    await bot.cache.set('REF_HTML', body)
+    await bot.cache.set("REF_HTML", body)
 
-    logger.info('fetch html ref end')
+    logger.info("fetch html ref end")
 
 
 def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
     h = get_root(blob)
-    a_tags = h.cssselect('a.reference.internal')
+    a_tags = h.cssselect("a.reference.internal")
 
     result = []
     for a in a_tags:
-        code_els = a.cssselect('code.docutils.literal')
+        code_els = a.cssselect("code.docutils.literal")
         name = str(a.text_content()).strip()
         link = f'https://docs.python.org/3/library/{a.get("href")}'
         if code_els:
@@ -103,7 +103,7 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
         else:
             result.append(
                 (
-                    '',
+                    "",
                     name,
                     link,
                 )
@@ -112,9 +112,9 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
 
 
 async def fetch_python_ref(bot: Bot):
-    logger.info('fetch python ref start')
+    logger.info("fetch python ref start")
 
-    url = 'https://docs.python.org/3/library/'
+    url = "https://docs.python.org/3/library/"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             blob = await resp.read()
@@ -124,14 +124,14 @@ async def fetch_python_ref(bot: Bot):
         blob,
     )
 
-    await bot.cache.set('REF_PYTHON', body)
+    await bot.cache.set("REF_PYTHON", body)
 
-    logger.info('fetch python ref end')
+    logger.info("fetch python ref end")
 
 
 @box.on(YuiSystemStart)
 async def on_start(bot):
-    logger.info('on_start ref')
+    logger.info("on_start ref")
     tasks = [
         fetch_css_ref(bot),
         fetch_html_ref(bot),
@@ -141,9 +141,9 @@ async def on_start(bot):
     return True
 
 
-@box.cron('0 3 * * *')
+@box.cron("0 3 * * *")
 async def refresh(bot):
-    logger.info('refresh ref')
+    logger.info("refresh ref")
     tasks = [
         fetch_css_ref(bot),
         fetch_html_ref(bot),
@@ -152,8 +152,8 @@ async def refresh(bot):
     await asyncio.wait(tasks)
 
 
-@box.command('html', ['htm'])
-@argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
+@box.command("html", ["htm"])
+@argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
 async def html(bot, event: Message, keyword: str):
     """
     HTML 레퍼런스 링크
@@ -162,10 +162,10 @@ async def html(bot, event: Message, keyword: str):
 
     """
 
-    data = await bot.cache.get('REF_HTML')
+    data = await bot.cache.get("REF_HTML")
     if data is None:
         await bot.say(
-            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
         return
 
@@ -180,13 +180,13 @@ async def html(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f':html: `{name}` - {link}')
+        await bot.say(event.channel, f":html: `{name}` - {link}")
     else:
-        await bot.say(event.channel, '비슷한 HTML Element를 찾지 못하겠어요!')
+        await bot.say(event.channel, "비슷한 HTML Element를 찾지 못하겠어요!")
 
 
-@box.command('css')
-@argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
+@box.command("css")
+@argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
 async def css(bot, event: Message, keyword: str):
     """
     CSS 레퍼런스 링크
@@ -195,10 +195,10 @@ async def css(bot, event: Message, keyword: str):
 
     """
 
-    data = await bot.cache.get('REF_CSS')
+    data = await bot.cache.get("REF_CSS")
     if data is None:
         await bot.say(
-            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
         return
 
@@ -213,13 +213,13 @@ async def css(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f':css: `{name}` - {link}')
+        await bot.say(event.channel, f":css: `{name}` - {link}")
     else:
-        await bot.say(event.channel, '비슷한 CSS 관련 요소를 찾지 못하겠어요!')
+        await bot.say(event.channel, "비슷한 CSS 관련 요소를 찾지 못하겠어요!")
 
 
-@box.command('php')
-@argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
+@box.command("php")
+@argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
 async def php(bot, event: Message, keyword: str):
     """
     PHP 레퍼런스 링크
@@ -228,33 +228,33 @@ async def php(bot, event: Message, keyword: str):
 
     """
 
-    raw_path = keyword.replace('::', '.')
-    if '::' in keyword:
+    raw_path = keyword.replace("::", ".")
+    if "::" in keyword:
         superclass, func = (
             keyword.lower()
-            .replace('$', '')
-            .replace('__', '')
-            .replace('_', '-')
-            .split('::')
+            .replace("$", "")
+            .replace("__", "")
+            .replace("_", "-")
+            .split("::")
         )
-    elif keyword.startswith('mysqli_stmt_'):
-        superclass = 'mysqli-stmt'
-        func = keyword[12:].replace('_', '-')
-    elif keyword.startswith('mysqli_'):
-        superclass = 'mysqli'
-        func = keyword[7:].replace('_', '-')
+    elif keyword.startswith("mysqli_stmt_"):
+        superclass = "mysqli-stmt"
+        func = keyword[12:].replace("_", "-")
+    elif keyword.startswith("mysqli_"):
+        superclass = "mysqli"
+        func = keyword[7:].replace("_", "-")
     else:
         superclass, func = (
-            'function',
+            "function",
             keyword.lower()
-            .replace('$', '')
-            .replace('__', '')
-            .replace('_', '-'),
+            .replace("$", "")
+            .replace("__", "")
+            .replace("_", "-"),
         )
 
     urls = [
-        f'http://www.php.net/manual/en/{superclass}.{func}.php',
-        f'http://php.net/{raw_path}',
+        f"http://www.php.net/manual/en/{superclass}.{func}.php",
+        f"http://php.net/{raw_path}",
     ]
 
     async with aiohttp.ClientSession() as session:
@@ -262,19 +262,19 @@ async def php(bot, event: Message, keyword: str):
             async with session.get(url) as res:
                 async with res:
                     res_url = str(res.url)
-                    if 'manual-lookup.php' in res_url:
+                    if "manual-lookup.php" in res_url:
                         continue
                     if res.status == 200:
                         await bot.say(
-                            event.channel, f':php: `{keyword}` - {res_url}'
+                            event.channel, f":php: `{keyword}` - {res_url}"
                         )
                         break
         else:
-            await bot.say(event.channel, '비슷한 PHP 관련 요소를 찾지 못하겠어요!')
+            await bot.say(event.channel, "비슷한 PHP 관련 요소를 찾지 못하겠어요!")
 
 
-@box.command('python', ['py'])
-@argument('keyword', nargs=-1, concat=True, count_error='키워드를 입력해주세요')
+@box.command("python", ["py"])
+@argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
 async def python(bot, event: Message, keyword: str):
     """
     Python library 레퍼런스 링크
@@ -283,10 +283,10 @@ async def python(bot, event: Message, keyword: str):
 
     """
 
-    data = await bot.cache.get('REF_PYTHON')
+    data = await bot.cache.get("REF_PYTHON")
     if data is None:
         await bot.say(
-            event.channel, '아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!'
+            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
         return
 
@@ -304,6 +304,6 @@ async def python(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f':python: {name} - {link}')
+        await bot.say(event.channel, f":python: {name} - {link}")
     else:
-        await bot.say(event.channel, '비슷한 Python library를 찾지 못하겠어요!')
+        await bot.say(event.channel, "비슷한 Python library를 찾지 못하겠어요!")

@@ -1,10 +1,10 @@
 from ...box import box
 from ...event import Message
 
-box.assert_user_required('owner')
+box.assert_user_required("owner")
 
 
-@box.command('quit')
+@box.command("quit")
 async def quit(bot, event: Message):
     """
     봇을 종료합니다
@@ -15,11 +15,11 @@ async def quit(bot, event: Message):
 
     """
 
-    if event.user == bot.config.USERS['owner']:
-        await bot.say(event.channel, '안녕히 주무세요!')
+    if event.user == bot.config.USERS["owner"]:
+        await bot.say(event.channel, "안녕히 주무세요!")
         raise SystemExit()
     else:
         await bot.say(
             event.channel,
-            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user),
+            "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user),
         )

@@ -11,13 +11,13 @@ def test_error():
     """Expect raising SystemExit"""
 
     with pytest.raises(SystemExit):
-        error('Error')
+        error("Error")
 
 
 def test_load_not_exists_file(fx_tmpdir: pathlib.Path):
     """Test config load function - not exists file"""
 
-    no_file = fx_tmpdir / 'nofile'
+    no_file = fx_tmpdir / "nofile"
 
     with pytest.raises(SystemExit):
         load(no_file)
@@ -26,7 +26,7 @@ def test_load_not_exists_file(fx_tmpdir: pathlib.Path):
 def test_load_not_file(fx_tmpdir: pathlib.Path):
     """Test config load function - not exists file"""
 
-    path = fx_tmpdir / 'path'
+    path = fx_tmpdir / "path"
     path.mkdir()
 
     with pytest.raises(SystemExit):
@@ -36,7 +36,7 @@ def test_load_not_file(fx_tmpdir: pathlib.Path):
 def test_load_not_correct_suffix(fx_tmpdir: pathlib.Path):
     """Test config load function - not correct suffix"""
 
-    file = fx_tmpdir / 'conf.py'
+    file = fx_tmpdir / "conf.py"
     file.touch()
 
     with pytest.raises(SystemExit):
@@ -46,7 +46,7 @@ def test_load_not_correct_suffix(fx_tmpdir: pathlib.Path):
 def test_load_empty(fx_tmpdir: pathlib.Path):
     """Test config load function - empty file"""
 
-    file = fx_tmpdir / 'empty.config.toml'
+    file = fx_tmpdir / "empty.config.toml"
     file.touch()
 
     with pytest.raises(SystemExit):
@@ -56,10 +56,10 @@ def test_load_empty(fx_tmpdir: pathlib.Path):
 def test_load_fine(fx_tmpdir: pathlib.Path):
     """Test config load function - empty file"""
 
-    file = fx_tmpdir / 'yui.config.toml'
-    with file.open('w') as f:
+    file = fx_tmpdir / "yui.config.toml"
+    with file.open("w") as f:
         f.write(
-            '''
+            """
 TOKEN = 'asdf'
 DATABASE_URL = 'sqlite:///:memory:'
 DEBUG = true
@@ -72,46 +72,46 @@ general = '_general'
 [USERS]
 owner = 'U111'
 
-        '''
+        """
         )
     config = load(file)
 
-    assert config.TOKEN == 'asdf'
+    assert config.TOKEN == "asdf"
     assert config.DEBUG
-    assert config.PREFIX == '.'
-    assert config.APPS == ['a', 'b']
+    assert config.PREFIX == "."
+    assert config.APPS == ["a", "b"]
     assert config.CHANNELS == {
-        'general': '_general',
+        "general": "_general",
     }
 
 
 def test_config_check(bot_config):
     del bot_config.TOKEN
 
-    err = 'Required config key was not defined: TOKEN'
+    err = "Required config key was not defined: TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
-            {'TOKEN': str},
+            {"TOKEN": str},
             set(),
             set(),
             set(),
             set(),
         )
 
-    bot_config.TOKEN = 'asdf'
-    err = 'Wrong config value type: TOKEN'
+    bot_config.TOKEN = "asdf"
+    err = "Wrong config value type: TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
-            {'TOKEN': list[int]},
+            {"TOKEN": list[int]},
             set(),
             set(),
             set(),
             set(),
         )
 
-    bot_config.TOKEN = 'XXXX'
+    bot_config.TOKEN = "XXXX"
     assert bot_config.check(
-        {'TOKEN': str},
+        {"TOKEN": str},
         set(),
         set(),
         set(),
@@ -119,162 +119,162 @@ def test_config_check(bot_config):
     )
 
     bot_config.CHANNELS = {}
-    err = 'Required channel key was not defined: general'
+    err = "Required channel key was not defined: general"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
-            {'general'},
+            {"general"},
             set(),
             set(),
             set(),
         )
 
-    bot_config.CHANNELS = {'general': 1}
-    err = 'Channel config has wrong type: general'
+    bot_config.CHANNELS = {"general": 1}
+    err = "Channel config has wrong type: general"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
-            {'general'},
+            {"general"},
             set(),
             set(),
             set(),
         )
 
-    bot_config.CHANNELS = {'general': '_general'}
+    bot_config.CHANNELS = {"general": "_general"}
     assert bot_config.check(
         {},
-        {'general'},
+        {"general"},
         set(),
         set(),
         set(),
     )
 
-    err = 'Required channel key was not defined: test'
+    err = "Required channel key was not defined: test"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
-            {'test'},
+            {"test"},
             set(),
             set(),
         )
 
-    bot_config.CHANNELS = {'test': 1}
-    err = 'Channel config has wrong type: test'
+    bot_config.CHANNELS = {"test": 1}
+    err = "Channel config has wrong type: test"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
-            {'test'},
+            {"test"},
             set(),
             set(),
         )
-    bot_config.CHANNELS = {'test': [1]}
-    err = 'Channel config has wrong type: test'
+    bot_config.CHANNELS = {"test": [1]}
+    err = "Channel config has wrong type: test"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
-            {'test'},
+            {"test"},
             set(),
             set(),
         )
 
-    bot_config.CHANNELS = {'test': ['aaa', 'bbb']}
+    bot_config.CHANNELS = {"test": ["aaa", "bbb"]}
     assert bot_config.check(
         {},
         set(),
-        {'test'},
+        {"test"},
         set(),
         set(),
     )
 
-    bot_config.CHANNELS = {'test': '*'}
+    bot_config.CHANNELS = {"test": "*"}
     assert bot_config.check(
         {},
         set(),
-        {'test'},
+        {"test"},
         set(),
         set(),
     )
 
     bot_config.USERS = {}
-    err = 'Required user key was not defined: owner'
+    err = "Required user key was not defined: owner"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
             set(),
-            {'owner'},
+            {"owner"},
             set(),
         )
 
-    bot_config.USERS = {'owner': 1}
-    err = 'User config has wrong type: owner'
+    bot_config.USERS = {"owner": 1}
+    err = "User config has wrong type: owner"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
             set(),
-            {'owner'},
+            {"owner"},
             set(),
         )
 
-    bot_config.USERS = {'owner': 'U1'}
+    bot_config.USERS = {"owner": "U1"}
     assert bot_config.check(
         {},
         set(),
         set(),
-        {'owner'},
+        {"owner"},
         set(),
     )
 
-    err = 'Required user key was not defined: tester'
+    err = "Required user key was not defined: tester"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
             set(),
             set(),
-            {'tester'},
+            {"tester"},
         )
 
-    bot_config.USERS = {'tester': 1}
-    err = 'User config has wrong type: tester'
+    bot_config.USERS = {"tester": 1}
+    err = "User config has wrong type: tester"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
             set(),
             set(),
-            {'tester'},
+            {"tester"},
         )
 
-    bot_config.USERS = {'tester': [1]}
-    err = 'User config has wrong type: tester'
+    bot_config.USERS = {"tester": [1]}
+    err = "User config has wrong type: tester"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
             {},
             set(),
             set(),
             set(),
-            {'tester'},
+            {"tester"},
         )
 
-    bot_config.USERS = {'tester': ['aaa', 'bbb']}
+    bot_config.USERS = {"tester": ["aaa", "bbb"]}
     assert bot_config.check(
         {},
         set(),
         set(),
         set(),
-        {'tester'},
+        {"tester"},
     )
 
-    bot_config.USERS = {'tester': '*'}
+    bot_config.USERS = {"tester": "*"}
     assert bot_config.check(
         {},
         set(),
         set(),
         set(),
-        {'tester'},
+        {"tester"},
     )

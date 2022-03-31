@@ -6,10 +6,10 @@ from decimal import Decimal
 from typing import Any
 from typing import TypeVar
 
-T = TypeVar('T', int, float, Decimal)
+T = TypeVar("T", int, float, Decimal)
 
 DATE_FORMAT_RE = re.compile(
-    r'(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?'
+    r"(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?"
 )
 
 
@@ -32,15 +32,15 @@ def str_to_date(
                     raise
                 else:
                     return fallback()
-        raise ValueError('Incorrect date string')
+        raise ValueError("Incorrect date string")
 
     return callback
 
 
 def _extract(text: str) -> str:
-    if text.startswith('<') and text.endswith('>'):
-        if '|' in text:
-            return text[1:-1].split('|', 1)[0]
+    if text.startswith("<") and text.endswith(">"):
+        if "|" in text:
+            return text[1:-1].split("|", 1)[0]
         else:
             return text[1:-1]
     return text
@@ -55,13 +55,13 @@ def extract_url(text: str) -> str:
 def get_channel_id(text: str) -> str:
     """Helper to get Channel from given text."""
 
-    return _extract(text).lstrip('#')
+    return _extract(text).lstrip("#")
 
 
 def get_user_id(text: str) -> str:
     """Helper to get User from given text."""
 
-    return _extract(text).lstrip('@')
+    return _extract(text).lstrip("@")
 
 
 def enum_getitem(
@@ -139,7 +139,7 @@ def choice(
                 if fallback is not None:
                     return transform_case(fallback)
                 else:
-                    raise ValueError('given value is not in allowed cases')
+                    raise ValueError("given value is not in allowed cases")
         else:
             if val in items:
                 return transform_case(val)
@@ -147,7 +147,7 @@ def choice(
                 if fallback is not None:
                     return transform_case(fallback)
                 else:
-                    raise ValueError('given value is not in allowed cases')
+                    raise ValueError("given value is not in allowed cases")
 
     return callback
 
@@ -184,11 +184,11 @@ def value_range(
             if autofix:
                 return start
             else:
-                raise ValueError('given value is too small.')
+                raise ValueError("given value is too small.")
         else:
             if autofix:
                 return end
             else:
-                raise ValueError('given value is too big.')
+                raise ValueError("given value is too big.")
 
     return callback

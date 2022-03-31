@@ -12,7 +12,7 @@ from ..types.slack.response import APIResponse
 
 class Chat(Endpoint):
 
-    name = 'chat'
+    name = "chat"
 
     async def delete(
         self,
@@ -25,14 +25,14 @@ class Chat(Endpoint):
         """https://api.slack.com/methods/chat.delete"""
 
         params = {
-            'channel': str(channel),
-            'ts': str(ts),
+            "channel": str(channel),
+            "ts": str(ts),
         }
 
         if as_user is not None:
-            params['as_user'] = bool2str(as_user)
+            params["as_user"] = bool2str(as_user)
 
-        return await self._call('delete', params, token=token)
+        return await self._call("delete", params, token=token)
 
     async def postEphemeral(
         self,
@@ -54,45 +54,45 @@ class Chat(Endpoint):
         """https://api.slack.com/methods/chat.postEphemeral"""
 
         params: dict[str, Any] = {
-            'channel': channel,
-            'user': user,
+            "channel": channel,
+            "user": user,
         }
 
         if text is None and blocks is None and attachments is None:
-            raise TypeError('text or attachement or blocks is required.')
+            raise TypeError("text or attachement or blocks is required.")
 
         if text is not None:
-            params['text'] = text
+            params["text"] = text
 
         if attachments is not None:
-            params['attachments'] = attachments
+            params["attachments"] = attachments
 
         if as_user is not None:
-            params['as_user'] = as_user
+            params["as_user"] = as_user
 
         if blocks is not None:
-            params['blocks'] = blocks
+            params["blocks"] = blocks
 
         if icon_emoji is not None:
-            params['icon_emoji'] = icon_emoji
+            params["icon_emoji"] = icon_emoji
 
         if icon_url is not None:
-            params['icon_url'] = icon_url
+            params["icon_url"] = icon_url
 
         if link_names is not None:
-            params['link_names'] = link_names
+            params["link_names"] = link_names
 
         if parse is not None:
-            params['parse'] = parse
+            params["parse"] = parse
 
         if thread_ts is not None:
-            params['thread_ts'] = thread_ts
+            params["thread_ts"] = thread_ts
 
         if username is not None:
-            params['username'] = username
+            params["username"] = username
 
         return await self._call(
-            'postEphemeral',
+            "postEphemeral",
             params,
             token=token,
             json_mode=True,
@@ -121,56 +121,56 @@ class Chat(Endpoint):
         """https://api.slack.com/methods/chat.postMessage"""
 
         params: dict[str, Any] = {
-            'channel': channel,
+            "channel": channel,
         }
 
         if text is None and blocks is None and attachments is None:
-            raise TypeError('text or attachement or blocks is required.')
+            raise TypeError("text or attachement or blocks is required.")
 
         if text is not None:
-            params['text'] = text
+            params["text"] = text
 
         if as_user is not None:
-            params['as_user'] = as_user
+            params["as_user"] = as_user
 
         if attachments is not None:
-            params['attachments'] = attachments
+            params["attachments"] = attachments
 
         if blocks is not None:
-            params['blocks'] = blocks
+            params["blocks"] = blocks
 
         if icon_emoji is not None:
-            params['icon_emoji'] = icon_emoji
+            params["icon_emoji"] = icon_emoji
 
         if icon_url is not None:
-            params['icon_url'] = icon_url
+            params["icon_url"] = icon_url
 
         if link_names is not None:
-            params['link_names'] = link_names
+            params["link_names"] = link_names
 
         if mrkdwn is not None:
-            params['mrkdwn'] = mrkdwn
+            params["mrkdwn"] = mrkdwn
 
         if parse is not None:
-            params['parse'] = parse
+            params["parse"] = parse
 
         if reply_broadcast is not None:
-            params['reply_broadcast'] = reply_broadcast
+            params["reply_broadcast"] = reply_broadcast
 
         if thread_ts is not None:
-            params['thread_ts'] = thread_ts
+            params["thread_ts"] = thread_ts
 
         if unfurl_links is not None:
-            params['unfurl_links'] = unfurl_links
+            params["unfurl_links"] = unfurl_links
 
         if unfurl_media is not None:
-            params['unfurl_media'] = unfurl_media
+            params["unfurl_media"] = unfurl_media
 
         if username is not None:
-            params['username'] = username
+            params["username"] = username
 
         return await self._call(
-            'postMessage',
+            "postMessage",
             params,
             token=token,
             json_mode=True,

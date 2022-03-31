@@ -13,56 +13,56 @@ from .utils.cast import cast
 
 
 REQUIRED = {
-    'APPS',
-    'DATABASE_URL',
-    'TOKEN',
+    "APPS",
+    "DATABASE_URL",
+    "TOKEN",
 }
 
 
 DEFAULT = {
-    'DEBUG': False,
-    'RECEIVE_TIMEOUT': 300,  # 60 * 5 seconds
-    'REGISTER_CRONTAB': True,
-    'PREFIX': '',
-    'APPS': (),
-    'DATABASE_URL': '',
-    'DATABASE_ECHO': False,
-    'LOGGING': {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'brief': {'format': '%(message)s'},
-            'default': {
-                'format': '%(asctime)s %(levelname)s %(name)s %(message)s',
-                'datefmt': '%Y-%m-%d %H:%M:%S',
+    "DEBUG": False,
+    "RECEIVE_TIMEOUT": 300,  # 60 * 5 seconds
+    "REGISTER_CRONTAB": True,
+    "PREFIX": "",
+    "APPS": (),
+    "DATABASE_URL": "",
+    "DATABASE_ECHO": False,
+    "LOGGING": {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "brief": {"format": "%(message)s"},
+            "default": {
+                "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
             },
         },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'formatter': 'brief',
-                'level': 'INFO',
-                'filters': [],
-                'stream': 'ext://sys.stdout',
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "formatter": "brief",
+                "level": "INFO",
+                "filters": [],
+                "stream": "ext://sys.stdout",
             },
-            'file': {
-                'class': 'logging.handlers.RotatingFileHandler',
-                'formatter': 'default',
-                'level': 'WARNING',
-                'filename': 'log/warning.log',
-                'maxBytes': 1024,
-                'backupCount': 3,
+            "file": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "formatter": "default",
+                "level": "WARNING",
+                "filename": "log/warning.log",
+                "maxBytes": 1024,
+                "backupCount": 3,
             },
         },
-        'loggers': {
-            'yui': {
-                'handlers': ['console', 'file'],
-                'propagate': True,
-                'level': 'INFO',
+        "loggers": {
+            "yui": {
+                "handlers": ["console", "file"],
+                "propagate": True,
+                "level": "INFO",
             },
         },
     },
-    'CACHE': {'HOST': 'localhost', 'PORT': 11211, 'PREFIX': 'YUI_'},
+    "CACHE": {"HOST": "localhost", "PORT": 11211, "PREFIX": "YUI_"},
 }
 
 
@@ -100,26 +100,26 @@ class Config(SimpleNamespace):
                 config = getattr(self, key)
             except AttributeError:
                 raise ConfigurationError(
-                    f'Required config key was not defined: {key}'
+                    f"Required config key was not defined: {key}"
                 )
             try:
                 casted = cast(value, config)
                 if config != casted:
                     raise CastError
             except CastError:
-                raise ConfigurationError(f'Wrong config value type: {key}')
+                raise ConfigurationError(f"Wrong config value type: {key}")
 
         for key in single_channels:
             try:
                 value = self.CHANNELS[key]
             except KeyError:
                 raise ConfigurationError(
-                    f'Required channel key was not defined: {key}'
+                    f"Required channel key was not defined: {key}"
                 )
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
-                        f'Channel config has wrong type: {key}'
+                        f"Channel config has wrong type: {key}"
                     )
 
         for key in multiple_channels:
@@ -127,28 +127,28 @@ class Config(SimpleNamespace):
                 value = self.CHANNELS[key]
             except KeyError:
                 raise ConfigurationError(
-                    f'Required channel key was not defined: {key}'
+                    f"Required channel key was not defined: {key}"
                 )
             else:
-                if value == '*':
+                if value == "*":
                     continue
                 elif isinstance(value, list):
                     if all(isinstance(x, str) for x in value):
                         continue
                 raise ConfigurationError(
-                    f'Channel config has wrong type: {key}'
+                    f"Channel config has wrong type: {key}"
                 )
         for key in single_users:
             try:
                 value = self.USERS[key]
             except KeyError:
                 raise ConfigurationError(
-                    f'Required user key was not defined: {key}'
+                    f"Required user key was not defined: {key}"
                 )
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
-                        f'User config has wrong type: {key}'
+                        f"User config has wrong type: {key}"
                     )
 
         for key in multiple_users:
@@ -156,15 +156,15 @@ class Config(SimpleNamespace):
                 value = self.USERS[key]
             except KeyError:
                 raise ConfigurationError(
-                    f'Required user key was not defined: {key}'
+                    f"Required user key was not defined: {key}"
                 )
             else:
-                if value == '*':
+                if value == "*":
                     continue
                 elif isinstance(value, list):
                     if all(isinstance(x, str) for x in value):
                         continue
-                raise ConfigurationError(f'User config has wrong type: {key}')
+                raise ConfigurationError(f"User config has wrong type: {key}")
         return True
 
 
@@ -178,13 +178,13 @@ def load(path: pathlib.Path) -> Config:
     """Load configuration from given path."""
 
     if not path.exists():
-        error('File do not exists.')
+        error("File do not exists.")
 
     if not path.is_file():
-        error('Given path is not file.')
+        error("Given path is not file.")
 
-    if not path.match('*.config.toml'):
-        error('File suffix must be *.config.toml')
+    if not path.match("*.config.toml"):
+        error("File suffix must be *.config.toml")
 
     config_dict = copy.deepcopy(DEFAULT)
     data = toml.load(path.open())

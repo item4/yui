@@ -106,9 +106,9 @@ class Handler:
         self.is_prepared = True
 
     def __call__(self, *args, **kwargs) -> HANDLER_CALL_RETURN_TYPE:
-        _self = kwargs.pop('_self', None)
+        _self = kwargs.pop("_self", None)
         if _self:
-            kwargs['self'] = _self
+            kwargs["self"] = _self
         return self.f(*args, **kwargs)
 
 

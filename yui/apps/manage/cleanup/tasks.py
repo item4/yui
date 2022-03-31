@@ -8,16 +8,16 @@ from .commons import collect_history_from_channel
 from ....box import box
 
 
-box.assert_config_required('OWNER_USER_TOKEN', str)
-box.assert_channels_required('auto_cleanup_targets')
+box.assert_config_required("OWNER_USER_TOKEN", str)
+box.assert_channels_required("auto_cleanup_targets")
 
 LOGS = set[tuple[str, str]]
 
 
-@box.cron('0,10,20,30,40,50 * * * *')
+@box.cron("0,10,20,30,40,50 * * * *")
 async def cleanup_channels(bot, sess: AsyncSession):
     try:
-        channels = bot.config.CHANNELS['auto_cleanup_targets']
+        channels = bot.config.CHANNELS["auto_cleanup_targets"]
     except KeyError:
         return
 
@@ -35,10 +35,10 @@ async def cleanup_channels(bot, sess: AsyncSession):
         )
 
 
-@box.cron('0 * * * *')
+@box.cron("0 * * * *")
 async def get_old_history(bot, sess: AsyncSession):
     try:
-        channels = bot.config.CHANNELS['auto_cleanup_targets']
+        channels = bot.config.CHANNELS["auto_cleanup_targets"]
     except KeyError:
         return
 

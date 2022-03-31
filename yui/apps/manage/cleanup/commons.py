@@ -41,8 +41,8 @@ async def cleanup_by_event_logs(
         except APICallError as e:
             await report(bot, exception=e)
             return deleted
-        ok = resp.body['ok']
-        if ok or (not ok and resp.body['error'] == 'message_not_found'):
+        ok = resp.body["ok"]
+        if ok or (not ok and resp.body["error"] == "message_not_found"):
             deleted += ok
             await sess.delete(log)
             await sess.commit()
@@ -71,29 +71,29 @@ async def cleanup_by_history(
             break
         history = resp.body
         deletable = False
-        if history['ok']:
-            messages = history['messages']
+        if history["ok"]:
+            messages = history["messages"]
             while messages:
                 message = messages.pop(0)
-                reply_count = message.get('reply_count', 0)
+                reply_count = message.get("reply_count", 0)
                 if reply_count:
                     try:
                         r = await bot.api.conversations.replies(
                             channel_id,
-                            ts=message['ts'],
+                            ts=message["ts"],
                         )
                     except APICallError as e:
                         await report(bot, exception=e)
                         break
-                    messages += r.body.get('messages', [])
+                    messages += r.body.get("messages", [])
                 try:
                     res = await bot.api.chat.delete(
                         channel_id,
-                        message['ts'],
+                        message["ts"],
                         token=token,
                         as_user=as_user,
                     )
-                    ok = res.body['ok']
+                    ok = res.body["ok"]
                 except APICallError as e:
                     ok = False
                     await report(bot, exception=e)
@@ -122,29 +122,29 @@ async def collect_history_from_channel(
             return collected
 
         history = resp.body
-        if not history['ok']:
+        if not history["ok"]:
             return collected
 
-        if 'response_metadata' in history:
-            cursor = history['response_metadata']['next_cursor']
+        if "response_metadata" in history:
+            cursor = history["response_metadata"]["next_cursor"]
 
-        messages = history['messages']
+        messages = history["messages"]
         while messages:
             message = messages.pop(0)
-            reply_count = message.get('reply_count', 0)
+            reply_count = message.get("reply_count", 0)
             if reply_count:
                 try:
                     r = await bot.api.conversations.replies(
                         channel_id,
-                        ts=message['ts'],
+                        ts=message["ts"],
                     )
                 except APICallError as e:
                     await report(bot, exception=e)
                 else:
-                    messages += r.body.get('messages', [])
+                    messages += r.body.get("messages", [])
             await sess.execute(
                 Insert(EventLog)
-                .values(channel=channel_id, ts=message['ts'])
+                .values(channel=channel_id, ts=message["ts"])
                 .on_conflict_do_nothing()
             )
             await sess.commit()

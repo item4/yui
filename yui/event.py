@@ -16,13 +16,13 @@ from .utils.attrs import ts_field
 from .utils.attrs import user_id_field
 
 
-GoodByeType = Literal['goodbye']
-HelloType = Literal['hello']
-MessageType = Literal['message']
-PongType = Literal['pong']
-TeamJoinType = Literal['team_join']
-TeamMigrationStartedType = Literal['team_migration_started']
-YuiSystemStartType = Literal['yui_system_start']
+GoodByeType = Literal["goodbye"]
+HelloType = Literal["hello"]
+MessageType = Literal["message"]
+PongType = Literal["pong"]
+TeamJoinType = Literal["team_join"]
+TeamMigrationStartedType = Literal["team_migration_started"]
+YuiSystemStartType = Literal["yui_system_start"]
 
 EventType = Literal[
     GoodByeType,
@@ -63,7 +63,7 @@ class UnknownEvent:
 class GoodBye(Event):
     """The server intends to close the connection soon."""
 
-    type: ClassVar[str] = 'goodbye'
+    type: ClassVar[str] = "goodbye"
 
 
 @event
@@ -71,7 +71,7 @@ class GoodBye(Event):
 class Hello(Event):
     """The client has successfully connected to the server."""
 
-    type: ClassVar[str] = 'hello'
+    type: ClassVar[str] = "hello"
 
 
 @event
@@ -79,7 +79,7 @@ class Hello(Event):
 class Message(Event):
     """A message was sent to a channel."""
 
-    type: ClassVar[str] = 'message'
+    type: ClassVar[str] = "message"
     channel: ChannelID = channel_id_field()
     ts: Ts = ts_field()
     event_ts: Ts = ts_field(repr=False)
@@ -96,7 +96,7 @@ class Message(Event):
 class Pong(Event):
     """Ping-Pong"""
 
-    type: ClassVar[str] = 'pong'
+    type: ClassVar[str] = "pong"
 
 
 @event
@@ -104,7 +104,7 @@ class Pong(Event):
 class TeamJoin(Event):
     """A new team member has joined."""
 
-    type: ClassVar[str] = 'team_join'
+    type: ClassVar[str] = "team_join"
     user: UserID = user_id_field()
 
 
@@ -113,7 +113,7 @@ class TeamJoin(Event):
 class TeamMigrationStarted(Event):
     """The team is being migrated between servers."""
 
-    type: ClassVar[str] = 'team_migration_started'
+    type: ClassVar[str] = "team_migration_started"
 
 
 @event
@@ -121,7 +121,7 @@ class TeamMigrationStarted(Event):
 class YuiSystemStart(Event):
     """System event for start system."""
 
-    type: ClassVar[str] = 'yui_system_start'
+    type: ClassVar[str] = "yui_system_start"
 
 
 @overload
@@ -168,7 +168,7 @@ def create_event(type_, source):
 
     try:
         if cls is UnknownEvent:
-            source['type'] = type_
+            source["type"] = type_
         return make_instance(cls, **source)
     except TypeError as e:
-        raise TypeError(f'Error at creating {cls.__name__}: {e}')
+        raise TypeError(f"Error at creating {cls.__name__}: {e}")

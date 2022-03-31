@@ -5,28 +5,28 @@ from ...event import Message
 from ...transform import extract_url
 from ...types.slack.attachment import Attachment
 
-box.assert_channel_required('notice')
-box.assert_user_required('owner')
+box.assert_channel_required("notice")
+box.assert_user_required("owner")
 
 FLAG_MAP = {
-    'primary': '428bca',
-    'new': '428bca',
-    'add': '428bca',
-    'good': '5cb85c',
-    'nice': '5cb85c',
-    'update': '5cb85c',
-    'patch': '5cb85c',
-    'fix': '5cb85c',
-    'danger': 'd9534f',
-    'del': 'd9534f',
-    'delete': 'd9534f',
-    'remove': 'd9534f',
-    'bug': 'd9534f',
-    'warning': 'd9534f',
-    'info': '5bc0de',
-    'test': '5bc0de',
-    'internal': '5bc0de',
-    'mics': '5bc0de',
+    "primary": "428bca",
+    "new": "428bca",
+    "add": "428bca",
+    "good": "5cb85c",
+    "nice": "5cb85c",
+    "update": "5cb85c",
+    "patch": "5cb85c",
+    "fix": "5cb85c",
+    "danger": "d9534f",
+    "del": "d9534f",
+    "delete": "d9534f",
+    "remove": "d9534f",
+    "bug": "d9534f",
+    "warning": "d9534f",
+    "info": "5bc0de",
+    "test": "5bc0de",
+    "internal": "5bc0de",
+    "mics": "5bc0de",
 }
 
 
@@ -36,16 +36,16 @@ def prepare(kw):
     for key, value in kw.items():
         kw[key] = value.strip()
 
-    if 'title' in kw:
-        kw['fallback'] = '{}: {}'.format(
-            kw['title'],
-            kw.get('text', '').replace('\n', ' '),
+    if "title" in kw:
+        kw["fallback"] = "{}: {}".format(
+            kw["title"],
+            kw.get("text", "").replace("\n", " "),
         ).strip()
     else:
-        kw['fallback'] = kw.get('text', '').replace('\n', ' ').strip()
+        kw["fallback"] = kw.get("text", "").replace("\n", " ").strip()
 
 
-@box.command('update', aliases=['업데이트'])
+@box.command("update", aliases=["업데이트"])
 async def update(bot, event: Message, raw: str):
     """
     봇을 통해 업데이트 공지 메시지를 전송합니다.
@@ -56,40 +56,40 @@ async def update(bot, event: Message, raw: str):
 
     """
 
-    if event.user == bot.config.USERS['owner']:
+    if event.user == bot.config.USERS["owner"]:
         lines = raw.splitlines()
         attachments: list[Attachment] = []
         kw: dict[str, Any] = {}
-        pretext = '유이 업데이트 안내'
+        pretext = "유이 업데이트 안내"
         for line in lines:
-            if line == '---':
+            if line == "---":
                 prepare(kw)
                 if kw:
                     attachments.append(Attachment(**kw))
                     kw.clear()
-            elif line.startswith('PRETEXT='):
+            elif line.startswith("PRETEXT="):
                 pretext = line[8:]
-            elif line.startswith('TITLE='):
-                kw['title'] = line[6:]
-            elif line.startswith('COLOR='):
-                kw['color'] = line[6:]
-            elif line.startswith('LINK='):
-                kw['title_link'] = extract_url(line[5:])
-            elif line.startswith('FLAG='):
+            elif line.startswith("TITLE="):
+                kw["title"] = line[6:]
+            elif line.startswith("COLOR="):
+                kw["color"] = line[6:]
+            elif line.startswith("LINK="):
+                kw["title_link"] = extract_url(line[5:])
+            elif line.startswith("FLAG="):
                 flag = line[5:].lower()
-                kw['color'] = FLAG_MAP[flag]
-                if 'title' in kw:
-                    kw['title'] = f"[{flag}] {kw['title']}"
+                kw["color"] = FLAG_MAP[flag]
+                if "title" in kw:
+                    kw["title"] = f"[{flag}] {kw['title']}"
             else:
-                if 'text' not in kw:
-                    kw['text'] = ''
-                kw['text'] += f'{line.strip()}\n'
+                if "text" not in kw:
+                    kw["text"] = ""
+                kw["text"] += f"{line.strip()}\n"
         if kw:
             prepare(kw)
             attachments.append(Attachment(**kw))
 
         await bot.api.chat.postMessage(
-            channel=bot.config.CHANNELS['notice'],
+            channel=bot.config.CHANNELS["notice"],
             text=pretext,
             attachments=attachments,
             as_user=True,
@@ -97,5 +97,5 @@ async def update(bot, event: Message, raw: str):
     else:
         await bot.say(
             event.channel,
-            '<@{}> 이 명령어는 아빠만 사용할 수 있어요!'.format(event.user),
+            "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user),
         )

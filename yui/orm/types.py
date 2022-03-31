@@ -21,14 +21,14 @@ class JSONType(_JSONType):
     """JSONType with orjson"""
 
     def process_bind_param(self, value, dialect):
-        if dialect.name == 'postgresql' and has_postgres_json:
+        if dialect.name == "postgresql" and has_postgres_json:
             return value
         if value is not None:  # pragma: no cover
             value = six.text_type(json.dumps(value))
         return value  # pragma: no cover
 
     def process_result_value(self, value, dialect):
-        if dialect.name == 'postgresql':
+        if dialect.name == "postgresql":
             return value
         if value is not None:  # pragma: no cover
             value = json.loads(value)
@@ -38,7 +38,7 @@ class JSONType(_JSONType):
 class TimezoneType(_TimezoneType):
     """TimezoneType"""
 
-    def __init__(self, backend='dateutil'):
+    def __init__(self, backend="dateutil"):
         self.backend = backend
 
         self.python_type = tzfile
@@ -50,13 +50,13 @@ class TimezoneType(_TimezoneType):
 
     def process_bind_param(self, value, dialect):
         if value == UTC:
-            return 'UTC'
+            return "UTC"
         if isinstance(value, tzfile):
-            return '/'.join(value._filename.split('/')[-2:])
+            return "/".join(value._filename.split("/")[-2:])
         return value
 
     def process_result_value(self, value, dialect):
-        if value == 'UTC':
+        if value == "UTC":
             return UTC
         if value:
             return gettz(value)

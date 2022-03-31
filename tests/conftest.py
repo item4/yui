@@ -23,15 +23,15 @@ from yui.orm import make_session
 from .util import FakeBot
 
 
-DEFAULT_DATABASE_URL = 'sqlite://'
+DEFAULT_DATABASE_URL = "sqlite://"
 
 
 def pytest_addoption(parser):
     parser.addoption(
-        '--database-url',
+        "--database-url",
         type=str,
-        default=os.getenv('YUI_TEST_DATABASE_URL', DEFAULT_DATABASE_URL),
-        help='Database URL for testing.' '[default: %(default)s]',
+        default=os.getenv("YUI_TEST_DATABASE_URL", DEFAULT_DATABASE_URL),
+        help="Database URL for testing." "[default: %(default)s]",
     )
 
 
@@ -43,7 +43,7 @@ def fx_tmpdir(tmpdir):
 @pytest_asyncio.fixture()
 async def fx_engine(request):
     try:
-        database_url = request.config.getoption('--database-url')
+        database_url = request.config.getoption("--database-url")
     except ValueError:
         database_url = None
     config = gen_config(request)
@@ -68,7 +68,7 @@ async def fx_sess(fx_engine):
     error = False
     async with fx_engine.begin() as conn:
         try:
-            await conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
+            await conn.execute(text("SET CONSTRAINTS ALL IMMEDIATE;"))
         except ProgrammingError:
             error = True
 
@@ -76,7 +76,7 @@ async def fx_sess(fx_engine):
             try:
                 await conn.execute(
                     text(
-                        'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;'.format(
+                        "TRUNCATE TABLE {} RESTART IDENTITY CASCADE;".format(
                             table.name,
                         )
                     )
@@ -85,7 +85,7 @@ async def fx_sess(fx_engine):
                 error = True
 
         try:
-            await conn.execute(text('SET CONSTRAINTS ALL IMMEDIATE;'))
+            await conn.execute(text("SET CONSTRAINTS ALL IMMEDIATE;"))
         except ProgrammingError:
             error = True
 
@@ -102,24 +102,24 @@ async def fx_sess(fx_engine):
 
 def gen_config(request):
     try:
-        database_url = request.config.getoption('--database-url')
+        database_url = request.config.getoption("--database-url")
     except ValueError:
-        database_url = 'sqlite:///'
+        database_url = "sqlite:///"
     cfg = copy.deepcopy(DEFAULT)
     cfg.update(
         dict(
             DEBUG=True,
             DATABASE_URL=database_url,
-            TOKEN='asdf1234',
+            TOKEN="asdf1234",
             REGISTER_CRONTAB=False,
             CHANNELS={},
             USERS={},
-            WEBSOCKETDEBUGGERURL='',
+            WEBSOCKETDEBUGGERURL="",
         )
     )
     config = Config(**cfg)
-    config.LOGGING['loggers']['yui']['handlers'] = ['console']
-    del config.LOGGING['handlers']['file']
+    config.LOGGING["loggers"]["yui"]["handlers"] = ["console"]
+    del config.LOGGING["handlers"]["file"]
     return config
 
 
@@ -133,12 +133,12 @@ def bot_config(request):
     return gen_config(request)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 async def cache():
     mc = await emcache.create_client(
-        [emcache.MemcachedHostAddress('localhost', 11211)]
+        [emcache.MemcachedHostAddress("localhost", 11211)]
     )  # FIXME
-    yield Cache(mc, 'YUI_TEST_')
+    yield Cache(mc, "YUI_TEST_")
     await mc.close()
 
 

@@ -25,18 +25,18 @@ class APIServerError(RuntimeError):
 
 
 async def get_cat_image_url(timeout: float) -> str:
-    api_url = 'http://thecatapi.com/api/images/get'
+    api_url = "http://thecatapi.com/api/images/get"
     async with aiohttp.ClientSession() as session:
         while True:
             try:
                 async with session.get(
-                    api_url, params={'format': 'xml', 'type': 'jpg,png'}
+                    api_url, params={"format": "xml", "type": "jpg,png"}
                 ) as res:
                     if res.status != 200:
                         raise APIServerError
                     xml_result = await res.read()
                     tree = etree.fromstring(xml_result)
-                    url = tree.find('data/images/image/url').text
+                    url = tree.find("data/images/image/url").text
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(0.1)
                 continue
@@ -51,7 +51,7 @@ async def get_cat_image_url(timeout: float) -> str:
 
 
 async def get_dog_image_url(timeout: float) -> str:
-    api_url = 'https://dog.ceo/api/breeds/image/random'
+    api_url = "https://dog.ceo/api/breeds/image/random"
     async with aiohttp.ClientSession() as session:
         while True:
             try:
@@ -59,7 +59,7 @@ async def get_dog_image_url(timeout: float) -> str:
                     if res.status != 200:
                         raise APIServerError
                     data = await res.json(loads=json.loads)
-                    url = data['message']
+                    url = data["message"]
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(0.1)
                 continue
@@ -74,21 +74,21 @@ async def get_dog_image_url(timeout: float) -> str:
 
 
 async def get_fox_image_url(timeout: float) -> str:
-    url = 'http://fox-info.net/fox-gallery'
+    url = "http://fox-info.net/fox-gallery"
     async with async_timeout.timeout(delay=timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 data = await resp.text()
     h = get_root(data)
-    image_els = h.cssselect('#gallery-1 img.attachment-thumbnail')
+    image_els = h.cssselect("#gallery-1 img.attachment-thumbnail")
     try:
-        return str(image_els[0].get('src'))
+        return str(image_els[0].get("src"))
     except IndexError:
         raise APIServerError
 
 
-@box.command('cat', ['냥', '야옹', '냐옹'])
-@option('--timeout', default=1.5)
+@box.command("cat", ["냥", "야옹", "냐옹"])
+@option("--timeout", default=1.5)
 async def cat(bot, event: Message, timeout: float):
     """
     냥냥이 짤을 수급합니다.
@@ -101,14 +101,14 @@ async def cat(bot, event: Message, timeout: float):
         bot.api.chat.postMessage,
         channel=event.channel,
         as_user=False,
-        username='냥짤의 요정',
-        icon_url='https://i.imgur.com/hIBJUMI.jpg',
+        username="냥짤의 요정",
+        icon_url="https://i.imgur.com/hIBJUMI.jpg",
     )
 
     now_dt = now()
     if event.channel in cat.last_call:
         last_call = cat.last_call[event.channel]
-        if event.channel.startswith('D'):
+        if event.channel.startswith("D"):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -116,7 +116,7 @@ async def cat(bot, event: Message, timeout: float):
             fine = last_call + cooltime
             await cat_say(
                 text=(
-                    f'아직 쿨타임이다냥! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
+                    f"아직 쿨타임이다냥! " f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라냥!"
                 )
             )
             return
@@ -124,7 +124,7 @@ async def cat(bot, event: Message, timeout: float):
     try:
         url = await get_cat_image_url(timeout)
     except APIServerError:
-        await cat_say(text='냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!')
+        await cat_say(text="냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!")
         return
 
     cat.last_call[event.channel] = now_dt
@@ -132,8 +132,8 @@ async def cat(bot, event: Message, timeout: float):
     await cat_say(text=url)
 
 
-@box.command('dog', ['멍'])
-@option('--timeout', default=1.5)
+@box.command("dog", ["멍"])
+@option("--timeout", default=1.5)
 async def dog(bot, event: Message, timeout: float):
     """
     멍멍이 짤을 수급합니다.
@@ -148,14 +148,14 @@ async def dog(bot, event: Message, timeout: float):
         bot.api.chat.postMessage,
         channel=event.channel,
         as_user=False,
-        username='멍짤의 요정',
-        icon_url='https://i.imgur.com/Q9FKplO.png',
+        username="멍짤의 요정",
+        icon_url="https://i.imgur.com/Q9FKplO.png",
     )
 
     now_dt = now()
     if event.channel in dog.last_call:
         last_call = dog.last_call[event.channel]
-        if event.channel.startswith('D'):
+        if event.channel.startswith("D"):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -163,7 +163,7 @@ async def dog(bot, event: Message, timeout: float):
             fine = last_call + cooltime
             await dog_say(
                 text=(
-                    f'아직 쿨타임이다멍! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
+                    f"아직 쿨타임이다멍! " f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보라멍!"
                 )
             )
             return
@@ -171,7 +171,7 @@ async def dog(bot, event: Message, timeout: float):
     try:
         url = await get_dog_image_url(timeout)
     except APIServerError:
-        await dog_say(text='멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!')
+        await dog_say(text="멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!")
         return
 
     dog.last_call[event.channel] = now_dt
@@ -179,7 +179,7 @@ async def dog(bot, event: Message, timeout: float):
     await dog_say(text=url)
 
 
-@box.command('fox', ['여우'])
+@box.command("fox", ["여우"])
 async def fox(bot, event: Message, timeout: float = 1.5):
     """
     여우 짤을 수급합니다.
@@ -194,14 +194,14 @@ async def fox(bot, event: Message, timeout: float = 1.5):
         bot.api.chat.postMessage,
         channel=event.channel,
         as_user=False,
-        username='웹 브라우저의 요정',
-        icon_url='https://i.imgur.com/xFpyvpZ.png',
+        username="웹 브라우저의 요정",
+        icon_url="https://i.imgur.com/xFpyvpZ.png",
     )
 
     now_dt = now()
     if event.channel in fox.last_call:
         last_call = fox.last_call[event.channel]
-        if event.channel.startswith('D'):
+        if event.channel.startswith("D"):
             cooltime = DM_COOLTIME
         else:
             cooltime = DEFAULT_COOLTIME
@@ -209,7 +209,7 @@ async def fox(bot, event: Message, timeout: float = 1.5):
             fine = last_call + cooltime
             await fox_say(
                 text=(
-                    f'아직 쿨타임이에요! ' f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보세요!"
+                    f"아직 쿨타임이에요! " f"{fine.strftime('%H시 %M분')} 이후로 다시 시도해보세요!"
                 )
             )
             return
@@ -217,7 +217,7 @@ async def fox(bot, event: Message, timeout: float = 1.5):
     try:
         url = await get_fox_image_url(timeout)
     except APIServerError:
-        await fox_say(text='여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!')
+        await fox_say(text="여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!")
         return
 
     fox.last_call[event.channel] = now_dt

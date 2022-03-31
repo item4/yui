@@ -71,7 +71,7 @@ class Box:
 
             self.apps.append(
                 App(
-                    'message',
+                    "message",
                     subtype,
                     handler,
                     name=name,

@@ -1,9 +1,9 @@
 from sqlalchemy.sql.expression import func
 
 TRUNCATE_QUERY = {
-    'mysql': 'TRUNCATE TABLE {};',
-    'postgresql': 'TRUNCATE TABLE {} RESTART IDENTITY CASCADE;',
-    'sqlite': 'DELETE FROM {};',
+    "mysql": "TRUNCATE TABLE {};",
+    "postgresql": "TRUNCATE TABLE {} RESTART IDENTITY CASCADE;",
+    "sqlite": "DELETE FROM {};",
 }
 
 

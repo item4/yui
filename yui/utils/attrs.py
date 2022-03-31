@@ -7,7 +7,7 @@ import attrs
 
 from .datetime import fromtimestamp
 
-_C = TypeVar('_C')
+_C = TypeVar("_C")
 
 
 def make_instance(
@@ -46,7 +46,7 @@ def _field_transformer(cls, fields):
         if get_args(t):
             t = get_args(t)[0]
         if field.converter is None:
-            if hasattr(t, '__attrs_attrs__'):
+            if hasattr(t, "__attrs_attrs__"):
                 results.append(field.evolve(converter=_attrs_converter(t)))
             elif t is datetime.datetime:
                 results.append(field.evolve(converter=_datetime_converter))

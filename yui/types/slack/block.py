@@ -11,8 +11,8 @@ from ...utils.attrs import define
 
 class TextFieldType(enum.Enum):
 
-    plain_text = 'plain_text'
-    mrkdwn = 'mrkdwn'
+    plain_text = "plain_text"
+    mrkdwn = "mrkdwn"
 
 
 @define
@@ -24,7 +24,7 @@ class TextField:
 
 def enforce_plain_text(instance, attribute, value):
     if value != TextFieldType.plain_text:
-        raise ValueError('this field support only plain text')
+        raise ValueError("this field support only plain text")
 
 
 @define
@@ -51,14 +51,14 @@ class ImageElement(Element):
 
     image_url: str
     alt_text: str
-    type: str = field(default='image', init=False)
+    type: str = field(default="image", init=False)
 
 
 class ButtonStyle(enum.Enum):
 
-    default = 'default'
-    primary = 'primary'
-    danger = 'danger'
+    default = "default"
+    primary = "primary"
+    danger = "danger"
 
 
 @define
@@ -79,7 +79,7 @@ class ButtonElement(InteractiveElement):
     value: str | None = None
     style: ButtonStyle | None = ButtonStyle.default
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='button', init=False)
+    type: str = field(default="button", init=False)
 
 
 @define
@@ -105,7 +105,7 @@ class StaticSelectElement(InteractiveElement):
     option_groups: list[OptionGroup] = Factory(list)
     initial_option: Option | None = None
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='static_select', init=False)
+    type: str = field(default="static_select", init=False)
 
 
 @define
@@ -116,7 +116,7 @@ class ExternalSelectElement(InteractiveElement):
     initial_option: Option | None = None
     confirm: ConfirmationDialog | None = None
     min_query_length: int | None = None
-    type: str = field(default='external_select', init=False)
+    type: str = field(default="external_select", init=False)
 
 
 @define
@@ -126,7 +126,7 @@ class UsersSelectElement(InteractiveElement):
     action_id: str
     initial_user: UserID | None = None
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='users_select', init=False)
+    type: str = field(default="users_select", init=False)
 
 
 @define
@@ -136,7 +136,7 @@ class ConversationsSelectElement(InteractiveElement):
     action_id: str
     initial_conversation: ChannelID | None = None
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='conversations_select', init=False)
+    type: str = field(default="conversations_select", init=False)
 
 
 @define
@@ -146,7 +146,7 @@ class ChannelsSelectElement(InteractiveElement):
     action_id: str
     initial_channel: PublicChannelID | None = None
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='channels_select', init=False)
+    type: str = field(default="channels_select", init=False)
 
 
 @define
@@ -156,7 +156,7 @@ class OverflowElement(InteractiveElement):
     action_id: str
     options: list[Option] = Factory(list)
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='overflow', init=False)
+    type: str = field(default="overflow", init=False)
 
 
 @define
@@ -166,13 +166,13 @@ class DatepickerElement(InteractiveElement):
     action_id: str
     initial_date: str | None = None
     confirm: ConfirmationDialog | None = None
-    type: str = field(default='datepicker', init=False)
+    type: str = field(default="datepicker", init=False)
 
 
 class Block:
     """Slack Block Structure"""
 
-    type: str = ''
+    type: str = ""
     block_id: str | None = None
 
 
@@ -181,7 +181,7 @@ class Section(Block):
     """Section Block"""
 
     text: TextField
-    type: str = field(default='section', init=False)
+    type: str = field(default="section", init=False)
     fields: list[TextField] = Factory(list)
     accessory: Element | None = None
 
@@ -190,7 +190,7 @@ class Section(Block):
 class Divider(Block):
     """Divider Block"""
 
-    type: str = field(default='divider', init=False)
+    type: str = field(default="divider", init=False)
 
 
 @define
@@ -199,7 +199,7 @@ class Image(Block):
 
     image_url: str
     alt_text: str
-    type: str = field(default='image', init=False)
+    type: str = field(default="image", init=False)
     title: TextField | None = None
 
 
@@ -213,5 +213,5 @@ class Action(Block):
 class Context(Block):
     """Context Block"""
 
-    type: str = field(default='context', init=False)
+    type: str = field(default="context", init=False)
     elements: list[TextField | ImageElement] = Factory(list)

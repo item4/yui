@@ -9,7 +9,7 @@ from ....orm import Base
 class EventLog(Base):
     """EventLog for cleanup function"""
 
-    __tablename__ = 'event_log'
+    __tablename__ = "event_log"
 
     id = Column(Integer, primary_key=True)
 
@@ -17,4 +17,4 @@ class EventLog(Base):
 
     channel = Column(String, nullable=False)
 
-    __table_args__ = (UniqueConstraint('ts', 'channel'),)
+    __table_args__ = (UniqueConstraint("ts", "channel"),)

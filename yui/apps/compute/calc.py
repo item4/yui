@@ -37,7 +37,7 @@ async def body(
     decimal_mode: bool = True,
 ):
     expr = expr.strip()
-    expr_is_multiline = '\n' in expr
+    expr_is_multiline = "\n" in expr
     ts = None if event.message is None else event.message.ts
     if not expr:
         await bot.say(event.channel, help)
@@ -53,28 +53,28 @@ async def body(
     except (SyntaxError, BadSyntax) as e:
         await bot.say(
             event.channel,
-            '입력해주신 수식에 문법 오류가 있어요! {}'.format(e),
+            "입력해주신 수식에 문법 오류가 있어요! {}".format(e),
             thread_ts=ts,
         )
         return
     except ZeroDivisionError:
         await bot.say(
             event.channel,
-            '입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!',
+            "입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!",
             thread_ts=ts,
         )
         return
     except asyncio.TimeoutError:
         await bot.say(
             event.channel,
-            '입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!',
+            "입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!",
             thread_ts=ts,
         )
         return
     except Exception as e:
         await bot.say(
             event.channel,
-            '예기치 않은 에러가 발생했어요! {}: {}'.format(e.__class__.__name__, e),
+            "예기치 않은 에러가 발생했어요! {}: {}".format(e.__class__.__name__, e),
             thread_ts=ts,
         )
         return
@@ -82,43 +82,43 @@ async def body(
     if result is not None:
         result_string = str(result)[:1500].strip()
 
-        if expr_is_multiline or '\n' in result_string:
+        if expr_is_multiline or "\n" in result_string:
             r = (
-                f'```\n{result_string}\n```'
+                f"```\n{result_string}\n```"
                 if result_string.strip()
-                else '_Empty_'
+                else "_Empty_"
             )
-            text = f'*Input*\n```\n{expr}\n```\n' f'*Output*\n{r}'
+            text = f"*Input*\n```\n{expr}\n```\n" f"*Output*\n{r}"
             if ts is None:
                 ts = event.ts
         else:
-            r = f'`{result_string}`' if result_string.strip() else '_Empty_'
-            text = f'`{expr}` == {r}'
+            r = f"`{result_string}`" if result_string.strip() else "_Empty_"
+            text = f"`{expr}` == {r}"
         await bot.say(
             event.channel,
             text,
             thread_ts=ts,
         )
     elif local:
-        r = '\n'.join(
-            '{} = {}'.format(key, repr(value)) for key, value in local.items()
+        r = "\n".join(
+            "{} = {}".format(key, repr(value)) for key, value in local.items()
         )[:1500].strip()
         if ts is None:
             ts = event.ts
         await bot.say(
             event.channel,
-            f'*Input*\n```\n{expr}\n```\n*Local State*\n```\n{r}\n```',
+            f"*Input*\n```\n{expr}\n```\n*Local State*\n```\n{r}\n```",
             thread_ts=ts,
         )
     else:
         await bot.say(
             event.channel,
-            '입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!',
+            "입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!",
             thread_ts=ts,
         )
 
 
-@box.command('=', ['calc'])
+@box.command("=", ["calc"])
 async def calc_decimal(bot, event: Message, raw: str):
     """
     정수타입 수식 계산기
@@ -133,24 +133,24 @@ async def calc_decimal(bot, event: Message, raw: str):
         bot,
         event,
         raw,
-        '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+        "사용법: `{}= <계산할 수식>`".format(bot.config.PREFIX),
         True,
     )
 
 
-@box.command('=', ['calc'], subtype='message_changed')
+@box.command("=", ["calc"], subtype="message_changed")
 async def calc_decimal_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
             event,
             raw,
-            '사용법: `{}= <계산할 수식>`'.format(bot.config.PREFIX),
+            "사용법: `{}= <계산할 수식>`".format(bot.config.PREFIX),
             True,
         )
 
 
-@box.command('==')
+@box.command("==")
 async def calc_num(bot, event: Message, raw: str):
     """
     부동소숫점타입 수식 계산기
@@ -165,19 +165,19 @@ async def calc_num(bot, event: Message, raw: str):
         bot,
         event,
         raw,
-        '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
+        "사용법: `{}== <계산할 수식>`".format(bot.config.PREFIX),
         False,
     )
 
 
-@box.command('==', subtype='message_changed')
+@box.command("==", subtype="message_changed")
 async def calc_num_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
             bot,
             event,
             raw,
-            '사용법: `{}== <계산할 수식>`'.format(bot.config.PREFIX),
+            "사용법: `{}== <계산할 수식>`".format(bot.config.PREFIX),
             False,
         )
 
@@ -331,493 +331,493 @@ class Evaluator:
     def __init__(self, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
-            datetime: {'date', 'datetime', 'time', 'timedelta', 'tzinfo'},
-            functools: {'reduce'},
-            html: {'escape', 'unescape'},
+            datetime: {"date", "datetime", "time", "timedelta", "tzinfo"},
+            functools: {"reduce"},
+            html: {"escape", "unescape"},
             itertools: {
-                'accumulate',
-                'chain',
-                'chain.from_iterable',
-                'compress',
-                'dropwhile',
-                'filterfalse',
-                'groupby',
-                'starmap',
-                'takewhile',
-                'tee',
-                'zip_longest',
-                'product',
-                'permutations',
-                'combinations',
-                'combinations_with_replacement',
+                "accumulate",
+                "chain",
+                "chain.from_iterable",
+                "compress",
+                "dropwhile",
+                "filterfalse",
+                "groupby",
+                "starmap",
+                "takewhile",
+                "tee",
+                "zip_longest",
+                "product",
+                "permutations",
+                "combinations",
+                "combinations_with_replacement",
             },
             math: {
-                'acos',
-                'acosh',
-                'asin',
-                'asinh',
-                'atan',
-                'atan2',
-                'atanh',
-                'ceil',
-                'copysign',
-                'cos',
-                'cosh',
-                'degrees',
-                'erf',
-                'erfc',
-                'exp',
-                'expm1',
-                'fabs',
-                'factorial',
-                'floor',
-                'fmod',
-                'frexp',
-                'fsum',
-                'gamma',
-                'gcd',
-                'hypot',
-                'isclose',
-                'isfinite',
-                'isinf',
-                'isnan',
-                'ldexp',
-                'lgamma',
-                'log',
-                'log1p',
-                'log10',
-                'log2',
-                'modf',
-                'pow',
-                'radians',
-                'sin',
-                'sinh',
-                'sqrt',
-                'tan',
-                'tanh',
-                'trunc',
-                'pi',
-                'e',
-                'tau',
-                'inf',
-                'nan',
+                "acos",
+                "acosh",
+                "asin",
+                "asinh",
+                "atan",
+                "atan2",
+                "atanh",
+                "ceil",
+                "copysign",
+                "cos",
+                "cosh",
+                "degrees",
+                "erf",
+                "erfc",
+                "exp",
+                "expm1",
+                "fabs",
+                "factorial",
+                "floor",
+                "fmod",
+                "frexp",
+                "fsum",
+                "gamma",
+                "gcd",
+                "hypot",
+                "isclose",
+                "isfinite",
+                "isinf",
+                "isnan",
+                "ldexp",
+                "lgamma",
+                "log",
+                "log1p",
+                "log10",
+                "log2",
+                "modf",
+                "pow",
+                "radians",
+                "sin",
+                "sinh",
+                "sqrt",
+                "tan",
+                "tanh",
+                "trunc",
+                "pi",
+                "e",
+                "tau",
+                "inf",
+                "nan",
             },
             operator: {
-                'lt',
-                'le',
-                'eq',
-                'ne',
-                'ge',
-                'gt',
-                'not_',
-                'truth',
-                'is_',
-                'is_not',
-                'add',
-                'and_',
-                'floordiv',
-                'index',
-                'inv',
-                'invert',
-                'lshift',
-                'mod',
-                'mul',
-                'matmul',
-                'neg',
-                'or_',
-                'pos',
-                'pow',
-                'rshift',
-                'sub',
-                'truediv',
-                'xor',
-                'concat',
-                'contains',
-                'countOf',
-                'delitem',
-                'getitem',
-                'indexOf',
-                'setitem',
-                'length_hint',
-                'itemgetter',
+                "lt",
+                "le",
+                "eq",
+                "ne",
+                "ge",
+                "gt",
+                "not_",
+                "truth",
+                "is_",
+                "is_not",
+                "add",
+                "and_",
+                "floordiv",
+                "index",
+                "inv",
+                "invert",
+                "lshift",
+                "mod",
+                "mul",
+                "matmul",
+                "neg",
+                "or_",
+                "pos",
+                "pow",
+                "rshift",
+                "sub",
+                "truediv",
+                "xor",
+                "concat",
+                "contains",
+                "countOf",
+                "delitem",
+                "getitem",
+                "indexOf",
+                "setitem",
+                "length_hint",
+                "itemgetter",
             },
             random: {
-                'randrange',
-                'randint',
-                'choice',
-                'choices',
-                'shuffle',
-                'sample',
-                'random',
-                'uniform',
-                'triangular',
-                'betavariate',
-                'expovariate',
-                'gammavariate',
-                'gauss',
-                'lognormvariate',
-                'normalvariate',
-                'vonmisesvariate',
-                'paretovariate',
-                'weibullvariate',
+                "randrange",
+                "randint",
+                "choice",
+                "choices",
+                "shuffle",
+                "sample",
+                "random",
+                "uniform",
+                "triangular",
+                "betavariate",
+                "expovariate",
+                "gammavariate",
+                "gauss",
+                "lognormvariate",
+                "normalvariate",
+                "vonmisesvariate",
+                "paretovariate",
+                "weibullvariate",
             },
             statistics: {
-                'mean',
-                'harmonic_mean',
-                'median',
-                'median_low',
-                'median_high',
-                'median_grouped',
-                'mode',
-                'pstdev',
-                'pvariance',
-                'stdev',
-                'variance',
+                "mean",
+                "harmonic_mean",
+                "median",
+                "median_low",
+                "median_high",
+                "median_grouped",
+                "mode",
+                "pstdev",
+                "pvariance",
+                "stdev",
+                "variance",
             },
-            json: {'dumps', 'loads'},
+            json: {"dumps", "loads"},
         }
         self.allowed_class_properties = {
-            bytes: {'fromhex', 'maketrans'},
+            bytes: {"fromhex", "maketrans"},
             datetime.date: {
-                'today',
-                'fromtimestamp',
-                'fromordinal',
-                'fromisoformat',
-                'min',
-                'max',
-                'resolution',
+                "today",
+                "fromtimestamp",
+                "fromordinal",
+                "fromisoformat",
+                "min",
+                "max",
+                "resolution",
             },
             datetime.datetime: {
-                'today',
-                'now',
-                'utcnow' 'fromtimestamp',
-                'utcfromtimestamp',
-                'fromordinal',
-                'combine',
-                'fromisoformat',
-                'strptime',
-                'min',
-                'max',
-                'resolution',
+                "today",
+                "now",
+                "utcnow" "fromtimestamp",
+                "utcfromtimestamp",
+                "fromordinal",
+                "combine",
+                "fromisoformat",
+                "strptime",
+                "min",
+                "max",
+                "resolution",
             },
-            datetime.time: {'min', 'max', 'resolution', 'fromisoformat'},
-            datetime.timedelta: {'min', 'max', 'resolution'},
-            datetime.timezone: {'utc'},
-            dict: {'fromkeys'},
-            float: {'fromhex'},
-            int: {'from_bytes'},
-            str: {'maketrans'},
+            datetime.time: {"min", "max", "resolution", "fromisoformat"},
+            datetime.timedelta: {"min", "max", "resolution"},
+            datetime.timezone: {"utc"},
+            dict: {"fromkeys"},
+            float: {"fromhex"},
+            int: {"from_bytes"},
+            str: {"maketrans"},
         }
         self.allowed_instance_properties = {
             bytes: {
-                'hex',
-                'count',
-                'decode',
-                'endswith',
-                'find',
-                'index',
-                'join',
-                'partition',
-                'replace',
-                'rfind',
-                'rindex',
-                'rpartition',
-                'startswith',
-                'translate',
-                'center',
-                'ljust',
-                'lstrip',
-                'rjust',
-                'rsplit',
-                'rstrip',
-                'split',
-                'strip',
-                'capitalize',
-                'expandtabs',
-                'isalnum',
-                'isalpha',
-                'isdigit',
-                'islower',
-                'isspace',
-                'istitle',
-                'isupper',
-                'lower',
-                'splitlines',
-                'swapcase',
-                'title',
-                'upper',
-                'zfill',
+                "hex",
+                "count",
+                "decode",
+                "endswith",
+                "find",
+                "index",
+                "join",
+                "partition",
+                "replace",
+                "rfind",
+                "rindex",
+                "rpartition",
+                "startswith",
+                "translate",
+                "center",
+                "ljust",
+                "lstrip",
+                "rjust",
+                "rsplit",
+                "rstrip",
+                "split",
+                "strip",
+                "capitalize",
+                "expandtabs",
+                "isalnum",
+                "isalpha",
+                "isdigit",
+                "islower",
+                "isspace",
+                "istitle",
+                "isupper",
+                "lower",
+                "splitlines",
+                "swapcase",
+                "title",
+                "upper",
+                "zfill",
             },
             datetime.date: {
-                'year',
-                'month',
-                'day',
-                'replace',
-                'timetuple',
-                'toordinal',
-                'weekday',
-                'isoweekday',
-                'isocalendar',
-                'isoformat',
-                'ctime',
-                'strftime',
+                "year",
+                "month",
+                "day",
+                "replace",
+                "timetuple",
+                "toordinal",
+                "weekday",
+                "isoweekday",
+                "isocalendar",
+                "isoformat",
+                "ctime",
+                "strftime",
             },
             datetime.datetime: {
-                'year',
-                'month',
-                'day' 'hour',
-                'minute',
-                'second',
-                'microsecond',
-                'tzinfo',
-                'fold',
-                'date',
-                'time',
-                'timetz',
-                'replace',
-                'astimezone',
-                'dst',
-                'tzname',
-                'timetuple',
-                'utctimetuple',
-                'toordinal',
-                'timestamp',
-                'weekday',
-                'isoweekday',
-                'isocalendar',
-                'isoformat',
-                'ctime',
-                'strftime',
+                "year",
+                "month",
+                "day" "hour",
+                "minute",
+                "second",
+                "microsecond",
+                "tzinfo",
+                "fold",
+                "date",
+                "time",
+                "timetz",
+                "replace",
+                "astimezone",
+                "dst",
+                "tzname",
+                "timetuple",
+                "utctimetuple",
+                "toordinal",
+                "timestamp",
+                "weekday",
+                "isoweekday",
+                "isocalendar",
+                "isoformat",
+                "ctime",
+                "strftime",
             },
             datetime.time: {
-                'hour',
-                'minute',
-                'second',
-                'microsecond',
-                'tzinfo',
-                'fold',
-                'replace',
-                'isoformat',
-                'strftime',
-                'utcoffset',
-                'dst',
-                'tzname',
+                "hour",
+                "minute",
+                "second",
+                "microsecond",
+                "tzinfo",
+                "fold",
+                "replace",
+                "isoformat",
+                "strftime",
+                "utcoffset",
+                "dst",
+                "tzname",
             },
-            datetime.timedelta: {'total_seconds'},
-            datetime.timezone: {'utcoffset', 'tzname', 'dst', 'fromutc'},
-            datetime.tzinfo: {'utcoffset', 'dst', 'tzname', 'fromutc'},
+            datetime.timedelta: {"total_seconds"},
+            datetime.timezone: {"utcoffset", "tzname", "dst", "fromutc"},
+            datetime.tzinfo: {"utcoffset", "dst", "tzname", "fromutc"},
             dict: {
-                'copy',
-                'get',
-                'items',
-                'keys',
-                'pop',
-                'popitem',
-                'setdefault',
-                'update',
-                'values',
+                "copy",
+                "get",
+                "items",
+                "keys",
+                "pop",
+                "popitem",
+                "setdefault",
+                "update",
+                "values",
             },
-            float: {'as_integer_ratio', 'is_integer', 'hex'},
-            int: {'bit_length', 'to_bytes'},
+            float: {"as_integer_ratio", "is_integer", "hex"},
+            int: {"bit_length", "to_bytes"},
             list: {
-                'index',
-                'count',
-                'append',
-                'clear',
-                'copy',
-                'extend',
-                'insert',
-                'pop',
-                'remove',
-                'reverse',
-                'sort',
+                "index",
+                "count",
+                "append",
+                "clear",
+                "copy",
+                "extend",
+                "insert",
+                "pop",
+                "remove",
+                "reverse",
+                "sort",
             },
-            range: {'start', 'stop', 'step'},
+            range: {"start", "stop", "step"},
             str: {
-                'capitalize',
-                'casefold',
-                'center',
-                'count',
-                'encode',
-                'endswith',
-                'expandtabs',
-                'find',
-                'format',
-                'format_map',
-                'index',
-                'isalnum',
-                'isalpha',
-                'isdecimal',
-                'isdigit',
-                'isidentifier',
-                'islower',
-                'isnumeric',
-                'isprintable',
-                'isspace',
-                'istitle',
-                'isupper',
-                'join',
-                'ljust',
-                'lower',
-                'lstrip',
-                'partition',
-                'replace',
-                'rfind',
-                'rindex',
-                'rjust',
-                'rpartition',
-                'rsplit',
-                'rstrip',
-                'split',
-                'splitlines',
-                'swapcase',
-                'startswith',
-                'strip',
-                'title',
-                'translate',
-                'upper',
-                'zfill',
+                "capitalize",
+                "casefold",
+                "center",
+                "count",
+                "encode",
+                "endswith",
+                "expandtabs",
+                "find",
+                "format",
+                "format_map",
+                "index",
+                "isalnum",
+                "isalpha",
+                "isdecimal",
+                "isdigit",
+                "isidentifier",
+                "islower",
+                "isnumeric",
+                "isprintable",
+                "isspace",
+                "istitle",
+                "isupper",
+                "join",
+                "ljust",
+                "lower",
+                "lstrip",
+                "partition",
+                "replace",
+                "rfind",
+                "rindex",
+                "rjust",
+                "rpartition",
+                "rsplit",
+                "rstrip",
+                "split",
+                "splitlines",
+                "swapcase",
+                "startswith",
+                "strip",
+                "title",
+                "translate",
+                "upper",
+                "zfill",
             },
             set: {
-                'isdisjoint',
-                'issubset',
-                'issuperset',
-                'union',
-                'intersection',
-                'difference',
-                'symmetric_difference',
-                'copy',
-                'update',
-                'intersection_update',
-                'difference_update',
-                'symmetric_difference_update',
-                'add',
-                'remove',
-                'discard',
-                'pop',
-                'clear',
+                "isdisjoint",
+                "issubset",
+                "issuperset",
+                "union",
+                "intersection",
+                "difference",
+                "symmetric_difference",
+                "copy",
+                "update",
+                "intersection_update",
+                "difference_update",
+                "symmetric_difference_update",
+                "add",
+                "remove",
+                "discard",
+                "pop",
+                "clear",
             },
             tuple: {
-                'index',
-                'count',
-                'append',
-                'clear',
-                'copy',
-                'extend',
-                'insert',
-                'pop',
-                'remove',
-                'reverse',
+                "index",
+                "count",
+                "append",
+                "clear",
+                "copy",
+                "extend",
+                "insert",
+                "pop",
+                "remove",
+                "reverse",
             },
         }
         self.global_symbol_table: dict[str, Any] = {
             # builtin func
-            'abs': abs,
-            'all': all,
-            'any': any,
-            'ascii': ascii,
-            'bin': bin,
-            'bool': bool,
-            'bytes': bytes,
-            'chr': chr,
-            'complex': complex,
-            'dict': dict,
-            'divmod': divmod,
-            'enumerate': enumerate,
-            'filter': filter,
-            'float': float,
-            'format': format,
-            'frozenset': frozenset,
-            'hex': hex,
-            'int': int,
-            'isinstance': isinstance,
-            'issubclass': issubclass,
-            'len': len,
-            'list': list,
-            'map': map,
-            'max': max,
-            'min': min,
-            'oct': oct,
-            'ord': ord,
-            'pow': pow,
-            'range': range,
-            'repr': repr,
-            'reversed': reversed,
-            'round': round,
-            'set': set,
-            'slice': slice,
-            'sorted': sorted,
-            'str': str,
-            'sum': sum,
-            'tuple': tuple,
-            'zip': zip,
+            "abs": abs,
+            "all": all,
+            "any": any,
+            "ascii": ascii,
+            "bin": bin,
+            "bool": bool,
+            "bytes": bytes,
+            "chr": chr,
+            "complex": complex,
+            "dict": dict,
+            "divmod": divmod,
+            "enumerate": enumerate,
+            "filter": filter,
+            "float": float,
+            "format": format,
+            "frozenset": frozenset,
+            "hex": hex,
+            "int": int,
+            "isinstance": isinstance,
+            "issubclass": issubclass,
+            "len": len,
+            "list": list,
+            "map": map,
+            "max": max,
+            "min": min,
+            "oct": oct,
+            "ord": ord,
+            "pow": pow,
+            "range": range,
+            "repr": repr,
+            "reversed": reversed,
+            "round": round,
+            "set": set,
+            "slice": slice,
+            "sorted": sorted,
+            "str": str,
+            "sum": sum,
+            "tuple": tuple,
+            "zip": zip,
             # additional type
-            'Decimal': Decimal,
+            "Decimal": Decimal,
             # math shortcut
-            'acos': math.acos,
-            'acosh': math.acosh,
-            'asin': math.asin,
-            'asinh': math.asinh,
-            'atan': math.atan,
-            'atan2': math.atan2,
-            'atanh': math.atanh,
-            'ceil': math.ceil,
-            'copysign': math.copysign,
-            'cos': math.cos,
-            'cosh': math.cosh,
-            'degrees': math.degrees,
-            'erf': math.erf,
-            'erfc': math.erfc,
-            'exp': math.exp,
-            'expm1': math.expm1,
-            'fabs': math.fabs,
-            'factorial': math.factorial,
-            'floor': math.floor,
-            'fmod': math.fmod,
-            'frexp': math.frexp,
-            'fsum': math.fsum,
-            'gamma': math.gamma,
-            'gcd': math.gcd,
-            'hypot': math.hypot,
-            'isclose': math.isclose,
-            'isfinite': math.isfinite,
-            'isinf': math.isinf,
-            'isnan': math.isnan,
-            'ldexp': math.ldexp,
-            'lgamma': math.lgamma,
-            'log': math.log,
-            'log1p': math.log1p,
-            'log10': math.log10,
-            'log2': math.log2,
-            'modf': math.modf,
-            'radians': math.radians,
-            'sin': math.sin,
-            'sinh': math.sinh,
-            'sqrt': math.sqrt,
-            'tan': math.tan,
-            'tanh': math.tanh,
-            'trunc': math.trunc,
-            'pi': math.pi,
-            'e': math.e,
-            'tau': math.tau,
-            'inf': math.inf,
-            'nan': math.nan,
+            "acos": math.acos,
+            "acosh": math.acosh,
+            "asin": math.asin,
+            "asinh": math.asinh,
+            "atan": math.atan,
+            "atan2": math.atan2,
+            "atanh": math.atanh,
+            "ceil": math.ceil,
+            "copysign": math.copysign,
+            "cos": math.cos,
+            "cosh": math.cosh,
+            "degrees": math.degrees,
+            "erf": math.erf,
+            "erfc": math.erfc,
+            "exp": math.exp,
+            "expm1": math.expm1,
+            "fabs": math.fabs,
+            "factorial": math.factorial,
+            "floor": math.floor,
+            "fmod": math.fmod,
+            "frexp": math.frexp,
+            "fsum": math.fsum,
+            "gamma": math.gamma,
+            "gcd": math.gcd,
+            "hypot": math.hypot,
+            "isclose": math.isclose,
+            "isfinite": math.isfinite,
+            "isinf": math.isinf,
+            "isnan": math.isnan,
+            "ldexp": math.ldexp,
+            "lgamma": math.lgamma,
+            "log": math.log,
+            "log1p": math.log1p,
+            "log10": math.log10,
+            "log2": math.log2,
+            "modf": math.modf,
+            "radians": math.radians,
+            "sin": math.sin,
+            "sinh": math.sinh,
+            "sqrt": math.sqrt,
+            "tan": math.tan,
+            "tanh": math.tanh,
+            "trunc": math.trunc,
+            "pi": math.pi,
+            "e": math.e,
+            "tau": math.tau,
+            "inf": math.inf,
+            "nan": math.nan,
             # module level injection
-            'datetime': datetime,
-            'functools': functools,
-            'html': html,
-            'itertools': itertools,
-            'json': json,
-            'math': math,
-            'operator': operator,
-            'random': random,
-            'statistics': statistics,
+            "datetime": datetime,
+            "functools": functools,
+            "html": html,
+            "itertools": itertools,
+            "json": json,
+            "math": math,
+            "operator": operator,
+            "random": random,
+            "statistics": statistics,
         }
         self.symbol_table: dict[str, Any] = {}
         self.current_interrupt: _ast.Break | _ast.Continue | None = None
 
     def run(self, expr: str):
-        h = ast.parse(expr, mode='exec')
+        h = ast.parse(expr, mode="exec")
         self.last_dump = ast.dump(h)
         return self._run(h)
 
@@ -827,7 +827,7 @@ class Evaluator:
 
         return getattr(
             self,
-            f'visit_{node.__class__.__name__.lower()}',
+            f"visit_{node.__class__.__name__.lower()}",
             self.no_impl,
         )(node)
 
@@ -839,7 +839,7 @@ class Evaluator:
         elif cls in (_ast.Tuple, _ast.List):
             if not isinstance(val, Iterable):
                 raise TypeError(
-                    'cannot unpack non-iterable {} object'.format(
+                    "cannot unpack non-iterable {} object".format(
                         type(val).__name__,
                     )
                 )
@@ -849,9 +849,9 @@ class Evaluator:
                 fillvalue=PLACEHOLDER,
             ):
                 if telem == PLACEHOLDER:
-                    raise ValueError('not enough values to unpack')
+                    raise ValueError("not enough values to unpack")
                 if tval == PLACEHOLDER:
-                    raise ValueError('too many values to unpack')
+                    raise ValueError("too many values to unpack")
                 self.assign(telem, tval)
         elif cls == _ast.Subscript:
             sym = self._run(node.value)
@@ -861,7 +861,7 @@ class Evaluator:
             else:
                 sym[xslice] = val
         else:
-            raise BadSyntax('This assign method is not allowed')
+            raise BadSyntax("This assign method is not allowed")
 
     def delete(self, node):
         cls = node.__class__
@@ -876,10 +876,10 @@ class Evaluator:
         raise NotImplementedError
 
     def visit_annassign(self, node: _ast.AnnAssign):
-        raise BadSyntax('You can not use annotation syntax')
+        raise BadSyntax("You can not use annotation syntax")
 
     def visit_assert(self, node: _ast.Assert):
-        raise BadSyntax('You can not use assertion syntax')
+        raise BadSyntax("You can not use assertion syntax")
 
     def visit_assign(self, node: _ast.Assign):  # targets, value
         value = self._run(node.value)
@@ -888,13 +888,13 @@ class Evaluator:
         return
 
     def visit_asyncfor(self, node: _ast.AsyncFor):
-        raise BadSyntax('You can not use `async for` loop syntax')
+        raise BadSyntax("You can not use `async for` loop syntax")
 
     def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
-        raise BadSyntax('Defining new coroutine via def syntax is not allowed')
+        raise BadSyntax("Defining new coroutine via def syntax is not allowed")
 
     def visit_asyncwith(self, node: _ast.AsyncWith):
-        raise BadSyntax('You can not use `async with` syntax')
+        raise BadSyntax("You can not use `async with` syntax")
 
     def visit_attribute(self, node: _ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
@@ -903,18 +903,18 @@ class Evaluator:
             if value in self.allowed_modules:
                 if node.attr in self.allowed_modules[value]:
                     return getattr(value, node.attr)
-                raise BadSyntax(f'You can not access `{node.attr}` attribute')
+                raise BadSyntax(f"You can not access `{node.attr}` attribute")
             if value in self.allowed_class_properties:
                 if node.attr in self.allowed_class_properties[value]:
                     return getattr(value, node.attr)
-                raise BadSyntax(f'You can not access `{node.attr}` attribute')
+                raise BadSyntax(f"You can not access `{node.attr}` attribute")
         except TypeError:
             pass
         if t in self.allowed_instance_properties:
             if node.attr in self.allowed_instance_properties[t]:
                 return getattr(value, node.attr)
-            raise BadSyntax(f'You can not access `{node.attr}` attribute')
-        raise BadSyntax(f'You can not access attributes of {t}')
+            raise BadSyntax(f"You can not access `{node.attr}` attribute")
+        raise BadSyntax(f"You can not access attributes of {t}")
 
     def visit_augassign(self, node: _ast.AugAssign):  # target, op, value
         value = self._run(node.value)
@@ -939,13 +939,13 @@ class Evaluator:
                     value,
                 )
             else:
-                raise BadSyntax('This assign method is not allowed')
+                raise BadSyntax("This assign method is not allowed")
         else:
-            raise BadSyntax('This assign method is not allowed')
+            raise BadSyntax("This assign method is not allowed")
         return
 
     def visit_await(self, node: _ast.Await):
-        raise BadSyntax('You can not await anything')
+        raise BadSyntax("You can not await anything")
 
     def visit_binop(self, node: _ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
@@ -992,7 +992,7 @@ class Evaluator:
         self.current_interrupt = node
 
     def visit_classdef(self, node: _ast.ClassDef):
-        raise BadSyntax('Defining new class via def syntax is not allowed')
+        raise BadSyntax("Defining new class via def syntax is not allowed")
 
     def visit_delete(self, node: _ast.Delete):  # targets
         for target in node.targets:
@@ -1008,9 +1008,9 @@ class Evaluator:
                 ):
                     del sym[xslice]
                 else:
-                    raise BadSyntax('This delete method is not allowed')
+                    raise BadSyntax("This delete method is not allowed")
             else:
-                raise BadSyntax('This delete method is not allowed')
+                raise BadSyntax("This delete method is not allowed")
         return
 
     def visit_dict(self, node: _ast.Dict):  # keys, values
@@ -1048,7 +1048,7 @@ class Evaluator:
         return self._run(node.value)
 
     def visit_functiondef(self, node: _ast.FunctionDef):
-        raise BadSyntax('Defining new function via def syntax is not allowed')
+        raise BadSyntax("Defining new function via def syntax is not allowed")
 
     def visit_for(self, node: _ast.For):  # target, iter, body, orelse
         for val in self._run(node.iter):
@@ -1071,14 +1071,14 @@ class Evaluator:
         value = self._run(node.value)
         format_spec = self._run(node.format_spec)
         if format_spec is None:
-            format_spec = ''
+            format_spec = ""
         return format(value, format_spec)
 
     def visit_generatorexp(self, node: _ast.GeneratorExp):
-        raise BadSyntax('Defining new generator expression is not allowed')
+        raise BadSyntax("Defining new generator expression is not allowed")
 
     def visit_global(self, node: _ast.Global):
-        raise BadSyntax('You can not use `global` syntax')
+        raise BadSyntax("You can not use `global` syntax")
 
     def visit_if(self, node: _ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
@@ -1090,17 +1090,17 @@ class Evaluator:
         return self._run(node.body if self._run(node.test) else node.orelse)
 
     def visit_import(self, node: _ast.Import):
-        raise BadSyntax('You can not import anything')
+        raise BadSyntax("You can not import anything")
 
     def visit_importfrom(self, node: _ast.ImportFrom):
-        raise BadSyntax('You can not import anything')
+        raise BadSyntax("You can not import anything")
 
     def visit_joinedstr(self, node: _ast.JoinedStr):  # values,
-        return ''.join(self._run(x) for x in node.values)
+        return "".join(self._run(x) for x in node.values)
 
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax(
-            'Defining new function via lambda' ' syntax is not allowed'
+            "Defining new function via lambda" " syntax is not allowed"
         )
 
     def visit_list(self, node: _ast.List):  # elts, ctx
@@ -1148,16 +1148,16 @@ class Evaluator:
             raise NameError()
 
     def visit_nonlocal(self, node: _ast.Nonlocal):
-        raise BadSyntax('You can not use `nonlocal` syntax')
+        raise BadSyntax("You can not use `nonlocal` syntax")
 
     def visit_pass(self, node: _ast.Pass):
         return
 
     def visit_raise(self, node: _ast.Raise):
-        raise BadSyntax('You can not use `raise` syntax')
+        raise BadSyntax("You can not use `raise` syntax")
 
     def visit_return(self, node: _ast.Return):
-        raise BadSyntax('You can not use `return` syntax')
+        raise BadSyntax("You can not use `return` syntax")
 
     def visit_set(self, node: _ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
@@ -1197,7 +1197,7 @@ class Evaluator:
         return self._run(node.value)[self._run(node.slice)]
 
     def visit_try(self, node: _ast.Try):
-        raise BadSyntax('You can not use `try` syntax')
+        raise BadSyntax("You can not use `try` syntax")
 
     def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
@@ -1224,13 +1224,13 @@ class Evaluator:
         self.current_interrupt = None
 
     def visit_with(self, node: _ast.With):
-        raise BadSyntax('You can not use `with` syntax')
+        raise BadSyntax("You can not use `with` syntax")
 
     def visit_yield(self, node: _ast.Yield):
-        raise BadSyntax('You can not use `yield` syntax')
+        raise BadSyntax("You can not use `yield` syntax")
 
     def visit_yieldfrom(self, node: _ast.YieldFrom):
-        raise BadSyntax('You can not use `yield from` syntax')
+        raise BadSyntax("You can not use `yield from` syntax")
 
 
 def calculate(expr: str, *, decimal_mode: bool = True):

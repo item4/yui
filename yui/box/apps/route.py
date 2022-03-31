@@ -57,9 +57,9 @@ class RouteApp(BaseApp):
         if not isinstance(event, Message):
             return True
 
-        root_args = ''
-        root_call = ''
-        args = ''
+        root_args = ""
+        root_call = ""
+        args = ""
         handler = None
         if event.text:
             try:
@@ -76,7 +76,7 @@ class RouteApp(BaseApp):
             for c in self.route_list:
                 if (
                     c.subtype
-                    and (c.subtype == event.subtype or c.subtype == '*')
+                    and (c.subtype == event.subtype or c.subtype == "*")
                 ) or not c.subtype:
                     if root_args is None:
                         if c.name is None:
@@ -101,7 +101,7 @@ class RouteApp(BaseApp):
                 chunks = split_chunks(raw, self.use_shlex)
             except ValueError:
                 await bot.say(
-                    event.channel, '*Error*: Can not parse this command'
+                    event.channel, "*Error*: Can not parse this command"
                 )
                 return False
 
@@ -111,7 +111,7 @@ class RouteApp(BaseApp):
                     chunks,
                 )
             except SyntaxError as e:
-                await bot.say(event.channel, '*Error*\n{}'.format(e))
+                await bot.say(event.channel, "*Error*\n{}".format(e))
                 return False
             async with self.prepare_kwargs(
                 bot=bot,

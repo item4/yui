@@ -68,7 +68,7 @@ class TypeVarCaster(BaseCaster):
 
 class NewTypeCaster(BaseCaster):
     def check(self, t, value):
-        return hasattr(t, '__supertype__')
+        return hasattr(t, "__supertype__")
 
     def cast(self, caster_box, t, value):
         return caster_box.cast(t.__supertype__, value)
@@ -167,7 +167,7 @@ class NoneTypeCaster(BaseCaster):
 
 class AttrCaster(BaseCaster):
     def check(self, t, value):
-        return hasattr(t, '__attrs_attrs__')
+        return hasattr(t, "__attrs_attrs__")
 
     def cast(self, caster_box, t, value):
         return make_instance(t, **value)
@@ -187,7 +187,7 @@ class CasterBox:
         for caster_box in self.caster_box:
             if caster_box.check(t, value):
                 return caster_box.cast(self, t, value)
-        raise CastError('Can not find matching caster')
+        raise CastError("Can not find matching caster")
 
 
 cast = CasterBox(

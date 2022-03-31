@@ -12,7 +12,7 @@ DATA_TYPE: TypeAlias = (
 
 
 class Cache:
-    def __init__(self, mc: Client | _Client, prefix: str = '') -> None:
+    def __init__(self, mc: Client | _Client, prefix: str = "") -> None:
         self.mc = mc
         self.prefix = prefix.encode()
 

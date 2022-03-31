@@ -43,25 +43,25 @@ class OptionFieldGroup:
 
 class ActionType(enum.Enum):
 
-    button = 'button'
-    select = 'select'
+    button = "button"
+    select = "select"
 
 
 class ActionStyle(enum.Enum):
 
-    default = 'default'
-    primary = 'primary'
-    danger = 'danger'
+    default = "default"
+    primary = "primary"
+    danger = "danger"
 
 
 class ActionDataSource(enum.Enum):
 
-    default = 'default'
-    static = 'static'
-    users = 'users'
-    channels = 'channels'
-    conversations = 'conversations'
-    external = 'external'
+    default = "default"
+    static = "static"
+    users = "users"
+    channels = "channels"
+    conversations = "conversations"
+    external = "external"
 
 
 @define

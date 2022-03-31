@@ -11,20 +11,20 @@ from ....event import Message
 from ....transform import choice
 from ....utils.datetime import now
 
-box.assert_channels_required('auto_cleanup_targets')
-box.assert_users_required('force_cleanup')
+box.assert_channels_required("auto_cleanup_targets")
+box.assert_users_required("force_cleanup")
 
 COOLTIME = datetime.timedelta(minutes=5)
 
 
-@box.command('청소')
+@box.command("청소")
 @option(
-    '--mode',
-    'm',
+    "--mode",
+    "m",
     transform_func=choice(
-        ['log', 'history'], fallback='history', case='lower'
+        ["log", "history"], fallback="history", case="lower"
     ),
-    default='log',
+    default="log",
 )
 async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
     """
@@ -37,9 +37,9 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
 
     count = 100
     now_dt = now()
-    is_dm = event.channel.startswith('D')
+    is_dm = event.channel.startswith("D")
     if is_dm:
-        mode = 'history'
+        mode = "history"
         token = None
         channels = []
         force_cleanup = []
@@ -51,17 +51,17 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
         except AttributeError:
             await bot.say(
                 event.channel,
-                '본 슬랙에서는 이 명령어를 DM 외의 용도로 사용할 수 없어요!',
+                "본 슬랙에서는 이 명령어를 DM 외의 용도로 사용할 수 없어요!",
             )
             return
 
         try:
-            channels = bot.config.CHANNELS['auto_cleanup_targets']
-            force_cleanup = bot.config.USERS['force_cleanup']
+            channels = bot.config.CHANNELS["auto_cleanup_targets"]
+            force_cleanup = bot.config.USERS["force_cleanup"]
         except KeyError:
             await bot.say(
                 event.channel,
-                '권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!',
+                "권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!",
             )
             return
 
@@ -69,7 +69,7 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
         if event.channel not in channels:
             await bot.say(
                 event.channel,
-                '본 채널에서 이 명령어를 사용할 수 있는 권한이 없어요!',
+                "본 채널에서 이 명령어를 사용할 수 있는 권한이 없어요!",
             )
             return
         count = 100
@@ -77,14 +77,14 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
         if event.channel in cleanup.last_call:
             last_call = cleanup.last_call[event.channel]
             if now_dt - last_call < COOLTIME:
-                fine = (last_call + COOLTIME).strftime('%H시 %M분')
+                fine = (last_call + COOLTIME).strftime("%H시 %M분")
                 await bot.say(
                     event.channel,
-                    f'아직 쿨타임이에요! {fine} 이후로 다시 시도해주세요!',
+                    f"아직 쿨타임이에요! {fine} 이후로 다시 시도해주세요!",
                 )
                 return
 
-    if event.channel in channels and mode == 'log':
+    if event.channel in channels and mode == "log":
         deleted = await cleanup_by_event_logs(
             bot,
             sess,
@@ -104,13 +104,13 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
 
     await bot.say(
         event.channel,
-        f'본 채널에서 최근 {deleted:,}개의 메시지를 삭제했어요!',
+        f"본 채널에서 최근 {deleted:,}개의 메시지를 삭제했어요!",
     )
 
     cleanup.last_call[event.channel] = now_dt
 
 
-@box.command('수집')
+@box.command("수집")
 async def collect(bot, sess: AsyncSession, event: Message):
     """
     채널 메시지 수집
@@ -120,26 +120,26 @@ async def collect(bot, sess: AsyncSession, event: Message):
     """
 
     try:
-        channels = bot.config.CHANNELS['auto_cleanup_targets']
-        force_cleanup = bot.config.USERS['force_cleanup']
+        channels = bot.config.CHANNELS["auto_cleanup_targets"]
+        force_cleanup = bot.config.USERS["force_cleanup"]
     except KeyError:
         await bot.say(
             event.channel,
-            '권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!',
+            "권한 검사 도중 에러가 발생했어요! 잠시 후에 다시 시도해주세요!",
         )
         return
 
     if event.user not in force_cleanup:
         await bot.say(
             event.channel,
-            '이 명령어를 사용할 수 있는 권한이 없어요!',
+            "이 명령어를 사용할 수 있는 권한이 없어요!",
         )
         return
 
     if event.channel not in channels:
         await bot.say(
             event.channel,
-            '이 명령어를 사용할 수 없는 채널이에요!',
+            "이 명령어를 사용할 수 없는 채널이에요!",
         )
         return
 
@@ -147,5 +147,5 @@ async def collect(bot, sess: AsyncSession, event: Message):
 
     await bot.say(
         event.channel,
-        f'본 채널에서 최근 {collected:,}개의 메시지를 수집했어요!',
+        f"본 채널에서 최근 {collected:,}개의 메시지를 수집했어요!",
     )

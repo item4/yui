@@ -51,9 +51,9 @@ from .utils.datetime import now
 from .utils.report import report
 
 
-P = ParamSpec('P')
-R = TypeVar('R')
-UTC9 = tzoffset('UTC9', timedelta(hours=9))
+P = ParamSpec("P")
+R = TypeVar("R")
+UTC9 = tzoffset("UTC9", timedelta(hours=9))
 
 
 class BotReconnect(Exception):
@@ -94,21 +94,21 @@ class Bot:
 
         logging.config.dictConfig(config.LOGGING)
 
-        logger = logging.getLogger(f'{__name__}.Bot.__init__')
+        logger = logging.getLogger(f"{__name__}.Bot.__init__")
 
-        logger.info('start')
+        logger.info("start")
 
         self.process_pool_executor = ProcessPoolExecutor()
         self.thread_pool_executor = ThreadPoolExecutor()
 
-        logger.info('connect to DB')
+        logger.info("connect to DB")
         config.DATABASE_ENGINE = get_database_engine(config)
 
-        logger.info('connect to memcache')
+        logger.info("connect to memcache")
 
-        logger.info('import apps')
+        logger.info("import apps")
         for app_name in config.APPS:
-            logger.debug('import apps: %s', app_name)
+            logger.debug("import apps: %s", app_name)
             importlib.import_module(app_name)
 
         self.config = config
@@ -143,36 +143,36 @@ class Bot:
     async def register_tasks(self):
         """Register cronjob to bot from box."""
 
-        logger = logging.getLogger(f'{__name__}.Bot.register_tasks')
+        logger = logging.getLogger(f"{__name__}.Bot.register_tasks")
         loop = asyncio.get_running_loop()
 
         def register(bot, c: CronTask):
-            logger.info(f'register {c}')
+            logger.info(f"register {c}")
             is_runnable = [1]
             func_params = c.handler.params
             kw: dict[str, Any] = {}
-            if 'bot' in func_params:
-                kw['bot'] = bot
+            if "bot" in func_params:
+                kw["bot"] = bot
 
             @aiocron.crontab(c.spec, tz=UTC9, loop=loop, *c.args, **c.kwargs)
             async def task():
                 if not bot.is_ready:
-                    logger.debug(f'cron condition hit but not ready {c}')
+                    logger.debug(f"cron condition hit but not ready {c}")
                     return
-                logger.debug(f'cron condition hit {c}')
+                logger.debug(f"cron condition hit {c}")
                 if not is_runnable:
-                    logger.debug(f'cron skip(lock) {c}')
+                    logger.debug(f"cron skip(lock) {c}")
                     return
 
                 is_runnable.pop()
-                if 'loop' in func_params:
-                    kw['loop'] = asyncio.get_running_loop()
+                if "loop" in func_params:
+                    kw["loop"] = asyncio.get_running_loop()
 
                 sess = make_session(bind=bot.config.DATABASE_ENGINE)
-                if 'sess' in func_params:
-                    kw['sess'] = sess
+                if "sess" in func_params:
+                    kw["sess"] = sess
 
-                logger.debug(f'cron run {c}')
+                logger.debug(f"cron run {c}")
                 try:
                     await c.handler(**kw)
                 except APICallError as e:
@@ -182,7 +182,7 @@ class Bot:
                 finally:
                     await sess.close()
                     is_runnable.append(1)
-                logger.debug(f'cron end {c}')
+                logger.debug(f"cron end {c}")
 
             c.start = task.start
             c.stop = task.stop
@@ -193,24 +193,24 @@ class Bot:
     async def run(self):
         """Run"""
 
-        logger = logging.getLogger(f'{__name__}.Bot.run')
+        logger = logging.getLogger(f"{__name__}.Bot.run")
 
         if self.config.REGISTER_CRONTAB:
-            logger.info('register crontab')
+            logger.info("register crontab")
             await self.register_tasks()
 
         while True:
             self.mc = await emcache.create_client(
                 [
                     emcache.MemcachedHostAddress(
-                        self.config.CACHE['HOST'],
-                        self.config.CACHE['PORT'],
+                        self.config.CACHE["HOST"],
+                        self.config.CACHE["PORT"],
                     )
                 ]
             )
             self.cache = Cache(
                 self.mc,
-                self.config.CACHE.get('PREFIX', 'YUI_'),
+                self.config.CACHE.get("PREFIX", "YUI_"),
             )
 
             await asyncio.wait(
@@ -254,7 +254,7 @@ class Bot:
             raise
 
     async def throttle(self, method: str):
-        name = ''.join(random.choice(string.printable) for _ in range(16))
+        name = "".join(random.choice(string.printable) for _ in range(16))
         q = self.method_queue[method]
         q.append(name)
         while q and q[0] != name:
@@ -284,22 +284,22 @@ class Bot:
             await self.throttle(method)
         async with aiohttp.ClientSession() as session:
             headers = {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
             }
             payload: str | aiohttp.FormData
             if json_mode:
                 payload = json.dumps(data)
-                headers['Content-Type'] = 'application/json'
-                headers['Authorization'] = 'Bearer {}'.format(
+                headers["Content-Type"] = "application/json"
+                headers["Authorization"] = "Bearer {}".format(
                     token or self.config.TOKEN
                 )
             else:
                 payload = aiohttp.FormData(data or {})
-                payload.add_field('token', token or self.config.TOKEN)
+                payload.add_field("token", token or self.config.TOKEN)
 
             try:
                 async with session.post(
-                    'https://slack.com/api/{}'.format(method),
+                    "https://slack.com/api/{}".format(method),
                     data=payload,
                     headers=headers,
                 ) as response:
@@ -340,16 +340,16 @@ class Bot:
     async def process(self):
         """Process messages."""
 
-        logger = logging.getLogger(f'{__name__}.Bot.process')
+        logger = logging.getLogger(f"{__name__}.Bot.process")
 
         async def handle(handler, event):
             try:
                 return await handler.run(self, event)
             except SystemExit:
-                logger.info('SystemExit')
+                logger.info("SystemExit")
                 raise
             except BotReconnect:
-                logger.info('BotReconnect raised.')
+                logger.info("BotReconnect raised.")
                 self.restart = True
                 return False
             except APICallError as e:
@@ -372,14 +372,14 @@ class Bot:
     async def ping(self, ws: ClientWebSocketResponse):
         while not ws.closed:
             await ws.send_json(
-                {'id': datetime.now().toordinal(), 'type': 'ping'},
+                {"id": datetime.now().toordinal(), "type": "ping"},
                 dumps=json.dumps,
             )
             await asyncio.sleep(60)
 
     async def receive(self, ws: ClientWebSocketResponse):
         timeout = self.config.RECEIVE_TIMEOUT
-        logger = logging.getLogger(f'{__name__}.Bot.receive')
+        logger = logging.getLogger(f"{__name__}.Bot.receive")
 
         while not ws.closed:
             if self.restart:
@@ -391,7 +391,7 @@ class Bot:
                 async with async_timeout.timeout(timeout):
                     msg: aiohttp.WSMessage = await ws.receive()
             except asyncio.TimeoutError:
-                logger.error(f'receive timeout({timeout})')
+                logger.error(f"receive timeout({timeout})")
                 await ws.close()
                 break
 
@@ -400,7 +400,7 @@ class Bot:
 
             if msg.type == aiohttp.WSMsgType.TEXT:
                 source = msg.json(loads=json.loads)
-                type_ = source.pop('type', None)
+                type_ = source.pop("type", None)
                 try:
                     event = create_event(type_, source)
                 except:  # noqa:
@@ -412,14 +412,14 @@ class Bot:
                 aiohttp.WSMsgType.CLOSED,
                 aiohttp.WSMsgType.CLOSING,
             ):
-                logger.info('websocket closed')
+                logger.info("websocket closed")
                 break
             elif msg.type == aiohttp.WSMsgType.ERROR:
                 logger.error(msg.data)
                 break
             else:
                 logger.error(
-                    'Type: %s / MSG: %s',
+                    "Type: %s / MSG: %s",
                     msg.type,
                     msg,
                 )
@@ -427,25 +427,25 @@ class Bot:
 
     async def connect(self):
         """Connect Slack RTM."""
-        logger = logging.getLogger(f'{__name__}.Bot.connect')
+        logger = logging.getLogger(f"{__name__}.Bot.connect")
 
         while True:
-            await self.queue.put(create_event('yui_system_start', {}))
+            await self.queue.put(create_event("yui_system_start", {}))
             while not self.is_ready:
                 await asyncio.sleep(0.1)
 
             try:
-                rtm = await self.call('rtm.start')
+                rtm = await self.call("rtm.start")
             except Exception as e:
                 logger.exception(e)
                 continue
-            if not rtm.body['ok']:
+            if not rtm.body["ok"]:
                 continue
 
             try:
-                logger.info('Connected to Slack RTM.')
+                logger.info("Connected to Slack RTM.")
                 async with aiohttp.ClientSession() as session:
-                    async with session.ws_connect(rtm.body['url']) as ws:
+                    async with session.ws_connect(rtm.body["url"]) as ws:
                         await asyncio.wait(
                             (
                                 self.ping(ws),
@@ -456,14 +456,14 @@ class Bot:
 
                 raise BotReconnect()
             except BotReconnect:
-                logger.info('BotReconnect raised. I will reconnect to rtm.')
+                logger.info("BotReconnect raised. I will reconnect to rtm.")
                 continue
             except:  # noqa
-                logger.exception('Unexpected Exception raised')
+                logger.exception("Unexpected Exception raised")
                 continue
 
     async def get_user(self, user_id: UserID) -> User:
         resp = await self.api.users.info(user=user_id)
         if isinstance(resp.body, dict):
-            return User(**resp.body['user'])
-        raise ValueError('Unexpected response')
+            return User(**resp.body["user"])
+        raise ValueError("Unexpected response")

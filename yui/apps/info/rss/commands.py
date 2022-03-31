@@ -20,25 +20,25 @@ from ....event import Message
 from ....transform import extract_url
 from ....types.slack.attachment import Attachment
 
-SPACE_RE = re.compile(r'\s{2,}')
+SPACE_RE = re.compile(r"\s{2,}")
 
 
 class RSS(route.RouteApp):
     def __init__(self) -> None:
-        self.name = 'rss'
+        self.name = "rss"
         self.route_list = [
-            route.Route(name='add', callback=self.add),
-            route.Route(name='추가', callback=self.add),
-            route.Route(name='list', callback=self.list),
-            route.Route(name='목록', callback=self.list),
-            route.Route(name='del', callback=self.delete),
-            route.Route(name='delete', callback=self.delete),
-            route.Route(name='삭제', callback=self.delete),
-            route.Route(name='제거', callback=self.delete),
+            route.Route(name="add", callback=self.add),
+            route.Route(name="추가", callback=self.add),
+            route.Route(name="list", callback=self.list),
+            route.Route(name="목록", callback=self.list),
+            route.Route(name="del", callback=self.delete),
+            route.Route(name="delete", callback=self.delete),
+            route.Route(name="삭제", callback=self.delete),
+            route.Route(name="제거", callback=self.delete),
         ]
 
     def get_short_help(self, prefix: str):
-        return f'`{prefix}rss`: RSS Feed 구독'
+        return f"`{prefix}rss`: RSS Feed 구독"
 
     def get_full_help(self, prefix: str):
         return inspect.cleandoc(
@@ -58,29 +58,29 @@ class RSS(route.RouteApp):
         )
 
     async def fallback(self, bot, event: Message):
-        await bot.say(event.channel, f'Usage: `{bot.config.PREFIX}help rss`')
+        await bot.say(event.channel, f"Usage: `{bot.config.PREFIX}help rss`")
 
-    @argument('url', nargs=-1, concat=True, transform_func=extract_url)
+    @argument("url", nargs=-1, concat=True, transform_func=extract_url)
     async def add(self, bot, event: Message, sess: AsyncSession, url: str):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(url) as res:
                     data: bytes = await res.read()
             except aiohttp.client_exceptions.InvalidURL:
-                await bot.say(event.channel, f'`{url}`은 올바른 URL이 아니에요!')
+                await bot.say(event.channel, f"`{url}`은 올바른 URL이 아니에요!")
                 return
             except aiohttp.client_exceptions.ClientConnectorError:
-                await bot.say(event.channel, f'`{url}`에 접속할 수 없어요!')
+                await bot.say(event.channel, f"`{url}`에 접속할 수 없어요!")
                 return
 
         if not data:
-            await bot.say(event.channel, f'`{url}`은 빈 웹페이지에요!')
+            await bot.say(event.channel, f"`{url}`은 빈 웹페이지에요!")
             return
 
         f = feedparser.parse(data)
 
         if f.bozo != 0:
-            await bot.say(event.channel, f'`{url}`은 올바른 RSS 문서가 아니에요!')
+            await bot.say(event.channel, f"`{url}`은 올바른 RSS 문서가 아니에요!")
             return
 
         feed = RSSFeedURL()
@@ -97,7 +97,7 @@ class RSS(route.RouteApp):
         await sess.commit()
 
         await bot.say(
-            event.channel, f'<#{event.channel}> 채널에서 `{url}`을 구독하기 시작했어요!'
+            event.channel, f"<#{event.channel}> 채널에서 `{url}`을 구독하기 시작했어요!"
         )
 
     async def list(self, bot, event: Message, sess: AsyncSession):
@@ -108,54 +108,54 @@ class RSS(route.RouteApp):
         ).all()
 
         if feeds:
-            feed_list = '\n'.join(f'{feed.id} - {feed.url}' for feed in feeds)
+            feed_list = "\n".join(f"{feed.id} - {feed.url}" for feed in feeds)
 
             await bot.say(
                 event.channel,
-                f'<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!'
-                f'\n```\n{feed_list}\n```',
+                f"<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!"
+                f"\n```\n{feed_list}\n```",
             )
         else:
             await bot.say(
-                event.channel, f'<#{event.channel}> 채널에서 구독중인 RSS가 없어요!'
+                event.channel, f"<#{event.channel}> 채널에서 구독중인 RSS가 없어요!"
             )
 
-    @argument('id')
+    @argument("id")
     async def delete(self, bot, event: Message, sess: AsyncSession, id: int):
         feed = await sess.get(RSSFeedURL, id)
 
         if feed is None:
-            await bot.say(event.channel, f'{id}번 RSS 구독 레코드는 존재하지 않아요!')
+            await bot.say(event.channel, f"{id}번 RSS 구독 레코드는 존재하지 않아요!")
             return
 
         await bot.say(
             event.channel,
-            f'<#{feed.channel}>에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!',
+            f"<#{feed.channel}>에서 구독하는 `{feed.url}` RSS 구독을 취소했어요!",
         )
 
         await sess.delete(feed)
         await sess.commit()
 
 
-@box.cron('*/1 * * * *')
+@box.cron("*/1 * * * *")
 async def crawl(bot, sess: AsyncSession):
     feeds = (await sess.scalars(select(RSSFeedURL))).all()
 
     for feed in feeds:  # type: RSSFeedURL
-        data = b''
+        data = b""
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(feed.url) as res:
                     data = await res.read()
             except aiohttp.client_exceptions.ClientConnectorError:
                 await bot.say(
-                    feed.channel, f'*Error*: `{feed.url}`에 접속할 수 없어요!'
+                    feed.channel, f"*Error*: `{feed.url}`에 접속할 수 없어요!"
                 )
                 continue
 
         if not data:
             await bot.say(
-                feed.channel, f'*Error*: `{feed.url}`에 접속해도 자료를 가져올 수 없어요!'
+                feed.channel, f"*Error*: `{feed.url}`에 접속해도 자료를 가져올 수 없어요!"
             )
             continue
 
@@ -163,7 +163,7 @@ async def crawl(bot, sess: AsyncSession):
 
         if f.bozo != 0:
             await bot.say(
-                feed.channel, f'*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!'
+                feed.channel, f"*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!"
             )
             continue
 
@@ -176,14 +176,14 @@ async def crawl(bot, sess: AsyncSession):
                 attachments.append(
                     Attachment(
                         fallback=(
-                            'RSS Feed: '
-                            f'{str(f.feed.title)} - '
-                            f'{str(entry.title)} - '
-                            f'{entry.links[0].href}'
+                            "RSS Feed: "
+                            f"{str(f.feed.title)} - "
+                            f"{str(entry.title)} - "
+                            f"{entry.links[0].href}"
                         ),
                         title=str(entry.title),
                         title_link=entry.links[0].href,
-                        text=('\n'.join(str(entry.summary).split('\n')[:3]))[
+                        text=("\n".join(str(entry.summary).split("\n")[:3]))[
                             :100
                         ],
                         author_name=str(f.feed.title),

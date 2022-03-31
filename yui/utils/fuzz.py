@@ -2,28 +2,28 @@ import unicodedata
 
 from fuzzywuzzy import fuzz
 
-KOREAN_START = ord('가')
-KOREAN_END = ord('힣')
+KOREAN_START = ord("가")
+KOREAN_END = ord("힣")
 KOREAN_ALPHABETS_FIRST_MAP: dict[str, str] = {
-    'ㄱ': chr(4352 + 0),
-    'ㄲ': chr(4352 + 1),
-    'ㄴ': chr(4352 + 2),
-    'ㄷ': chr(4352 + 3),
-    'ㄸ': chr(4352 + 4),
-    'ㄹ': chr(4352 + 5),
-    'ㅁ': chr(4352 + 6),
-    'ㅂ': chr(4352 + 7),
-    'ㅃ': chr(4352 + 8),
-    'ㅅ': chr(4352 + 9),
-    'ㅆ': chr(4352 + 10),
-    'ㅇ': chr(4352 + 11),
-    'ㅈ': chr(4352 + 12),
-    'ㅉ': chr(4352 + 13),
-    'ㅊ': chr(4352 + 14),
-    'ㅋ': chr(4352 + 15),
-    'ㅌ': chr(4352 + 16),
-    'ㅍ': chr(4352 + 17),
-    'ㅎ': chr(4352 + 18),
+    "ㄱ": chr(4352 + 0),
+    "ㄲ": chr(4352 + 1),
+    "ㄴ": chr(4352 + 2),
+    "ㄷ": chr(4352 + 3),
+    "ㄸ": chr(4352 + 4),
+    "ㄹ": chr(4352 + 5),
+    "ㅁ": chr(4352 + 6),
+    "ㅂ": chr(4352 + 7),
+    "ㅃ": chr(4352 + 8),
+    "ㅅ": chr(4352 + 9),
+    "ㅆ": chr(4352 + 10),
+    "ㅇ": chr(4352 + 11),
+    "ㅈ": chr(4352 + 12),
+    "ㅉ": chr(4352 + 13),
+    "ㅊ": chr(4352 + 14),
+    "ㅋ": chr(4352 + 15),
+    "ㅌ": chr(4352 + 16),
+    "ㅍ": chr(4352 + 17),
+    "ㅎ": chr(4352 + 18),
 }
 
 KOREAN_ALPHABETS_MIDDLE_MAP: dict[str, str] = {
@@ -40,8 +40,8 @@ def normalize_korean_nfc_to_nfd(value: str) -> str:
     for from_, to_ in KOREAN_ALPHABETS_MIDDLE_MAP.items():
         value = value.replace(from_, to_)
 
-    return ''.join(
-        unicodedata.normalize('NFD', x)
+    return "".join(
+        unicodedata.normalize("NFD", x)
         if KOREAN_START <= ord(x) <= KOREAN_END
         else x
         for x in list(value)
@@ -81,7 +81,7 @@ def match(s1: str, s2: str) -> int:
     pr = partial_ratio(s1, s2) // 2
     r = ratio(s1, s2)
 
-    if ' ' in s1 or ' ' in s2:
+    if " " in s1 or " " in s2:
         tsr = token_sort_ratio(s1, s2)
         return min(100, int((r + pr + tsr) / 2))
     return min(100, r + pr)

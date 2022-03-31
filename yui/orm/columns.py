@@ -13,8 +13,8 @@ from .types import TimezoneType
 
 
 def extract_timezone_name(tz) -> str:
-    if isinstance(tz, str) and '/' in tz:
-        return '/'.join(tz.split('/')[-2:])
+    if isinstance(tz, str) and "/" in tz:
+        return "/".join(tz.split("/")[-2:])
     return tz
 
 
@@ -41,7 +41,7 @@ class DateTimeAtComparator(Comparator):
             self.dt = maybe_dt.isoformat()
 
             if maybe_tz == UTC:
-                self.tz = 'UTC'
+                self.tz = "UTC"
             elif isinstance(maybe_tz, tzfile):
                 self.tz = maybe_tz._filename
             elif isinstance(maybe_tz, datetime.tzinfo):
@@ -54,7 +54,7 @@ class DateTimeAtComparator(Comparator):
             self.dt = maybe_dt
 
             if maybe_tz == UTC:
-                self.tz = 'UTC'
+                self.tz = "UTC"
             elif isinstance(maybe_tz, tzfile):
                 self.tz = maybe_tz._filename
             elif isinstance(maybe_tz, str):
@@ -85,8 +85,8 @@ class DateTimeAtComparator(Comparator):
 
 
 def DateTimeAtColumn(prefix: str) -> hybrid_property:
-    datetime_key = f'{prefix}_datetime'
-    timezone_key = f'{prefix}_timezone'
+    datetime_key = f"{prefix}_datetime"
+    timezone_key = f"{prefix}_timezone"
 
     def getter(self) -> datetime.datetime | None:
         dt: datetime.datetime | None = getattr(self, datetime_key)

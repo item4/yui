@@ -47,8 +47,8 @@ class App(BaseApp):
         if short_help is None or help is None:
             doc = handler.doc
             if doc:
-                if '\n\n' in doc:
-                    short_help, help = doc.split('\n\n', 1)
+                if "\n\n" in doc:
+                    short_help, help = doc.split("\n\n", 1)
                 else:
                     if short_help is None:
                         short_help = doc
@@ -67,27 +67,27 @@ class App(BaseApp):
         return bool(self.short_help)
 
     def get_short_help(self, prefix: str) -> str:
-        return f'`{prefix}{self.name}`: {self.short_help}'
+        return f"`{prefix}{self.name}`: {self.short_help}"
 
     def get_full_help(self, prefix: str) -> str:
-        aliases = '/'.join(
-            f'`{prefix}{n}`' for n in self.names if self.name != n
+        aliases = "/".join(
+            f"`{prefix}{n}`" for n in self.names if self.name != n
         )
 
-        help = bold(f'{prefix}{self.name}') + '\n'
+        help = bold(f"{prefix}{self.name}") + "\n"
         if aliases:
-            help += f'(Aliases: {aliases})\n'
+            help += f"(Aliases: {aliases})\n"
 
         help += str(self.short_help)
 
         if self.help:
-            help += '\n\n' + self.help.format(PREFIX=prefix)
+            help += "\n\n" + self.help.format(PREFIX=prefix)
         return help
 
     async def run(self, bot: Bot, event: Event):
         subtype = (
             self.subtype
-            and (event.subtype == self.subtype or self.subtype == '*')
+            and (event.subtype == self.subtype or self.subtype == "*")
         ) or not self.subtype
         if event.type == self.type and subtype:
             if isinstance(event, Message):
@@ -109,8 +109,8 @@ class App(BaseApp):
 
     async def _run_message_event(self, bot: Bot, event: Message):
         res: bool | None = True
-        call = ''
-        args = ''
+        call = ""
+        args = ""
         if event.text:
             try:
                 call, args = SPACE_RE.split(event.text, 1)
@@ -136,7 +136,7 @@ class App(BaseApp):
                 chunks = split_chunks(raw, self.use_shlex)
             except ValueError:
                 await bot.say(
-                    event.channel, '*Error*: Can not parse this command'
+                    event.channel, "*Error*: Can not parse this command"
                 )
                 return False
 
@@ -146,17 +146,17 @@ class App(BaseApp):
                     chunks,
                 )
             except SyntaxError as e:
-                await bot.say(event.channel, '*Error*\n{}'.format(e))
+                await bot.say(event.channel, "*Error*\n{}".format(e))
                 return False
 
-            if 'raw' in func_params:
-                kw['raw'] = raw
-            if 'remain_chunks' in func_params:
-                annotation = func_params['remain_chunks'].annotation
+            if "raw" in func_params:
+                kw["raw"] = raw
+            if "remain_chunks" in func_params:
+                annotation = func_params["remain_chunks"].annotation
                 if annotation in [str, inspect._empty]:
-                    kw['remain_chunks'] = ' '.join(remain_chunks)
+                    kw["remain_chunks"] = " ".join(remain_chunks)
                 else:
-                    kw['remain_chunks'] = remain_chunks
+                    kw["remain_chunks"] = remain_chunks
             async with self.prepare_kwargs(
                 bot=bot,
                 event=event,

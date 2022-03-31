@@ -12,7 +12,7 @@ from ....orm.columns import TimezoneColumn
 class Memo(Base):
     """Memo"""
 
-    __tablename__ = 'memo'
+    __tablename__ = "memo"
 
     id = Column(Integer, primary_key=True)
 
@@ -26,4 +26,4 @@ class Memo(Base):
 
     created_timezone = TimezoneColumn()
 
-    created_at = DateTimeAtColumn('created')
+    created_at = DateTimeAtColumn("created")

@@ -5,96 +5,96 @@ from yui.api.encoder import bool2str
 
 @pytest.mark.asyncio
 async def test_slack_api_conversations_history(bot):
-    channel_id = 'C1234'
+    channel_id = "C1234"
 
     await bot.api.conversations.history(
         channel_id,
-        cursor='asdf',
+        cursor="asdf",
         inclusive=True,
-        latest='123',
+        latest="123",
         limit=42,
-        oldest='456',
+        oldest="456",
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.history'
+    assert call.method == "conversations.history"
     assert call.data == {
-        'channel': channel_id,
-        'cursor': 'asdf',
-        'inclusive': bool2str(True),
-        'latest': '123',
-        'limit': '42',
-        'oldest': '456',
+        "channel": channel_id,
+        "cursor": "asdf",
+        "inclusive": bool2str(True),
+        "latest": "123",
+        "limit": "42",
+        "oldest": "456",
     }
     await bot.api.conversations.history(
         channel_id,
-        cursor='asdf',
+        cursor="asdf",
         inclusive=True,
-        latest='123',
+        latest="123",
         limit=42,
-        oldest='456',
+        oldest="456",
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.history'
+    assert call.method == "conversations.history"
     assert call.data == {
-        'channel': channel_id,
-        'cursor': 'asdf',
-        'inclusive': bool2str(True),
-        'latest': '123',
-        'limit': '42',
-        'oldest': '456',
+        "channel": channel_id,
+        "cursor": "asdf",
+        "inclusive": bool2str(True),
+        "latest": "123",
+        "limit": "42",
+        "oldest": "456",
     }
 
 
 @pytest.mark.asyncio
 async def test_slack_api_conversations_replies(bot):
-    channel_id = 'C1234'
-    ts = '123456.7'
+    channel_id = "C1234"
+    ts = "123456.7"
 
     await bot.api.conversations.replies(
         channel_id,
         ts,
-        cursor='asdf',
+        cursor="asdf",
         inclusive=True,
-        latest='123',
+        latest="123",
         limit=42,
-        oldest='456',
+        oldest="456",
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.replies'
+    assert call.method == "conversations.replies"
     assert call.data == {
-        'channel': channel_id,
-        'ts': ts,
-        'cursor': 'asdf',
-        'inclusive': bool2str(True),
-        'latest': '123',
-        'limit': '42',
-        'oldest': '456',
+        "channel": channel_id,
+        "ts": ts,
+        "cursor": "asdf",
+        "inclusive": bool2str(True),
+        "latest": "123",
+        "limit": "42",
+        "oldest": "456",
     }
     await bot.api.conversations.replies(
         channel_id,
         ts,
-        cursor='asdf',
+        cursor="asdf",
         inclusive=True,
-        latest='123',
+        latest="123",
         limit=42,
-        oldest='456',
+        oldest="456",
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.replies'
+    assert call.method == "conversations.replies"
     assert call.data == {
-        'channel': channel_id,
-        'ts': ts,
-        'cursor': 'asdf',
-        'inclusive': bool2str(True),
-        'latest': '123',
-        'limit': '42',
-        'oldest': '456',
+        "channel": channel_id,
+        "ts": ts,
+        "cursor": "asdf",
+        "inclusive": bool2str(True),
+        "latest": "123",
+        "limit": "42",
+        "oldest": "456",
     }
 
 
 @pytest.mark.asyncio
 async def test_slack_api_conversations_info(bot):
-    channel_id = 'C1234'
+    channel_id = "C1234"
 
     await bot.api.conversations.info(
         channel_id,
@@ -102,11 +102,11 @@ async def test_slack_api_conversations_info(bot):
         include_num_members=True,
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.info'
+    assert call.method == "conversations.info"
     assert call.data == {
-        'channel': channel_id,
-        'include_locale': bool2str(False),
-        'include_num_members': bool2str(True),
+        "channel": channel_id,
+        "include_locale": bool2str(False),
+        "include_num_members": bool2str(True),
     }
 
     await bot.api.conversations.info(
@@ -115,21 +115,21 @@ async def test_slack_api_conversations_info(bot):
         include_num_members=True,
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.info'
+    assert call.method == "conversations.info"
     assert call.data == {
-        'channel': channel_id,
-        'include_locale': bool2str(False),
-        'include_num_members': bool2str(True),
+        "channel": channel_id,
+        "include_locale": bool2str(False),
+        "include_num_members": bool2str(True),
     }
 
 
 @pytest.mark.asyncio
 async def test_slack_api_conversations_list(bot):
-    cursor = '1234asdf'
+    cursor = "1234asdf"
     exclude_archived = False
     limit = 12
-    types = 'private_channel'
-    team_id = 'T1'
+    types = "private_channel"
+    team_id = "T1"
 
     await bot.api.conversations.list(
         cursor=cursor,
@@ -139,21 +139,21 @@ async def test_slack_api_conversations_list(bot):
         types=types,
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.list'
+    assert call.method == "conversations.list"
     assert call.data == {
-        'cursor': cursor,
-        'exclude_archived': bool2str(exclude_archived),
-        'limit': str(limit),
-        'team_id': team_id,
-        'types': types,
+        "cursor": cursor,
+        "exclude_archived": bool2str(exclude_archived),
+        "limit": str(limit),
+        "team_id": team_id,
+        "types": types,
     }
 
 
 @pytest.mark.asyncio
 async def test_slack_api_conversations_open(bot):
-    channel_id = 'C1234'
-    user_id = 'U1234'
-    user2_id = 'U5678'
+    channel_id = "C1234"
+    user_id = "U1234"
+    user2_id = "U5678"
     return_im = True
 
     with pytest.raises(ValueError):
@@ -169,25 +169,25 @@ async def test_slack_api_conversations_open(bot):
         return_im=return_im,
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.open'
+    assert call.method == "conversations.open"
     assert call.data == {
-        'channel': channel_id,
-        'return_im': bool2str(return_im),
+        "channel": channel_id,
+        "return_im": bool2str(return_im),
     }
 
     await bot.api.conversations.open(
         channel=channel_id,
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.open'
+    assert call.method == "conversations.open"
     assert call.data == {
-        'channel': channel_id,
+        "channel": channel_id,
     }
 
     await bot.api.conversations.open(
         users=[user_id, user2_id],
     )
     call = bot.call_queue.pop()
-    assert call.method == 'conversations.open'
-    assert 'users' in call.data
-    assert set(call.data['users'].split(',')) == {user_id, user2_id}
+    assert call.method == "conversations.open"
+    assert "users" in call.data
+    assert set(call.data["users"].split(",")) == {user_id, user2_id}

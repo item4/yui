@@ -34,8 +34,8 @@ def parse_option_and_arguments(
     while not end and chunks:
         for option in options:
             name = chunks.pop(0)
-            if name.startswith(option.name + '='):
-                name, new_chunk = name.split('=', 1)
+            if name.startswith(option.name + "="):
+                name, new_chunk = name.split("=", 1)
                 chunks.insert(0, new_chunk)
 
             if name == option.name:
@@ -108,7 +108,7 @@ def parse_option_and_arguments(
 
     if required:
         raise SyntaxError(
-            '\n'.join(
+            "\n".join(
                 o.count_error.format(
                     name=o.name,
                     expected=o.nargs,
@@ -130,7 +130,7 @@ def parse_option_and_arguments(
             raise SyntaxError(
                 argument.count_error.format(
                     name=argument.name,
-                    expected='>0',
+                    expected=">0",
                     given=0,
                 )
             )
@@ -146,7 +146,7 @@ def parse_option_and_arguments(
             )
         try:
             if argument.concat:
-                r = ' '.join(args)
+                r = " ".join(args)
             elif argument.container_cls:
                 r = argument.container_cls(
                     cast(argument.type_, x) for x in args

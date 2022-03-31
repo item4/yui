@@ -11,12 +11,12 @@ from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.html import strip_tags
 
-box.assert_config_required('NAVER_CLIENT_ID', str)
-box.assert_config_required('NAVER_CLIENT_SECRET', str)
+box.assert_config_required("NAVER_CLIENT_ID", str)
+box.assert_config_required("NAVER_CLIENT_SECRET", str)
 
 
-@box.command('책', ['book'])
-@argument('keyword', nargs=-1, concat=True)
+@box.command("책", ["book"])
+@argument("keyword", nargs=-1, concat=True)
 async def book(bot, event: Message, keyword: str):
     """
     책 검색
@@ -27,13 +27,13 @@ async def book(bot, event: Message, keyword: str):
 
     """
 
-    url = 'https://openapi.naver.com/v1/search/book.json'
+    url = "https://openapi.naver.com/v1/search/book.json"
     params = {
-        'query': keyword,
+        "query": keyword,
     }
     headers = {
-        'X-Naver-Client-Id': bot.config.NAVER_CLIENT_ID,
-        'X-Naver-Client-Secret': bot.config.NAVER_CLIENT_SECRET,
+        "X-Naver-Client-Id": bot.config.NAVER_CLIENT_ID,
+        "X-Naver-Client-Secret": bot.config.NAVER_CLIENT_SECRET,
     }
 
     async with aiohttp.ClientSession() as session:
@@ -42,23 +42,23 @@ async def book(bot, event: Message, keyword: str):
 
     attachments: list[Attachment] = []
 
-    count = min(5, len(data['items']))
+    count = min(5, len(data["items"]))
 
     for i in range(count):
-        book = data['items'][i]
-        title = strip_tags(book['title'])
+        book = data["items"][i]
+        title = strip_tags(book["title"])
         attachments.append(
             Attachment(
-                fallback='{} - {}'.format(title, book['link']),
+                fallback="{} - {}".format(title, book["link"]),
                 title=title,
-                title_link=book['link'],
-                thumb_url=book['image'],
-                text='저자: {} / 출판사: {}{}'.format(
-                    strip_tags(book['author']),
-                    strip_tags(book['publisher']),
-                    ' / 정가: ￦{:,}'.format(Decimal(book['price']))
-                    if book['price']
-                    else '',
+                title_link=book["link"],
+                thumb_url=book["image"],
+                text="저자: {} / 출판사: {}{}".format(
+                    strip_tags(book["author"]),
+                    strip_tags(book["publisher"]),
+                    " / 정가: ￦{:,}".format(Decimal(book["price"]))
+                    if book["price"]
+                    else "",
                 ),
             )
         )
@@ -67,12 +67,12 @@ async def book(bot, event: Message, keyword: str):
         await bot.api.chat.postMessage(
             channel=event.channel,
             text=(
-                '키워드 *{}* {} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요.'
-                ' 그 중 상위 {}개를 보여드릴게요!'
+                "키워드 *{}* {} 네이버 책 DB 검색 결과, 총 {:,}개의 결과가 나왔어요."
+                " 그 중 상위 {}개를 보여드릴게요!"
             ).format(
                 keyword,
-                tossi.pick(keyword, '(으)로'),
-                data['total'],
+                tossi.pick(keyword, "(으)로"),
+                data["total"],
                 count,
             ),
             attachments=attachments,
@@ -80,4 +80,4 @@ async def book(bot, event: Message, keyword: str):
             thread_ts=event.ts,
         )
     else:
-        await bot.say(event.channel, '검색 결과가 없어요!')
+        await bot.say(event.channel, "검색 결과가 없어요!")

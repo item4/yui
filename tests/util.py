@@ -47,7 +47,7 @@ class FakeBot(Bot):
         if config is None:
             config = Config(
                 **DEFAULT,
-                TOKEN='asdf',
+                TOKEN="asdf",
                 CHANNELS={},
                 USERS={},
             )
@@ -64,7 +64,7 @@ class FakeBot(Bot):
         self.groups: list[PrivateChannel] = []
         self.cache: Cache = cache
         self.users: list[User] = [
-            User(id=UserID('U0'), name='system'),
+            User(id=UserID("U0"), name="system"),
         ]
         self.responses: dict[str, Callable] = {}
         self.config = config
@@ -103,8 +103,8 @@ class FakeBot(Bot):
         self,
         id: str,
         name: str,
-        creator: str = 'U0',
-        last_read: str = '0',
+        creator: str = "U0",
+        last_read: str = "0",
     ):
         channel = PublicChannel(
             id=PublicChannelID(id),
@@ -119,8 +119,8 @@ class FakeBot(Bot):
         self,
         id: str,
         name: str,
-        creator: str = 'U0',
-        last_read: str = '0',
+        creator: str = "U0",
+        last_read: str = "0",
     ):
         channel = PrivateChannel(
             id=PrivateChannelID(id),
@@ -131,7 +131,7 @@ class FakeBot(Bot):
         self.groups.append(channel)
         return channel
 
-    def add_dm(self, id: str, user: str, last_read: str = '0'):
+    def add_dm(self, id: str, user: str, last_read: str = "0"):
         dm = DirectMessageChannel(
             id=DirectMessageChannelID(id),
             user=UserID(user),
@@ -149,8 +149,8 @@ class FakeBot(Bot):
         self,
         channel: str,
         user: str,
-        ts: str = '',
-        event_ts: str = '',
+        ts: str = "",
+        event_ts: str = "",
         **kwargs,
     ) -> Message:
         return Message(

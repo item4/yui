@@ -2,7 +2,7 @@ from ...box import box
 from ...event import Message
 
 
-@box.command('help', ['도움', '도움말'])
+@box.command("help", ["도움", "도움말"])
 async def help(bot, event: Message, raw: str):
     """
     봇 명령어들의 도움말 모음
@@ -12,10 +12,10 @@ async def help(bot, event: Message, raw: str):
 
     """
     p = bot.config.PREFIX
-    if raw == '':
+    if raw == "":
         await bot.say(
             event.channel,
-            '\n'.join(
+            "\n".join(
                 a.get_short_help(p) for a in bot.box.apps if a.has_short_help
             ),
             thread_ts=event.ts,
@@ -39,12 +39,12 @@ async def help(bot, event: Message, raw: str):
             else:
                 await bot.say(
                     event.channel,
-                    '\n'.join(a.get_short_help(p) for a in apps),
+                    "\n".join(a.get_short_help(p) for a in apps),
                     thread_ts=event.ts,
                 )
         else:
             await bot.say(
                 event.channel,
-                '그런 명령어는 없어요!',
+                "그런 명령어는 없어요!",
                 thread_ts=event.ts,
             )
