@@ -440,6 +440,15 @@ class Bot:
                 logger.exception(e)
                 continue
             if not rtm.body["ok"]:
+                if rtm.body["error"] in {
+                    "migration_in_progress",
+                    "ratelimited",
+                    "accesslimited",
+                    "service_unavailable",
+                    "fatal_error",
+                    "internal_error",
+                }:
+                    await asyncio.sleep(60)
                 continue
 
             try:
