@@ -435,7 +435,7 @@ class Bot:
                 await asyncio.sleep(0.1)
 
             try:
-                rtm = await self.call("rtm.start")
+                rtm = await self.call("rtm.connect")
             except Exception as e:
                 logger.exception(e)
                 continue
