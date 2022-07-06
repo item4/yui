@@ -29,7 +29,7 @@ cssselect = "^1.1.0"
 emcache = "^0.6.1"
 feedparser = "^6.0.10"
 fuzzywuzzy = {version = "^0.18.0",extras = ["speedup"]}
-lxml = "^4.9.0"
+lxml = "^4.9.1"
 more-itertools = "^8.13.0"
 orjson = "^3.7.1"
 pyppeteer = "^1.0.2"
