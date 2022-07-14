@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.postgresql import Insert
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import EventLog
@@ -17,10 +17,8 @@ async def make_log(bot, event: Message, sess: AsyncSession):
         return True
 
     if event.channel in channels:
-        await sess.execute(
-            Insert(EventLog)
-            .values(channel=event.channel, ts=event.ts)
-            .on_conflict_do_nothing()
-        )
+        stmt = insert(EventLog).values(channel=event.channel, ts=event.ts)
+        stmt.on_conflict_do_nothing()
+        await sess.execute(stmt)
         await sess.commit()
     return True

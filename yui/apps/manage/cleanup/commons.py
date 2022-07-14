@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.postgresql import Insert
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 
@@ -142,11 +142,11 @@ async def collect_history_from_channel(
                     await report(bot, exception=e)
                 else:
                     messages += r.body.get("messages", [])
-            await sess.execute(
-                Insert(EventLog)
-                .values(channel=channel_id, ts=message["ts"])
-                .on_conflict_do_nothing()
+            stmt = insert(EventLog).values(
+                channel=channel_id, ts=message["ts"]
             )
+            stmt.on_conflict_do_nothing()
+            await sess.execute(stmt)
             await sess.commit()
             collected += 1
 
