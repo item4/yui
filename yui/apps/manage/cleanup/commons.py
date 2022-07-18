@@ -142,11 +142,11 @@ async def collect_history_from_channel(
                     await report(bot, exception=e)
                 else:
                     messages += r.body.get("messages", [])
-            stmt = insert(EventLog).values(
-                channel=channel_id, ts=message["ts"]
+            await sess.execute(
+                insert(EventLog)
+                .values(channel=channel_id, ts=message["ts"])
+                .on_conflict_do_nothing()
             )
-            stmt.on_conflict_do_nothing()
-            await sess.execute(stmt)
             await sess.commit()
             collected += 1
 

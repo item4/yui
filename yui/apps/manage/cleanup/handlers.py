@@ -17,8 +17,10 @@ async def make_log(bot, event: Message, sess: AsyncSession):
         return True
 
     if event.channel in channels:
-        stmt = insert(EventLog).values(channel=event.channel, ts=event.ts)
-        stmt.on_conflict_do_nothing()
-        await sess.execute(stmt)
+        await sess.execute(
+            insert(EventLog)
+            .values(channel=event.channel, ts=event.ts)
+            .on_conflict_do_nothing()
+        )
         await sess.commit()
     return True
