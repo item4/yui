@@ -16,8 +16,8 @@ Requirements
 
 - Git
 - Slack bot permission for bot account
-- Python 3.10.2 or higher
-- PostgreSQL
+- Python 3.10.5 or higher
+- PostgresSQL
 - memcached
 - Poetry_
 
@@ -45,7 +45,7 @@ You must make config file before run.
 Config key and value is below.
 
 TOKEN
-  string. Slack App Toekn
+  string. Slack App Token
 
 PREFIX
   string. Prefix for command.
