@@ -15,7 +15,8 @@ from .utils.cast import cast
 REQUIRED = {
     "APPS",
     "DATABASE_URL",
-    "TOKEN",
+    "APP_TOKEN",
+    "BOT_TOKEN",
 }
 
 
