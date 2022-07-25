@@ -1,7 +1,9 @@
 from hashlib import md5
+from typing import Optional
 from urllib.parse import urlencode
 
 import aiohttp
+from aiohttp import client_exceptions
 
 from attrs import define
 
@@ -9,44 +11,47 @@ from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
-from ...utils.datetime import fromtimestamp
-from ...utils.http import USER_AGENT
 
 
 box.assert_config_required("GOOGLE_API_KEY", str)
-box.assert_config_required("AQI_API_TOKEN", str)
+box.assert_config_required("OPENWEATHER_API_KEY", str)
 
+
+class AirPollutionResponseError(RuntimeError):
+    pass
+
+
+EXCEPTIONS = (
+    client_exceptions.ClientPayloadError,  # Bad HTTP Response
+    ValueError,  # JSON Error
+    client_exceptions.ClientConnectorCertificateError,  # TLS expired
+    AirPollutionResponseError,  # Bad HTTP Response
+)
 
 LABELS = {
     "pm25": "PM2.5",
     "pm10": "PM10",
     "o3": "오존",
+    "no": "일산화 질소",
     "no2": "이산화 질소",
     "so2": "이산화 황",
     "co": "일산화 탄소",
+    "nh3": "암모니아",
 }
 
 
 @define
-class Field:
+class AirPollutionRecord:
 
-    current: int
-    min: int
-    max: int
-
-
-@define
-class AQIRecord:
-
-    name: str
-    aqi: int
-    time: int
-    pm25: Field | None = None  # PM2.5
-    pm10: Field | None = None  # PM10
-    o3: Field | None = None  # 오존(Ozone)
-    no2: Field | None = None  # 이산화 질소 (Nitrogen Dioxide)
-    so2: Field | None = None  # 이산화 황 (Sulphur Dioxide)
-    co: Field | None = None  # 일산화 탄소 (Carbon Monoxide)
+    aqi: int  # 1~5까지의 AQI Index
+    co: Optional[float] = None  # 일산화 탄소 (Carbon Monoxide)
+    no: Optional[float] = None  # 일산화 질소
+    no2: Optional[float] = None  # 이산화 질소 (Nitrogen Dioxide)
+    o3: Optional[float] = None  # 오존(Ozone)
+    so2: Optional[float] = None  # 이산화 황 (Sulphur Dioxide)
+    pm25: Optional[float] = None  # PM2.5
+    pm10: Optional[float] = None  # PM10
+    nh3: Optional[float] = None  # 암모니아
 
 
 async def get_geometric_info_by_address(
@@ -69,59 +74,52 @@ async def get_geometric_info_by_address(
     return full_address, lat, lng
 
 
-async def get_aqi_idx(lat: float, lng: float, token: str) -> str:
-    url = f"https://api.waqi.info/feed/geo:{lat};{lng}/?token={token}"
+async def get_air_pollution_by_coordinate(
+    lat: float,
+    lng: float,
+    api_key: str,
+) -> AirPollutionRecord:
+    url = "https://api.openweathermap.org/data/2.5/air_pollution?" + urlencode(
+        {
+            "lat": lat,
+            "lon": lng,
+            "appid": api_key,
+        }
+    )
+
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            d1 = await res.json(loads=json.loads)
-    try:
-        return str(d1["data"]["idx"])
-    except (KeyError, TypeError):
-        return "wrong"
+            if res.status != 200:
+                raise AirPollutionResponseError(
+                    f"Bad HTTP Response: {res.status}"
+                )
 
+            data = await res.json(loads=json.loads)
 
-async def get_aqi_result(idx: str) -> AQIRecord | None:
-    url = f"https://api.waqi.info/api/feed/@{idx}/obs.en.json"
-    headers = {
-        "User-Agent": USER_AGENT,
-        "accept-language": "ko",
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, headers=headers) as res:
-            d2 = await res.json(loads=json.loads)
-
-    if d2["rxs"]["obs"][0]["status"] != "ok":
-        return None
-
-    data = d2["rxs"]["obs"][0]["msg"]
-
-    return AQIRecord(
-        name=data["i18n"]["name"]["ko"],
-        aqi=data["aqi"],
-        time=data["time"]["utc"]["v"],
-        **{
-            x["p"]: Field(*x["v"])
-            for x in data["iaqi"]
-            if x["p"] in ["pm25", "pm10", "o3", "no2", "so2", "co"]
-        },
+    return AirPollutionRecord(
+        aqi=data["list"][0]["main"]["aqi"],
+        co=data["list"][0]["components"].get("co", None),
+        no=data["list"][0]["components"].get("no", None),
+        no2=data["list"][0]["components"].get("no2", None),
+        o3=data["list"][0]["components"].get("o3", None),
+        so2=data["list"][0]["components"].get("so2", None),
+        pm25=data["list"][0]["components"].get("pm2_5", None),
+        pm10=data["list"][0]["components"].get("pm10", None),
+        nh3=data["list"][0]["components"].get("nh3", None),
     )
 
 
-def get_aqi_description(aqi: int) -> str:
-    if aqi > 300:
-        return "위험(환자군 및 민감군에게 응급 조치가 발생되거나, " "일반인에게 유해한 영향이 유발될 수 있는 수준)"
-    elif aqi > 200:
-        return (
-            "매우 나쁨(환자군 및 민감군에게 급성 노출시 심각한 영향 유발, " "일반인도 약한 영향이 유발될 수 있는 수준)"
-        )
-    elif aqi > 150:
+def get_aqi_description(aqi_level: int) -> str:
+    if aqi_level == 5:
+        return "매우 나쁨(환자군 및 민감군에게 노출시 심각한 영향 유발, " "일반인도 유해한 영향이 유발될 수 있는 수준)"
+    elif aqi_level == 4:
         return (
             "나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발, "
             "일반인도 건강상 불쾌감을 경험할 수 있는 수준)"
         )
-    elif aqi > 100:
+    elif aqi_level == 3:
         return "민감군 영향(환자군 및 민감군에게 유해한 영향이 유발될 수 있는 수준)"
-    elif aqi > 50:
+    elif aqi_level == 2:
         return "보통(환자군에게 만성 노출시 경미한 영향이 유발될 수 있는 수준)"
     else:
         return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
@@ -175,33 +173,30 @@ async def aqi(bot, event: Message, address: str):
             await bot.say(event.channel, "해당 주소는 찾을 수 없어요!")
             return
 
-    idx = await bot.cache.get(f"AQI_IDX_{lat}_{lng}")
-    if not idx:
-        idx = await get_aqi_idx(lat, lng, bot.config.AQI_API_TOKEN)
-        await bot.cache.set(f"AQI_IDX_{lat}_{lng}", idx)
-
-    if idx == "wrong":
-        await bot.say(event.channel, "해당 지역의 AQI 정보를 받아올 수 없어요!")
+    try:
+        result = await get_air_pollution_by_coordinate(
+            lat, lng, bot.config.OPENWEATHER_API_KEY
+        )
+    except EXCEPTIONS:
+        await bot.say(event.channel, "날씨 API 접근 중 에러가 발생했어요!")
         return
-
-    result = await get_aqi_result(idx)
 
     if result is None:
-        await bot.say(event.channel, "현재 AQI 서버의 상태가 좋지 않아요! 나중에 다시 시도해주세요!")
+        await bot.say(
+            event.channel,
+            "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!",
+        )
         return
 
-    time = fromtimestamp(result.time)
-
-    ftime = time.strftime("%Y년 %m월 %d일 %H시")
     text = (
-        f"{full_address} 기준으로 가장 근접한 관측소의 {ftime} 계측 자료에요.\n\n"
-        f"* 종합 AQI: {result.aqi} - {get_aqi_description(result.aqi)}\n"
+        f"{full_address} 기준으로 가장 근접한 위치의 최근 자료에요.\n\n"
+        f"* 종합 AQI: {get_aqi_description(result.aqi)}\n"
     )
 
     for key, name in LABELS.items():
-        f: Field = getattr(result, key)
+        f: Optional[float] = getattr(result, key)
         if f:
-            text += f"* {name}: {f.current} (최소 {f.min} / 최대 {f.max})\n"
+            text += f"* {name}: {f}μg/m3\n"
 
     text = text.strip()
     await bot.say(
