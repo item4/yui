@@ -110,7 +110,7 @@ async def get_air_pollution_by_coordinate(
 
 
 def get_aqi_description(aqi_level: int) -> str:
-    if aqi_level == 5:
+    if aqi_level >= 5:
         return "매우 나쁨(환자군 및 민감군에게 노출시 심각한 영향 유발, " "일반인도 유해한 영향이 유발될 수 있는 수준)"
     elif aqi_level == 4:
         return (

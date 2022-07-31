@@ -103,7 +103,7 @@ async def test_get_aqi_wrong_geometric_info(response_mock):
 async def test_get_air_pollution_with_wrong_coordination(response_mock):
     response_mock.get(
         "https://api.openweathermap.org/data/2.5/air_pollution?"
-        "lat=WRONG&lon=WRONG&appid=XXX",
+        "lat=123&lon=456&appid=asdf",
         body=json.dumps({}),
         status=404,
         headers={"Content-Type": "application/json"},
@@ -126,8 +126,8 @@ def test_get_aqi_description():
 
 @pytest.mark.asyncio
 async def test_aqi(bot_config, cache, openweather_api_key, google_api_key):
-    bot_config.OPENWEATHER_API_TOKEN = openweather_api_key
-    bot_config.GOOGLE_API_TOKEN = google_api_key
+    bot_config.OPENWEATHER_API_KEY = openweather_api_key
+    bot_config.GOOGLE_API_KEY = google_api_key
 
     bot = FakeBot(bot_config, cache=cache)
     bot.add_channel("C1", "general")
@@ -156,14 +156,14 @@ async def test_aqi_geocoding_error(bot_config, cache, response_mock):
     response_mock.get(
         "https://maps.googleapis.com/maps/api/geocode/json?"
         + urlencode(
-            {"region": "kr", "address": unavailable_address, "key": "qwer"}
+            {"region": "kr", "address": unavailable_address, "key": "ghjk"}
         ),
         body=json.dumps({"results": [], "status": "ZERO_RESULTS"}),
         headers={"Content-Type": "application/json"},
     )
 
-    bot_config.OPENWEATHER_API_TOKEN = "asdf"
-    bot_config.GOOGLE_API_TOKEN = "ghjk"
+    bot_config.OPENWEATHER_API_KEY = "asdf"
+    bot_config.GOOGLE_API_KEY = "ghjk"
 
     bot = FakeBot(bot_config, cache=cache)
     bot.add_channel("C1", "general")
@@ -178,7 +178,6 @@ async def test_aqi_geocoding_error(bot_config, cache, response_mock):
 
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["thread_ts"] == "1234.5678"
     assert said.data["text"] == "해당 주소는 찾을 수 없어요!"
 
 
@@ -205,15 +204,15 @@ async def test_aqi_openweather_error(bot_config, cache, response_mock):
         headers={"Content-Type": "application/json"},
     )
     response_mock.get(
-        "https://https://api.openweathermap.org/data/2.5/weather?"
-        "lat=37.5034138&lon=126.7660309&appid=asdf&units=metric",
+        "https://api.openweathermap.org/data/2.5/air_pollution?"
+        "appid=asdf&lat=37.5034138&lon=126.7660309",
         body="null",
         status=401,
         headers={"Content-Type": "application/json"},
     )
 
-    bot_config.OPENWEATHER_API_TOKEN = "asdf"
-    bot_config.GOOGLE_API_TOKEN = "ghjk"
+    bot_config.OPENWEATHER_API_KEY = "asdf"
+    bot_config.GOOGLE_API_KEY = "qwer"
 
     bot = FakeBot(bot_config, cache=cache)
     bot.add_channel("C1", "general")
@@ -228,5 +227,4 @@ async def test_aqi_openweather_error(bot_config, cache, response_mock):
 
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["thread_ts"] == "1234.5678"
     assert said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!"
