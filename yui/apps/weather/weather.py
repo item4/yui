@@ -1,3 +1,4 @@
+import asyncio
 from decimal import Decimal
 from hashlib import md5
 from typing import Optional
@@ -28,6 +29,18 @@ EXCEPTIONS = (
     client_exceptions.ClientConnectorCertificateError,  # TLS expired
     WeatherResponseError,  # Bad HTTP Response
 )
+
+
+LABELS = {
+    "pm25": "PM2.5",
+    "pm10": "PM10",
+    "o3": "오존",
+    "no": "일산화 질소",
+    "no2": "이산화 질소",
+    "so2": "이산화 황",
+    "co": "일산화 탄소",
+    "nh3": "암모니아",
+}
 
 
 @define
@@ -64,6 +77,20 @@ class WeatherRecord:
     # 날씨 설명 (영어)
     status: str
     description: str
+
+
+@define
+class AirPollutionRecord:
+
+    aqi: int  # 1~5까지의 AQI Index
+    co: Optional[float] = None  # 일산화 탄소 (Carbon Monoxide)
+    no: Optional[float] = None  # 일산화 질소
+    no2: Optional[float] = None  # 이산화 질소 (Nitrogen Dioxide)
+    o3: Optional[float] = None  # 오존(Ozone)
+    so2: Optional[float] = None  # 이산화 황 (Sulphur Dioxide)
+    pm25: Optional[float] = None  # PM2.5
+    pm10: Optional[float] = None  # PM10
+    nh3: Optional[float] = None  # 암모니아
 
 
 async def get_geometric_info_by_address(
@@ -136,6 +163,39 @@ async def get_weather_by_coordinate(
     )
 
 
+async def get_air_pollution_by_coordinate(
+    lat: float,
+    lng: float,
+    api_key: str,
+) -> AirPollutionRecord:
+    url = "https://api.openweathermap.org/data/2.5/air_pollution?" + urlencode(
+        {
+            "lat": lat,
+            "lon": lng,
+            "appid": api_key,
+        }
+    )
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as res:
+            if res.status != 200:
+                raise WeatherResponseError(f"Bad HTTP Response: {res.status}")
+
+            data = await res.json(loads=json.loads)
+
+    return AirPollutionRecord(
+        aqi=data["list"][0]["main"]["aqi"],
+        co=data["list"][0]["components"].get("co", None),
+        no=data["list"][0]["components"].get("no", None),
+        no2=data["list"][0]["components"].get("no2", None),
+        o3=data["list"][0]["components"].get("o3", None),
+        so2=data["list"][0]["components"].get("so2", None),
+        pm25=data["list"][0]["components"].get("pm2_5", None),
+        pm10=data["list"][0]["components"].get("pm10", None),
+        nh3=data["list"][0]["components"].get("nh3", None),
+    )
+
+
 def degree_to_direction(degree: int) -> str:
     # 북에서 다시 북으로, 360으로 나누면서 index로 계산
     directions = [
@@ -190,7 +250,23 @@ def clothes_by_temperature(temperature: float) -> str:
         return "민소매티, 반바지, 반팔티, 치마"
 
 
-@box.command("날씨", ["aws", "weather"])
+def get_aqi_description(aqi_level: int) -> str:
+    if aqi_level >= 5:
+        return "매우 나쁨(환자군 및 민감군에게 노출시 심각한 영향 유발, " "일반인도 유해한 영향이 유발될 수 있는 수준)"
+    elif aqi_level == 4:
+        return (
+            "나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발, "
+            "일반인도 건강상 불쾌감을 경험할 수 있는 수준)"
+        )
+    elif aqi_level == 3:
+        return "민감군 영향(환자군 및 민감군에게 유해한 영향이 유발될 수 있는 수준)"
+    elif aqi_level == 2:
+        return "보통(환자군에게 만성 노출시 경미한 영향이 유발될 수 있는 수준)"
+    else:
+        return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
+
+
+@box.command("날씨", ["aws", "weather", "aqi", "공기", "먼지", "미세먼지"])
 @argument("address", nargs=-1, concat=True)
 async def weather(
     bot,
@@ -231,31 +307,34 @@ async def weather(
                 address,
                 bot.config.GOOGLE_API_KEY,
             )
-            await bot.cache.set(
-                full_address_key,
-                full_address,
-            )
-            await bot.cache.set(
-                lat_key,
-                lat,
-            )
-            await bot.cache.set(
-                lng_key,
-                lng,
+
+            await asyncio.gather(
+                bot.cache.set(full_address_key, full_address),
+                bot.cache.set(lat_key, lat),
+                bot.cache.set(lng_key, lng),
             )
         except IndexError:
             await bot.say(event.channel, "해당 주소는 찾을 수 없어요!")
             return
 
     try:
-        result = await get_weather_by_coordinate(
-            lat, lng, bot.config.OPENWEATHER_API_KEY
+        result: tuple[
+            WeatherRecord, AirPollutionRecord
+        ] = await asyncio.gather(
+            get_weather_by_coordinate(
+                lat, lng, bot.config.OPENWEATHER_API_KEY
+            ),
+            get_air_pollution_by_coordinate(
+                lat, lng, bot.config.OPENWEATHER_API_KEY
+            ),
         )
+
+        (weather_result, air_pollution_result) = result
     except EXCEPTIONS:
         await bot.say(event.channel, "날씨 API 접근 중 에러가 발생했어요!")
         return
 
-    if result is None:
+    if weather_result is None or air_pollution_result is None:
         await bot.say(
             event.channel,
             "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!",
@@ -263,59 +342,86 @@ async def weather(
         return
 
     rain = None
-    if result.rain:
+    if weather_result.rain:
         rain = "예(1시간: {} / 3시간: {})".format(
-            shorten(result.rain_1h),
-            shorten(result.rain_3h),
+            shorten(weather_result.rain_1h),
+            shorten(weather_result.rain_3h),
         )
 
     snow = None
-    if result.snow:
+    if weather_result.snow:
         snow = "예(1시간: {} / 3시간: {})".format(
-            shorten(result.snow_1h),
-            shorten(result.snow_3h),
+            shorten(weather_result.snow_1h),
+            shorten(weather_result.snow_3h),
         )
 
     temperature = "{}℃ / 체감: {}℃".format(
-        shorten(result.current_temp), shorten(result.feel_temp)
+        shorten(weather_result.current_temp), shorten(weather_result.feel_temp)
     )
 
     wind = "{} {}㎧".format(
-        degree_to_direction(result.wind_degree),
-        shorten(result.wind_speed),
+        degree_to_direction(weather_result.wind_degree),
+        shorten(weather_result.wind_speed),
     )
 
-    humidity = "{}%".format(shorten(result.humidity))
+    humidity = "{}%".format(shorten(weather_result.humidity))
 
-    atmospheric = "{}hPa".format(shorten(result.pressure))
+    atmospheric = "{}hPa".format(shorten(weather_result.pressure))
 
     # full_address를 쓰는 이유는 result.location은 영어이기 때문입니다.
-    res = "[{}] ".format(full_address)
+    weather_text = "[{}] ".format(full_address)
 
-    if result.rain:
-        res += "강수 {} / ".format(rain)
-        emoji = ":umbrella_with_rain_drops:"
-    elif result.snow:
-        res += "강설 {} / ".format(snow)
-        emoji = ":snowflake:"
+    if weather_result.rain:
+        weather_text += "강수 {} / ".format(rain)
+        weather_emoji = ":umbrella_with_rain_drops:"
+    elif weather_result.snow:
+        weather_text += "강설 {} / ".format(snow)
+        weather_emoji = ":snowflake:"
     else:
         if now().hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
-            emoji = ":crescent_moon:"
+            weather_emoji = ":crescent_moon:"
         else:
-            emoji = ":sunny:"
+            weather_emoji = ":sunny:"
 
-    res += temperature
-    res += " / 바람: {}".format(wind)
-    res += " / 습도: {}".format(humidity)
-    res += " / 해면기압: {}".format(atmospheric)
+    weather_text += temperature
+    weather_text += " / 바람: {}".format(wind)
+    weather_text += " / 습도: {}".format(humidity)
+    weather_text += " / 해면기압: {}".format(atmospheric)
 
-    recommend = clothes_by_temperature(result.current_temp)
-    res += f"\n\n추천 의상: {recommend}"
+    recommend = clothes_by_temperature(weather_result.current_temp)
+    weather_text += f"\n\n추천 의상: {recommend}"
 
     await bot.api.chat.postMessage(
         channel=event.channel,
-        text=res,
+        text=weather_text,
         username=f"{full_address} 날씨",
-        icon_emoji=emoji,
-        thread_ts=event.ts if result is not None else None,
+        icon_emoji=weather_emoji,
+        thread_ts=event.ts,
+    )
+
+    air_pollution_text = (
+        f"{full_address} 기준으로 가장 근접한 관측소의 최근 자료에요.\n\n"
+        f"* 종합 AQI: {get_aqi_description(air_pollution_result.aqi)}\n"
+    )
+
+    for key, name in LABELS.items():
+        f: Optional[float] = getattr(air_pollution_result, key)
+        if f:
+            air_pollution_text += f"* {name}: {f}μg/m3\n"
+
+    text = air_pollution_text.strip()
+
+    if air_pollution_result.aqi >= 4:
+        air_pollution_emoji = ":skull_with_crossbones:"
+    elif air_pollution_result.aqi <= 2:
+        air_pollution_emoji = ":+1:"
+    else:
+        air_pollution_emoji = ":neutral_face:"
+
+    await bot.api.chat.postMessage(
+        channel=event.channel,
+        text=text,
+        username=f"{full_address} 대기질",
+        icon_emoji=air_pollution_emoji,
+        thread_ts=event.ts,
     )

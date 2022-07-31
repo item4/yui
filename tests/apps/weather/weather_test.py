@@ -1,5 +1,6 @@
 import asyncio
 import os
+import re
 from hashlib import md5
 from urllib.parse import urlencode
 
@@ -10,10 +11,25 @@ from tests.util import FakeBot
 from yui.apps.weather.weather import WeatherResponseError
 from yui.apps.weather.weather import clothes_by_temperature
 from yui.apps.weather.weather import degree_to_direction
+from yui.apps.weather.weather import get_air_pollution_by_coordinate
+from yui.apps.weather.weather import get_aqi_description
 from yui.apps.weather.weather import get_geometric_info_by_address
 from yui.apps.weather.weather import get_weather_by_coordinate
 from yui.apps.weather.weather import weather
 from yui.utils import json
+
+result_pattern_re = re.compile(
+    r".+? 기준으로 가장 근접한 관측소의 최근 자료에요.\n\n"
+    r"\* 종합 AQI: (?:좋음|보통|민감군 영향|나쁨|매우 나쁨)\(.+?\)\n"
+    r"\* PM2\.5: \d+(?:\.\d+)?μg/m3\n"
+    r"\* PM10: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 오존: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 일산화 질소: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 이산화 질소: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 이산화 황: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 일산화 탄소: \d+(?:\.\d+)?μg/m3\n"
+    r"\* 암모니아: \d+(?:\.\d+)?μg/m3"
+)
 
 
 def test_clothes_by_temperature():
@@ -115,6 +131,31 @@ async def test_get_weather_with_wrong_openweather_coordination(response_mock):
         await get_weather_by_coordinate(123, 456, "asdf")
 
 
+@pytest.mark.asyncio
+async def test_get_air_pollution_with_wrong_coordination(response_mock):
+    response_mock.get(
+        "https://api.openweathermap.org/data/2.5/air_pollution?"
+        "lat=123&lon=456&appid=asdf",
+        body=json.dumps({}),
+        status=404,
+        headers={"Content-Type": "application/json"},
+    )
+
+    with pytest.raises(WeatherResponseError):
+        await get_air_pollution_by_coordinate(123, 456, "asdf")
+
+
+def test_get_aqi_description():
+    assert get_aqi_description(0).startswith("좋음")
+    assert get_aqi_description(1).startswith("좋음")
+    assert get_aqi_description(2).startswith("보통")
+    assert get_aqi_description(3).startswith("민감군 영향")
+    assert get_aqi_description(4).startswith("나쁨")
+    assert get_aqi_description(5).startswith("매우 나쁨")
+    # API Spec은 5단계가 최대입니다.
+    assert get_aqi_description(6).startswith("매우 나쁨")
+
+
 def test_degree_to_direction():
     cases = [
         (0, "N"),
@@ -153,14 +194,28 @@ async def test_weather(bot_config, cache, openweather_api_key, google_api_key):
     async with bot.begin():
         await weather(bot, event, addr1)
 
-    said = bot.call_queue.pop(0)
+    weather_said = bot.call_queue.pop(0)
 
-    assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
-    assert said.data["thread_ts"] == "1234.5678"
-    assert said.data["text"] != "해당 주소는 찾을 수 없어요!"
-    assert said.data["text"] != "날씨 API 접근 중 에러가 발생했어요!"
-    assert said.data["text"] != "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!"
+    assert weather_said.method == "chat.postMessage"
+    assert weather_said.data["channel"] == "C1"
+    assert weather_said.data["thread_ts"] == "1234.5678"
+    assert weather_said.data["username"].endswith("날씨")
+
+    assert weather_said.data["text"] != "해당 주소는 찾을 수 없어요!"
+    assert weather_said.data["text"] != "날씨 API 접근 중 에러가 발생했어요!"
+    assert (
+        weather_said.data["text"] != "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!"
+    )
+
+    air_pollution_said = bot.call_queue.pop(0)
+
+    assert air_pollution_said.method == "chat.postMessage"
+    assert air_pollution_said.data["channel"] == "C1"
+    assert air_pollution_said.data["thread_ts"] == "1234.5678"
+
+    print(air_pollution_said.data["text"])
+    assert result_pattern_re.match(air_pollution_said.data["text"]) is not None
+    assert air_pollution_said.data["username"].endswith("대기질")
 
 
 unavailable_address = "테스트 장소"
@@ -222,6 +277,13 @@ async def test_weather_openweather_error(bot_config, cache, response_mock):
         "https://api.openweathermap.org/data/2.5/weather?"
         "appid=asdf&lat=37.5034138&lon=126.7660309&units=metric",
         body="null",
+        status=401,
+        headers={"Content-Type": "application/json"},
+    )
+    response_mock.get(
+        "https://api.openweathermap.org/data/2.5/air_pollution?"
+        "lat=37.5034138&lon=126.7660309&appid=asdf",
+        body=json.dumps({}),
         status=401,
         headers={"Content-Type": "application/json"},
     )
