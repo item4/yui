@@ -1,7 +1,6 @@
 import asyncio
 from decimal import Decimal
 from hashlib import md5
-from typing import Optional
 from urllib.parse import urlencode
 
 import aiohttp
@@ -66,13 +65,13 @@ class WeatherRecord:
 
     # 강우 유무
     rain: bool
-    rain_1h: Optional[float]
-    rain_3h: Optional[float]
+    rain_1h: float | None
+    rain_3h: float | None
 
     # 강설 유무
     snow: bool
-    snow_1h: Optional[float]
-    snow_3h: Optional[float]
+    snow_1h: float | None
+    snow_3h: float | None
 
     # 날씨 설명 (영어)
     status: str
@@ -83,27 +82,31 @@ class WeatherRecord:
 class AirPollutionRecord:
 
     aqi: int  # 1~5까지의 AQI Index
-    co: Optional[float] = None  # 일산화 탄소 (Carbon Monoxide)
-    no: Optional[float] = None  # 일산화 질소
-    no2: Optional[float] = None  # 이산화 질소 (Nitrogen Dioxide)
-    o3: Optional[float] = None  # 오존(Ozone)
-    so2: Optional[float] = None  # 이산화 황 (Sulphur Dioxide)
-    pm25: Optional[float] = None  # PM2.5
-    pm10: Optional[float] = None  # PM10
-    nh3: Optional[float] = None  # 암모니아
+    co: float | None = None  # 일산화 탄소 (Carbon Monoxide)
+    no: float | None = None  # 일산화 질소
+    no2: float | None = None  # 이산화 질소 (Nitrogen Dioxide)
+    o3: float | None = None  # 오존(Ozone)
+    so2: float | None = None  # 이산화 황 (Sulphur Dioxide)
+    pm25: float | None = None  # PM2.5
+    pm10: float | None = None  # PM10
+    nh3: float | None = None  # 암모니아
 
 
 async def get_geometric_info_by_address(
     address: str,
     api_key: str,
 ) -> tuple[str, float, float]:
-    url = "https://maps.googleapis.com/maps/api/geocode/json?" + urlencode(
-        {"region": "kr", "address": address, "key": api_key}
-    )
+    url = "https://maps.googleapis.com/maps/api/geocode/json"
+    params = {
+        "region": "kr",
+        "address": address,
+        "key": api_key,
+    }
+
     async with aiohttp.ClientSession(
         headers={"Accept-Language": "ko-KR"}
     ) as session:
-        async with session.get(url) as resp:
+        async with session.get(url, params=params) as resp:
             if resp.status != 200:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
@@ -121,24 +124,23 @@ async def get_weather_by_coordinate(
     lng: float,
     api_key: str,
 ) -> WeatherRecord:
-    url = "https://api.openweathermap.org/data/2.5/weather?" + urlencode(
-        {
-            "lat": lat,
-            "lon": lng,
-            "appid": api_key,
-            "units": "metric",
-        }
-    )
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    params = {
+        "lat": lat,
+        "lon": lng,
+        "appid": api_key,
+        "units": "metric",
+    }
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
+        async with session.get(url, params=params) as resp:
             if resp.status != 200:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
             data = await resp.json(loads=json.loads)
 
-    is_rain = data.get("rain", None) is not None
-    is_snow = data.get("snow", None) is not None
+    is_rain = data.get("rain") is not None
+    is_snow = data.get("snow") is not None
 
     return WeatherRecord(
         location=data["name"],
@@ -153,11 +155,11 @@ async def get_weather_by_coordinate(
         wind_degree=data["wind"]["deg"],
         cloudiness=data["clouds"]["all"],
         rain=is_rain,
-        rain_1h=data["rain"].get("1h", None) if is_rain else None,
-        rain_3h=data["rain"].get("3h", None) if is_rain else None,
+        rain_1h=data["rain"].get("1h") if is_rain else None,
+        rain_3h=data["rain"].get("3h") if is_rain else None,
         snow=is_snow,
-        snow_1h=data["snow"].get("1h", None) if is_snow else None,
-        snow_3h=data["snow"].get("3h", None) if is_snow else None,
+        snow_1h=data["snow"].get("1h") if is_snow else None,
+        snow_3h=data["snow"].get("3h") if is_snow else None,
         status=data["weather"][0]["main"],
         description=data["weather"][0]["description"],
     )
@@ -329,7 +331,7 @@ async def weather(
             ),
         )
 
-        (weather_result, air_pollution_result) = result
+        weather_result, air_pollution_result = result
     except EXCEPTIONS:
         await bot.say(event.channel, "날씨 API 접근 중 에러가 발생했어요!")
         return
@@ -405,7 +407,7 @@ async def weather(
     )
 
     for key, name in LABELS.items():
-        f: Optional[float] = getattr(air_pollution_result, key)
+        f: float | None = getattr(air_pollution_result, key)
         if f:
             air_pollution_text += f"* {name}: {f}μg/m3\n"
 

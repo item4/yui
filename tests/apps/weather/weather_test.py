@@ -18,17 +18,10 @@ from yui.apps.weather.weather import get_weather_by_coordinate
 from yui.apps.weather.weather import weather
 from yui.utils import json
 
+# AQI 이외의 데이터는 모두 Optiona한 데이터이므로 정규식 매치에서 제외함.
 result_pattern_re = re.compile(
     r".+? 기준으로 가장 근접한 관측소의 최근 자료에요.\n\n"
-    r"\* 종합 AQI: (?:좋음|보통|민감군 영향|나쁨|매우 나쁨)\(.+?\)\n"
-    r"\* PM2\.5: \d+(?:\.\d+)?μg/m3\n"
-    r"\* PM10: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 오존: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 일산화 질소: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 이산화 질소: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 이산화 황: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 일산화 탄소: \d+(?:\.\d+)?μg/m3\n"
-    r"\* 암모니아: \d+(?:\.\d+)?μg/m3"
+    r"\* 종합 AQI: (?:좋음|보통|민감군 영향|나쁨|매우 나쁨)\(.+?\)"
 )
 
 
@@ -145,19 +138,23 @@ async def test_get_air_pollution_with_wrong_coordination(response_mock):
         await get_air_pollution_by_coordinate(123, 456, "asdf")
 
 
-def test_get_aqi_description():
-    assert get_aqi_description(0).startswith("좋음")
-    assert get_aqi_description(1).startswith("좋음")
-    assert get_aqi_description(2).startswith("보통")
-    assert get_aqi_description(3).startswith("민감군 영향")
-    assert get_aqi_description(4).startswith("나쁨")
-    assert get_aqi_description(5).startswith("매우 나쁨")
-    # API Spec은 5단계가 최대입니다.
-    assert get_aqi_description(6).startswith("매우 나쁨")
+@pytest.mark.parametrize(
+    "level, expected",
+    [
+        (1, "좋음"),
+        (2, "보통"),
+        (3, "민감군 영향"),
+        (4, "나쁨"),
+        (5, "매우 나쁨"),  # API Spec은 5단계가 최대입니다.
+    ],
+)
+def test_get_aqi_description(level, expected):
+    assert get_aqi_description(level).startswith(expected)
 
 
-def test_degree_to_direction():
-    cases = [
+@pytest.mark.parametrize(
+    "degree, direction",
+    [
         (0, "N"),
         (22.5, "NNE"),
         (45, "NE"),
@@ -174,10 +171,10 @@ def test_degree_to_direction():
         (292.5, "WNW"),
         (315, "NW"),
         (337.5, "NNW"),
-    ]
-
-    for degree, direction in cases:
-        assert direction == degree_to_direction(degree)
+    ],
+)
+def test_degree_to_direction(degree, direction):
+    assert direction == degree_to_direction(degree)
 
 
 @pytest.mark.asyncio
@@ -211,9 +208,6 @@ async def test_weather(bot_config, cache, openweather_api_key, google_api_key):
 
     assert air_pollution_said.method == "chat.postMessage"
     assert air_pollution_said.data["channel"] == "C1"
-    assert air_pollution_said.data["thread_ts"] == "1234.5678"
-
-    print(air_pollution_said.data["text"])
     assert result_pattern_re.match(air_pollution_said.data["text"]) is not None
     assert air_pollution_said.data["username"].endswith("대기질")
 
