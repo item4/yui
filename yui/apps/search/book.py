@@ -47,19 +47,19 @@ async def book(bot, event: Message, keyword: str):
     for i in range(count):
         book = data["items"][i]
         title = strip_tags(book["title"])
+        text = "저자: {} / 출판사: {}".format(
+            strip_tags(book["author"]),
+            strip_tags(book["publisher"]),
+        )
+        if "price" in book:
+            text += " / 가격: {}".format(Decimal(book["price"]))
         attachments.append(
             Attachment(
                 fallback="{} - {}".format(title, book["link"]),
                 title=title,
                 title_link=book["link"],
                 thumb_url=book["image"],
-                text="저자: {} / 출판사: {}{}".format(
-                    strip_tags(book["author"]),
-                    strip_tags(book["publisher"]),
-                    " / 정가: ￦{:,}".format(Decimal(book["price"]))
-                    if book["price"]
-                    else "",
-                ),
+                text=text,
             )
         )
 
