@@ -11,9 +11,9 @@ jobs:
     steps:
       # Set-up
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       # Install Dependencies
@@ -54,13 +54,13 @@ jobs:
     steps:
       # Set-up
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
       - name: Install Poetry
-        uses: snok/install-poetry@v1.3.0
+        uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
@@ -68,7 +68,7 @@ jobs:
       # Install Dependencies
       - name: Load cached venv
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/ci.yml') }}-${{ hashFiles('**/poetry.lock') }}
@@ -86,10 +86,10 @@ jobs:
           echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
 
       # Type Check
-      - name: Edit mypy.ini for disable color output
-        run: echo "color_output=False" >> mypy.ini
       - name: Check static types
-        run: mypy yui
+        run: |
+          echo "color_output=False" >> mypy.ini
+          mypy yui
 
       # Test
       - name: Run test cases
@@ -106,12 +106,12 @@ jobs:
         run: |
           poetry export -o requirements.txt --without-hashes
       - name: Archive requirements.txt file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: python-deps
           path: requirements.txt
       - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
 
@@ -122,20 +122,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: item4
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Fetch stored requirements.txt
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: python-deps
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: ./Dockerfile
