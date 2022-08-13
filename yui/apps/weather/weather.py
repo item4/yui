@@ -200,14 +200,14 @@ async def get_air_pollution_by_coordinate(
 
     return AirPollutionRecord(
         aqi=data["list"][0]["main"]["aqi"],
-        co=data["list"][0]["components"].get("co", None),
-        no=data["list"][0]["components"].get("no", None),
-        no2=data["list"][0]["components"].get("no2", None),
-        o3=data["list"][0]["components"].get("o3", None),
-        so2=data["list"][0]["components"].get("so2", None),
-        pm25=data["list"][0]["components"].get("pm2_5", None),
-        pm10=data["list"][0]["components"].get("pm10", None),
-        nh3=data["list"][0]["components"].get("nh3", None),
+        co=data["list"][0]["components"].get("co"),
+        no=data["list"][0]["components"].get("no"),
+        no2=data["list"][0]["components"].get("no2"),
+        o3=data["list"][0]["components"].get("o3"),
+        so2=data["list"][0]["components"].get("so2"),
+        pm25=data["list"][0]["components"].get("pm2_5"),
+        pm10=data["list"][0]["components"].get("pm10"),
+        nh3=data["list"][0]["components"].get("nh3"),
     )
 
 
