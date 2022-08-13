@@ -12,7 +12,7 @@ from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
-from ...utils.datetime import now
+from ...utils.datetime import fromtimestampoffset
 
 box.assert_config_required("GOOGLE_API_KEY", str)
 box.assert_config_required("OPENWEATHER_API_KEY", str)
@@ -77,6 +77,12 @@ class WeatherRecord:
     status: str
     description: str
 
+    # 시간 관련
+    # 현재 UTC 단위의 timestamp
+    timestamp: int
+    # UTC 기준에서 얼마나 시간 차가 나는지 초 단위로 제공됨
+    timezone: int
+
 
 @define
 class AirPollutionRecord:
@@ -115,6 +121,11 @@ async def get_geometric_info_by_address(
     full_address = data["results"][0]["formatted_address"]
     lat = data["results"][0]["geometry"]["location"]["lat"]
     lng = data["results"][0]["geometry"]["location"]["lng"]
+
+    # 주소가 대한민국의 주소일 경우, 앞의 "대한민국 "을 자른다.
+    # 캐시를 위해 함수의 반환 결과부터 미리 처리를 해놓는다.
+    if full_address.startswith("대한민국 "):
+        full_address = full_address[5:]
 
     return full_address, lat, lng
 
@@ -162,6 +173,8 @@ async def get_weather_by_coordinate(
         snow_3h=data["snow"].get("3h") if is_snow else None,
         status=data["weather"][0]["main"],
         description=data["weather"][0]["description"],
+        timestamp=data["dt"],
+        timezone=data["timezone"],
     )
 
 
@@ -357,7 +370,7 @@ async def weather(
             shorten(weather_result.snow_3h),
         )
 
-    temperature = "{}℃ / 체감: {}℃".format(
+    temperature = "기온: {}℃ (체감 {}℃)".format(
         shorten(weather_result.current_temp), shorten(weather_result.feel_temp)
     )
 
@@ -380,7 +393,13 @@ async def weather(
         weather_text += "강설 {} / ".format(snow)
         weather_emoji = ":snowflake:"
     else:
-        if now().hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
+        current_dt = fromtimestampoffset(
+            # timestamp는 UTC 기준이므로 offset 값을 미리 더해줘야합니다.
+            timestamp=weather_result.timestamp + weather_result.timezone,
+            offset=weather_result.timezone,
+        )
+
+        if current_dt.hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
             weather_emoji = ":crescent_moon:"
         else:
             weather_emoji = ":sunny:"
@@ -414,7 +433,7 @@ async def weather(
     text = air_pollution_text.strip()
 
     if air_pollution_result.aqi >= 4:
-        air_pollution_emoji = ":skull_with_crossbones:"
+        air_pollution_emoji = ":skull_and_crossbones:"
     elif air_pollution_result.aqi <= 2:
         air_pollution_emoji = ":+1:"
     else:

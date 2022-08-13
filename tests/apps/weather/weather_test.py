@@ -43,6 +43,8 @@ addr1 = "부천"
 addr1_md5 = md5(addr1.encode()).hexdigest()
 addr2 = "서울"
 addr2_md5 = md5(addr2.encode()).hexdigest()
+addr3 = "카와고에"
+addr3_md5 = md5(addr3.encode()).hexdigest()
 
 
 @pytest.fixture(scope="module")
@@ -75,7 +77,7 @@ async def test_get_geometric_info_by_address(google_api_key):
         google_api_key,
     )
 
-    assert full_address == "대한민국 경기도 부천시"
+    assert full_address == "경기도 부천시"
     assert lat == 37.5034138
     assert lng == 126.7660309
 
@@ -84,9 +86,19 @@ async def test_get_geometric_info_by_address(google_api_key):
         google_api_key,
     )
 
-    assert full_address == "대한민국 서울특별시"
+    assert full_address == "서울특별시"
     assert lat == 37.566535
     assert lng == 126.9779692
+
+    full_address, lat, lng = await get_geometric_info_by_address(
+        addr3,
+        google_api_key,
+    )
+
+    # 한국이 아니면 나라가 나와야함.
+    assert full_address == "일본 사이타마현 가와고에시"
+    assert lat == 35.9251335
+    assert lng == 139.4858042
 
 
 @pytest.mark.asyncio
@@ -196,7 +208,7 @@ async def test_weather(bot_config, cache, openweather_api_key, google_api_key):
     assert weather_said.method == "chat.postMessage"
     assert weather_said.data["channel"] == "C1"
     assert weather_said.data["thread_ts"] == "1234.5678"
-    assert weather_said.data["username"].endswith("날씨")
+    assert weather_said.data["username"] == "경기도 부천시 날씨"
 
     assert weather_said.data["text"] != "해당 주소는 찾을 수 없어요!"
     assert weather_said.data["text"] != "날씨 API 접근 중 에러가 발생했어요!"
@@ -209,7 +221,7 @@ async def test_weather(bot_config, cache, openweather_api_key, google_api_key):
     assert air_pollution_said.method == "chat.postMessage"
     assert air_pollution_said.data["channel"] == "C1"
     assert result_pattern_re.match(air_pollution_said.data["text"]) is not None
-    assert air_pollution_said.data["username"].endswith("대기질")
+    assert air_pollution_said.data["username"] == "경기도 부천시 대기질"
 
 
 unavailable_address = "테스트 장소"
