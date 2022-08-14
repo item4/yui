@@ -20,7 +20,7 @@ NAVER_CLIENT_SECRET = 'FILL_ME'
 
 GOOGLE_API_KEY = 'FILL_ME'
 
-AQI_API_TOKEN = 'FILL_ME'
+OPENWEATHER_API_TOKEN = 'FILL_ME'
 
 WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
 
@@ -30,8 +30,6 @@ WEEKEND_LOADING_TIME = []
 general = 'FILL_ME'
 notice = 'FILL_ME'
 welcome = 'FILL_ME'
-saomd = 'FILL_ME'
-toranoana = 'FILL_ME'
 auto_cleanup_targets = ['FILL_ME']
 
 

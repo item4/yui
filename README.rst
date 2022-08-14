@@ -16,7 +16,7 @@ Requirements
 
 - Git
 - Slack bot permission for bot account
-- Python 3.10.5 or higher
+- Python 3.10.6 or higher
 - PostgresSQL
 - memcached
 - Poetry_
@@ -122,9 +122,9 @@ GOOGLE_API_TOKEN
   You can generate this value on `Google API Console`_ and `this activation page`_
   **Do not** upload this value on VCS.
 
-AQI_API_TOKEN
-  string. API Token for using AQI API.
-  You can get this value on `this request form`_
+OPENWEATHER_API_KEY
+  string. API Token for using OpenWeather API.
+  You can get this value on `this website`_
   **Do not** upload this value on VCS.
 
 WEBSOCKETDEBUGGERURL
@@ -196,7 +196,7 @@ LOGGING
 .. _`Naver developer page`: https://developers.naver.com
 .. _`Google API Console`: https://console.developers.google.com/apis/dashboard
 .. _`this activation page`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
-.. _`this request form`: http://aqicn.org/data-platform/token/#/
+.. _`this website`: https://openweathermap.org/api
 
 
 Run

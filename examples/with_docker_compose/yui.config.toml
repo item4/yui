@@ -6,14 +6,10 @@ APPS = [
     # Core apps
     'yui.apps.core',
 
-    # Shared Models
-    'yui.apps.shared',
-
     # Root apps
     'yui.apps.animal',
     'yui.apps.hi',
     'yui.apps.ping',
-    'yui.apps.quit',
 
     # Compute apps
     'yui.apps.compute.calc',
@@ -21,6 +17,7 @@ APPS = [
     'yui.apps.compute.gacha',
     'yui.apps.compute.gamble',
     'yui.apps.compute.select',
+    'yui.apps.compute.translate',
 
     # Date apps
     'yui.apps.date.age',
@@ -28,19 +25,20 @@ APPS = [
     'yui.apps.date.dday',
     'yui.apps.date.monday',
     'yui.apps.date.weekend',
+    'yui.apps.date.work',
 
     # Funny apps
     'yui.apps.fun.answer',
+    'yui.apps.fun.code',
     'yui.apps.fun.hassan',
     'yui.apps.fun.relax',
 
     # Info apps
     'yui.apps.info.memo',
-    'yui.apps.info.saomd',
-    'yui.apps.info.subscribe',
     'yui.apps.info.about',
     'yui.apps.info.help',
-    'yui.apps.info.packtpub',
+    'yui.apps.info.packtpub.commands',
+    'yui.apps.info.packtpub.tasks',
 
     # Search apps
     'yui.apps.search.book',
@@ -52,9 +50,7 @@ APPS = [
     'yui.apps.search.subway',
 
     # Weather apps
-    'yui.apps.weather.aws',
-    'yui.apps.weather.aqi',
-    'yui.apps.weather.pongdang',
+    'yui.apps.weather.weather',
 ]
 
 DATABASE_URL = 'postgresql://postgres:MYSECRET@db/dbname'
@@ -65,15 +61,15 @@ NAVER_CLIENT_SECRET = 'NAVER_CLIENT_SECRET'
 
 GOOGLE_API_KEY = 'GOOGLE_API_KEY'
 
-AQI_API_TOKEN = 'AQI_API_TOKEN'
+OPENWEATHER_API_KEY = 'OPENWEATHER_API_TOKEN'
 
 WEBSOCKETDEBUGGERURL = 'http://10.5.0.3:9222/json/version'
 
 [CHANNELS]
-general = '_general'
-game = 'game'
-game_and_test = ['game', 'test']
-welcome = '_general'
+general = 'C1111'
+game = 'C2222'
+game_and_test = ['C2222', 'C3333']
+welcome = 'C1111'
 
 [USERS]
 owner = 'U11111111'
