@@ -2,23 +2,38 @@ import pytest
 
 from time_machine import travel
 
-from yui.apps.info.packtpub import PACKTPUB_URL
-from yui.apps.info.packtpub import auto_packtpub_dotd
-from yui.apps.info.packtpub import packtpub_dotd
-from yui.utils import json
+from yui.apps.info.packtpub.commands import packtpub_dotd
+from yui.apps.info.packtpub.commons import PACKTPUB_URL
+from yui.apps.info.packtpub.tasks import auto_packtpub_dotd
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+
+MOCK_BODY = """\
+<!doctype html>
+<html>
+<main class="product">
+<h3 class="product-info__title">Free eBook - {title}</h3>
+<img class="product-image" src="{image_url}" alt="">
+</main>
+</html>
+"""
 
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_no_packtpub_dotd(bot, response_mock):
     response_mock.get(
-        "https://services.packtpub.com/free-learning-v1/offers"
-        "?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z",
-        body=json.dumps({"data": []}),
-        headers={"Content-Type": "application/json"},
+        "https://www.packtpub.com/free-learning",
+        body="""\
+<!doctype html>
+<html>
+<main class="product">
+<p>Something else</p>
+</main>
+</html>
+""",
+        headers={"Content-Type": "text/html"},
     )
 
     bot.add_channel("C1", "general")
@@ -37,19 +52,12 @@ async def test_no_packtpub_dotd(bot, response_mock):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_packtpub_dotd(bot, response_mock):
-    product_id = "11223344"
     title = "test book"
     image_url = "test url"
     response_mock.get(
-        "https://services.packtpub.com/free-learning-v1/offers"
-        "?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z",
-        body=json.dumps({"data": [{"productId": product_id}]}),
-        headers={"Content-Type": "application/json"},
-    )
-    response_mock.get(
-        f"https://static.packt-cdn.com/products/{product_id}/summary",
-        body=json.dumps({"title": title, "coverImage": image_url}),
-        headers={"Content-Type": "application/json"},
+        "https://www.packtpub.com/free-learning",
+        body=MOCK_BODY.format(title=title, image_url=image_url),
+        headers={"Content-Type": "text/html"},
     )
 
     bot.add_channel("C1", "general")
@@ -78,19 +86,12 @@ async def test_packtpub_dotd(bot, response_mock):
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_auto_packtpub_dotd(bot_config, response_mock):
     assert auto_packtpub_dotd.cron.spec == "5 9 * * *"
-    product_id = "11223344"
     title = "test book"
     image_url = "test url"
     response_mock.get(
-        "https://services.packtpub.com/free-learning-v1/offers"
-        "?dateFrom=2018-10-07T00:00:00.000Z&dateTo=2018-10-08T00:00:00.000Z",
-        body=json.dumps({"data": [{"productId": product_id}]}),
-        headers={"Content-Type": "application/json"},
-    )
-    response_mock.get(
-        f"https://static.packt-cdn.com/products/{product_id}/summary",
-        body=json.dumps({"title": title, "coverImage": image_url}),
-        headers={"Content-Type": "application/json"},
+        "https://www.packtpub.com/free-learning",
+        body=MOCK_BODY.format(title=title, image_url=image_url),
+        headers={"Content-Type": "text/html"},
     )
 
     bot_config.CHANNELS = {
