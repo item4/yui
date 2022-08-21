@@ -47,11 +47,13 @@ APP_TOKEN
   ``str``. Slack App Token 입니다.
   앱 설정 페이지 좌측 메뉴에서 ``Settings`` → ``Basic Information`` 페이지에서 ``App-Level Tokens`` 하단의 버튼을 눌러 생성할 수 있습니다.
   해당 토큰에는 ``connections:write`` scope를 반드시 포함해서 생성해야합니다.
+
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 BOT_TOKEN
   ``str``. Yui App에게 할당된 Bot Token입니다.
   앱 설정 페이지 좌측 메뉴에서 ``Features`` → ``OAuth & Permissions`` 페이지에서 ``OAuth Tokens for Your Workspace`` 단락 아래에서 ``Bot User OAuth Token`` 을 복사해서 사용할 수 있습니다.
+
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 PREFIX
@@ -113,16 +115,19 @@ NAVER_CLIENT_ID
 
 NAVER_CLIENT_SECRET
   ``str``. 네이버 API 사용을 위한 클라이언트 비밀값입니다.
+
   **해당 설정의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 GOOGLE_API_TOKEN
   ``str``. 구글 API 사용을 위한 API 키입니다.
   해당 값은 `Google API Console`_ 과 `활성화 설정 페이지`_ 를 이용해 생성해야합니다.
+
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 OPENWEATHER_API_KEY
   ``str``. OpenWeather API 사용을 위한 API 키입니다.
   해당 값은 `OpenWeather 공식 웹사이트`_에서 발급받을 수 있습니다.
+
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 WEBSOCKETDEBUGGERURL
@@ -161,8 +166,8 @@ LOGGING
 .. _`OpenWeather 공식 웹사이트`: https://openweathermap.org/api
 
 
-구동
----
+실행
+-------
 
 .. code-block:: bash
 
@@ -186,7 +191,7 @@ YUI의 CLI는 대부분의 Alembic_ 명령어를 지원합니다.
 지원되는 명령어는 다음과 같습니다.
 
 * ``revision``
-* ``migrate`` (``revision``과 동일하나 ``--autogenerate``가 추가되어있음)
+* ``migrate``
 * ``edit``
 * ``merge``
 * ``upgrade``
