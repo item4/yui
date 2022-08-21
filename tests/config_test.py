@@ -77,7 +77,8 @@ owner = 'U111'
         )
     config = load(file)
 
-    assert config.TOKEN == "asdf"
+    assert config.APP_TOKEN == "TEST_APP_TOKEN"
+    assert config.BOT_TOKEN == "TEST_BOT_TOKEN"
     assert config.DEBUG
     assert config.PREFIX == "."
     assert config.APPS == ["a", "b"]
