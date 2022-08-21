@@ -88,7 +88,7 @@ owner = 'U111'
 
 
 def test_config_check(bot_config):
-    del bot_config.TOKEN
+    del bot_config.APP_TOKEN
 
     err = "Required config key was not defined: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
