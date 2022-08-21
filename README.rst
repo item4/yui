@@ -8,15 +8,15 @@ YUI
    :target: https://codecov.io/gh/item4/yui
    :alt: Code Coverage Status
 
-YUI is Multi-purposed Slack Bot.
+YUI는 다용도 Slack App 입니다.
 
 
-Requirements
+실행 요구사항
 ------------
 
 - Git
-- Slack bot permission for bot account
-- Python 3.10.6 or higher
+- Slack App 설치 및 App Token/Bot Token
+- Python 3.10.6 혹은 그 이상 버전
 - PostgresSQL
 - memcached
 - Poetry_
@@ -25,8 +25,8 @@ Requirements
 .. _Poetry: https://poetry.eustace.io/
 
 
-Installation
-------------
+설치
+------
 
 .. code-block:: bash
 
@@ -36,40 +36,46 @@ Installation
    $ poetry install
 
 
-Configuration
+설정
 -------------
 
-Yui must require ``~~~.config.toml`` file for run.
-You must make config file before run.
+YUI를 실행하기 위해서는 ``~~~.config.toml`` 형식의 파일명을 가진 설정용 toml 파일이 필요합니다.
 
-Config key and value is below.
+필요한 설정은 다음과 같습니다.
 
-TOKEN
-  string. Slack App Token
+APP_TOKEN
+  ``str``. Slack App Token 입니다.
+  앱 설정 페이지 좌측 메뉴에서 ``Settings`` → ``Basic Information`` 페이지에서 ``App-Level Tokens`` 하단의 버튼을 눌러 생성할 수 있습니다.
+  해당 토큰에는 ``connections:write`` scope를 반드시 포함해서 생성해야합니다.
+  **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
+
+BOT_TOKEN
+  ``str``. Yui App에게 할당된 Bot Token입니다.
+  앱 설정 페이지 좌측 메뉴에서 ``Features`` → ``OAuth & Permissions`` 페이지에서 ``OAuth Tokens for Your Workspace`` 단락 아래에서 ``Bot User OAuth Token`` 을 복사해서 사용할 수 있습니다.
+  **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 PREFIX
-  string. Prefix for command.
-  for example, if you set PREFIX to ``'='`` and you want to run ``help``
-  command, you must type ``=help``
+  ``str``. Yui의 명령어를 실행할 때 사용할 명령어 접두사입니다.
+  예를 들면, 명령어의 이름이 ``help`` 이고 ``PREFIX`` 값이 ``=`` 이라면 해당 명령어를 실행하려면 ``=help`` 라고 입력해야합니다.
 
 RECEIVE_TIMEOUT
-  integer. timeout seconds for receiving data from Slask WebSocket.
-  default is ``300`` (5min)
+  ``int``. Slack과 Web Socket 통신시 timeout 설정값입니다.
+  기본값은 ``300`` 입니다. (5분)
 
 APPS
-  list of str. Python module path of apps.
-  Yui import given paths automatically.
-  You must use core apps.
+  ``list[str]``. Yui에서 사용할 APP 목록입니다.
+  해당 목록에 추가하면 Yui가 기동되면서 자동으로 import합니다.
+  정상적인 동작을 위해서는 반드시 ``yui.apps.core`` 를 추가해주세요.
 
   .. code-block:: toml
 
-     HANDLERS = [
+     APPS = [
          'yui.apps.core'
      ]
 
 CHANNELS
-  dictionary of str. Channel IDs used in code.
-  it used for support same handler code with different server envrionment.
+  ``dict[str, str]``. 코드 내에서 사용될 채널 Alias와 매칭될 실제 채널 ID입니다.
+  하나의 App을 여러 Slack Workspace에서 재사용하는 경우 유용합니다.
 
   For example,
 
@@ -81,125 +87,81 @@ CHANNELS
 
 
 USERS
-  dictionary of str. User IDs used in code.
-  it used for support same handler code with different server envrionment.
+  ``dict[str, str]``. 코드 내에서 사용될 사용자 Alias와 실제 사용자 ID입니다.
+  하나의 App을 여러 Slack Workspace에서 재사용하는 경우 유용합니다.
 
   For example,
 
   .. code-block:: toml
 
-     [CHANNELS]
+     [USERS]
      owner = 'U1111'
      force_cleanup = ['U1111', 'U2222']
 
-  .. warning::
-
-     You must set `owner` value for receive error report and do admin actions.
-
-  .. danger::
-
-     USERS value consume ID of user, not name because name can be secret hole.
-
-
 DATABASE_URL
-  string. URL to connect Database via SQLAlchemy.
+  ``str``. SQLAlchemy를 사용하여 DB에 접속하는데에 사용됩니다.
 
 DATABASE_ECHO
-  bool. If you set it to true, you can see raw SQL in log
+  ``bool``. ``true``로 설정하면 YUI 기동중에 발생하는 SQL을 로그에서 볼 수 있습니다.
 
 NAVER_CLIENT_ID
-  string. ID for using Naver API.
-  If you want to use ``yui.apps.compute.translate`` or
-  ``yui.apps.search.book``, you must need this setting.(You can get this value
-  from `Naver developer page`_)
+  ``str``. 네이버 API 사용을 위한 클라이언트 ID 값입니다.
+  다음 App이 요구합니다.
+  * ``yui.apps.compute.translate``
+  * ``yui.apps.search.book``
+  사용을 원한다면 해당 값을 `네이버 개발자 페이지`_에서 발급받으세요.
 
 NAVER_CLIENT_SECRET
-  string. SECRET Key for using Naver API.
-  **Do not** upload this value on VCS.
+  ``str``. 네이버 API 사용을 위한 클라이언트 비밀값입니다.
+  **해당 설정의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 GOOGLE_API_TOKEN
-  string. API Token for using Google map API.
-  You can generate this value on `Google API Console`_ and `this activation page`_
-  **Do not** upload this value on VCS.
+  ``str``. 구글 API 사용을 위한 API 키입니다.
+  해당 값은 `Google API Console`_ 과 `활성화 설정 페이지`_ 를 이용해 생성해야합니다.
+  **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 OPENWEATHER_API_KEY
-  string. API Token for using OpenWeather API.
-  You can get this value on `this website`_
-  **Do not** upload this value on VCS.
+  ``str``. OpenWeather API 사용을 위한 API 키입니다.
+  해당 값은 `OpenWeather 공식 웹사이트`_에서 발급받을 수 있습니다.
+  **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
 WEBSOCKETDEBUGGERURL
-  string. URL of Chrome websocket debugger.
-  This is using for access webpage via headless Chrome for bypass anti-DDoS tool such as CloudFlare.
+  ``str``. Chrome websocket debugger URL.
+  headless chrome을 통해 웹페이지에 접속해야하는 경우 사용됩니다.
 
   .. code-block:: toml
 
      WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
 
-  You can launch headless chrome by this command.
+  docker를 사용하면 편리합니다.
 
   .. code-block:: bash
 
      docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN yukinying/chrome-headless-browser
 
 CACHE
-  complex dict. memcached config.
-  You can use default setting, But if you want to change some values, you can
-  override like below example.
+  캐시 설정입니다.
+  기본값을 그대로 사용하셔도 되지만 기본값을 덮어쓰고 싶으신 경우 아래와 같이 재정의해주세요.
 
   .. code-block:: toml
 
      [CACHE]
      HOST = 'localhost'
-     PORT = 12345
-     PREFIX = 'CUSTOM_YUI_\'
+     PORT = 11211
+     PREFIX = 'YUI_'
 
 
 LOGGING
-  complex dict. Python logging config.
-  You can use default setting.
-  But if you want to change some value, you can override below example.
+  YUI 로깅 설정입니다.
+  자세한 내용은 내부 코드를 참조해주세요.
 
-  .. code-block:: toml
-
-      [LOGGING]
-      version = 1
-      disable_existing_loggers = false
-
-      [LOGGING.formatters.brief]
-      format = '%(message)s'
-
-      [LOGGING.formatters.default]
-      format = '%(asctime)s %(levelname)s %(name)s %(message)s'
-      datefmt = '%Y-%m-%d %H:%M:%S'
-
-      [LOGGING.handlers.console]
-      class = 'logging.StreamHandler'
-      formatter = 'brief'
-      level = 'DEBUG'
-      filters = []
-      stream = 'ext://sys.stdout'
-
-      [LOGGING.handlers.file]
-      class = 'logging.handlers.RotatingFileHandler'
-      formatter = 'default'
-      level = 'WARNING'
-      filename = 'log/warning.log'
-      maxBytes = 102400
-      backupCount = 3
-
-      [LOGGING.loggers.yui]
-      handlers = ['console', 'file']
-      propagate = true
-      level = 'DEBUG'
-
-.. _`this test page`: https://api.slack.com/methods/users.info/test
-.. _`Naver developer page`: https://developers.naver.com
+.. _`네이버 개발자 페이지`: https://developers.naver.com
 .. _`Google API Console`: https://console.developers.google.com/apis/dashboard
-.. _`this activation page`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
-.. _`this website`: https://openweathermap.org/api
+.. _`활성화 설정 페이지`: https://developers.google.com/maps/documentation/geocoding/start?hl=ko#get-a-key
+.. _`OpenWeather 공식 웹사이트`: https://openweathermap.org/api
 
 
-Run
+구동
 ---
 
 .. code-block:: bash
@@ -207,7 +169,7 @@ Run
    $ yui run -c yui.config.toml
 
 
-If you do not want to write ``-c`` option everytime, you can put it into envvar.
+``YUI_CONFIG_FILE_PATH`` 환경변수를 정의하면 ``-c`` 인자를 생략할 수 있습니다.
 
 .. code-block:: bash
 
@@ -218,13 +180,13 @@ If you do not want to write ``-c`` option everytime, you can put it into envvar.
 CLI for Database
 ----------------
 
-Yui CLI support most of command of Alembic_\.
-You can use command with ``yui`` such as ``yui revision --autogenerate -m "Test"``.
+YUI의 CLI는 대부분의 Alembic_ 명령어를 지원합니다.
+``revision`` 명령어를 사용한다면 ``yui revision --autogenerate -m "Test"`` 같은 형태로 사용하실 수 있습니다.
 
-List of commands are below.
+지원되는 명령어는 다음과 같습니다.
 
 * ``revision``
-* ``migrate`` (same as ``revision`` with ``--autogenerate``
+* ``migrate`` (``revision``과 동일하나 ``--autogenerate``가 추가되어있음)
 * ``edit``
 * ``merge``
 * ``upgrade``
@@ -239,73 +201,46 @@ List of commands are below.
 .. _Alembic: http://alembic.zzzcomputing.com/en/latest/
 
 
-Yui with Docker-compose
+YUI with Docker-compose
 ------------------------
 
-You can launch yui on docker-compose easily.
+YUI의 여러 요구사항을 docker-compose를 이용하면 간단히 관리할 수 있습니다.
 
-1. Install Docker-compose.
-
-2. Create ``docker-compose.yml`` file.
-
-   .. code-block:: yml
-
-      version: '3'
-      services:
-        bot_item4:
-          image: item4/yui:latest
-          volumes:
-            - .:/yui/data
-          environment:
-            - YUI_CONFIG_FILE_PATH=data/yui.config.toml
-          depends_on:
-            - db
-          links:
-            - db
-          command: ./data/run.sh
-        db:
-          image: postgres:alpine
-          volumes:
-            - ./postgres/data:/var/lib/postgresql/data
-          environment:
-            - POSTGRES_PASSWORD=MYSECRET
-          healthcheck:
-            test: "pg_isready -h localhost -p 5432 -q -U postgres"
-            interval: 3s
-            timeout: 1s
-            retries: 10
-
-3. Pull images
+1. docker와 docker-compose를 설치해주세요.
+2. ``docker-compose.yml`` 파일을 만들어주세요. (내용은 예제 폴더를 참조)
+3. YUI가 사용하는 이미지를 다운로드 받아주세요.
 
    .. code-block:: bash
 
       $ docker pull item4/yui
-      $ docker pull postgres:alpine
+      $ docker pull postgres:14
 
-4. Launch db container and create database
+4. 먼저 DB 컨테이너만 실행하여 사용자와 database를 생성합니다.
 
    .. code-block:: bash
 
       $ docker-compose up -d db
-      $ docker ps  # and see container name
-      $ docker exec -it <CONTAINER_NAME_HERE> psql -U postgres  # and typing create database dbname; for create db
+      $ docker-compose exec db createuser [사용자명]
+      $ docker-compose exec db psql -U postgres
+      # on psql console
+      \password [사용자명]
+      create database [DB명]
 
-5. Create config file with db info
-
-6. Launch Yui
+5. 위 단락에서 지정한 값을 config 파일에 반영합니다.
+6. YUI를 docker-compose로 실행합니다.
 
    .. code-block:: bash
 
       $ docker-compose up -d
 
-You can see example files on ``example`` directory at this repo.
+자세한 내용은 예제 폴더를 참조해주세요.
 
 
-Contribute to YUI
+YUI에 코드 기여하기
 -----------------
 
-YUI has some coding convention or rules such as PEP-8
-So you must run ``poetry install`` first and install pre-commit hook by below commands.
+YUI는 PEP8 등의 몇가지 코드 컨벤션을 따르고 있습니다.
+이를 위해서는 ``poetry install`` 이후에 반드시 추가적으로 아래와 같은 방법으로 Git Hook을 설치해주셔야합니다.
 
 .. code-block:: bash
 
@@ -318,9 +253,11 @@ License
 MIT
 
 
-Become a Sponsor
+스폰서가 되어주세요!
 ----------------
 
-.. image:: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
-   :target: https://www.buymeacoffee.com/item4
-   :alt: Buy Me A Coffee
+* `Buy Me A Coffee`_
+* `Become a patron`_
+
+.. _`Buy Me A Coffee`: https://www.buymeacoffee.com/item4
+.. _`Become a patron`: https://www.patreon.com/item4
