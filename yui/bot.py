@@ -287,7 +287,7 @@ class Bot:
             payload: str | aiohttp.FormData
             if json_mode:
                 payload = json.dumps(data)
-                headers["Content-Type"] = "application/json"
+                headers["Content-Type"] = "application/json; charset=utf-8"
                 headers["Authorization"] = "Bearer {}".format(
                     token or self.config.BOT_TOKEN
                 )
