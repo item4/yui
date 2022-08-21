@@ -68,7 +68,7 @@ PREFIX = '.'
 APPS = ['a', 'b']
 
 [CHANNELS]
-general = '_general'
+general = 'C1'
 
 [USERS]
 owner = 'U111'
@@ -83,7 +83,7 @@ owner = 'U111'
     assert config.PREFIX == "."
     assert config.APPS == ["a", "b"]
     assert config.CHANNELS == {
-        "general": "_general",
+        "general": "C1",
     }
 
 
@@ -142,7 +142,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.CHANNELS = {"general": "_general"}
+    bot_config.CHANNELS = {"general": "C1"}
     assert bot_config.check(
         {},
         {"general"},
@@ -182,7 +182,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.CHANNELS = {"test": ["aaa", "bbb"]}
+    bot_config.CHANNELS = {"test": ["C1", "C2"]}
     assert bot_config.check(
         {},
         set(),
