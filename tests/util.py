@@ -47,7 +47,8 @@ class FakeBot(Bot):
         if config is None:
             config = Config(
                 **DEFAULT,
-                TOKEN="asdf",
+                APP_TOKEN="TEST_APP_TOKEN",
+                BOT_TOKEN="TEST_BOT_TOKEN",
                 CHANNELS={},
                 USERS={},
             )

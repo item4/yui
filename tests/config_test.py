@@ -60,7 +60,8 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
     with file.open("w") as f:
         f.write(
             """
-TOKEN = 'asdf'
+APP_TOKEN = 'TEST_APP_TOKEN'
+BOT_TOKEN = 'TEST_BOT_TOKEN'
 DATABASE_URL = 'sqlite:///:memory:'
 DEBUG = true
 PREFIX = '.'
@@ -88,30 +89,30 @@ owner = 'U111'
 def test_config_check(bot_config):
     del bot_config.TOKEN
 
-    err = "Required config key was not defined: TOKEN"
+    err = "Required config key was not defined: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
-            {"TOKEN": str},
+            {"APP_TOKEN": str},
             set(),
             set(),
             set(),
             set(),
         )
 
-    bot_config.TOKEN = "asdf"
-    err = "Wrong config value type: TOKEN"
+    bot_config.APP_TOKEN = "TEST_APP_TOKEN"
+    err = "Wrong config value type: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
-            {"TOKEN": list[int]},
+            {"APP_TOKEN": list[int]},
             set(),
             set(),
             set(),
             set(),
         )
 
-    bot_config.TOKEN = "XXXX"
+    bot_config.APP_TOKEN = "XXXX"
     assert bot_config.check(
-        {"TOKEN": str},
+        {"APP_TOKEN": str},
         set(),
         set(),
         set(),

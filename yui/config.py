@@ -73,7 +73,8 @@ class ConfigurationError(Exception):
 
 class Config(SimpleNamespace):
 
-    TOKEN: str
+    APP_TOKEN: str
+    BOT_TOKEN: str
     RECEIVE_TIMEOUT: int
     DEBUG: bool
     PREFIX: str

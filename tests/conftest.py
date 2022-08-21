@@ -110,7 +110,8 @@ def gen_config(request):
         dict(
             DEBUG=True,
             DATABASE_URL=database_url,
-            TOKEN="asdf1234",
+            APP_TOKEN="TEST_APP_TOKEN",
+            BOT_TOKEN="TEST_BOT_TOKEN",
             REGISTER_CRONTAB=False,
             CHANNELS={},
             USERS={},
