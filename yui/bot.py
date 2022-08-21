@@ -23,8 +23,6 @@ from aiohttp.client_exceptions import ClientError
 from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 
-import async_timeout
-
 from dateutil.tz import tzoffset
 
 import emcache
@@ -291,11 +289,11 @@ class Bot:
                 payload = json.dumps(data)
                 headers["Content-Type"] = "application/json"
                 headers["Authorization"] = "Bearer {}".format(
-                    token or self.config.TOKEN
+                    token or self.config.BOT_TOKEN
                 )
             else:
                 payload = aiohttp.FormData(data or {})
-                payload.add_field("token", token or self.config.TOKEN)
+                payload.add_field("token", token or self.config.BOT_TOKEN)
 
             try:
                 async with session.post(
@@ -371,14 +369,17 @@ class Bot:
 
     async def ping(self, ws: ClientWebSocketResponse):
         while not ws.closed:
+            await ws.ping()
+            await asyncio.sleep(10)
+
+    async def acknowledge(self, ws: ClientWebSocketResponse, envelope_id: str):
+        if not ws.closed:
             await ws.send_json(
-                {"id": datetime.now().toordinal(), "type": "ping"},
+                {"envelope_id": envelope_id},
                 dumps=json.dumps,
             )
-            await asyncio.sleep(60)
 
     async def receive(self, ws: ClientWebSocketResponse):
-        timeout = self.config.RECEIVE_TIMEOUT
         logger = logging.getLogger(f"{__name__}.Bot.receive")
 
         while not ws.closed:
@@ -386,23 +387,27 @@ class Bot:
                 self.restart = False
                 await ws.close()
                 break
-
-            try:
-                async with async_timeout.timeout(timeout):
-                    msg: aiohttp.WSMessage = await ws.receive()
-            except asyncio.TimeoutError:
-                logger.error(f"receive timeout({timeout})")
+            elif ws.closed:
                 await ws.close()
                 break
+
+            msg: aiohttp.WSMessage = await ws.receive()
 
             if msg == aiohttp.http.WS_CLOSED_MESSAGE:
                 break
 
             if msg.type == aiohttp.WSMsgType.TEXT:
                 source = msg.json(loads=json.loads)
-                type_ = source.pop("type", None)
+                envelope_id = source.pop("envelope_id", None)
+                payload = source.pop("payload", {})
+                event = payload.pop("event", None)
+                if envelope_id:
+                    await self.acknowledge(ws, envelope_id)
+                if not event:
+                    continue
+                type_ = event.pop("type", None)
                 try:
-                    event = create_event(type_, source)
+                    event = create_event(type_, event)
                 except:  # noqa:
                     logger.exception(msg.data)
                 else:
@@ -435,15 +440,35 @@ class Bot:
                 await asyncio.sleep(0.1)
 
             try:
-                rtm = await self.call("rtm.connect")
+                resp = await self.api.apps.connections.open(
+                    token=self.config.APP_TOKEN
+                )
             except Exception as e:
                 logger.exception(e)
                 continue
-            if not rtm.body["ok"]:
-                if rtm.body["error"] in {
+            if not resp.body["ok"]:
+                if resp.body["error"] in {
+                    "invalid_auth",
+                    "missing_args",
+                    "insecure_request",
+                    "forbidden_team",
+                    "not_authed",
+                    "access_denied",
+                    "account_inactive",
+                    "token_revoked",
+                    "token_expired",
+                    "no_permission",
+                    "not_allowed_token_type",
+                    "invalid_charset",
+                }:
+                    logger.error(resp.body["error"])
+                    break
+
+                if resp.body["error"] in {
                     "migration_in_progress",
                     "ratelimited",
                     "accesslimited",
+                    "request_timeout",
                     "service_unavailable",
                     "fatal_error",
                     "internal_error",
@@ -452,9 +477,9 @@ class Bot:
                 continue
 
             try:
-                logger.info("Connected to Slack RTM.")
+                logger.info("Connected to Slack")
                 async with aiohttp.ClientSession() as session:
-                    async with session.ws_connect(rtm.body["url"]) as ws:
+                    async with session.ws_connect(resp.body["url"]) as ws:
                         await asyncio.wait(
                             (
                                 self.ping(ws),
@@ -465,7 +490,7 @@ class Bot:
 
                 raise BotReconnect()
             except BotReconnect:
-                logger.info("BotReconnect raised. I will reconnect to rtm.")
+                logger.info("BotReconnect raised. I will reconnect soon.")
                 continue
             except:  # noqa
                 logger.exception("Unexpected Exception raised")

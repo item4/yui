@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import timedelta
 
+from .apps import Apps
 from .chat import Chat
 from .conversations import Conversations
 from .users import Users
@@ -20,6 +21,7 @@ POST_MESSAGE = _limit_to_timedelta(60)  # 1 per second
 class SlackAPI:
     """Slack API Interface"""
 
+    apps: Apps
     converstations: Conversations
     chat: Chat
     users: Users
@@ -27,6 +29,7 @@ class SlackAPI:
     def __init__(self, bot) -> None:
         """Initialize"""
 
+        self.apps = Apps(bot)
         self.chat = Chat(bot)
         self.conversations = Conversations(bot)
         self.users = Users(bot)
@@ -34,6 +37,9 @@ class SlackAPI:
         self.throttle_interval: defaultdict[str, timedelta] = defaultdict(
             lambda: TIER3
         )
+
+        # apps.connections tier 1
+        self.throttle_interval["apps.connections.open"] = TIER1
 
         # chat tier 3
         self.throttle_interval["chat.delete"] = TIER3
