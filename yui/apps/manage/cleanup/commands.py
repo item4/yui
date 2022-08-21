@@ -11,6 +11,7 @@ from ....event import Message
 from ....transform import choice
 from ....utils.datetime import now
 
+box.assert_config_required("USER_TOKEN", str)
 box.assert_channels_required("auto_cleanup_targets")
 box.assert_users_required("force_cleanup")
 

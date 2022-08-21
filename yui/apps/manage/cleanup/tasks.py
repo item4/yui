@@ -8,7 +8,7 @@ from .commons import collect_history_from_channel
 from ....box import box
 
 
-box.assert_config_required("OWNER_USER_TOKEN", str)
+box.assert_config_required("USER_TOKEN", str)
 box.assert_channels_required("auto_cleanup_targets")
 
 LOGS = set[tuple[str, str]]
