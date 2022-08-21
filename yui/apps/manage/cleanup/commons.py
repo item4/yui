@@ -91,7 +91,6 @@ async def cleanup_by_history(
                         channel_id,
                         message["ts"],
                         token=token,
-                        as_user=as_user,
                     )
                     ok = res.body["ok"]
                 except APICallError as e:
