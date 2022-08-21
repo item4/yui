@@ -52,16 +52,14 @@ async def test_dice_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert not said.data["as_user"]
     assert said.data["username"] == "딜러"
-    assert said.data["text"] == ("유이가 기도하며 주사위를 굴려줬습니다. 19입니다.")
+    assert said.data["text"] == "유이가 기도하며 주사위를 굴려줬습니다. 19입니다."
 
     assert not await dice(bot, event, "", seed=206)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert not said.data["as_user"]
     assert said.data["username"] == "딜러"
     assert said.data["text"] == "콩"
 
@@ -70,7 +68,6 @@ async def test_dice_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert not said.data["as_user"]
     assert said.data["username"] == "딜러"
     assert said.data["text"] == "콩콩"
 
@@ -79,7 +76,6 @@ async def test_dice_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert not said.data["as_user"]
     assert said.data["username"] == "딜러"
     assert said.data["text"] == "*Error*: Can not parse this chunk (`bug`)"
 
@@ -88,6 +84,5 @@ async def test_dice_handler(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert not said.data["as_user"]
     assert said.data["username"] == "딜러"
     assert said.data["text"] == "d6 == 2"

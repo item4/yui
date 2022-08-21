@@ -1,6 +1,5 @@
 import pytest
 
-from yui.api.encoder import bool2str
 from yui.types.slack.attachment import Attachment
 from yui.types.slack.attachment import Field
 from yui.types.slack.block import Divider
@@ -13,25 +12,23 @@ async def test_slack_api_chat_delete(bot):
     ts = "1234.56"
     alternative_token = "1234567890"
 
-    await bot.api.chat.delete(channel_id, ts, False)
+    await bot.api.chat.delete(channel_id, ts)
 
     call = bot.call_queue.pop()
     assert call.method == "chat.delete"
     assert call.data == {
         "channel": channel_id,
         "ts": ts,
-        "as_user": bool2str(False),
     }
     assert call.token is None
 
-    await bot.api.chat.delete(channel_id, ts, True, token=alternative_token)
+    await bot.api.chat.delete(channel_id, ts, token=alternative_token)
 
     call = bot.call_queue.pop()
     assert call.method == "chat.delete"
     assert call.data == {
         "channel": channel_id,
         "ts": ts,
-        "as_user": bool2str(True),
     }
     assert call.token == alternative_token
 
@@ -103,7 +100,6 @@ async def test_slack_api_chat_post_ephemeral(bot):
     assert call.json_mode
 
     await bot.api.chat.postEphemeral(
-        as_user=False,
         attachments=attachments,
         blocks=blocks,
         channel=channel_id,
@@ -141,7 +137,6 @@ async def test_slack_api_chat_post_ephemeral(bot):
         ],
         "blocks": [{"type": "divider"}],
         "username": username,
-        "as_user": False,
         "icon_url": icon_url,
         "icon_emoji": icon_emoji,
         "thread_ts": thread_ts,
@@ -174,14 +169,13 @@ async def test_slack_api_chat_post_message(bot):
     with pytest.raises(TypeError):
         await bot.api.chat.postMessage(channel=channel_id)
 
-    await bot.api.chat.postMessage(channel=channel_id, text=text, as_user=True)
+    await bot.api.chat.postMessage(channel=channel_id, text=text)
 
     call = bot.call_queue.pop()
     assert call.method == "chat.postMessage"
     assert call.data == {
         "channel": channel_id,
         "text": text,
-        "as_user": True,
         "mrkdwn": True,
     }
     assert call.json_mode
@@ -210,7 +204,6 @@ async def test_slack_api_chat_post_message(bot):
     assert call.json_mode
 
     await bot.api.chat.postMessage(
-        as_user=False,
         attachments=attachments,
         blocks=blocks,
         channel=channel_id,
@@ -252,7 +245,6 @@ async def test_slack_api_chat_post_message(bot):
         "unfurl_links": False,
         "unfurl_media": True,
         "username": username,
-        "as_user": False,
         "icon_url": icon_url,
         "icon_emoji": icon_emoji,
         "thread_ts": thread_ts,

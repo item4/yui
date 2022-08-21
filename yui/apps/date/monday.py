@@ -24,7 +24,6 @@ async def monday_dog(bot):
     monday_dog_say = functools.partial(
         bot.api.chat.postMessage,
         channel=bot.config.CHANNEL["general"],
-        as_user=False,
         username=name,
         icon_url=icon,
     )

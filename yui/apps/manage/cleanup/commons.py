@@ -56,7 +56,6 @@ async def cleanup_by_history(
     ts: str,
     token: str | None,
     minimum: int = 100,
-    as_user: bool = False,
 ) -> int:
     deleted = 0
     deletable = True

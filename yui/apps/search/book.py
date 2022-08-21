@@ -76,7 +76,6 @@ async def book(bot, event: Message, keyword: str):
                 count,
             ),
             attachments=attachments,
-            as_user=True,
             thread_ts=event.ts,
         )
     else:

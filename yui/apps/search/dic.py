@@ -119,5 +119,4 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
             channel=event.channel,
             attachments=attachments,
             text="검색결과 {}개의 링크를 찾았어요!".format(len(attachments)),
-            as_user=True,
         )

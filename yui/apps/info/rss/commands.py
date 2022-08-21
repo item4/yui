@@ -197,7 +197,6 @@ async def crawl(bot, sess: AsyncSession):
             await bot.api.chat.postMessage(
                 channel=feed.channel,
                 attachments=attachments,
-                as_user=True,
             )
 
             sess.add(feed)

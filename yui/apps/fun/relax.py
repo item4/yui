@@ -32,7 +32,6 @@ async def relax(bot, event: Message):
     await bot.api.chat.postMessage(
         channel=event.channel,
         text=f"{message} {jv}! 악당은 방금 이 너굴맨이 처치했으니 안심하라구!",
-        as_user=False,
         icon_url="https://i.imgur.com/dG6wXTX.jpg",
         username="너굴맨",
     )

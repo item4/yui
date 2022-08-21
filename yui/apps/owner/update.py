@@ -92,7 +92,6 @@ async def update(bot, event: Message, raw: str):
             channel=bot.config.CHANNELS["notice"],
             text=pretext,
             attachments=attachments,
-            as_user=True,
         )
     else:
         await bot.say(

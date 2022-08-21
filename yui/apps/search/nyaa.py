@@ -164,7 +164,6 @@ async def nyaa(bot, event: Message, category_name: str, keyword: str):
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
-            as_user=True,
             thread_ts=event.ts,
         )
     else:

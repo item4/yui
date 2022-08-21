@@ -45,7 +45,6 @@ async def say_packtpub_dotd(bot: Bot, channel):
             channel=channel,
             text="오늘자 PACKT Book의 무료책이에요!",
             attachments=attachments,
-            as_user=True,
         )
     else:
         await bot.say(channel, "오늘은 PACKT Book의 무료책이 없는 것 같아요")

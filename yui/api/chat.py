@@ -1,6 +1,5 @@
 from typing import Any
 
-from .encoder import bool2str
 from .endpoint import Endpoint
 from ..types.base import ChannelID
 from ..types.base import Ts
@@ -18,7 +17,6 @@ class Chat(Endpoint):
         self,
         channel: ChannelID,
         ts: Ts,
-        as_user: bool | None = None,
         *,
         token: str | None = None,
     ) -> APIResponse:
@@ -29,9 +27,6 @@ class Chat(Endpoint):
             "ts": str(ts),
         }
 
-        if as_user is not None:
-            params["as_user"] = bool2str(as_user)
-
         return await self._call("delete", params, token=token)
 
     async def postEphemeral(
@@ -41,7 +36,6 @@ class Chat(Endpoint):
         text: str | None = None,
         *,
         attachments: list[Attachment] | None = None,
-        as_user: bool | None = None,
         blocks: list[Block] | None = None,
         icon_emoji: str | None = None,
         icon_url: str | None = None,
@@ -66,9 +60,6 @@ class Chat(Endpoint):
 
         if attachments is not None:
             params["attachments"] = attachments
-
-        if as_user is not None:
-            params["as_user"] = as_user
 
         if blocks is not None:
             params["blocks"] = blocks
@@ -103,7 +94,6 @@ class Chat(Endpoint):
         channel: ChannelID,
         text: str | None = None,
         *,
-        as_user: bool | None = None,
         attachments: list[Attachment] | None = None,
         blocks: list[Block] | None = None,
         icon_emoji: str | None = None,
@@ -129,9 +119,6 @@ class Chat(Endpoint):
 
         if text is not None:
             params["text"] = text
-
-        if as_user is not None:
-            params["as_user"] = as_user
 
         if attachments is not None:
             params["attachments"] = attachments

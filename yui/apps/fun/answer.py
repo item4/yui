@@ -90,7 +90,6 @@ async def magic_conch(bot, event: Message):
         await bot.api.chat.postMessage(
             channel=event.channel,
             text=random.choice(RESPONSES),
-            as_user=False,
             icon_url=icon_url,
             username="마법의 소라고둥",
         )

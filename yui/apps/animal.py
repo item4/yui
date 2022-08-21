@@ -100,7 +100,6 @@ async def cat(bot, event: Message, timeout: float):
     cat_say = functools.partial(
         bot.api.chat.postMessage,
         channel=event.channel,
-        as_user=False,
         username="냥짤의 요정",
         icon_url="https://i.imgur.com/hIBJUMI.jpg",
     )
@@ -147,7 +146,6 @@ async def dog(bot, event: Message, timeout: float):
     dog_say = functools.partial(
         bot.api.chat.postMessage,
         channel=event.channel,
-        as_user=False,
         username="멍짤의 요정",
         icon_url="https://i.imgur.com/Q9FKplO.png",
     )
@@ -193,7 +191,6 @@ async def fox(bot, event: Message, timeout: float = 1.5):
     fox_say = functools.partial(
         bot.api.chat.postMessage,
         channel=event.channel,
-        as_user=False,
         username="웹 브라우저의 요정",
         icon_url="https://i.imgur.com/xFpyvpZ.png",
     )

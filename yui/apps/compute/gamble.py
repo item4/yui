@@ -133,7 +133,6 @@ async def dice(bot, event: Message, raw: str, seed: int = None):
 
     await bot.api.chat.postMessage(
         channel=event.channel,
-        as_user=False,
         username="딜러",
         icon_url="https://i.imgur.com/8OcjS3o.jpg",
         text=text,

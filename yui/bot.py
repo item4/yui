@@ -330,7 +330,6 @@ class Bot:
         return await self.api.chat.postMessage(
             channel,
             text[:length_limit],
-            as_user=True,
             link_names=True,
             **kwargs,
         )

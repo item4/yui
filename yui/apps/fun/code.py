@@ -31,7 +31,6 @@ async def write_code_review(bot, event: Message, *, seed=None):
     await bot.api.chat.postMessage(
         channel=event.channel,
         attachments=[Attachment(fallback=image_url, image_url=image_url)],
-        as_user=False,
         icon_url=ICON_URL,
         username="코드램지",
     )

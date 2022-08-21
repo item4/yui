@@ -327,7 +327,6 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
-            as_user=True,
             thread_ts=event.ts,
         )
 
@@ -378,7 +377,6 @@ async def search_finished(
             await bot.api.chat.postMessage(
                 channel=event.channel,
                 attachments=attachments,
-                as_user=True,
                 thread_ts=event.event_ts,
             )
     else:

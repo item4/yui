@@ -44,9 +44,7 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
         token = None
         channels = []
         force_cleanup = []
-        as_user = True
     else:
-        as_user = False
         try:
             token = bot.config.USER_TOKEN
         except AttributeError:
@@ -100,7 +98,6 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
             event.ts,
             token,
             count,
-            as_user,
         )
 
     await bot.say(
