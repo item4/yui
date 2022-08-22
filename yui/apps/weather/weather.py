@@ -381,7 +381,7 @@ async def weather(
 
     humidity = "{}%".format(shorten(weather_result.humidity))
 
-    atmospheric = "{}hPa".format(shorten(weather_result.pressure))
+    atmospheric = "{}㍱".format(shorten(weather_result.pressure))
 
     # full_address를 쓰는 이유는 result.location은 영어이기 때문입니다.
     weather_text = "[{}] ".format(full_address)
@@ -428,7 +428,7 @@ async def weather(
     for key, name in LABELS.items():
         f: float | None = getattr(air_pollution_result, key)
         if f:
-            air_pollution_text += f"* {name}: {f}μg/m3\n"
+            air_pollution_text += f"* {name}: {f}㎍/㎥\n"
 
     text = air_pollution_text.strip()
 
