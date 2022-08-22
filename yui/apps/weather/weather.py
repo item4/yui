@@ -358,14 +358,14 @@ async def weather(
 
     rain = None
     if weather_result.rain:
-        rain = "예(1시간: {} / 3시간: {})".format(
+        rain = "예(1시간: {}㎜ / 3시간: {}㎜)".format(
             shorten(weather_result.rain_1h),
             shorten(weather_result.rain_3h),
         )
 
     snow = None
     if weather_result.snow:
-        snow = "예(1시간: {} / 3시간: {})".format(
+        snow = "예(1시간: {}㎜ / 3시간: {}㎜)".format(
             shorten(weather_result.snow_1h),
             shorten(weather_result.snow_3h),
         )
