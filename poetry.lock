@@ -826,11 +826,11 @@ url = ["furl (>=0.4.1)"]
 
 [[package]]
 name = "sympy"
-version = "1.10.1"
+version = "1.11"
 description = "Computer algebra system (CAS) in Python"
 category = "main"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 
 [package.dependencies]
 mpmath = ">=0.19"
@@ -917,7 +917,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-six"
-version = "1.16.18"
+version = "1.16.19"
 description = "Typing stubs for six"
 category = "dev"
 optional = false
@@ -1982,8 +1982,8 @@ sqlalchemy-utils = [
     {file = "SQLAlchemy_Utils-0.38.3-py3-none-any.whl", hash = "sha256:5c13b5d08adfaa85f3d4e8ec09a75136216fad41346980d02974a70a77988bf9"},
 ]
 sympy = [
-    {file = "sympy-1.10.1-py3-none-any.whl", hash = "sha256:df75d738930f6fe9ebe7034e59d56698f29e85f443f743e51e47df0caccc2130"},
-    {file = "sympy-1.10.1.tar.gz", hash = "sha256:5939eeffdf9e152172601463626c022a2c27e75cf6278de8d401d50c9d58787b"},
+    {file = "sympy-1.11-py3-none-any.whl", hash = "sha256:b53069f5f30e4a4690b57cdb8e3d0d9065fff42627239db718214f804e442481"},
+    {file = "sympy-1.11.tar.gz", hash = "sha256:1fe96b4c56bb7a7630cdf150a6cd98bc97a79e6be233e30502aba1cf54dee33d"},
 ]
 time-machine = [
     {file = "time-machine-2.8.1.tar.gz", hash = "sha256:4779029fa192fc36f782c1032a44be76ce8b75b1f0b7ec746647cb950b620bb7"},
@@ -2065,8 +2065,8 @@ types-pytz = [
     {file = "types_pytz-2022.2.1.0-py3-none-any.whl", hash = "sha256:50ead2254b524a3d4153bc65d00289b66898060d2938e586170dce918dbaf3b3"},
 ]
 types-six = [
-    {file = "types-six-1.16.18.tar.gz", hash = "sha256:26f481fabb65321ba428bdfb82c97fc638e00be6b20efa83915b007cf3893e28"},
-    {file = "types_six-1.16.18-py3-none-any.whl", hash = "sha256:4f8be25faaa0a3088d6380ab7f27b4c7bc74ba81b2c7a351729f5be4af438290"},
+    {file = "types-six-1.16.19.tar.gz", hash = "sha256:5bd851a00d761c5b5df78a379cb174a9aa63defc8d967600bbb37df607099ed2"},
+    {file = "types_six-1.16.19-py3-none-any.whl", hash = "sha256:c9892951c3fd39e193aa35952049c48b31b56bd9c0bf104eb9735de030f20c8d"},
 ]
 types-toml = [
     {file = "types-toml-0.10.8.tar.gz", hash = "sha256:b7e7ea572308b1030dc86c3ba825c5210814c2825612ec679eb7814f8dd9295a"},
