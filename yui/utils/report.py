@@ -72,9 +72,13 @@ async def report(
         block += line
         length += len(line)
 
+    resp = await bot.api.conversations.open(
+        users=[bot.config.USERS["owner"]],
+    )
+
     for message in messages:
         await bot.say(
-            bot.config.USERS["owner"],
+            resp.body["channel"]["id"],  # type: ignore
             message,
             length_limit=None,
         )
