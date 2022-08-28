@@ -99,7 +99,7 @@ async def fx_sess(fx_engine):
     try:
         yield sess
     finally:
-        await sess.rollback()
+        await sess.close()
 
 
 def gen_config(request):
