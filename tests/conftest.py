@@ -17,8 +17,8 @@ from yui.cache import Cache
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.orm import Base
-from yui.orm import get_database_engine
-from yui.orm import make_session
+from yui.orm import create_database_engine
+from yui.orm import sessionmaker
 
 from .util import FakeBot
 
@@ -49,7 +49,7 @@ async def fx_engine(request):
     config = gen_config(request)
     if database_url:
         config.DATABASE_URL = database_url
-    engine = get_database_engine(config)
+    engine = create_database_engine(database_url, False)
     try:
         metadata = Base.metadata
         async with engine.begin() as conn:
@@ -95,9 +95,11 @@ async def fx_sess(fx_engine):
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
 
-    sess = make_session(bind=fx_engine)
-    yield sess
-    await sess.rollback()
+    sess = sessionmaker(bind=fx_engine)
+    try:
+        yield sess
+    finally:
+        await sess.rollback()
 
 
 def gen_config(request):

@@ -1,6 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker as _sessionmaker
 
 
-def make_session(*args, **kwargs) -> AsyncSession:
+def sessionmaker(*args, **kwargs):
+    kwargs["class_"] = AsyncSession
     kwargs["expire_on_commit"] = False
-    return AsyncSession(*args, **kwargs)
+    return _sessionmaker(*args, **kwargs)

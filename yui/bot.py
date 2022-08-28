@@ -35,8 +35,8 @@ from .cache import Cache
 from .config import Config
 from .event import create_event
 from .orm import Base
-from .orm import get_database_engine
-from .orm import make_session
+from .orm import create_database_engine
+from .orm import sessionmaker
 from .types.base import ChannelID
 from .types.base import UserID
 from .types.channel import DirectMessageChannel
@@ -100,7 +100,11 @@ class Bot:
         self.thread_pool_executor = ThreadPoolExecutor()
 
         logger.info("connect to DB")
-        config.DATABASE_ENGINE = get_database_engine(config)
+        self.database_engine = create_database_engine(
+            config.DATABASE_URL,
+            echo=config.DATABASE_ECHO,
+        )
+        self.session_maker = sessionmaker(self.database_engine)
 
         logger.info("connect to memcache")
 
@@ -168,7 +172,7 @@ class Bot:
                 if "loop" in func_params:
                     kw["loop"] = asyncio.get_running_loop()
 
-                sess = make_session(bind=bot.config.DATABASE_ENGINE)
+                sess = bot.session_maker()
                 if "sess" in func_params:
                     kw["sess"] = sess
 

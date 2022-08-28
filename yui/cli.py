@@ -105,7 +105,7 @@ def revision(
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -153,7 +153,7 @@ def migrate(
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -176,7 +176,7 @@ def edit(config, revision: str):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -214,7 +214,7 @@ def merge(
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -239,7 +239,7 @@ def upgrade(config, revision: str, sql: bool, tag: str | None):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -264,7 +264,7 @@ def downgrade(config, revision: str, sql: bool, tag: str):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -287,7 +287,7 @@ def show(config, revision: str):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -311,7 +311,7 @@ def history(config, verbose: bool, rev_range: str | None):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -337,7 +337,7 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -360,7 +360,7 @@ def branches(config, verbose: bool):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -383,7 +383,7 @@ def current(config, verbose: bool):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())
@@ -409,7 +409,7 @@ def stamp(config, revision: str, sql: bool, tag: str | None):
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
-        async with bot.config.DATABASE_ENGINE.begin() as conn:
+        async with bot.database_engine.begin() as conn:
             await conn.run_sync(op, c)
 
     asyncio.run(main())

@@ -2,9 +2,8 @@ from .columns import DateTimeAtColumn
 from .columns import DateTimeColumn
 from .columns import TimezoneColumn
 from .engine import create_database_engine
-from .engine import get_database_engine
 from .model import Base
-from .session import make_session
+from .session import sessionmaker
 from .types import JSONType
 from .types import TimezoneType
 from .utils import TRUNCATE_QUERY

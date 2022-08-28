@@ -4,8 +4,6 @@ import sys
 from types import SimpleNamespace
 from typing import Any
 
-from sqlalchemy.engine import Engine
-
 import toml
 
 from .utils.cast import CastError
@@ -87,7 +85,6 @@ class Config(SimpleNamespace):
     USERS: dict[str, Any]
     CACHE: dict[str, Any]
     WEBSOCKETDEBUGGERURL: str | None
-    DATABASE_ENGINE: Engine
 
     def check(
         self,

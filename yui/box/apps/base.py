@@ -7,7 +7,6 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
 from ...event import Event
-from ...orm import make_session
 
 if TYPE_CHECKING:
     from ...bot import Bot
@@ -50,7 +49,7 @@ class BaseApp:
         func_params: Mapping[str, inspect.Parameter],
         **kwargs,
     ):
-        sess = make_session(bind=bot.config.DATABASE_ENGINE)
+        sess = bot.session_maker()
         if "self" in func_params:
             kwargs["_self"] = self
         if "bot" in func_params:
