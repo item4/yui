@@ -154,7 +154,7 @@ class Bot:
 
             @aiocron.crontab(c.spec, tz=UTC9, loop=loop, *c.args, **c.kwargs)
             async def task():
-                log = logging.getLogger(str(c))
+                log = logging.getLogger(repr(c.handler))
 
                 if not bot.is_ready:
                     log.debug("cron condition hit but not ready")
