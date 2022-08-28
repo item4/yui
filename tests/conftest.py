@@ -95,11 +95,9 @@ async def fx_sess(fx_engine):
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
 
-    sess = sessionmaker(bind=fx_engine)
-    try:
+    session = sessionmaker(bind=fx_engine)
+    async with session() as sess:
         yield sess
-    finally:
-        await sess.close()
 
 
 def gen_config(request):
