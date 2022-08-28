@@ -22,7 +22,7 @@ class SlackAPI:
     """Slack API Interface"""
 
     apps: Apps
-    converstations: Conversations
+    conversations: Conversations
     chat: Chat
     users: Users
 
