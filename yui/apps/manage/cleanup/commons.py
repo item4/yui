@@ -1,5 +1,6 @@
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import delete
 from sqlalchemy.sql.expression import select
 
 from .models import EventLog
@@ -52,6 +53,7 @@ async def cleanup_by_event_logs(
 
 async def cleanup_by_history(
     bot,
+    sess: AsyncSession,
     channel_id: ChannelID,
     ts: str,
     token: str | None,
@@ -100,6 +102,13 @@ async def cleanup_by_history(
                 if ok:
                     deletable = True
                     deleted += 1
+                    await sess.execute(
+                        delete(EventLog).where(
+                            EventLog.channel == channel_id,
+                            EventLog.ts == message["ts"],
+                        )
+                    )
+                    await sess.commit()
 
     return deleted
 

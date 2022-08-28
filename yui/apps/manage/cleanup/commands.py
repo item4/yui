@@ -93,6 +93,7 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
     else:
         deleted = await cleanup_by_history(
             bot,
+            sess,
             event.channel,
             event.ts,
             token,
