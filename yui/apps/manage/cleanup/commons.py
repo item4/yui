@@ -126,10 +126,10 @@ async def collect_history_from_channel(
         if "response_metadata" in history:
             cursor = history["response_metadata"]["next_cursor"]
 
-        messages = history["messages"]
+        messages = simplify_history_result(history["messages"])
         while messages:
             message = messages.pop(0)
-            reply_count = message.get("reply_count", 0)
+            reply_count = message["reply_count"]
             if reply_count:
                 try:
                     r = await bot.api.conversations.replies(
@@ -139,7 +139,7 @@ async def collect_history_from_channel(
                 except APICallError as e:
                     await report(bot, exception=e)
                 else:
-                    messages += r.body.get("messages", [])
+                    messages += simplify_history_result(r.body["messages"][1:])
             await sess.execute(
                 insert(EventLog)
                 .values(channel=channel_id, ts=message["ts"])
@@ -149,3 +149,16 @@ async def collect_history_from_channel(
             collected += 1
 
         return collected
+
+
+def simplify_history_result(rows: list[dict]) -> list[dict]:
+    results = []
+    for row in rows:
+        results.append(
+            {
+                "ts": row["ts"],
+                "reply_count": row.get("reply_count", 0),
+                "messages": row.get("messages", []),
+            }
+        )
+    return results
