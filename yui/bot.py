@@ -154,12 +154,14 @@ class Bot:
 
             @aiocron.crontab(c.spec, tz=UTC9, loop=loop, *c.args, **c.kwargs)
             async def task():
+                log = logging.getLogger(str(c))
+
                 if not bot.is_ready:
-                    logger.debug(f"cron condition hit but not ready {c}")
+                    log.debug("cron condition hit but not ready")
                     return
-                logger.debug(f"cron condition hit {c}")
+                log.debug("cron condition hit")
                 if not is_runnable:
-                    logger.debug(f"cron skip(lock) {c}")
+                    log.debug("cron skip by lock")
                     return
 
                 is_runnable.pop()
@@ -170,7 +172,7 @@ class Bot:
                 if "sess" in func_params:
                     kw["sess"] = sess
 
-                logger.debug(f"cron run {c}")
+                log.debug("cron run")
                 try:
                     await c.handler(**kw)
                 except APICallError as e:
@@ -180,7 +182,7 @@ class Bot:
                 finally:
                     await sess.close()
                     is_runnable.append(1)
-                logger.debug(f"cron end {c}")
+                log.debug("cron end")
 
             c.start = task.start
             c.stop = task.stop

@@ -39,11 +39,6 @@ class CronTask:
         return handler
 
     def __repr__(self) -> str:
-        return (
-            "CronTask("
-            f"spec={self.spec!r}, "
-            f"func={self.handler.f.__module__}.{self.handler.f.__name__}"
-            ")"
-        )
+        return f"CronTask(spec={self.spec!r}, func={self.handler!r})"
 
     __str__ = __repr__

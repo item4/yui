@@ -111,6 +111,9 @@ class Handler:
             kwargs["self"] = _self
         return self.f(*args, **kwargs)
 
+    def __repr__(self) -> str:
+        return f"{self.f.__module__}.{self.f.__name__}"
+
 
 DECORATOR_ARGS_TYPE: TypeAlias = HANDLER_CALL_TYPE | Handler
 DECORATOR_TYPE: TypeAlias = Callable[[DECORATOR_ARGS_TYPE], Handler]
