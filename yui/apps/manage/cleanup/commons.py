@@ -17,7 +17,6 @@ async def cleanup_by_event_logs(
     token: str | None,
     count: int | None = None,
 ) -> int:
-    deleted = 0
     stmt = (
         select(EventLog)
         .where(
@@ -32,6 +31,8 @@ async def cleanup_by_event_logs(
 
     result = await sess.stream(stmt)
 
+    deleted: set[int] = set()
+
     async for log in result.scalars():  # type: EventLog
         try:
             resp = await bot.api.chat.delete(
@@ -41,14 +42,15 @@ async def cleanup_by_event_logs(
             )
         except APICallError as e:
             await report(bot, exception=e)
-            return deleted
+            return len(deleted)
         ok = resp.body["ok"]
         if ok or (not ok and resp.body["error"] == "message_not_found"):
-            deleted += ok
-            await sess.delete(log)
-            await sess.commit()
+            deleted.add(log.id)
 
-    return deleted
+    await sess.execute(delete(EventLog).where(EventLog.id.in_(list(deleted))))
+    await sess.commit()
+
+    return len(deleted)
 
 
 async def cleanup_by_history(
