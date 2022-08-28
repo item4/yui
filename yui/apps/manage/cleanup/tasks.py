@@ -38,7 +38,7 @@ async def cleanup_channels(bot, sess: AsyncSession):
             sess,
             channel,
             ts,
-            bot.config.OWNER_USER_TOKEN,
+            bot.config.USER_TOKEN,
         )
         logger.info(f"Finish channel cleanup: {channel}, {deleted} deleted")
 
