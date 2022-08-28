@@ -121,49 +121,51 @@ async def collect_history_from_channel(
     sess: AsyncSession,
 ) -> int:
     cursor = None
-    collected = 0
-    while True:
-        try:
-            resp = await bot.api.conversations.history(
-                channel_id,
-                cursor=cursor,
-            )
-        except APICallError as e:
-            await report(bot, exception=e)
-            return collected
+    collected: set[dict[str, str]] = set()
+    try:
+        while True:
+            try:
+                resp = await bot.api.conversations.history(
+                    channel_id,
+                    cursor=cursor,
+                )
+            except APICallError as e:
+                await report(bot, exception=e)
+                raise RuntimeError
 
-        history = resp.body
-        if not history["ok"]:
-            return collected
+            history = resp.body
+            if not history["ok"]:
+                raise RuntimeError
 
-        if "response_metadata" in history:
-            cursor = history["response_metadata"]["next_cursor"]
+            if "response_metadata" in history:
+                cursor = history["response_metadata"]["next_cursor"]
 
-        messages = simplify_history_result(history["messages"])
-        while messages:
-            message = messages.pop(0)
-            reply_count = message["reply_count"]
-            if reply_count:
-                try:
-                    r = await bot.api.conversations.replies(
-                        channel_id,
-                        ts=message["ts"],
-                    )
-                except APICallError as e:
-                    await report(bot, exception=e)
-                else:
-                    messages += simplify_history_result(
-                        r.body.get("messages", [])[1:]
-                    )
-            await sess.execute(
-                insert(EventLog)
-                .values(channel=channel_id, ts=message["ts"])
-                .on_conflict_do_nothing()
-            )
-            await sess.commit()
-            collected += 1
-
-        return collected
+            messages = simplify_history_result(history["messages"])
+            while messages:
+                message = messages.pop(0)
+                reply_count = message["reply_count"]
+                if reply_count:
+                    try:
+                        r = await bot.api.conversations.replies(
+                            channel_id,
+                            ts=message["ts"],
+                        )
+                    except APICallError as e:
+                        await report(bot, exception=e)
+                    else:
+                        messages += simplify_history_result(
+                            r.body.get("messages", [])[1:]
+                        )
+                collected.add(dict(channel=channel_id, ts=message["ts"]))
+    finally:
+        await sess.execute(
+            insert(EventLog)
+            .values(list(collected))
+            .on_conflict_do_nothing()
+            .inline()
+        )
+        await sess.commit()
+        return len(collected)
 
 
 def simplify_history_result(rows: list[dict]) -> list[dict]:
