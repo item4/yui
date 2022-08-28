@@ -71,10 +71,10 @@ async def cleanup_by_history(
         history = resp.body
         deletable = False
         if history["ok"]:
-            messages = history["messages"]
+            messages = simplify_history_result(history["messages"])
             while messages:
                 message = messages.pop(0)
-                reply_count = message.get("reply_count", 0)
+                reply_count = message["reply_count"]
                 if reply_count:
                     try:
                         r = await bot.api.conversations.replies(
@@ -84,7 +84,9 @@ async def cleanup_by_history(
                     except APICallError as e:
                         await report(bot, exception=e)
                         break
-                    messages += r.body.get("messages", [])
+                    messages += simplify_history_result(
+                        r.body.get("messages", [])[1:]
+                    )
                 try:
                     res = await bot.api.chat.delete(
                         channel_id,
@@ -139,7 +141,9 @@ async def collect_history_from_channel(
                 except APICallError as e:
                     await report(bot, exception=e)
                 else:
-                    messages += simplify_history_result(r.body["messages"][1:])
+                    messages += simplify_history_result(
+                        r.body.get("messages", [])[1:]
+                    )
             await sess.execute(
                 insert(EventLog)
                 .values(channel=channel_id, ts=message["ts"])
@@ -158,7 +162,6 @@ def simplify_history_result(rows: list[dict]) -> list[dict]:
             {
                 "ts": row["ts"],
                 "reply_count": row.get("reply_count", 0),
-                "messages": row.get("messages", []),
             }
         )
     return results
