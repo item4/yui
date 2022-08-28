@@ -138,6 +138,14 @@ async def collect_history_from_channel(
 
             history = resp.body
             if not history["ok"]:
+                await report(
+                    bot,
+                    exception=APICallError(
+                        method="conversations.history",
+                        headers={},
+                        data=history,
+                    ),
+                )
                 raise RuntimeError
 
             if "response_metadata" in history:
