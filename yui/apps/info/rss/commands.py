@@ -137,7 +137,7 @@ class RSS(route.RouteApp):
         await sess.commit()
 
 
-@box.cron("*/1 * * * *")
+@box.cron("*/5 * * * *")
 async def crawl(bot, sess: AsyncSession):
     feeds = (await sess.scalars(select(RSSFeedURL))).all()
 
