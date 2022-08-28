@@ -47,8 +47,11 @@ async def cleanup_by_event_logs(
         if ok or (not ok and resp.body["error"] == "message_not_found"):
             deleted.add(log.id)
 
-    await sess.execute(delete(EventLog).where(EventLog.id.in_(list(deleted))))
-    await sess.commit()
+    if deleted:
+        await sess.execute(
+            delete(EventLog).where(EventLog.id.in_(list(deleted)))
+        )
+        await sess.commit()
 
     return len(deleted)
 
@@ -158,13 +161,14 @@ async def collect_history_from_channel(
                         )
                 collected.add(dict(channel=channel_id, ts=message["ts"]))
     finally:
-        await sess.execute(
-            insert(EventLog)
-            .values(list(collected))
-            .on_conflict_do_nothing()
-            .inline()
-        )
-        await sess.commit()
+        if collected:
+            await sess.execute(
+                insert(EventLog)
+                .values(list(collected))
+                .on_conflict_do_nothing()
+                .inline()
+            )
+            await sess.commit()
         return len(collected)
 
 
