@@ -17,6 +17,8 @@ import _ast
 
 from async_timeout import timeout
 
+from more_itertools import numeric_range
+
 from ...bot import Bot
 from ...box import box
 from ...event import Message
@@ -633,6 +635,7 @@ class Evaluator:
                 "sort",
             },
             range: {"start", "stop", "step"},
+            numeric_range: {"start", "stop", "step"},
             str: {
                 "capitalize",
                 "casefold",
@@ -740,7 +743,8 @@ class Evaluator:
             "oct": oct,
             "ord": ord,
             "pow": pow,
-            "range": range,
+            "range": numeric_range if self.decimal_mode else range,
+            "numeric_range": numeric_range,
             "repr": repr,
             "reversed": reversed,
             "round": round,
