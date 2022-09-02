@@ -198,6 +198,9 @@ async def get_air_pollution_by_coordinate(
 
             data = await res.json(loads=json.loads)
 
+    if not data["list"]:
+        raise WeatherResponseError("No air pollution data")
+
     return AirPollutionRecord(
         aqi=data["list"][0]["main"]["aqi"],
         co=data["list"][0]["components"].get("co"),

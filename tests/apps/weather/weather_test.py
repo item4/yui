@@ -207,6 +207,10 @@ async def test_weather(bot_config, cache, openweather_api_key, google_api_key):
 
     assert weather_said.method == "chat.postMessage"
     assert weather_said.data["channel"] == "C1"
+
+    if weather_said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!":
+        pytest.skip("Can not run test via OpenWeather API")
+
     assert weather_said.data["thread_ts"] == "1234.5678"
     assert weather_said.data["username"] == "경기도 부천시 날씨"
 
