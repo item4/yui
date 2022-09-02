@@ -18,7 +18,7 @@ from yui.apps.weather.weather import get_weather_by_coordinate
 from yui.apps.weather.weather import weather
 from yui.utils import json
 
-# AQI 이외의 데이터는 모두 Optiona한 데이터이므로 정규식 매치에서 제외함.
+# AQI 이외의 데이터는 모두 Optional한 데이터이므로 정규식 매치에서 제외함.
 result_pattern_re = re.compile(
     r".+? 기준으로 가장 근접한 관측소의 최근 자료에요.\n\n"
     r"\* 종합 AQI: (?:좋음|보통|민감군 영향|나쁨|매우 나쁨)\(.+?\)"
