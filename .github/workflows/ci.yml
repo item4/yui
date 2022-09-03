@@ -59,30 +59,18 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      - name: Setup Poetry
+        run: |
+          pipx install --python $(which python) poetry
+          pipx inject poetry poetry-plugin-export
+          poetry config virtualenvs.create true
+          poetry config virtualenvs.in-project true
 
-      # Install Dependencies
-      - name: Load cached venv
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/ci.yml') }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: |
           python -m venv .venv
           .venv/bin/pip install --upgrade pip setuptools wheel
           poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
-
-      # Fix PATH
-      - name: Fix PATH
-        run: |
-          ls -al .venv/bin
           echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
 
       # Type Check
