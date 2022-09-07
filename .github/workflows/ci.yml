@@ -92,7 +92,7 @@ jobs:
       # After jobs
       - name: Export requirements.txt for docker build
         run: |
-          poetry export -o requirements.txt --without-hashes
+          poetry export --without dev -o requirements.txt --without-hashes
       - name: Archive requirements.txt file
         uses: actions/upload-artifact@v3
         with:
