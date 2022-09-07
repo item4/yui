@@ -1,5 +1,6 @@
 import datetime
 from functools import partial
+from typing import TYPE_CHECKING
 from typing import TypeVar
 from typing import get_args
 
@@ -7,7 +8,14 @@ import attrs
 
 from .datetime import fromtimestamp
 
-_C = TypeVar("_C")
+
+if TYPE_CHECKING:
+    from attr import AttrsInstance
+else:
+    AttrsInstance = None
+
+
+_C = TypeVar("_C", bound=AttrsInstance)
 
 
 def make_instance(
