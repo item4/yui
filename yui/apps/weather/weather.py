@@ -386,8 +386,17 @@ async def weather(
 
     atmospheric = "{}㍱".format(shorten(weather_result.pressure))
 
+    current_dt = fromtimestampoffset(
+        # timestamp는 UTC 기준이므로 offset 값을 미리 더해줘야합니다.
+        timestamp=weather_result.timestamp,
+        offset=weather_result.timezone,
+    )
+
     # full_address를 쓰는 이유는 result.location은 영어이기 때문입니다.
-    weather_text = "[{}] ".format(full_address)
+    weather_text = "[{} / {}] ".format(
+        full_address,
+        current_dt.strftime("%H시 %M분 기준"),
+    )
 
     if weather_result.rain:
         weather_text += "강수 {} / ".format(rain)
@@ -396,12 +405,6 @@ async def weather(
         weather_text += "강설 {} / ".format(snow)
         weather_emoji = ":snowflake:"
     else:
-        current_dt = fromtimestampoffset(
-            # timestamp는 UTC 기준이므로 offset 값을 미리 더해줘야합니다.
-            timestamp=weather_result.timestamp + weather_result.timezone,
-            offset=weather_result.timezone,
-        )
-
         if current_dt.hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
             weather_emoji = ":crescent_moon:"
         else:
