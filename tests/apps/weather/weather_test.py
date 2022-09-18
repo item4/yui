@@ -17,6 +17,8 @@ from yui.apps.weather.weather import get_geometric_info_by_address
 from yui.apps.weather.weather import get_weather_by_coordinate
 from yui.apps.weather.weather import weather
 from yui.utils import json
+from yui.utils.datetime import fromtimestampoffset
+from yui.utils.datetime import now
 
 # AQI 이외의 데이터는 모두 Optional한 데이터이므로 정규식 매치에서 제외함.
 result_pattern_re = re.compile(
@@ -99,6 +101,29 @@ async def test_get_geometric_info_by_address(google_api_key):
     assert full_address == "일본 사이타마현 가와고에시"
     assert lat == 35.9251335
     assert lng == 139.4858042
+
+
+@pytest.mark.asyncio
+async def test_get_weather_datetime_is_correct(
+    google_api_key, openweather_api_key
+):
+    full_address, lat, lng = await get_geometric_info_by_address(
+        addr1,
+        google_api_key,
+    )
+    weather_data = await get_weather_by_coordinate(
+        lat,
+        lng,
+        openweather_api_key,
+    )
+
+    # don't add or remove offset in timestamp
+    dt = fromtimestampoffset(
+        timestamp=weather_data.timestamp,
+        offset=weather_data.timezone,
+    )
+
+    assert dt.timestamp() < now().timestamp()
 
 
 @pytest.mark.asyncio
