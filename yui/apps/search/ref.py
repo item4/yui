@@ -3,7 +3,7 @@ import logging
 
 import aiohttp
 
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 
 from ...bot import Bot
 from ...box import box
@@ -171,7 +171,7 @@ async def html(bot, event: Message, keyword: str):
 
     name = None
     link = None
-    ratio = -1
+    ratio = -100.0
     for _name, _link in data:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
@@ -204,7 +204,7 @@ async def css(bot, event: Message, keyword: str):
 
     name = None
     link = None
-    ratio = -1
+    ratio = -100.0
     for _name, _link in data:
         _ratio = fuzz.ratio(keyword, _name)
         if _ratio > ratio:
@@ -292,7 +292,7 @@ async def python(bot, event: Message, keyword: str):
 
     name = None
     link = None
-    ratio = -1
+    ratio = -100.0
     for code, _name, _link in data:
         if code:
             _ratio = fuzz.ratio(keyword, code)

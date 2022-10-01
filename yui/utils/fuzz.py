@@ -1,6 +1,6 @@
 import unicodedata
 
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 
 KOREAN_START = ord("가")
 KOREAN_END = ord("힣")
@@ -51,27 +51,33 @@ def normalize_korean_nfc_to_nfd(value: str) -> str:
 def ratio(str1: str, str2: str) -> int:
     """Get fuzzy ratio with korean text"""
 
-    return fuzz.ratio(
-        normalize_korean_nfc_to_nfd(str1),
-        normalize_korean_nfc_to_nfd(str2),
+    return int(
+        fuzz.ratio(
+            normalize_korean_nfc_to_nfd(str1),
+            normalize_korean_nfc_to_nfd(str2),
+        )
     )
 
 
 def partial_ratio(str1: str, str2: str) -> int:
     """Get partial fuzzy ratio with korean text"""
 
-    return fuzz.partial_ratio(
-        normalize_korean_nfc_to_nfd(str1),
-        normalize_korean_nfc_to_nfd(str2),
+    return int(
+        fuzz.partial_ratio(
+            normalize_korean_nfc_to_nfd(str1),
+            normalize_korean_nfc_to_nfd(str2),
+        )
     )
 
 
 def token_sort_ratio(str1: str, str2: str) -> int:
     """Get token sorted fuzzy ratio with korean text"""
 
-    return fuzz.token_sort_ratio(
-        normalize_korean_nfc_to_nfd(str1),
-        normalize_korean_nfc_to_nfd(str2),
+    return int(
+        fuzz.token_sort_ratio(
+            normalize_korean_nfc_to_nfd(str1),
+            normalize_korean_nfc_to_nfd(str2),
+        )
     )
 
 

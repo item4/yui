@@ -12,7 +12,7 @@ import async_timeout
 from attrs import define
 from attrs import field
 
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 
 from ...box import box
 from ...command import argument

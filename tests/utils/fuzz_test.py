@@ -1,4 +1,4 @@
-from fuzzywuzzy import fuzz
+from rapidfuzz import fuzz
 
 from yui.utils.fuzz import match
 from yui.utils.fuzz import normalize_korean_nfc_to_nfd
