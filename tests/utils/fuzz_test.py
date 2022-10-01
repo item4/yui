@@ -69,10 +69,10 @@ def test_ratio():
     """Test Korean-specific fuzzy search."""
 
     assert fuzz.ratio("강", "공") == 0
-    assert ratio("강", "공") == 67
+    assert ratio("강", "공") == 66
 
     assert fuzz.ratio("안녕", "인형") == 0
-    assert ratio("안녕", "인형") == 67
+    assert ratio("안녕", "인형") == 66
 
     assert fuzz.ratio("사당", "ㅅㄷ") == 0
     assert ratio("사당", "ㅅㄷ") == 57
@@ -92,21 +92,21 @@ def test_match():
     sao = "소드 아트 온라인"
     assert match(sao, "소아온") == 70
     assert match(sao, "소드") == 61
-    assert match(sao, "소드아트") == 84
-    assert match(sao, "소드 아트") == 92
+    assert match(sao, "소드아트") == 82
+    assert match(sao, "소드 아트") == 91
     assert match(sao, "아트") == 61
-    assert match(sao, "온라인") == 87
+    assert match(sao, "온라인") == 86
     assert match(sao, sao) == 100
     assert match(sao, "소드아트온라인") == 100
-    assert match(sao, "소드 오라토리아") == 85
+    assert match(sao, "소드 오라토리아") == 84
 
     saop_movie = "극장판 소드 아트 온라인 -프로그레시브- 별 없는 밤의 아리아"
-    assert match(saop_movie, "소아온") == 33
+    assert match(saop_movie, "소아온") == 32
     assert match(saop_movie, "소드") == 36
-    assert match(saop_movie, "소드아트") == 43
-    assert match(saop_movie, "소드 아트") == 49
+    assert match(saop_movie, "소드아트") == 42
+    assert match(saop_movie, "소드 아트") == 48
     assert match(saop_movie, "아트") == 36
     assert match(saop_movie, "온라인") == 46
     assert match(saop_movie, saop_movie) == 100
-    assert match(saop_movie, "소드아트온라인") == 61
+    assert match(saop_movie, "소드아트온라인") == 60
     assert match(saop_movie, "소드 오라토리아") == 50
