@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 from decimal import Decimal
 from hashlib import md5
 from urllib.parse import urlencode
@@ -12,6 +13,7 @@ from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
+from ...utils.datetime import fromisoformat
 from ...utils.datetime import fromtimestampoffset
 
 box.assert_config_required("GOOGLE_API_KEY", str)
@@ -284,6 +286,39 @@ def get_aqi_description(aqi_level: int) -> str:
         return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
 
 
+async def get_emoji_by_sun(
+    input: datetime.datetime, lat: float, lng: float
+) -> str:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            "https://api.sunrise-sunset.org/json",
+            params={
+                "lat": lat,
+                "lng": lng,
+                "formatted": 0,
+                "date": input.date().isoformat(),
+            },
+        ) as resp:
+            data = await resp.json(loads=json.loads)
+
+        sunrise = fromisoformat(data["results"]["sunrise"])
+        sunset = fromisoformat(data["results"]["sunset"])
+        if input < sunrise or input > sunset:
+            return ":crescent_moon:"
+        else:
+            return ":sunny:"
+
+
+def get_emoji_by_aqi(aqi: int) -> str:
+    return {
+        1: ":smile:",
+        2: ":smiley:",
+        3: ":neutral_face:",
+        4: ":mask:",
+        5: ":skull_and_crossbones:",
+    }.get(aqi, ":interrobang:")
+
+
 @box.command("날씨", ["aws", "weather", "aqi", "공기", "먼지", "미세먼지"])
 @argument("address", nargs=-1, concat=True)
 async def weather(
@@ -405,10 +440,7 @@ async def weather(
         weather_text += "강설 {} / ".format(snow)
         weather_emoji = ":snowflake:"
     else:
-        if current_dt.hour in [21, 22, 23, 0, 1, 2, 3, 4, 5, 6]:
-            weather_emoji = ":crescent_moon:"
-        else:
-            weather_emoji = ":sunny:"
+        weather_emoji = await get_emoji_by_sun(current_dt, lat, lng)
 
     weather_text += temperature
     weather_text += " / 바람: {}".format(wind)
@@ -437,13 +469,7 @@ async def weather(
             air_pollution_text += f"* {name}: {f}㎍/㎥\n"
 
     text = air_pollution_text.strip()
-
-    if air_pollution_result.aqi >= 4:
-        air_pollution_emoji = ":skull_and_crossbones:"
-    elif air_pollution_result.aqi <= 2:
-        air_pollution_emoji = ":+1:"
-    else:
-        air_pollution_emoji = ":neutral_face:"
+    air_pollution_emoji = get_emoji_by_aqi(air_pollution_result.aqi)
 
     await bot.api.chat.postMessage(
         channel=event.channel,

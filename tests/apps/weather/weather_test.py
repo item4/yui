@@ -13,10 +13,12 @@ from yui.apps.weather.weather import clothes_by_temperature
 from yui.apps.weather.weather import degree_to_direction
 from yui.apps.weather.weather import get_air_pollution_by_coordinate
 from yui.apps.weather.weather import get_aqi_description
+from yui.apps.weather.weather import get_emoji_by_aqi
 from yui.apps.weather.weather import get_geometric_info_by_address
 from yui.apps.weather.weather import get_weather_by_coordinate
 from yui.apps.weather.weather import weather
 from yui.utils import json
+from yui.utils.datetime import datetime
 from yui.utils.datetime import fromtimestampoffset
 from yui.utils.datetime import now
 
@@ -187,6 +189,37 @@ async def test_get_air_pollution_with_wrong_coordination(response_mock):
 )
 def test_get_aqi_description(level, expected):
     assert get_aqi_description(level).startswith(expected)
+
+
+@pytest.mark.asyncio
+async def get_emoji_by_sun():
+    lat = 37.566535
+    lng = 126.9779692
+    before_sunrise = datetime(2022, 11, 6, 2)
+    after_sunrise = datetime(2022, 11, 6, 9)
+    noon = datetime(2022, 11, 6, 13)  # Start of SAO Official Service
+    after_sunset = datetime(2022, 11, 6, 22)
+    moon = ":crescent_moon:"
+    sun = ":sunny:"
+    assert (await get_emoji_by_sun(before_sunrise, lat, lng)) == moon
+    assert (await get_emoji_by_sun(after_sunrise, lat, lng)) == sun
+    assert (await get_emoji_by_sun(noon, lat, lng)) == sun
+    assert (await get_emoji_by_sun(after_sunset, lat, lng)) == moon
+
+
+@pytest.mark.parametrize(
+    "level, expected",
+    [
+        (1, ":smile:"),
+        (2, ":smiley:"),
+        (3, ":neutral_face:"),
+        (4, ":mask:"),
+        (5, ":skull_and_crossbones:"),  # API Spec은 5단계가 최대입니다.
+        (42, ":interrobang:"),  # 예외 처리
+    ],
+)
+def test_get_emoji_by_aqi(level, expected):
+    assert get_emoji_by_aqi(level) == expected
 
 
 @pytest.mark.parametrize(
