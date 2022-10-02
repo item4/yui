@@ -13,7 +13,6 @@ from ...box import box
 from ...command import argument
 from ...event import Message
 from ...utils import json
-from ...utils.datetime import fromisoformat
 from ...utils.datetime import fromtimestampoffset
 
 box.assert_config_required("GOOGLE_API_KEY", str)
@@ -300,9 +299,16 @@ async def get_emoji_by_sun(
             },
         ) as resp:
             data = await resp.json(loads=json.loads)
-
-        sunrise = fromisoformat(data["results"]["sunrise"])
-        sunset = fromisoformat(data["results"]["sunset"])
+        offset = input.utcoffset()
+        timezone = (
+            datetime.timezone(offset) if offset else datetime.timezone.utc
+        )
+        sunrise = datetime.datetime.fromisoformat(
+            data["results"]["sunrise"]
+        ).replace(tzinfo=timezone)
+        sunset = datetime.datetime.fromisoformat(
+            data["results"]["sunset"]
+        ).replace(tzinfo=timezone)
         if input < sunrise or input > sunset:
             return ":crescent_moon:"
         else:
