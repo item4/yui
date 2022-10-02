@@ -299,17 +299,14 @@ async def get_emoji_by_sun(
             },
         ) as resp:
             data = await resp.json(loads=json.loads)
-        tz = datetime.timezone(datetime.timedelta(seconds=offset))
-        sunrise = datetime.datetime.fromisoformat(
-            data["results"]["sunrise"]
-        ).replace(tzinfo=tz)
-        sunset = datetime.datetime.fromisoformat(
-            data["results"]["sunset"]
-        ).replace(tzinfo=tz)
-        if input < sunrise or input > sunset:
-            return ":crescent_moon:"
-        else:
-            return ":sunny:"
+    result = data["results"]
+    tz = datetime.timezone(datetime.timedelta(seconds=offset))
+    sunrise = datetime.datetime.fromisoformat(result["sunrise"]).astimezone(tz)
+    sunset = datetime.datetime.fromisoformat(result["sunset"]).astimezone(tz)
+    if sunrise <= input < sunset:
+        return ":sunny:"
+    else:
+        return ":crescent_moon:"
 
 
 def get_emoji_by_aqi(aqi: int) -> str:
