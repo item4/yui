@@ -286,7 +286,7 @@ def get_aqi_description(aqi_level: int) -> str:
 
 
 async def get_emoji_by_sun(
-    input: datetime.datetime, lat: float, lng: float
+    input: datetime.datetime, offset: int, lat: float, lng: float
 ) -> str:
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -299,16 +299,13 @@ async def get_emoji_by_sun(
             },
         ) as resp:
             data = await resp.json(loads=json.loads)
-        offset = input.utcoffset()
-        timezone = (
-            datetime.timezone(offset) if offset else datetime.timezone.utc
-        )
+        tz = datetime.timezone(datetime.timedelta(seconds=offset))
         sunrise = datetime.datetime.fromisoformat(
             data["results"]["sunrise"]
-        ).replace(tzinfo=timezone)
+        ).replace(tzinfo=tz)
         sunset = datetime.datetime.fromisoformat(
             data["results"]["sunset"]
-        ).replace(tzinfo=timezone)
+        ).replace(tzinfo=tz)
         if input < sunrise or input > sunset:
             return ":crescent_moon:"
         else:
@@ -446,7 +443,9 @@ async def weather(
         weather_text += "강설 {} / ".format(snow)
         weather_emoji = ":snowflake:"
     else:
-        weather_emoji = await get_emoji_by_sun(current_dt, lat, lng)
+        weather_emoji = await get_emoji_by_sun(
+            current_dt, weather_result.timezone, lat, lng
+        )
 
     weather_text += temperature
     weather_text += " / 바람: {}".format(wind)
