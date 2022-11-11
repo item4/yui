@@ -150,6 +150,8 @@ async def collect_history_from_channel(
 
             if "response_metadata" in history:
                 cursor = history["response_metadata"]["next_cursor"]
+            else:
+                cursor = None
 
             messages = simplify_history_result(history["messages"])
             while messages:
@@ -168,6 +170,8 @@ async def collect_history_from_channel(
                             r.body.get("messages", [])[1:]
                         )
                 collected.add((channel_id, message["ts"]))
+            if cursor is None:
+                break
     finally:
         if collected:
             await sess.execute(
