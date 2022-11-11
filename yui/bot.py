@@ -86,7 +86,7 @@ class Bot:
         config: Config,
         *,
         orm_base=None,
-        using_box: Box = None,
+        using_box: Box | None = None,
     ) -> None:
         """Initialize"""
 
@@ -277,10 +277,10 @@ class Bot:
     async def call(
         self,
         method: str,
-        data: dict[str, Any] = None,
+        data: dict[str, Any] | None = None,
         *,
         throttle_check: bool = True,
-        token: str = None,
+        token: str | None = None,
         json_mode: bool = False,
     ) -> APIResponse:
         """Call API methods."""

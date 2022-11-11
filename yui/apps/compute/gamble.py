@@ -34,7 +34,7 @@ class DiceResult:
         return f"{self.query} == {self.result}"
 
 
-def parse_dice_syntax(expr: str, seed: int = None) -> list[DiceResult]:
+def parse_dice_syntax(expr: str, seed: int | None = None) -> list[DiceResult]:
     try:
         random.seed(seed)
         result = []
@@ -98,7 +98,7 @@ def parse_dice_syntax(expr: str, seed: int = None) -> list[DiceResult]:
 
 
 @box.command("dice", ["주사위"])
-async def dice(bot, event: Message, raw: str, seed: int = None):
+async def dice(bot, event: Message, raw: str, seed: int | None = None):
     """
     주사위
 
