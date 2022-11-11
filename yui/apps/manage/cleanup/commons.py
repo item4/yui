@@ -124,7 +124,7 @@ async def collect_history_from_channel(
     sess: AsyncSession,
 ) -> int:
     cursor = None
-    collected: set[dict[str, str]] = set()
+    collected: set[tuple[str, str]] = set()
     try:
         while True:
             try:
@@ -167,12 +167,12 @@ async def collect_history_from_channel(
                         messages += simplify_history_result(
                             r.body.get("messages", [])[1:]
                         )
-                collected.add(dict(channel=channel_id, ts=message["ts"]))
+                collected.add((channel_id, message["ts"]))
     finally:
         if collected:
             await sess.execute(
                 insert(EventLog)
-                .values(list(collected))
+                .values([dict(channel=cid, ts=ts) for cid, ts in collected])
                 .on_conflict_do_nothing()
                 .inline()
             )
