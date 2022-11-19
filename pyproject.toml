@@ -12,9 +12,9 @@ authors = ["Kim, Jin Su <item4hun@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.group.main.dependencies]
-python = ">=3.10,<3.11"
+python = ">=3.11,<3.12"
 Babel = "^2.11.0"
-SQLAlchemy = {version = "^1.4.43", extras = ["asyncio"]}
+SQLAlchemy = {version = "^1.4.44", extras = ["asyncio"]}
 SQLAlchemy-Utils = "^0.38.3"
 aiocron = "^1.8"
 aiohttp = "^3.8.3"
@@ -25,7 +25,7 @@ attrdict = "^2.0.1"
 attrs = "^22.1.0"
 click = "^8.1.3"
 cssselect = "^1.2.0"
-emcache = "^0.6.2"
+emcache = "^1.0.0"
 feedparser = "^6.0.10"
 lxml = "^4.9.1"
 more-itertools = "^9.0.0"
@@ -40,9 +40,9 @@ tossi = "^0.3.1"
 tzlocal = "^4.2"
 
 [tool.poetry.group.dev.dependencies]
-mypy = "^0.990"
+mypy = "^0.991"
 pytest = "^7.2.0"
-pytest-asyncio = "^0.20.1"
+pytest-asyncio = "^0.20.2"
 pytest-cov = "^4.0.0"
 aioresponses = "^0.7.3"
 flake8 = "^5.0.4"
