@@ -1,14 +1,12 @@
 import copy
 import pathlib
 import sys
+import tomllib
 from types import SimpleNamespace
 from typing import Any
 
-import tomllib
-
 from .utils.cast import CastError
 from .utils.cast import cast
-
 
 REQUIRED = {
     "APPS",

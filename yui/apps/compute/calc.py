@@ -1,3 +1,4 @@
+import _ast
 import ast
 import asyncio
 import datetime
@@ -13,10 +14,7 @@ from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any
 
-import _ast
-
 from async_timeout import timeout
-
 from more_itertools import numeric_range
 
 from ...bot import Bot

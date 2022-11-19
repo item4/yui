@@ -1,8 +1,8 @@
-from .utils import weekend_loading_box
-from .utils import weekend_loading_percent
 from ...box import box
 from ...event import Message
 from ...utils.datetime import now
+from .utils import weekend_loading_box
+from .utils import weekend_loading_percent
 
 box.assert_config_required("WEEKEND_LOADING_TIME", list[int])
 box.assert_channel_required("general")

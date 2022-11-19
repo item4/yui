@@ -1,9 +1,8 @@
 import datetime
 from urllib.parse import urlencode
 
-from pyppeteer.errors import TimeoutError
-
 import tzlocal
+from pyppeteer.errors import TimeoutError
 
 from ...box import box
 from ...browser import new_page
@@ -14,7 +13,6 @@ from ...transform import choice
 from ...types.slack.action import Action
 from ...types.slack.attachment import Attachment
 from ...utils.url import b64_redirect
-
 
 CATEGORIES = {
     "all": "0_0",

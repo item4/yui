@@ -5,7 +5,6 @@ import pytest
 from yui.apps.compute.exchange import exchange
 from yui.utils import json
 
-
 YEN_PATTERN = re.compile(
     r"100 JPY == (?:\.?\d+,?)+ KRW \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\)"
 )

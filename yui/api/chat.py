@@ -1,12 +1,12 @@
 from typing import Any
 
-from .endpoint import Endpoint
 from ..types.base import ChannelID
 from ..types.base import Ts
 from ..types.base import UserID
 from ..types.slack.attachment import Attachment
 from ..types.slack.block import Block
 from ..types.slack.response import APIResponse
+from .endpoint import Endpoint
 
 
 class Chat(Endpoint):

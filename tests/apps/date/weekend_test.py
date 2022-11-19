@@ -1,5 +1,4 @@
 import pytest
-
 from time_machine import travel
 
 from yui.apps.date.weekend import auto_weekend_loading

@@ -1,8 +1,8 @@
 from attrs import Factory
 
+from ...utils.attrs import define
 from .action import Action
 from .block import Block
-from ...utils.attrs import define
 
 
 @define(kw_only=False)

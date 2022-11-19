@@ -1,11 +1,11 @@
 from typing import List
 
-from .encoder import bool2str
-from .endpoint import Endpoint
 from ..types.base import ChannelID
 from ..types.base import Ts
 from ..types.base import UserID
 from ..types.slack.response import APIResponse
+from .encoder import bool2str
+from .endpoint import Endpoint
 
 
 class Conversations(Endpoint):

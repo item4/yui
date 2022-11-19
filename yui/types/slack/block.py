@@ -3,10 +3,10 @@ import enum
 from attrs import Factory
 from attrs import field
 
+from ...utils.attrs import define
 from ..base import ChannelID
 from ..base import PublicChannelID
 from ..base import UserID
-from ...utils.attrs import define
 
 
 class TextFieldType(enum.Enum):

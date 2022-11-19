@@ -17,15 +17,12 @@ from typing import ParamSpec
 from typing import TypeVar
 
 import aiocron
-
 import aiohttp
+import emcache
 from aiohttp.client_exceptions import ClientError
 from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
-
 from dateutil.tz import tzoffset
-
-import emcache
 
 from .api import SlackAPI
 from .box import Box
@@ -47,7 +44,6 @@ from .types.user import User
 from .utils import json
 from .utils.datetime import now
 from .utils.report import report
-
 
 P = ParamSpec("P")
 R = TypeVar("R")

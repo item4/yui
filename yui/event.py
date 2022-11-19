@@ -15,7 +15,6 @@ from .utils.attrs import make_instance
 from .utils.attrs import ts_field
 from .utils.attrs import user_id_field
 
-
 GoodByeType = Literal["goodbye"]
 HelloType = Literal["hello"]
 MessageType = Literal["message"]

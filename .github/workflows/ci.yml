@@ -18,7 +18,7 @@ jobs:
           python-version: '3.11'
       # Install Dependencies
       - name: Install Checkers
-        run: pip install black flake8 flake8-import-order zimports
+        run: pip install black flake8 isort
 
       # Lint
       - name: Check coding convention
@@ -26,7 +26,7 @@ jobs:
       - name: Check missing autofix
         run: black --check .
       - name: Check import convention
-        run: ./check_zimports.sh
+        run: isort yui tests --check-only
 
   test-program:
     name: Test Program

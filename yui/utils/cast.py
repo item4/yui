@@ -6,7 +6,6 @@ from typing import get_origin
 
 from ..utils.attrs import make_instance
 
-
 KNOWN_TYPES = {
     bytes,
     float,

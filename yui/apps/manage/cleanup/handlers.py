@@ -1,9 +1,9 @@
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import EventLog
 from ....box import box
 from ....event import Message
+from .models import EventLog
 
 
 @box.on(Message, subtype="*")

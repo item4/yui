@@ -4,9 +4,7 @@ import functools
 
 import aiohttp
 import aiohttp.client_exceptions
-
 import async_timeout
-
 from lxml import etree
 
 from ..box import box

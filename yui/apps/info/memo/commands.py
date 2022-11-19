@@ -1,15 +1,14 @@
+import tossi
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import delete
 from sqlalchemy.sql.expression import select
 
-import tossi
-
-from .models import Memo
 from ....box import box
 from ....command import argument
 from ....event import Message
 from ....utils import format
 from ....utils.datetime import now
+from .models import Memo
 
 
 @box.command("기억")

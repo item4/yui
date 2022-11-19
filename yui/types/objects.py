@@ -1,9 +1,9 @@
-from .base import Ts
-from .base import UserID
 from ..utils.attrs import define
 from ..utils.attrs import field
 from ..utils.attrs import ts_field
 from ..utils.attrs import user_id_field
+from .base import Ts
+from .base import UserID
 
 
 @define

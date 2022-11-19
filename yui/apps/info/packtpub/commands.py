@@ -1,6 +1,6 @@
-from .commons import say_packtpub_dotd
 from ....box import box
 from ....event import Message
+from .commons import say_packtpub_dotd
 
 
 @box.command("무료책", ["freebook"])

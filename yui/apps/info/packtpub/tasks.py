@@ -1,5 +1,5 @@
-from .commons import say_packtpub_dotd
 from ....box import box
+from .commons import say_packtpub_dotd
 
 
 @box.cron("5 9 * * *")

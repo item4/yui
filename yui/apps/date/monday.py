@@ -3,12 +3,11 @@ import random
 
 import aiohttp
 import aiohttp.client_exceptions
-
 import tossi
 
-from .utils import get_holiday_names
 from ...box import box
 from ...utils.datetime import now
+from .utils import get_holiday_names
 
 box.assert_channel_required("general")
 

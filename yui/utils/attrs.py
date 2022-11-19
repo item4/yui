@@ -8,7 +8,6 @@ import attrs
 
 from .datetime import fromtimestamp
 
-
 if TYPE_CHECKING:
     from attr import AttrsInstance
 else:

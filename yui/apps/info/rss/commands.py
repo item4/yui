@@ -3,22 +3,19 @@ import re
 
 import aiohttp
 import aiohttp.client_exceptions
-
 import dateutil.parser
-from dateutil.tz import UTC
-
 import feedparser
-
+from dateutil.tz import UTC
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
 
-from .models import RSSFeedURL
 from ....box import box
 from ....box import route
 from ....command import argument
 from ....event import Message
 from ....transform import extract_url
 from ....types.slack.attachment import Attachment
+from .models import RSSFeedURL
 
 SPACE_RE = re.compile(r"\s{2,}")
 

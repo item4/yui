@@ -4,10 +4,9 @@ import time
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ....box import box
 from .commons import cleanup_by_event_logs
 from .commons import collect_history_from_channel
-from ....box import box
-
 
 box.assert_config_required("USER_TOKEN", str)
 box.assert_channels_required("auto_cleanup_targets")

@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 
 import aiohttp
-
 from pyppeteer.launcher import connect
 
 from .utils import json

@@ -6,10 +6,10 @@ import sys
 import traceback
 from typing import TYPE_CHECKING
 
+from ..event import Event
 from .format import bold
 from .format import code
 from .format import preformatted
-from ..event import Event
 
 if TYPE_CHECKING:
     from ..bot import APICallError

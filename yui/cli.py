@@ -3,10 +3,9 @@ import functools
 import os.path
 import pathlib
 
+import click
 from alembic import command
 from alembic.config import Config
-
-import click
 
 from .bot import Bot
 from .config import ConfigurationError

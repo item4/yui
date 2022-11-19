@@ -2,7 +2,6 @@ import datetime
 
 from dateutil.tz import UTC
 from dateutil.tz import tzfile
-
 from sqlalchemy.ext.hybrid import Comparator
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.schema import Column

@@ -2,14 +2,14 @@ import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .commons import cleanup_by_event_logs
-from .commons import cleanup_by_history
-from .commons import collect_history_from_channel
 from ....box import box
 from ....command import option
 from ....event import Message
 from ....transform import choice
 from ....utils.datetime import now
+from .commons import cleanup_by_event_logs
+from .commons import cleanup_by_history
+from .commons import collect_history_from_channel
 
 box.assert_channels_required("auto_cleanup_targets")
 box.assert_users_required("force_cleanup")

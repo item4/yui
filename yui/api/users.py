@@ -1,8 +1,8 @@
-from .encoder import bool2str
-from .endpoint import Endpoint
 from ..types.base import UserID
 from ..types.slack.response import APIResponse
 from ..types.user import User
+from .encoder import bool2str
+from .endpoint import Endpoint
 
 
 class Users(Endpoint):

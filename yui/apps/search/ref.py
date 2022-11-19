@@ -2,7 +2,6 @@ import asyncio
 import logging
 
 import aiohttp
-
 from rapidfuzz import fuzz
 
 from ...bot import Bot

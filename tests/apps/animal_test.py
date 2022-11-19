@@ -2,7 +2,6 @@ import asyncio
 import re
 
 import aiohttp
-
 import pytest
 
 from yui.apps.animal import APIServerError
@@ -13,7 +12,6 @@ from yui.apps.animal import get_cat_image_url
 from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
 from yui.utils import json
-
 
 cat_cooltime_re = re.compile(r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!")
 dog_cooltime_re = re.compile(r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!")

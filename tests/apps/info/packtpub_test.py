@@ -1,5 +1,4 @@
 import pytest
-
 from time_machine import travel
 
 from yui.apps.info.packtpub.commands import packtpub_dotd

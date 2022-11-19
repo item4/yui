@@ -7,16 +7,13 @@ Create Date: 2020-05-10 17:28:07.620112
 """
 import enum
 
-from alembic import op
-
 import sqlalchemy as sa
-
+from alembic import op
 from sqlalchemy_utils import ChoiceType
 from sqlalchemy_utils import URLType
 
 from yui.orm.types import JSONType
 from yui.orm.types import TimezoneType
-
 
 # revision identifiers, used by Alembic.
 revision = "0e7bdd5c7473"

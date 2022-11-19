@@ -3,10 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import delete
 from sqlalchemy.sql.expression import select
 
-from .models import EventLog
 from ....bot import APICallError
 from ....types.base import ChannelID
 from ....utils.report import report
+from .models import EventLog
 
 
 async def cleanup_by_event_logs(

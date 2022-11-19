@@ -1,5 +1,4 @@
 import pytest
-
 from sqlalchemy.sql.expression import func
 from sqlalchemy.sql.expression import select
 

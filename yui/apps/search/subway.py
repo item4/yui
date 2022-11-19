@@ -4,7 +4,6 @@ import re
 from urllib.parse import urlencode
 
 import aiohttp
-
 import tossi
 
 from ...box import box

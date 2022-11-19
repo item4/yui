@@ -22,10 +22,10 @@ repos:
     - id: yesqa
   - repo: local
     hooks:
-      - id: zimports
-        name: zimports
-        entry: zimports
-        args: ['--expand-stars', '--keep-unused']
+      - id: isort
+        name: isort
+        entry: isort
+        args: ['--check-only']
         language: system
         types: [ python ]
       - id: black

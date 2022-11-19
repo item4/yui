@@ -4,7 +4,6 @@ from urllib.parse import urlencode
 import aiohttp
 from aiohttp.client_exceptions import ClientConnectionError
 from aiohttp.client_exceptions import ContentTypeError
-
 from attrs import define
 
 from ...box import box

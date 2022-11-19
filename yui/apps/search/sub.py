@@ -6,12 +6,9 @@ from typing import Any
 
 import aiohttp
 import aiohttp.client_exceptions
-
 import async_timeout
-
 from attrs import define
 from attrs import field
-
 from rapidfuzz import fuzz
 
 from ...box import box
@@ -21,7 +18,6 @@ from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.fuzz import match
-
 
 MIN_RATIO = 60
 DOW = [

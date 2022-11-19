@@ -1,5 +1,5 @@
-from .endpoint import Endpoint
 from ..types.slack.response import APIResponse
+from .endpoint import Endpoint
 
 
 class Connections(Endpoint):

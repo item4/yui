@@ -6,7 +6,6 @@ from decimal import InvalidOperation
 from decimal import ROUND_FLOOR
 
 from scipy.stats import nbinom
-
 from sympy.functions.combinatorial.numbers import harmonic
 
 from ...box import box

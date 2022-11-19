@@ -3,13 +3,9 @@ import os
 import pathlib
 
 import aioresponses
-
 import emcache
-
 import pytest
-
 import pytest_asyncio
-
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.sql.expression import text
 
@@ -21,7 +17,6 @@ from yui.orm import create_database_engine
 from yui.orm import sessionmaker
 
 from .util import FakeBot
-
 
 DEFAULT_DATABASE_URL = "sqlite://"
 

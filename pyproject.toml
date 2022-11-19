@@ -1,6 +1,25 @@
 [tool.black]
 line-length = 79
 
+[tool.isort]
+# FIXME: Python 3.11 지원되면 변경
+py_version = "all"
+extra_standard_library = ["tomllib"]
+
+# isort에 의한 파일 파괴 방지
+atomic = true
+
+# zimports style과 가능한 유사하게
+force_single_line = true  # 한 줄 당 1개의 import 문
+order_by_type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
+case_sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
+
+# 프로젝트 감지 - tests와 yui 단락을 강제로 분리
+known_first_party = ["yui"]
+known_tests = ["tests"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTS", "FIRSTPARTY", "LOCALFOLDER"]
+
+
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'
 
@@ -39,16 +58,15 @@ tossi = "^0.3.1"
 tzlocal = "^4.2"
 
 [tool.poetry.group.dev.dependencies]
+aioresponses = "^0.7.3"
+black = "^22.10.0"
+flake8 = "^5.0.4"
+isort = "^5.10.1"
 mypy = "^0.991"
+pre-commit = "^2.20.0"
 pytest = "^7.2.0"
 pytest-asyncio = "^0.20.2"
 pytest-cov = "^4.0.0"
-aioresponses = "^0.7.3"
-flake8 = "^5.0.4"
-flake8-import-order = "^0.18.1"
-pre-commit = "^2.20.0"
-zimports = "^0.6.0"
-black = "^22.10.0"
 time-machine = "^2.8.2"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.8.19"
@@ -58,6 +76,8 @@ types-tzlocal = "^4.2.2"
 [tool.poetry.scripts]
 yui = "yui.cli:main"
 
+[tool.poetry.dependencies]
+flake8-isort = "^5.0.2"
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -1,9 +1,7 @@
+import six
 from dateutil.tz import UTC
 from dateutil.tz import gettz
 from dateutil.tz import tzfile
-
-import six
-
 from sqlalchemy_utils.types import JSONType as _JSONType
 from sqlalchemy_utils.types import TimezoneType as _TimezoneType
 

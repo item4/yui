@@ -6,7 +6,6 @@ from urllib.parse import urlencode
 
 import aiohttp
 from aiohttp import client_exceptions
-
 from attr import define
 
 from ...box import box

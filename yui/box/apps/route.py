@@ -3,15 +3,15 @@ from __future__ import annotations
 import html
 from typing import TYPE_CHECKING
 
-from .base import BaseApp
-from ..parsers import parse_option_and_arguments
-from ..utils import SPACE_RE
-from ..utils import split_chunks
 from ...event import Event
 from ...event import Message
 from ...types.handler import HANDLER_CALL_TYPE
 from ...types.handler import Handler
 from ...utils.handler import get_handler
+from ..parsers import parse_option_and_arguments
+from ..utils import SPACE_RE
+from ..utils import split_chunks
+from .base import BaseApp
 
 if TYPE_CHECKING:
     from ...bot import Bot

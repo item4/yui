@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 import aiohttp
-
 import tossi
 
 from ...box import box
