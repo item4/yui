@@ -482,11 +482,12 @@ class Bot:
                 logger.info("Connected to Slack")
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(resp.body["url"]) as ws:
+                        tasks = [
+                            asyncio.create_task(self.ping(ws)),
+                            asyncio.create_task(self.receive(ws)),
+                        ]
                         await asyncio.wait(
-                            (
-                                self.ping(ws),
-                                self.receive(ws),
-                            ),
+                            tasks,
                             return_when=asyncio.FIRST_COMPLETED,
                         )
 
