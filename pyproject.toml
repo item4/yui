@@ -35,7 +35,6 @@ python-dateutil = "^2.8.2"
 rapidfuzz = "^2.13.2"
 scipy = "^1.9.3"
 sympy = "^1.11.1"
-toml = "^0.10.2"
 tossi = "^0.3.1"
 tzlocal = "^4.2"
 
@@ -54,7 +53,6 @@ time-machine = "^2.8.2"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.8.19"
 types-six = "^1.16.21"
-types-toml = "^0.10.8"
 types-tzlocal = "^4.2.2"
 
 [tool.poetry.scripts]

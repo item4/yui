@@ -831,7 +831,7 @@ python-dateutil = "*"
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -900,14 +900,6 @@ python-versions = "*"
 name = "types-six"
 version = "1.16.21.4"
 description = "Typing stubs for six"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[[package]]
-name = "types-toml"
-version = "0.10.8.1"
-description = "Typing stubs for toml"
 category = "dev"
 optional = false
 python-versions = "*"
@@ -1033,7 +1025,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.11,<3.12"
-content-hash = "5dc9a899923d048de05cbc5e7a39e36837515367da01db02388470ccce191383"
+content-hash = "6f3c0f6ebad7ed10625b9127e23491d66994a8842e568df05c2057a3100dbbbf"
 
 [metadata.files]
 aiocron = [
@@ -2169,10 +2161,6 @@ types-pytz = [
 types-six = [
     {file = "types-six-1.16.21.4.tar.gz", hash = "sha256:daaf1b506137d37257fad7a747857c57d5331611919d0d94b8195a06bdbc02af"},
     {file = "types_six-1.16.21.4-py3-none-any.whl", hash = "sha256:3849354bd07b9274436aaa7d5d834594d8f0aa74581f88c632188c58f2abed23"},
-]
-types-toml = [
-    {file = "types-toml-0.10.8.1.tar.gz", hash = "sha256:171bdb3163d79a520560f24ba916a9fc9bff81659c5448a9fea89240923722be"},
-    {file = "types_toml-0.10.8.1-py3-none-any.whl", hash = "sha256:b7b5c4977f96ab7b5ac06d8a6590d17c0bf252a96efc03b109c2711fb3e0eafd"},
 ]
 types-tzlocal = [
     {file = "types-tzlocal-4.2.2.2.tar.gz", hash = "sha256:803b8329e20d7b3ecea713f91505f84ea5e3310825252d93e8217d85708fe93c"},

@@ -4,7 +4,7 @@ import sys
 from types import SimpleNamespace
 from typing import Any
 
-import toml
+import tomllib
 
 from .utils.cast import CastError
 from .utils.cast import cast
@@ -186,7 +186,7 @@ def load(path: pathlib.Path) -> Config:
         error("File suffix must be *.config.toml")
 
     config_dict = copy.deepcopy(DEFAULT)
-    data = toml.load(path.open())
+    data = tomllib.load(path.open("rb"))
 
     if missing := REQUIRED - set(data.keys()):
         error(f'Missing required keys: {", ".join(missing)}')
