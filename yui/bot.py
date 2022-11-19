@@ -213,11 +213,12 @@ class Bot:
                 self.config.CACHE.get("PREFIX", "YUI_"),
             )
 
+            tasks = [
+                asyncio.create_task(self.connect()),
+                asyncio.create_task(self.process()),
+            ]
             await asyncio.wait(
-                (
-                    self.connect(),
-                    self.process(),
-                ),
+                tasks,
                 return_when=asyncio.FIRST_EXCEPTION,
             )
 
