@@ -48,10 +48,10 @@ emcache = "^1.0.0"
 feedparser = "^6.0.10"
 lxml = "^4.9.1"
 more-itertools = "^9.0.0"
-orjson = "^3.8.1"
+orjson = "^3.8.3"
 pyppeteer = "^1.0.2"
 python-dateutil = "^2.8.2"
-rapidfuzz = "^2.13.2"
+rapidfuzz = "^2.13.3"
 scipy = "^1.9.3"
 sympy = "^1.11.1"
 tossi = "^0.3.1"
@@ -60,7 +60,7 @@ tzlocal = "^4.2"
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.3"
 black = "^22.10.0"
-flake8 = "^5.0.4"
+flake8 = "^6.0.0"
 isort = "^5.10.1"
 mypy = "^0.991"
 pre-commit = "^2.20.0"
@@ -76,8 +76,6 @@ types-tzlocal = "^4.2.2"
 [tool.poetry.scripts]
 yui = "yui.cli:main"
 
-[tool.poetry.dependencies]
-flake8-isort = "^5.0.2"
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
