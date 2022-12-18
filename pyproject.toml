@@ -2,9 +2,7 @@
 line-length = 79
 
 [tool.isort]
-# FIXME: Python 3.11 지원되면 변경
-py_version = "all"
-extra_standard_library = ["tomllib"]
+py_version = "311"
 
 # isort에 의한 파일 파괴 방지
 atomic = true
