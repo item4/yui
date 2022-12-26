@@ -132,9 +132,9 @@ async def fetch_python_ref(bot: Bot):
 async def on_start(bot):
     logger.info("on_start ref")
     tasks = [
-        fetch_css_ref(bot),
-        fetch_html_ref(bot),
-        fetch_python_ref(bot),
+        asyncio.create_task(fetch_css_ref(bot)),
+        asyncio.create_task(fetch_html_ref(bot)),
+        asyncio.create_task(fetch_python_ref(bot)),
     ]
     await asyncio.wait(tasks)
     return True
@@ -144,9 +144,9 @@ async def on_start(bot):
 async def refresh(bot):
     logger.info("refresh ref")
     tasks = [
-        fetch_css_ref(bot),
-        fetch_html_ref(bot),
-        fetch_python_ref(bot),
+        asyncio.create_task(fetch_css_ref(bot)),
+        asyncio.create_task(fetch_html_ref(bot)),
+        asyncio.create_task(fetch_python_ref(bot)),
     ]
     await asyncio.wait(tasks)
 

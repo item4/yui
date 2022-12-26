@@ -130,14 +130,14 @@ async def dns(bot, event: Message, server_list: list[str], domain: str):
         tasks = []
         if server_list:
             for ip in server_list:
-                tasks.append(query_custom(domain, ip))
+                tasks.append(asyncio.create_task(query_custom(domain, ip)))
         else:
             servers = SERVER_LIST_V4
             if await is_ipv6_enabled():
                 servers += SERVER_LIST_V6
 
             for server in servers:
-                tasks.append(query(domain, server))
+                tasks.append(asyncio.create_task(query(domain, server)))
 
         ok, no = await asyncio.wait(tasks)
 

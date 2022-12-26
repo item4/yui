@@ -64,7 +64,11 @@ async def on_start(bot):
     logger.info("on_start subway")
     tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        tasks.append(fetch_station_db(bot, service_region, api_version))
+        tasks.append(
+            asyncio.create_task(
+                fetch_station_db(bot, service_region, api_version)
+            )
+        )
     await asyncio.wait(tasks)
     return True
 
@@ -74,7 +78,11 @@ async def refresh_db(bot):
     logger.info("refresh subway")
     tasks = []
     for service_region, api_version in REGION_TABLE.values():
-        tasks.append(fetch_station_db(bot, service_region, api_version))
+        tasks.append(
+            asyncio.create_task(
+                fetch_station_db(bot, service_region, api_version)
+            )
+        )
     await asyncio.wait(tasks)
 
 
