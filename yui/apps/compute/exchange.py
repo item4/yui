@@ -1,6 +1,5 @@
 import re
 from decimal import Decimal
-from urllib.parse import urlencode
 
 import aiohttp
 
@@ -40,13 +39,12 @@ async def get_exchange_rate(base: str, to: str) -> dict:
     if base == to:
         raise SameBaseAndTo()
 
-    url = "https://api.manana.kr/exchange/rate.json?{}".format(
-        urlencode({"base": to, "code": base})
-    )
-
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            data = await res.json(loads=json.loads)
+        async with session.get(
+            "https://api.manana.kr/exchange/rate.json",
+            params={"base": to, "code": base},
+        ) as resp:
+            data = await resp.json(loads=json.loads)
             if isinstance(data, list):
                 return data[0]
             else:
@@ -64,8 +62,7 @@ async def exchange(bot, event: Message, query: str):
 
     """
 
-    match = QUERY_RE.match(query)
-    if match:
+    if match := QUERY_RE.match(query):
         quantity = Decimal(match.group(1))
         base = SHORTCUT_TABLE.get(match.group(2), match.group(2))
         to = SHORTCUT_TABLE.get(match.group(3), match.group(3)) or "KRW"

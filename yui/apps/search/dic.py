@@ -1,5 +1,4 @@
 import re
-from urllib.parse import urlencode
 
 import aiohttp
 
@@ -69,10 +68,10 @@ def parse(html: str) -> tuple[str | None, list[Attachment]]:
             w = word.cssselect(".txt_searchword")[0]
             attachments.append(
                 Attachment(
-                    title=strip_tags(w.text_content()),
-                    title_link=fix_url(w.get("href")),
+                    title=strip_tags(str(w.text_content())),
+                    title_link=fix_url(str(w.get("href"))),
                     text=fix_blank(
-                        word.cssselect(".list_search")[0].text_content()
+                        str(word.cssselect(".list_search")[0].text_content())
                     ),
                 )
             )
@@ -102,13 +101,13 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
 
     """
 
-    url = "https://dic.daum.net/search.do?{}".format(
-        urlencode({"q": keyword, "dic": DICS[category]})
-    )
     html = ""
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            html = await res.text()
+        async with session.get(
+            "https://dic.daum.net/search.do",
+            params={"q": keyword, "dic": DICS[category]},
+        ) as resp:
+            html = await resp.text()
 
     redirect, attachments = await bot.run_in_other_process(parse, html)
 
