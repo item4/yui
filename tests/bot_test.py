@@ -67,37 +67,32 @@ async def test_call(bot_config, response_mock):
     bot = Bot(bot_config, using_box=box)
     bot.api.throttle_interval = defaultdict(lambda: timedelta(0))
 
-    res = await bot.call("test11")
-    assert res == APIResponse(
-        body={"res": "hello world!"},
-        status=200,
-        headers={"content-type": "application/json"},
-    )
+    resp = await bot.call("test11")
+    assert isinstance(resp, APIResponse)
+    assert resp.body == {"res": "hello world!"}
+    assert resp.status == 200
+    assert resp.headers["Content-Type"] == "application/json"
 
-    res = await bot.call("test12", data={"extra": "wow"})
-    assert res == APIResponse(
-        body={"res": "hello world!", "data": {"extra": "wow"}},
-        status=200,
-        headers={"content-type": "application/json"},
-    )
+    resp = await bot.call("test12", data={"extra": "wow"})
+    assert isinstance(resp, APIResponse)
+    assert resp.body == {"res": "hello world!", "data": {"extra": "wow"}}
+    assert resp.status == 200
+    assert resp.headers["Content-Type"] == "application/json"
 
-    res = await bot.call("test21")
-    assert res == APIResponse(
-        body={"error": "aaa"},
-        status=404,
-        headers={"content-type": "application/json"},
-    )
+    resp = await bot.call("test21")
+    assert isinstance(resp, APIResponse)
+    assert resp.body == {"error": "aaa"}
+    assert resp.status == 404
+    assert resp.headers["Content-Type"] == "application/json"
 
-    res = await bot.call("test22", data={"extra": "wow"})
-    assert res == APIResponse(
-        body={"error": "aaa"},
-        status=404,
-        headers={"content-type": "application/json"},
-    )
+    resp = await bot.call("test22", data={"extra": "wow"})
+    assert isinstance(resp, APIResponse)
+    assert resp.body == {"error": "aaa"}
+    assert resp.status == 404
+    assert resp.headers["Content-Type"] == "application/json"
 
-    res = await bot.call("test3", token=token)
-    assert res == APIResponse(
-        body={"res": "hello world!"},
-        status=200,
-        headers={"content-type": "application/json"},
-    )
+    resp = await bot.call("test3", token=token)
+    assert isinstance(resp, APIResponse)
+    assert resp.body == {"res": "hello world!"}
+    assert resp.status == 200
+    assert resp.headers["Content-Type"] == "application/json"
