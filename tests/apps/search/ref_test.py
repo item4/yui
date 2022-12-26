@@ -51,7 +51,7 @@ async def test_css_command(bot):
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
         assert said.data["text"] == (
-            ":css: `font-family` - "
+            "CSS `font-family` - "
             "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
         )
 
@@ -84,7 +84,7 @@ async def test_html_command(bot):
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
         assert said.data["text"] == (
-            ":html: `<section>` - "
+            "HTML `<section>` - "
             "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"
         )
 
@@ -117,7 +117,7 @@ async def test_python_command(bot):
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
         assert said.data["text"] == (
-            ":python: Built-in Functions - "
+            "Python Built-in Functions - "
             "https://docs.python.org/3/library/functions.html"
         )
 
@@ -126,7 +126,7 @@ async def test_python_command(bot):
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
         assert said.data["text"] == (
-            ":python: re — Regular expression operations - "
+            "Python re — Regular expression operations - "
             "https://docs.python.org/3/library/re.html"
         )
 

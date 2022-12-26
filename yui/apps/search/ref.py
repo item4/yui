@@ -179,7 +179,7 @@ async def html(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f":html: `{name}` - {link}")
+        await bot.say(event.channel, f"HTML `{name}` - {link}")
     else:
         await bot.say(event.channel, "비슷한 HTML Element를 찾지 못하겠어요!")
 
@@ -212,7 +212,7 @@ async def css(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f":css: `{name}` - {link}")
+        await bot.say(event.channel, f"CSS `{name}` - {link}")
     else:
         await bot.say(event.channel, "비슷한 CSS 관련 요소를 찾지 못하겠어요!")
 
@@ -265,7 +265,7 @@ async def php(bot, event: Message, keyword: str):
                         continue
                     if res.status == 200:
                         await bot.say(
-                            event.channel, f":php: `{keyword}` - {res_url}"
+                            event.channel, f"PHP `{keyword}` - {res_url}"
                         )
                         break
         else:
@@ -303,6 +303,6 @@ async def python(bot, event: Message, keyword: str):
             ratio = _ratio
 
     if ratio > 40:
-        await bot.say(event.channel, f":python: {name} - {link}")
+        await bot.say(event.channel, f"Python {name} - {link}")
     else:
         await bot.say(event.channel, "비슷한 Python library를 찾지 못하겠어요!")
