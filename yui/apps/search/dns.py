@@ -1,5 +1,4 @@
 import asyncio
-from urllib.parse import urlencode
 
 import aiohttp
 from aiohttp.client_exceptions import ClientConnectionError
@@ -60,7 +59,7 @@ SERVER_LIST_V6: list[DNSServer] = [
 async def is_ipv6_enabled() -> bool:
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get("http://ipv6.icanhazip.com"):
+            async with session.get("https://ipv6.icanhazip.com"):
                 return True
     except:  # noqa
         return False
@@ -77,15 +76,15 @@ async def query_custom(domain: str, ip: str) -> Result:
 
 
 async def query(domain: str, server: DNSServer) -> Result:
-    url = "http://checkdnskr.appspot.com/api/lookup?{}".format(
-        urlencode({"domain": domain, "ip": server.ip})
-    )
     async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            async with res:
-                if res.status == 200:
+        async with session.get(
+            "https://checkdnskr.appspot.com/api/lookup",
+            params={"domain": domain, "ip": server.ip},
+        ) as resp:
+            async with resp:
+                if resp.status == 200:
                     try:
-                        data = await res.json(loads=json.loads)
+                        data = await resp.json(loads=json.loads)
                         data["error"] = False
                     except ContentTypeError:
                         data = {
