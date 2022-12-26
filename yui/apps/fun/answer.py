@@ -86,7 +86,7 @@ SUMMON_PREFIX = re.compile(r"^마법의?\s*소라고[둥동]님?\s*")
 
 @box.on(Message)
 async def magic_conch(bot, event: Message):
-    if SUMMON_PREFIX.search(event.text):
+    if event.text and SUMMON_PREFIX.search(event.text):
         await bot.api.chat.postMessage(
             channel=event.channel,
             text=random.choice(RESPONSES),
