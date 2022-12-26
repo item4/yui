@@ -166,3 +166,6 @@ class App(BaseApp):
                 res = await self.handler(**kwargs)
 
         return bool(res)
+
+    def __repr__(self) -> str:
+        return f"<App {self.type} {self.subtype} {self.handler}>"
