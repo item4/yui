@@ -8,7 +8,6 @@ from yui.api import SlackAPI
 from yui.bot import Bot
 from yui.box import Box
 from yui.types.slack.response import APIResponse
-from yui.utils import json
 
 from .util import FakeImportLib
 
@@ -42,34 +41,26 @@ async def test_call(bot_config, response_mock):
 
     response_mock.post(
         "https://slack.com/api/test11",
-        body=json.dumps({"res": "hello world!"}),
-        headers={"content-type": "application/json"},
-        status=200,
+        payload={"res": "hello world!"},
     )
     response_mock.post(
         "https://slack.com/api/test12",
-        body=json.dumps({"res": "hello world!", "data": {"extra": "wow"}}),
-        headers={"content-type": "application/json"},
-        status=200,
+        payload={"res": "hello world!", "data": {"extra": "wow"}},
     )
 
     response_mock.post(
         "https://slack.com/api/test21",
-        body=json.dumps({"error": "aaa"}),
-        headers={"content-type": "application/json"},
+        payload={"error": "aaa"},
         status=404,
     )
     response_mock.post(
         "https://slack.com/api/test22",
-        body=json.dumps({"error": "aaa"}),
-        headers={"content-type": "application/json"},
+        payload={"error": "aaa"},
         status=404,
     )
     response_mock.post(
         "https://slack.com/api/test3",
-        body=json.dumps({"res": "hello world!"}),
-        headers={"content-type": "application/json"},
-        status=200,
+        payload={"res": "hello world!"},
     )
 
     box = Box()

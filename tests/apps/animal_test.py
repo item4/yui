@@ -3,6 +3,7 @@ import re
 
 import aiohttp
 import pytest
+from yarl import URL
 
 from yui.apps.animal import APIServerError
 from yui.apps.animal import cat
@@ -11,26 +12,29 @@ from yui.apps.animal import fox
 from yui.apps.animal import get_cat_image_url
 from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
-from yui.utils import json
 
 cat_cooltime_re = re.compile(r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!")
 dog_cooltime_re = re.compile(r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!")
 fox_cooltime_re = re.compile(r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!")
 
 
+CAT_API_URL = URL("https://thecatapi.com/api/images/get").with_query(
+    format="xml", type="jpg,png"
+)
+
+
 @pytest.mark.asyncio
 async def test_get_cat_image_url(response_mock):
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
-        body="",
+        CAT_API_URL,
         status=500,
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         exception=aiohttp.client_exceptions.ServerDisconnectedError(),
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -42,7 +46,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -54,7 +58,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -66,7 +70,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -86,7 +90,7 @@ async def test_get_cat_image_url(response_mock):
         exception=asyncio.TimeoutError(),
     )
     response_mock.get("http://cat.com/404.jpg", status=404)
-    response_mock.get("http://cat.com/200.jpg", status=200)
+    response_mock.get("http://cat.com/200.jpg")
 
     with pytest.raises(APIServerError):
         await get_cat_image_url(0.001)
@@ -99,7 +103,6 @@ async def test_get_cat_image_url(response_mock):
 async def test_get_dog_image_url(response_mock):
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body="",
         status=500,
     )
     response_mock.get(
@@ -108,34 +111,22 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {"status": "success", "message": "http://dog.com/404.jpg"}
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={"status": "success", "message": "http://dog.com/404.jpg"},
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {
-                "status": "success",
-                "message": "http://cannotresolve.com/200.jpg",
-            }
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={
+            "status": "success",
+            "message": "http://cannotresolve.com/200.jpg",
+        },
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {"status": "success", "message": "http://timeout.com/200.jpg"}
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={"status": "success", "message": "http://timeout.com/200.jpg"},
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {"status": "success", "message": "http://dog.com/200.jpg"}
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={"status": "success", "message": "http://dog.com/200.jpg"},
     )
     response_mock.get(
         "http://cannotresolve.com/200.jpg",
@@ -146,7 +137,7 @@ async def test_get_dog_image_url(response_mock):
         exception=asyncio.TimeoutError(),
     )
     response_mock.get("http://dog.com/404.jpg", status=404)
-    response_mock.get("http://dog.com/200.jpg", status=200)
+    response_mock.get("http://dog.com/200.jpg")
 
     with pytest.raises(APIServerError):
         await get_dog_image_url(0.001)
@@ -183,12 +174,11 @@ async def test_get_fox_image_url(response_mock):
 @pytest.mark.asyncio
 async def test_cat_command(bot, response_mock):
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
-        body="",
+        CAT_API_URL,
         status=500,
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -200,12 +190,11 @@ async def test_cat_command(bot, response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
-        body="",
+        CAT_API_URL,
         status=500,
     )
     response_mock.get(
-        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -216,8 +205,8 @@ async def test_cat_command(bot, response_mock):
         ),
         headers={"Content-Type": "text/xml"},
     )
-    response_mock.get("http://cat.com/200.jpg", status=200)
-    response_mock.get("http://cat.com/200.jpg", status=200)
+    response_mock.get("http://cat.com/200.jpg")
+    response_mock.get("http://cat.com/200.jpg")
 
     bot.add_channel("C1", "general")
     user = bot.add_user("U1", "kirito")
@@ -298,30 +287,22 @@ async def test_cat_command(bot, response_mock):
 async def test_dog_command(bot, response_mock):
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body="",
         status=500,
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {"status": "success", "message": "http://dog.com/200.jpg"}
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={"status": "success", "message": "http://dog.com/200.jpg"},
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body="",
         status=500,
     )
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
-        body=json.dumps(
-            {"status": "success", "message": "http://dog.com/200.jpg"}
-        ),
-        headers={"Content-Type": "application/json"},
+        payload={"status": "success", "message": "http://dog.com/200.jpg"},
     )
-    response_mock.get("http://dog.com/200.jpg", status=200)
-    response_mock.get("http://dog.com/200.jpg", status=200)
+    response_mock.get("http://dog.com/200.jpg")
+    response_mock.get("http://dog.com/200.jpg")
 
     bot.add_channel("C1", "general")
     user = bot.add_user("U1", "kirito")

@@ -1,9 +1,9 @@
 import re
 
 import pytest
+from yarl import URL
 
 from yui.apps.compute.exchange import exchange
-from yui.utils import json
 
 YEN_PATTERN = re.compile(
     r"100 JPY == (?:\.?\d+,?)+ KRW \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\)"
@@ -55,9 +55,11 @@ async def test_exchange_command(bot):
 @pytest.mark.asyncio
 async def test_exchange_error(bot, response_mock):
     response_mock.get(
-        "https://api.manana.kr/exchange/rate.json?base=KRW&code=JPY",
-        body=json.dumps([False]),
-        headers={"Content-Type": "application/json"},
+        URL("https://api.manana.kr/exchange/rate.json").with_query(
+            base="KRW",
+            code="JPY",
+        ),
+        payload=[False],
     )
     bot.add_channel("C1", "test")
     bot.add_user("U1", "tester")

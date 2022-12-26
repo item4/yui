@@ -1,20 +1,23 @@
 import pytest
+from yarl import URL
 
 from yui.apps.weather.air import get_air_pollution_by_coordinate
 from yui.apps.weather.air import get_aqi_description
 from yui.apps.weather.air import get_emoji_by_aqi
 from yui.apps.weather.exceptions import WeatherResponseError
-from yui.utils import json
 
 
 @pytest.mark.asyncio
 async def test_get_air_pollution_with_wrong_coordination(response_mock):
     response_mock.get(
-        "https://api.openweathermap.org/data/2.5/air_pollution?"
-        "lat=123&lon=456&appid=asdf",
-        body=json.dumps({}),
+        URL(
+            "https://api.openweathermap.org/data/2.5/air_pollution"
+        ).with_query(
+            lat=123,
+            lon=456,
+            appid="asdf",
+        ),
         status=404,
-        headers={"Content-Type": "application/json"},
     )
 
     with pytest.raises(WeatherResponseError):

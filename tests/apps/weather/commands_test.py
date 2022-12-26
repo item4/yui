@@ -1,12 +1,11 @@
 import re
-from urllib.parse import urlencode
 
 import pytest
+from yarl import URL
 
 from tests.util import FakeBot
 
 from yui.apps.weather.commands import weather
-from yui.utils import json
 
 # AQI 이외의 데이터는 모두 Optional한 데이터이므로 정규식 매치에서 제외함.
 result_pattern_re = re.compile(
@@ -61,16 +60,16 @@ async def test_weather_geocoding_error(
     bot_config, cache, response_mock, unavailable_address
 ):
     response_mock.get(
-        "https://maps.googleapis.com/maps/api/geocode/json?"
-        + urlencode(
-            {"region": "kr", "address": unavailable_address, "key": "qwer"}
+        URL("https://maps.googleapis.com/maps/api/geocode/json").with_query(
+            region="kr",
+            address=unavailable_address,
+            key="DUMMY_GOOGLE_KEY",
         ),
-        body=json.dumps({"results": [], "status": "ZERO_RESULTS"}),
-        headers={"Content-Type": "application/json"},
+        payload={"results": [], "status": "ZERO_RESULTS"},
     )
 
-    bot_config.OPENWEATHER_API_KEY = "asdf"
-    bot_config.GOOGLE_API_KEY = "qwer"
+    bot_config.OPENWEATHER_API_KEY = "DUMMY_OPENWEATHER_KEY"
+    bot_config.GOOGLE_API_KEY = "DUMMY_GOOGLE_KEY"
 
     bot = FakeBot(bot_config, cache=cache)
     bot.add_channel("C1", "general")
@@ -93,42 +92,49 @@ async def test_weather_openweather_error(
     bot_config, cache, response_mock, address
 ):
     response_mock.get(
-        "https://maps.googleapis.com/maps/api/geocode/json?"
-        + urlencode({"region": "kr", "address": address, "key": "qwer"}),
-        body=json.dumps(
-            {
-                "results": [
-                    {
-                        "formatted_address": "대한민국 경기도 부천시",
-                        "geometry": {
-                            "location": {
-                                "lat": 37.5034138,
-                                "lng": 126.7660309,
-                            },
+        URL("https://maps.googleapis.com/maps/api/geocode/json").with_query(
+            region="kr",
+            address=address,
+            key="DUMMY_GOOGLE_KEY",
+        ),
+        payload={
+            "results": [
+                {
+                    "formatted_address": "대한민국 경기도 부천시",
+                    "geometry": {
+                        "location": {
+                            "lat": 37.5034138,
+                            "lng": 126.7660309,
                         },
                     },
-                ],
-            }
+                },
+            ],
+        },
+    )
+    response_mock.get(
+        URL("https://api.openweathermap.org/data/2.5/weather").with_query(
+            appid="DUMMY_OPENWEATHER_KEY",
+            lat="37.5034138",
+            lon="126.7660309",
+            units="metric",
         ),
-        headers={"Content-Type": "application/json"},
+        payload=None,
+        status=401,
     )
     response_mock.get(
-        "https://api.openweathermap.org/data/2.5/weather?"
-        "appid=asdf&lat=37.5034138&lon=126.7660309&units=metric",
-        body="null",
+        URL(
+            "https://api.openweathermap.org/data/2.5/air_pollution"
+        ).with_query(
+            appid="DUMMY_OPENWEATHER_KEY",
+            lat="37.5034138",
+            lon="126.7660309",
+        ),
+        payload={},
         status=401,
-        headers={"Content-Type": "application/json"},
-    )
-    response_mock.get(
-        "https://api.openweathermap.org/data/2.5/air_pollution?"
-        "lat=37.5034138&lon=126.7660309&appid=asdf",
-        body=json.dumps({}),
-        status=401,
-        headers={"Content-Type": "application/json"},
     )
 
-    bot_config.OPENWEATHER_API_KEY = "asdf"
-    bot_config.GOOGLE_API_KEY = "qwer"
+    bot_config.OPENWEATHER_API_KEY = "DUMMY_OPENWEATHER_KEY"
+    bot_config.GOOGLE_API_KEY = "DUMMY_GOOGLE_KEY"
 
     bot = FakeBot(bot_config, cache=cache)
     bot.add_channel("C1", "general")

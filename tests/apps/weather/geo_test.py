@@ -1,7 +1,7 @@
 import pytest
+from yarl import URL
 
 from yui.apps.weather.geo import get_geometric_info_by_address
-from yui.utils import json
 
 
 @pytest.mark.parametrize(
@@ -33,14 +33,14 @@ async def test_get_weather_wrong_geometric_info(
 ):
     key = "XXX"
     response_mock.get(
-        "https://maps.googleapis.com/maps/api/geocode/json"
-        f"?region=kr&address={unavailable_address}&key=XXX",
-        body=json.dumps(
-            {
-                "results": [],
-            }
+        URL("https://maps.googleapis.com/maps/api/geocode/json").with_query(
+            region="kr",
+            address=unavailable_address,
+            key=key,
         ),
-        headers={"Content-Type": "application/json"},
+        payload={
+            "results": [],
+        },
     )
     with pytest.raises(IndexError):
         await get_geometric_info_by_address(
