@@ -108,23 +108,28 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             find_end_ratio = end_ratio
 
     if find_start_ratio < 40:
-        await bot.say(event.channel, "출발역으로 지정하신 역 이름을 찾지 못하겠어요")
+        await bot.say(event.channel, "출발역으로 지정하신 역 이름을 찾지 못하겠어요!")
         return
     elif find_end_ratio < 40:
-        await bot.say(event.channel, "도착역으로 지정하신 역 이름을 찾지 못하겠어요")
+        await bot.say(event.channel, "도착역으로 지정하신 역 이름을 찾지 못하겠어요!")
         return
     elif find_start and find_end:
         if find_start["id"] == find_end["id"]:
-            await bot.say(event.channel, "출발역과 도착역이 동일한 역이에요!")
+            await bot.say(
+                event.channel,
+                f"출발역과 도착역이 동일한 역인 것 같아요!"
+                f" (참고로 제가 인식한 역 이름은 '{find_start['name']}' 이에요!)",
+            )
             return
 
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(
-                "https://map.naver.com/v5/api/subway/search",
+                "https://map.naver.com/v5/api/transit/directions/subway",
                 params={
-                    "serviceRegion": service_region,
                     "start": find_start["id"],
                     "goal": find_end["id"],
+                    "lang": "ko",
+                    "includeDetailOperation": "true",
                     "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
                 },
             ) as resp:
