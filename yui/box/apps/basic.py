@@ -85,10 +85,10 @@ class App(BaseApp):
         return help
 
     async def run(self, bot: Bot, event: Event):
+        event_subtype = getattr(event, "subtype", None)
         subtype = (
-            self.subtype
-            and (event.subtype == self.subtype or self.subtype == "*")
-        ) or not self.subtype
+            self.subtype is not None and self.subtype in {"*", event_subtype}
+        ) or self.subtype is None
         if event.type == self.type and subtype:
             if isinstance(event, Message):
                 return await self._run_message_event(bot, event)
