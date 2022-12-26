@@ -353,9 +353,11 @@ class Bot:
                 self.restart = True
                 return False
             except APICallError as e:
+                logger.exception("APICallError on app handle process")
                 await report(self, event=event, exception=e)
                 return False
             except:  # noqa: E722
+                logger.exception("Unexpected exception on app handle process")
                 await report(self, event=event)
                 return False
 
