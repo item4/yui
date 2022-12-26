@@ -21,16 +21,16 @@ fox_cooltime_re = re.compile(r"아직 쿨타임이에요! \d+시 \d+분 이후�
 @pytest.mark.asyncio
 async def test_get_cat_image_url(response_mock):
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body="",
         status=500,
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         exception=aiohttp.client_exceptions.ServerDisconnectedError(),
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -42,7 +42,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -54,7 +54,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -66,7 +66,7 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -183,12 +183,12 @@ async def test_get_fox_image_url(response_mock):
 @pytest.mark.asyncio
 async def test_cat_command(bot, response_mock):
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body="",
         status=500,
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
@@ -200,12 +200,12 @@ async def test_cat_command(bot, response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body="",
         status=500,
     )
     response_mock.get(
-        "http://thecatapi.com/api/images/get?format=xml&type=jpg,png",
+        "https://thecatapi.com/api/images/get?format=xml&type=jpg,png",
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
