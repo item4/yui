@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import re
-from urllib.parse import urlencode
 
 import aiohttp
 import tossi
@@ -38,20 +37,17 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f"subway-{service_region}-{api_version}"
     logger.info(f"fetch {name} start")
 
-    metadata_url = "https://map.naver.com/v5/api/subway/provide?{}".format(
-        urlencode(
-            {
+    async with aiohttp.ClientSession(headers=headers) as session:
+        async with session.get(
+            "https://map.naver.com/v5/api/subway/provide",
+            params={
                 "requestFile": "metaData.json",
                 "readPath": service_region,
                 "version": api_version,
                 "language": "ko",
                 "caller": "NaverMapPcBetaWeb",
-            }
-        )
-    )
-
-    async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.get(metadata_url) as resp:
+            },
+        ) as resp:
             data = await resp.json(loads=json.loads)
 
     await bot.cache.set(f"SUBWAY_{service_region}_{api_version}", data)
@@ -122,19 +118,16 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             await bot.say(event.channel, "출발역과 도착역이 동일한 역이에요!")
             return
 
-        url = "https://map.naver.com/v5/api/subway/search?{}".format(
-            urlencode(
-                {
+        async with aiohttp.ClientSession(headers=headers) as session:
+            async with session.get(
+                "https://map.naver.com/v5/api/subway/search",
+                params={
                     "serviceRegion": service_region,
                     "start": find_start["id"],
                     "goal": find_end["id"],
                     "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
-                }
-            )
-        )
-
-        async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.get(url) as resp:
+                },
+            ) as resp:
                 result = await resp.json(loads=json.loads)
 
         text = ""
