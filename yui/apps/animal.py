@@ -23,7 +23,7 @@ class APIServerError(RuntimeError):
 
 
 async def get_cat_image_url(timeout: float) -> str:
-    api_url = "http://thecatapi.com/api/images/get"
+    api_url = "https://thecatapi.com/api/images/get"
     async with aiohttp.ClientSession() as session:
         while True:
             try:
