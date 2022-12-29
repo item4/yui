@@ -4,6 +4,7 @@ MAINTAINER item4 <item4@localhost>
 
 ENV HOME="/home/kazuto"
 ENV TZ="Asia/Seoul"
+ENV PATH="${HOME}/.local/bin:${PATH}"
 
 RUN apt-get update -q \
     && apt-get install --no-install-recommends -y \
