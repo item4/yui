@@ -26,6 +26,6 @@ COPY --chown=kazuto:kirigaya ./requirements.txt ${HOME}/yui/
 
 WORKDIR ${HOME}/yui/
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt && rm requirements.txt
 
 COPY --chown=kazuto:kirigaya . ${HOME}/yui/
