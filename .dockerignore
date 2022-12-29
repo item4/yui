@@ -182,19 +182,19 @@ Temporary Items
 .apdisk
 
 # yui docker only
-.idea
-*.config.toml
-log
-.project
-docker
 .git
+.github
+docker
+examples
+logs
+tests
 .coveragerc
 .gitignore
-mypy.ini
-examples
-tests
 .pre-commit-config.yaml
-dmypy.ini
+mypy.ini
+poetry.lock
 README.rst
-.github
-check_zimports.sh
+setup.cfg
+
+.idea
+*.config.toml
