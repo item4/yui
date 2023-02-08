@@ -68,7 +68,6 @@ class ConfigurationError(Exception):
 
 
 class Config(SimpleNamespace):
-
     APP_TOKEN: str
     BOT_TOKEN: str
     RECEIVE_TIMEOUT: int

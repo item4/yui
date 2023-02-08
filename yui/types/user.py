@@ -29,7 +29,6 @@ class UserProfile:
 
 @define
 class User:
-
     id: str = user_id_field()
     name: str = name_field()
     deleted: bool = field()

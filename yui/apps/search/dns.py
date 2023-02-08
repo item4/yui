@@ -23,7 +23,6 @@ class DNSServer:
 
 @define
 class Result:
-
     server_name: str
     server_ip: str
     a_record: str

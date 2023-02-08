@@ -325,7 +325,6 @@ UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
 
 
 class Evaluator:
-
     last_dump: str
 
     def __init__(self, decimal_mode: bool = False) -> None:

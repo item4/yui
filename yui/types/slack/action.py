@@ -42,20 +42,17 @@ class OptionFieldGroup:
 
 
 class ActionType(enum.Enum):
-
     button = "button"
     select = "select"
 
 
 class ActionStyle(enum.Enum):
-
     default = "default"
     primary = "primary"
     danger = "danger"
 
 
 class ActionDataSource(enum.Enum):
-
     default = "default"
     static = "static"
     users = "users"

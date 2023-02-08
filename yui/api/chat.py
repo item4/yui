@@ -10,7 +10,6 @@ from .endpoint import Endpoint
 
 
 class Chat(Endpoint):
-
     name = "chat"
 
     async def delete(

@@ -33,7 +33,6 @@ class ChannelPurpose:
 
 @define
 class PublicChannel:
-
     id: PublicChannelID = channel_id_field()
     name: str = name_field()
     is_channel: bool = field()
@@ -62,7 +61,6 @@ class PublicChannel:
 
 @define
 class DirectMessageChannel:
-
     id: DirectMessageChannelID = channel_id_field()
     created: datetime = field()
     is_im: bool = field()
@@ -80,7 +78,6 @@ class DirectMessageChannel:
 
 @define
 class PrivateChannel:
-
     id: PrivateChannelID = channel_id_field()
     name: str = field()
     is_channel: bool = field()

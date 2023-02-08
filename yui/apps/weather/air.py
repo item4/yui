@@ -31,7 +31,6 @@ FIELDS: dict[str, tuple[str, float | None]] = {
 
 @define
 class AirPollutionRecord:
-
     aqi: int  # 1~5까지의 AQI Index
     co: float | None = None  # 일산화 탄소 (Carbon Monoxide)
     no: float | None = None  # 일산화 질소

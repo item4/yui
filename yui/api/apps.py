@@ -3,7 +3,6 @@ from .endpoint import Endpoint
 
 
 class Connections(Endpoint):
-
     name = "apps.connections"
 
     async def open(

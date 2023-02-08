@@ -9,7 +9,6 @@ from yui.utils.cast import cast
 
 @define
 class UserRecord:
-
     id: str
     pw: str
 

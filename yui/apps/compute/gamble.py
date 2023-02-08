@@ -26,7 +26,6 @@ DICE_SYNTAX = re.compile(
 
 @define
 class DiceResult:
-
     query: str
     result: str
 

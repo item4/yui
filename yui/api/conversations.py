@@ -9,7 +9,6 @@ from .endpoint import Endpoint
 
 
 class Conversations(Endpoint):
-
     name = "conversations"
 
     async def history(

@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
 
 class Route:
-
     name: str | None
     handler: Handler
     subtype: str | None = None
@@ -35,7 +34,6 @@ class Route:
 
 
 class RouteApp(BaseApp):
-
     use_shlex: bool = True
     name: str
     route_list: list[Route] = []

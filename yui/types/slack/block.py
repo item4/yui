@@ -10,14 +10,12 @@ from ..base import UserID
 
 
 class TextFieldType(enum.Enum):
-
     plain_text = "plain_text"
     mrkdwn = "mrkdwn"
 
 
 @define
 class TextField:
-
     text: str
     type: TextFieldType = TextFieldType.mrkdwn
 
@@ -29,7 +27,6 @@ def enforce_plain_text(instance, attribute, value):
 
 @define
 class PlainTextField(TextField):
-
     type: TextFieldType = field(
         validator=[enforce_plain_text],
         default=TextFieldType.plain_text,
@@ -48,14 +45,12 @@ class InteractiveElement(Element):
 
 @define
 class ImageElement(Element):
-
     image_url: str
     alt_text: str
     type: str = field(default="image", init=False)
 
 
 class ButtonStyle(enum.Enum):
-
     default = "default"
     primary = "primary"
     danger = "danger"
@@ -63,7 +58,6 @@ class ButtonStyle(enum.Enum):
 
 @define
 class ConfirmationDialog:
-
     title: PlainTextField
     text: TextField
     confirm: PlainTextField
@@ -72,7 +66,6 @@ class ConfirmationDialog:
 
 @define
 class ButtonElement(InteractiveElement):
-
     text: TextField
     action_id: str
     url: str | None = None
@@ -84,21 +77,18 @@ class ButtonElement(InteractiveElement):
 
 @define
 class Option:
-
     text: PlainTextField
     value: str
 
 
 @define
 class OptionGroup:
-
     label: PlainTextField
     options: list[Option] = Factory(list)
 
 
 @define
 class StaticSelectElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     options: list[Option] = Factory(list)
@@ -110,7 +100,6 @@ class StaticSelectElement(InteractiveElement):
 
 @define
 class ExternalSelectElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     initial_option: Option | None = None
@@ -121,7 +110,6 @@ class ExternalSelectElement(InteractiveElement):
 
 @define
 class UsersSelectElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     initial_user: UserID | None = None
@@ -131,7 +119,6 @@ class UsersSelectElement(InteractiveElement):
 
 @define
 class ConversationsSelectElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     initial_conversation: ChannelID | None = None
@@ -141,7 +128,6 @@ class ConversationsSelectElement(InteractiveElement):
 
 @define
 class ChannelsSelectElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     initial_channel: PublicChannelID | None = None
@@ -151,7 +137,6 @@ class ChannelsSelectElement(InteractiveElement):
 
 @define
 class OverflowElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     options: list[Option] = Factory(list)
@@ -161,7 +146,6 @@ class OverflowElement(InteractiveElement):
 
 @define
 class DatepickerElement(InteractiveElement):
-
     placeholder: PlainTextField
     action_id: str
     initial_date: str | None = None
@@ -205,7 +189,6 @@ class Image(Block):
 
 @define
 class Action(Block):
-
     elements: list[InteractiveElement] = Factory(list)
 
 

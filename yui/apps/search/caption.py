@@ -52,7 +52,6 @@ def convert_released_dt(value: str) -> str:
 
 @define(frozen=True, hash=True, eq=True)
 class Caption:
-
     maker: str
     episode_num: str
     url: str = field(converter=fix_url)

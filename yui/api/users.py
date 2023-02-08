@@ -6,7 +6,6 @@ from .endpoint import Endpoint
 
 
 class Users(Endpoint):
-
     name = "users"
 
     async def info(self, user: User | UserID) -> APIResponse:

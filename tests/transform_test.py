@@ -87,7 +87,6 @@ def test_get_user_id(bot):
     "items", [["Dog", "cat", "fish"], ("Dog", "cat", "fish")]
 )
 def test_choice(items):
-
     assert choice(items)("cat") == "cat"
 
     with pytest.raises(ValueError):
@@ -137,7 +136,6 @@ def test_choice(items):
 
 
 def test_value_range():
-
     # Decimal
     one = Decimal("1")
     three = Decimal("3.0")
