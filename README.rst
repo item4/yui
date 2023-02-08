@@ -16,10 +16,10 @@ YUI는 다용도 Slack App 입니다.
 
 - Git
 - Slack App 설치 및 App Token/Bot Token
-- Python 3.11.1 혹은 그 이상 버전
+- Python 3.11.2 혹은 그 이상 버전
 - PostgresSQL
 - memcached
-- Poetry_ 1.3.1 이상
+- Poetry_ 1.3.2 이상
 
 
 .. _Poetry: https://python-poetry.org/
