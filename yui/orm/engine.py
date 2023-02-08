@@ -10,6 +10,7 @@ def create_database_engine(
 ) -> AsyncEngine:
     return create_async_engine(
         url,
+        future=True,
         echo=echo,
         poolclass=poolclass,
         pool_pre_ping=True,
