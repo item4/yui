@@ -18,18 +18,18 @@ depends_on = None
 
 
 def upgrade():
-    op.alter_column("memo", "created_datetime", modify_name="created_at")
+    op.alter_column("memo", "created_datetime", new_column_name="created_at")
     op.alter_column(
-        "rss_feed_url", "updated_datetime", modify_name="updated_at"
+        "rss_feed_url", "updated_datetime", new_column_name="updated_at"
     )
     op.drop_column("memo", "created_timezone")
     op.drop_column("rss_feed_url", "updated_timezone")
 
 
 def downgrade():
-    op.alter_column("memo", "created_at", modify_name="created_datetime")
+    op.alter_column("memo", "created_at", new_column_name="created_datetime")
     op.alter_column(
-        "rss_feed_url", "updated_at", modify_name="updated_datetime"
+        "rss_feed_url", "updated_at", new_column_name="updated_datetime"
     )
     op.add_column("memo", sa.Column("created_timezone", TimezoneType()))
     op.add_column(
