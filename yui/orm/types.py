@@ -18,6 +18,8 @@ except ImportError:  # pragma: no cover
 class JSONType(_JSONType):
     """JSONType with orjson"""
 
+    cache_ok = True
+
     def process_bind_param(self, value, dialect):
         if dialect.name == "postgresql" and has_postgres_json:
             return value
@@ -35,6 +37,8 @@ class JSONType(_JSONType):
 
 class TimezoneType(_TimezoneType):
     """TimezoneType"""
+
+    cache_ok = True
 
     def __init__(self, backend="dateutil"):
         self.backend = backend
