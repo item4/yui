@@ -4,9 +4,7 @@ from sqlalchemy.types import String
 from sqlalchemy.types import Text
 
 from ....orm import Base
-from ....orm.columns import DateTimeAtColumn
-from ....orm.columns import DateTimeColumn
-from ....orm.columns import TimezoneColumn
+from ....orm.columns import DateTime
 
 
 class Memo(Base):
@@ -22,8 +20,4 @@ class Memo(Base):
 
     author = Column(String, nullable=False)
 
-    created_datetime = DateTimeColumn(nullable=False)
-
-    created_timezone = TimezoneColumn()
-
-    created_at = DateTimeAtColumn("created")
+    created_at = Column(DateTime(timezone=True))

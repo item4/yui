@@ -3,9 +3,7 @@ from sqlalchemy.types import Integer
 from sqlalchemy.types import String
 
 from ....orm import Base
-from ....orm.columns import DateTimeAtColumn
-from ....orm.columns import DateTimeColumn
-from ....orm.columns import TimezoneColumn
+from ....orm.columns import DateTime
 
 
 class RSSFeedURL(Base):
@@ -19,8 +17,4 @@ class RSSFeedURL(Base):
 
     channel = Column(String, nullable=False)
 
-    updated_datetime = DateTimeColumn(nullable=False)
-
-    updated_timezone = TimezoneColumn()
-
-    updated_at = DateTimeAtColumn("updated")
+    updated_at = Column(DateTime(timezone=True))
