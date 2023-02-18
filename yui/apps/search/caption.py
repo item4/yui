@@ -167,6 +167,8 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
             num = "단편"
         elif caption.episode_num == "9999":  # OHLI의 9999는 완결을 의미
             num = "완결"
+        else:
+            num = f"{num}화"
 
         date = caption.released_at
         if date:
