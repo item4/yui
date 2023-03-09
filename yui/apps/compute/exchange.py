@@ -8,8 +8,16 @@ from ...command import argument
 from ...event import Message
 from ...utils import json
 
-QUERY_RE = re.compile(
-    r"^(\d+(?:\.\d+)?)\s*(\S+)(?:\s+(?:to|->|=)\s+(\S+))?$", re.IGNORECASE
+_BASE = r"(?P<base>\S+)"
+_QUANTITY = r"(?P<quantity>\d+(?:\.\d+)?)"
+_TO = r"(?P<to>\S+)"
+QUERY_PATTERN1 = re.compile(
+    r"^" + _QUANTITY + r"\s*" + _BASE + r"(?:\s+(?:to|->|=)\s+" + _TO + r")?$",
+    re.IGNORECASE,
+)
+QUERY_PATTERN2 = re.compile(
+    r"^" + _BASE + r"\s*" + _QUANTITY + r"(?:\s+(?:to|->|=)\s+" + _TO + r")?$",
+    re.IGNORECASE,
 )
 SHORTCUT_TABLE: dict[str, str] = {
     "$": "USD",
@@ -61,11 +69,14 @@ async def exchange(bot, event: Message, query: str):
     `{PREFIX}환율 100 JPY to USD` (100 JPY가 USD로 얼마인지 계산)
 
     """
+    match = QUERY_PATTERN1.match(query)
+    if not match:
+        match = QUERY_PATTERN2.match(query)
 
-    if match := QUERY_RE.match(query):
-        quantity = Decimal(match.group(1))
-        base = SHORTCUT_TABLE.get(match.group(2), match.group(2))
-        to = SHORTCUT_TABLE.get(match.group(3), match.group(3)) or "KRW"
+    if match:
+        quantity = Decimal(match.group("quantity"))
+        base = SHORTCUT_TABLE.get(match.group("base"), match.group("base"))
+        to = SHORTCUT_TABLE.get(match.group("to"), match.group("to")) or "KRW"
 
         data = None
         error = None

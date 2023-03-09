@@ -23,6 +23,13 @@ async def test_exchange_command(bot):
     assert said.data["channel"] == "C1"
     assert YEN_PATTERN.match(said.data["text"])
 
+    await exchange(bot, event, "JPY 100")
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert YEN_PATTERN.match(said.data["text"])
+
     await exchange(bot, event, "100 JPY to KRW")
 
     said = bot.call_queue.pop(0)
