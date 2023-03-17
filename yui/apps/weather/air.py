@@ -55,7 +55,12 @@ class AirPollutionRecord:
                 atm = hpa_to_atm(pressure) if pressure is not None else 1
                 value = cubic_to_ppm(value, weight, temperature, atm)
                 unit = "ppm"  # unicode 문자는 가독성이 너무 낮음
-            results.append(f"* {name}: {shorten(value)} {unit}")
+            shorten_value = shorten(value)
+            if shorten_value == "0":
+                text = "관측 정밀도 미만"
+            else:
+                text = f"{shorten_value} {unit}"
+            results.append(f"* {name}: {text}")
 
         return "\n".join(results)
 
