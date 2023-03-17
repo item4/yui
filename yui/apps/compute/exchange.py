@@ -8,17 +8,7 @@ from ...command import argument
 from ...event import Message
 from ...utils import json
 
-_BASE = r"(?P<base>\S+)"
-_QUANTITY = r"(?P<quantity>\d+(?:\.\d+)?)"
-_TO = r"(?P<to>\S+)"
-QUERY_PATTERN1 = re.compile(
-    r"^" + _QUANTITY + r"\s*" + _BASE + r"(?:\s+(?:to|->|=)\s+" + _TO + r")?$",
-    re.IGNORECASE,
-)
-QUERY_PATTERN2 = re.compile(
-    r"^" + _BASE + r"\s*" + _QUANTITY + r"(?:\s+(?:to|->|=)\s+" + _TO + r")?$",
-    re.IGNORECASE,
-)
+
 SHORTCUT_TABLE: dict[str, str] = {
     "$": "USD",
     "달러": "USD",
@@ -27,6 +17,20 @@ SHORTCUT_TABLE: dict[str, str] = {
     "엔": "JPY",
     "유로": "EUR",
 }
+CURRENCY = (
+    r"|".join(re.escape(key) for key in SHORTCUT_TABLE.keys()) + r"|[a-z]+"
+)
+BASE = r"(?P<base>" + CURRENCY + r")"
+QUANTITY = r"(?P<quantity>\d+(?:\.\d+)?)"
+TO = r"(?P<to>" + CURRENCY + r")"
+QUERY_PATTERN1 = re.compile(
+    r"^" + QUANTITY + r"\s*" + BASE + r"(?:\s+(?:to|->|=)\s+" + TO + r")?$",
+    re.IGNORECASE,
+)
+QUERY_PATTERN2 = re.compile(
+    r"^" + BASE + r"\s*" + QUANTITY + r"(?:\s+(?:to|->|=)\s+" + TO + r")?$",
+    re.IGNORECASE,
+)
 
 
 class ExchangeError(Exception):
