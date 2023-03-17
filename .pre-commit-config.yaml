@@ -25,7 +25,6 @@ repos:
       - id: isort
         name: isort
         entry: isort
-        args: ['--check-only']
         language: system
         types: [ python ]
       - id: black

@@ -8,7 +8,6 @@ from ...command import argument
 from ...event import Message
 from ...utils import json
 
-
 SHORTCUT_TABLE: dict[str, str] = {
     "$": "USD",
     "달러": "USD",
