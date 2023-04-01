@@ -1,5 +1,6 @@
 import tossi
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.expression import delete
 from sqlalchemy.sql.expression import select
 
@@ -69,6 +70,7 @@ async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
     memos = (
         await sess.scalars(
             select(Memo)
+            .options(selectinload(Memo.text))
             .where(Memo.keyword == keyword)
             .order_by(Memo.created_at.asc())
         )
