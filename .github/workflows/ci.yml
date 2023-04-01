@@ -75,9 +75,7 @@ jobs:
 
       # Type Check
       - name: Check static types
-        run: |
-          echo "color_output=False" >> mypy.ini
-          mypy yui
+        run: mypy yui
 
       # Test
       - name: Run test cases
