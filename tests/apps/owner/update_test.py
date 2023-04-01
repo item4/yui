@@ -6,7 +6,7 @@ from yui.apps.owner.update import update
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_update_command(bot_config):
     bot_config.USERS["owner"] = "U1"
     bot_config.CHANNELS["notice"] = "C1"

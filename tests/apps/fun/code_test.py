@@ -4,7 +4,7 @@ from yui.apps.fun.code import code_review
 from yui.apps.fun.code import write_code_review
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_write_code_review(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -26,7 +26,7 @@ async def test_write_code_review(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_code_review(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

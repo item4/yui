@@ -5,7 +5,7 @@ from yui.apps.fun.relax import relax
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_relax_command(bot_config):
     bot_config.USERS["villain"] = "U2"
     bot = FakeBot(bot_config)

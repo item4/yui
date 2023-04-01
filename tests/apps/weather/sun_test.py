@@ -3,7 +3,7 @@ import pytest
 from yui.utils.datetime import datetime
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def get_emoji_by_sun():
     lat = 37.566535
     lng = 126.9779692

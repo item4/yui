@@ -5,7 +5,7 @@ from yui.types.slack.attachment import Field
 from yui.types.slack.block import Divider
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_chat_delete(bot):
     channel_id = "C1234"
 
@@ -33,7 +33,7 @@ async def test_slack_api_chat_delete(bot):
     assert call.token == alternative_token
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_chat_post_ephemeral(bot):
     channel_id = "C1234"
     user_id = "U5555"
@@ -145,7 +145,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
     assert call.token == "KIRITO"  # noqa: S105
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_chat_post_message(bot):
     channel_id = "C1234"
     attachments = [

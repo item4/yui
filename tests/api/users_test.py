@@ -3,7 +3,7 @@ import pytest
 from yui.api.encoder import bool2str
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_users_info(bot):
     user_id = "U1234"
     user = bot.add_user(user_id, "item4")
@@ -21,7 +21,7 @@ async def test_slack_api_users_info(bot):
     assert call.data == {"user": user_id}
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_users_list(bot):
     await bot.api.users.list(
         curser="asdf1234",

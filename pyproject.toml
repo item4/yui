@@ -25,6 +25,8 @@ select = [
     "C4",
     # flake8-pie
     "PIE",
+    # flake8-pytest-style
+    "PT",
     # flake8-raise
     "RSE",
     # flake8-return
@@ -51,6 +53,8 @@ select = [
 ignore = [
     # flake8-bandit
     "S311",  # Standard pseudo-random generators are not suitable for cryptographic purposes
+    # flake8-pytest-style
+    "PT011",  # pytest.raises({exception}) is too broad, set the match parameter or use a more specific exception
     # tryceratops
     "TRY003",  # Avoid specifying long messages outside the exception class
     "TRY301",  # Abstract raise to an inner function

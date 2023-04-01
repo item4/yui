@@ -4,7 +4,7 @@ from yui.apps.fun.answer import magic_conch
 from yui.apps.fun.answer import RESPONSES
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_magic_conch(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

@@ -4,7 +4,7 @@ from yui.apps.info.about import about
 from yui.apps.info.about import MESSAGE
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_about_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

@@ -3,7 +3,7 @@ import pytest
 from yui.apps.hi import hi
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_hi_handler(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "kirito")

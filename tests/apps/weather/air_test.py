@@ -7,7 +7,7 @@ from yui.apps.weather.air import get_emoji_by_aqi
 from yui.apps.weather.exceptions import WeatherResponseError
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_air_pollution_with_wrong_coordination(response_mock):
     response_mock.get(
         URL("https://api.openweathermap.org/data/2.5/air_pollution").with_query(
@@ -23,7 +23,7 @@ async def test_get_air_pollution_with_wrong_coordination(response_mock):
 
 
 @pytest.mark.parametrize(
-    "level, expected",
+    ("level", "expected"),
     [
         (1, "좋음"),
         (2, "보통"),
@@ -37,7 +37,7 @@ def test_get_aqi_description(level, expected):
 
 
 @pytest.mark.parametrize(
-    "level, expected",
+    ("level", "expected"),
     [
         (1, ":smile:"),
         (2, ":smiley:"),

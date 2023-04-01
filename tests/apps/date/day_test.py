@@ -7,7 +7,7 @@ from yui.utils.datetime import datetime
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2019, 2, 4), tick=False)
 async def test_holiday_command(bot_config):
     bot = FakeBot(bot_config)

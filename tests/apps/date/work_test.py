@@ -8,7 +8,7 @@ from yui.utils.datetime import datetime
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 9), tick=False)
 async def test_work_start_monday(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -24,7 +24,7 @@ async def test_work_start_monday(bot_config):
     assert said.data["attachments"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 10, 9), tick=False)
 async def test_work_start_normal(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -43,7 +43,7 @@ async def test_work_start_normal(bot_config):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 9), tick=False)
 async def test_work_start_holiday(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -62,7 +62,7 @@ async def test_work_start_holiday(bot_config):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 18), tick=False)
 async def test_work_end_18_normal(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -81,7 +81,7 @@ async def test_work_end_18_normal(bot_config):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 18), tick=False)
 async def test_work_end_18_holiday(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -100,7 +100,7 @@ async def test_work_end_18_holiday(bot_config):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 19), tick=False)
 async def test_work_end_19_normal(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -119,7 +119,7 @@ async def test_work_end_19_normal(bot_config):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 19), tick=False)
 async def test_work_end_19_holiday(bot_config):
     bot_config.CHANNELS["general"] = "C1"

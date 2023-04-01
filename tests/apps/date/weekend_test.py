@@ -7,7 +7,7 @@ from yui.utils.datetime import datetime
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_weekend_start(bot_config):
     bot_config.CHANNELS["general"] = "C1"
@@ -23,7 +23,7 @@ async def test_weekend_start(bot_config):
     assert said.data["text"] == "주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_weekend_half(bot_config):
     bot_config.CHANNELS["general"] = "C1"

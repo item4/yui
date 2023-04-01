@@ -8,7 +8,7 @@ from yui.utils.datetime import fromtimestampoffset
 from yui.utils.datetime import now
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_weather_datetime_is_correct(
     google_api_key, openweather_api_key, address
 ):
@@ -31,7 +31,7 @@ async def test_get_weather_datetime_is_correct(
     assert dt.timestamp() < now().timestamp()
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_get_weather_with_wrong_openweather_coordination(response_mock):
     response_mock.get(
         URL("https://api.openweathermap.org/data/2.5/weather").with_query(

@@ -29,7 +29,7 @@ async def bot(event_loop, cache):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_css_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -64,7 +64,7 @@ async def test_css_command(bot):
         assert said.data["text"] == "비슷한 CSS 관련 요소를 찾지 못하겠어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_html_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -99,7 +99,7 @@ async def test_html_command(bot):
         assert said.data["text"] == "비슷한 HTML Element를 찾지 못하겠어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_python_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

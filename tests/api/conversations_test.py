@@ -3,7 +3,7 @@ import pytest
 from yui.api.encoder import bool2str
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_conversations_history(bot):
     channel_id = "C1234"
 
@@ -45,7 +45,7 @@ async def test_slack_api_conversations_history(bot):
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_conversations_replies(bot):
     channel_id = "C1234"
     ts = "123456.7"
@@ -92,7 +92,7 @@ async def test_slack_api_conversations_replies(bot):
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_conversations_info(bot):
     channel_id = "C1234"
 
@@ -123,7 +123,7 @@ async def test_slack_api_conversations_info(bot):
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_conversations_list(bot):
     cursor = "1234asdf"
     exclude_archived = False
@@ -149,7 +149,7 @@ async def test_slack_api_conversations_list(bot):
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_slack_api_conversations_open(bot):
     channel_id = "C1234"
     user_id = "U1234"

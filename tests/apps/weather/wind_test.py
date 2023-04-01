@@ -4,7 +4,7 @@ from yui.apps.weather.wind import degree_to_direction
 
 
 @pytest.mark.parametrize(
-    "degree, direction",
+    ("degree", "direction"),
     [
         (0, "N"),
         (22.5, "NNE"),

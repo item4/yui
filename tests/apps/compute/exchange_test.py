@@ -10,7 +10,7 @@ YEN_PATTERN = re.compile(
 )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_exchange_command(bot):
     bot.add_channel("C1", "test")
     bot.add_user("U1", "tester")
@@ -59,7 +59,7 @@ async def test_exchange_command(bot):
     assert said.data["text"] == "주문을 이해하는데에 실패했어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_exchange_error(bot, response_mock):
     response_mock.get(
         URL("https://api.manana.kr/exchange/rate.json").with_query(

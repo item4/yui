@@ -13,7 +13,7 @@ result_pattern_re = re.compile(
 )
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_weather(
     bot_config, cache, openweather_api_key, google_api_key, address
 ):
@@ -55,7 +55,7 @@ async def test_weather(
     assert air_pollution_said.data["username"] == "경기도 부천시 대기질"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_weather_geocoding_error(
     bot_config, cache, response_mock, unavailable_address
 ):
@@ -87,7 +87,7 @@ async def test_weather_geocoding_error(
     assert said.data["text"] == "해당 주소는 찾을 수 없어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_weather_openweather_error(
     bot_config, cache, response_mock, address
 ):

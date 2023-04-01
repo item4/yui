@@ -40,7 +40,7 @@ def header(naver_client_id, naver_client_secret):
     }
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_detect_language(header):
     assert (
         await detect_language(header, "안녕하세요. 제 이름은 유이에요.") == "ko"
@@ -51,14 +51,14 @@ async def test_detect_language(header):
     assert await detect_language(header, "Hi. My name is Yui.") == "en"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_private_translate_function(header):
     text = "안녕하세요. 제 이름은 YUI에요."
     result = "こんにちは。私の名前はYUIです。"
     assert await _translate(header, "ko", "ja", text) == result
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 async def test_translate_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

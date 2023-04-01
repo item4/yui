@@ -19,7 +19,7 @@ MOCK_BODY = """\
 """
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_no_packtpub_dotd(bot, response_mock):
     response_mock.get(
@@ -48,7 +48,7 @@ async def test_no_packtpub_dotd(bot, response_mock):
     assert said.data["text"] == "오늘은 PACKT Book의 무료책이 없는 것 같아요"
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_packtpub_dotd(bot, response_mock):
     title = "test book"
@@ -82,7 +82,7 @@ async def test_packtpub_dotd(bot, response_mock):
     assert attachments[0]["image_url"] == image_url
 
 
-@pytest.mark.asyncio
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_auto_packtpub_dotd(bot_config, response_mock):
     assert auto_packtpub_dotd.cron.spec == "5 9 * * *"
