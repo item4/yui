@@ -191,7 +191,6 @@ tests
 .coveragerc
 .gitignore
 .pre-commit-config.yaml
-mypy.ini
 poetry.lock
 README.rst
 setup.cfg

@@ -1,6 +1,7 @@
 [tool.black]
 line-length = 79
 
+
 [tool.isort]
 py_version = "311"
 
@@ -20,6 +21,17 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTS", "FIRSTPARTY", "LOCALFOLDE
 
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'
+
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true  # Warns about unneeded # type: ignore comments.
+show_error_codes = true
+plugins = [
+    "yui.mypy_plugin",
+]
+
 
 [tool.poetry]
 name = "yui"
