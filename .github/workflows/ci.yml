@@ -24,7 +24,7 @@ jobs:
       - name: Check coding convention
         run: ruff check yui tests
       - name: Check missing autofix
-        run: black --check .
+        run: black --check --preview .
 
   test-program:
     name: Test Program
