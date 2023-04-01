@@ -26,7 +26,7 @@ def pytest_addoption(parser):
         "--database-url",
         type=str,
         default=os.getenv("YUI_TEST_DATABASE_URL", DEFAULT_DATABASE_URL),
-        help="Database URL for testing." "[default: %(default)s]",
+        help="Database URL for testing.[default: %(default)s]",
     )
 
 
@@ -102,16 +102,16 @@ def gen_config(request):
         database_url = "sqlite:///"
     cfg = copy.deepcopy(DEFAULT)
     cfg.update(
-        dict(
-            DEBUG=True,
-            DATABASE_URL=database_url,
-            APP_TOKEN="TEST_APP_TOKEN",
-            BOT_TOKEN="TEST_BOT_TOKEN",
-            REGISTER_CRONTAB=False,
-            CHANNELS={},
-            USERS={},
-            WEBSOCKETDEBUGGERURL="",
-        )
+        {
+            "DEBUG": True,
+            "DATABASE_URL": database_url,
+            "APP_TOKEN": "TEST_APP_TOKEN",
+            "BOT_TOKEN": "TEST_BOT_TOKEN",
+            "REGISTER_CRONTAB": False,
+            "CHANNELS": {},
+            "USERS": {},
+            "WEBSOCKETDEBUGGERURL": "",
+        }
     )
     config = Config(**cfg)
     config.LOGGING["loggers"]["yui"]["handlers"] = ["console"]

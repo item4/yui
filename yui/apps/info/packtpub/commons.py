@@ -23,7 +23,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
     try:
         container = h.cssselect("main.product")[0]
         title = str(
-            container.cssselect("h3.product-info__title")[0].text_content()
+            container.cssselect("h3.product-info__title")[0].text_content(),
         ).replace("Free eBook - ", "")
         image_url = str(container.cssselect("img.product-image")[0].get("src"))
 
@@ -32,10 +32,12 @@ async def say_packtpub_dotd(bot: Bot, channel):
                 fallback=f"{title} - {PACKTPUB_URL}",
                 title=title,
                 title_link=PACKTPUB_URL,
-                text="오늘의 Packt Book Deal of The Day:"
-                f" {title} - {PACKTPUB_URL}",
+                text=(
+                    f"오늘의 Packt Book Deal of The Day: {title} -"
+                    f" {PACKTPUB_URL}"
+                ),
                 image_url=image_url,
-            )
+            ),
         )
     except IndexError:
         pass

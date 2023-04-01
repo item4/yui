@@ -75,8 +75,9 @@ async def test_packtpub_dotd(bot, response_mock):
     assert attachments[0]["fallback"] == f"{title} - {PACKTPUB_URL}"
     assert attachments[0]["title"] == title
     assert attachments[0]["title_link"] == PACKTPUB_URL
-    assert attachments[0]["text"] == (
-        f"오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}"
+    assert (
+        attachments[0]["text"]
+        == f"오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}"
     )
     assert attachments[0]["image_url"] == image_url
 
@@ -110,7 +111,8 @@ async def test_auto_packtpub_dotd(bot_config, response_mock):
     assert attachments[0]["fallback"] == f"{title} - {PACKTPUB_URL}"
     assert attachments[0]["title"] == title
     assert attachments[0]["title_link"] == PACKTPUB_URL
-    assert attachments[0]["text"] == (
-        f"오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}"
+    assert (
+        attachments[0]["text"]
+        == f"오늘의 Packt Book Deal of The Day: {title} - {PACKTPUB_URL}"
     )
     assert attachments[0]["image_url"] == image_url

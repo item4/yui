@@ -2,8 +2,8 @@ from typing import Any
 from typing import TypeAlias
 
 from ..types.handler import Handler
-from ..utils.cast import CastError
 from ..utils.cast import cast
+from ..utils.cast import CastError
 
 KWARGS_DICT: TypeAlias = dict[str, Any]
 
@@ -25,11 +25,10 @@ def parse_option_and_arguments(
     for option in options:
         if option.multiple:
             result[option.dest] = []
+        elif callable(option.default):
+            result[option.dest] = option.default()
         else:
-            if callable(option.default):
-                result[option.dest] = option.default()
-            else:
-                result[option.dest] = option.default
+            result[option.dest] = option.default
 
     while not end and chunks:
         for option in options:
@@ -49,14 +48,14 @@ def parse_option_and_arguments(
                 length = len(chunks)
                 try:
                     args = [chunks.pop(0) for _ in range(option.nargs)]
-                except IndexError:
+                except IndexError as e:
                     raise SyntaxError(
                         option.count_error.format(
                             name=option.name,
                             expected=option.nargs,
                             given=length,
-                        )
-                    )
+                        ),
+                    ) from e
                 try:
                     if option.container_cls:
                         if option.multiple:
@@ -70,7 +69,7 @@ def parse_option_and_arguments(
                 except (ValueError, CastError) as e:
                     raise SyntaxError(
                         option.type_error.format(name=option.name, e=e)
-                    )
+                    ) from e
 
                 if option.transform_func:
                     if option.container_cls:
@@ -83,8 +82,8 @@ def parse_option_and_arguments(
                                 option.transform_error.format(
                                     name=option.name,
                                     e=e,
-                                )
-                            )
+                                ),
+                            ) from e
                     else:
                         try:
                             r = option.transform_func(r)
@@ -93,8 +92,8 @@ def parse_option_and_arguments(
                                 option.transform_error.format(
                                     name=option.name,
                                     e=e,
-                                )
-                            )
+                                ),
+                            ) from e
 
                 if option.multiple:
                     result[option.dest].append(r[0])
@@ -118,7 +117,7 @@ def parse_option_and_arguments(
                     list(filter(lambda x: x.dest == o, options))[0]
                     for o in required
                 )
-            )
+            ),
         )
 
     for i, argument in enumerate(arguments):
@@ -132,7 +131,7 @@ def parse_option_and_arguments(
                     name=argument.name,
                     expected=">0",
                     given=0,
-                )
+                ),
             )
         if length <= len(chunks):
             args = [chunks.pop(0) for _ in range(length)]
@@ -142,7 +141,7 @@ def parse_option_and_arguments(
                     name=argument.name,
                     expected=argument.nargs,
                     given=len(chunks),
-                )
+                ),
             )
         try:
             if argument.concat:
@@ -160,8 +159,8 @@ def parse_option_and_arguments(
                 argument.type_error.format(
                     name=argument.name,
                     e=e,
-                )
-            )
+                ),
+            ) from e
 
         if argument.transform_func:
             if argument.container_cls and r:
@@ -174,8 +173,8 @@ def parse_option_and_arguments(
                         argument.transform_error.format(
                             name=argument.name,
                             e=e,
-                        )
-                    )
+                        ),
+                    ) from e
             else:
                 try:
                     r = argument.transform_func(r)
@@ -184,8 +183,8 @@ def parse_option_and_arguments(
                         argument.transform_error.format(
                             name=argument.name,
                             e=e,
-                        )
-                    )
+                        ),
+                    ) from e
 
         if r is not None:
             result[argument.dest] = r

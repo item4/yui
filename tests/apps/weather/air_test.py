@@ -10,9 +10,7 @@ from yui.apps.weather.exceptions import WeatherResponseError
 @pytest.mark.asyncio
 async def test_get_air_pollution_with_wrong_coordination(response_mock):
     response_mock.get(
-        URL(
-            "https://api.openweathermap.org/data/2.5/air_pollution"
-        ).with_query(
+        URL("https://api.openweathermap.org/data/2.5/air_pollution").with_query(
             lat=123,
             lon=456,
             appid="asdf",

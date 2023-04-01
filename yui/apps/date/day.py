@@ -1,3 +1,4 @@
+import contextlib
 import re
 
 import aiohttp
@@ -21,10 +22,8 @@ YEAR_MONTH_PATTERN = re.compile(r"^(\d{4})년\s*(\d{1,2})월$")
 async def holiday_message(bot):
     holidays = None
     today = now()
-    try:
+    with contextlib.suppress(aiohttp.client_exceptions.ClientOSError):
         holidays = await get_holiday_names(today)
-    except aiohttp.client_exceptions.ClientOSError:
-        pass
 
     if holidays:
         await bot.say(
@@ -44,9 +43,6 @@ async def holiday(bot, event: Message, raw: str):
 
     `{PREFIX}공휴일` (오늘이 공휴일인지 조회)
     `{PREFIX}공휴일 2019년 1월 1일 (2019년 1월 1일이 공휴일인지 조회)
-
-    날짜는 `2019-01-01`/`20190101`/`2019.01.01`/`2019년01월01일` 형식을 지원합니다.
-    (띄어쓰기 허용)
 
     """
 

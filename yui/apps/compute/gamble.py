@@ -20,7 +20,7 @@ DICE_SYNTAX = re.compile(
     r"(?P<count>[0-9]*)"
     r"[dD]"
     r"(?P<faces>[0-9]+)"
-    r"(?P<modifier>[-+][0-9]+)?"
+    r"(?P<modifier>[-+][0-9]+)?",
 )
 
 
@@ -86,7 +86,7 @@ def parse_dice_syntax(expr: str, seed: int | None = None) -> list[DiceResult]:
                     DiceResult(
                         query=f"{count_str}d{faces}{modifier_str}",
                         result=text,
-                    )
+                    ),
                 )
             else:
                 raise SyntaxError(f"Can not parse this chunk (`{chunk}`)")

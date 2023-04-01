@@ -20,7 +20,7 @@ async def make_log(bot, event: Message, sess: AsyncSession):
         await sess.execute(
             insert(EventLog)
             .values(channel=event.channel, ts=event.ts)
-            .on_conflict_do_nothing()
+            .on_conflict_do_nothing(),
         )
         await sess.commit()
     return True

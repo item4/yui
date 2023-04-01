@@ -14,8 +14,8 @@ from .geo import get_geometric_info_by_address
 from .sun import get_emoji_by_sun
 from .temperature import clothes_by_temperature
 from .utils import shorten
-from .weather import WeatherRecord
 from .weather import get_weather_by_coordinate
+from .weather import WeatherRecord
 from .wind import degree_to_direction
 
 box.assert_config_required("GOOGLE_API_KEY", str)
@@ -42,7 +42,7 @@ async def weather(
         )
         return
 
-    addr = md5(address.encode()).hexdigest()
+    addr = md5(address.encode()).hexdigest()  # noqa: S324
 
     full_address_key = f"WEATHER_ADDRESS_{addr}_full_address"
     lat_key = f"WEATHER_ADDRESS_{addr}_lat"
@@ -74,12 +74,8 @@ async def weather(
             return
 
     try:
-        result: tuple[
-            WeatherRecord, AirPollutionRecord
-        ] = await asyncio.gather(
-            get_weather_by_coordinate(
-                lat, lng, bot.config.OPENWEATHER_API_KEY
-            ),
+        result: tuple[WeatherRecord, AirPollutionRecord] = await asyncio.gather(
+            get_weather_by_coordinate(lat, lng, bot.config.OPENWEATHER_API_KEY),
             get_air_pollution_by_coordinate(
                 lat, lng, bot.config.OPENWEATHER_API_KEY
             ),
@@ -112,7 +108,8 @@ async def weather(
         )
 
     temperature = "기온: {}℃ (체감 {}℃)".format(
-        shorten(weather_result.current_temp), shorten(weather_result.feel_temp)
+        shorten(weather_result.current_temp),
+        shorten(weather_result.feel_temp),
     )
 
     wind = "{} {}㎧".format(
@@ -120,9 +117,9 @@ async def weather(
         shorten(weather_result.wind_speed),
     )
 
-    humidity = "{}%".format(shorten(weather_result.humidity))
+    humidity = f"{shorten(weather_result.humidity)}%"
 
-    atmospheric = "{}㍱".format(shorten(weather_result.pressure))
+    atmospheric = f"{shorten(weather_result.pressure)}㍱"
 
     current_dt = fromtimestampoffset(
         # timestamp는 UTC 기준이므로 offset 값을 미리 더해줘야합니다.
@@ -137,20 +134,23 @@ async def weather(
     )
 
     if weather_result.rain:
-        weather_text += "강수 {} / ".format(rain)
+        weather_text += f"강수 {rain} / "
         weather_emoji = ":umbrella_with_rain_drops:"
     elif weather_result.snow:
-        weather_text += "강설 {} / ".format(snow)
+        weather_text += f"강설 {snow} / "
         weather_emoji = ":snowflake:"
     else:
         weather_emoji = await get_emoji_by_sun(
-            current_dt, weather_result.timezone, lat, lng
+            current_dt,
+            weather_result.timezone,
+            lat,
+            lng,
         )
 
     weather_text += temperature
-    weather_text += " / 바람: {}".format(wind)
-    weather_text += " / 습도: {}".format(humidity)
-    weather_text += " / 해면기압: {}".format(atmospheric)
+    weather_text += f" / 바람: {wind}"
+    weather_text += f" / 습도: {humidity}"
+    weather_text += f" / 해면기압: {atmospheric}"
 
     recommend = clothes_by_temperature(weather_result.current_temp)
     weather_text += f"\n\n추천 의상: {recommend}"
@@ -166,8 +166,10 @@ async def weather(
     air_pollution_text = (
         f"{full_address} 기준으로 가장 근접한 관측소의 최근 자료에요.\n\n"
         f"* 종합 AQI: {get_aqi_description(air_pollution_result.aqi)}\n"
-    ) + air_pollution_result.to_display(
-        weather_result.current_temp, weather_result.pressure
+        + air_pollution_result.to_display(
+            weather_result.current_temp,
+            weather_result.pressure,
+        )
     )
 
     text = air_pollution_text.strip()

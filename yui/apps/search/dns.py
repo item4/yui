@@ -114,15 +114,21 @@ async def dns(bot, event: Message, server_list: list[str], domain: str):
 
     주어진 도메인에 대해 많이 쓰이는 DNS들에서 A레코드 값을 가져옵니다.
 
-    `{PREFIX}dns item4.net` (`item4.net`의 A 레코드를 국내에서 많이 쓰이는 DNS들에서 조회)
-    `{PREFIX}dns --dns 8.8.8.8 item4.net` (`8.8.8.8`에서 A레코드 조회)
+    `{PREFIX}dns item4.net`
+    (`item4.net`의 A 레코드를 국내에서 많이 쓰이는 DNS들에서 조회)
+    `{PREFIX}dns --dns 8.8.8.8 item4.net`
+    (`8.8.8.8`에서 A레코드 조회)
 
     `--dns`/`-d` 인자는 여러개 지정 가능합니다.
 
     """
 
     chat = await bot.say(
-        event.channel, f"`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니 기다려주세요!"
+        event.channel,
+        (
+            f"`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니"
+            " 기다려주세요!"
+        ),
     )
     if chat.body["ok"]:
         tasks = []
@@ -156,9 +162,11 @@ async def dns(bot, event: Message, server_list: list[str], domain: str):
                 domain,
                 "주어진" if server_list else "많이 쓰이는",
                 "\n".join(
-                    f"{r.server_name}({r.server_ip}): 조회중 에러발생"
-                    if r.error
-                    else f"{r.server_name}({r.server_ip}): {r.a_record}"
+                    (
+                        f"{r.server_name}({r.server_ip}): 조회중 에러발생"
+                        if r.error
+                        else f"{r.server_name}({r.server_ip}): {r.a_record}"
+                    )
                     for r in result
                 ),
             ),

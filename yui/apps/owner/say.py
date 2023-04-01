@@ -43,7 +43,7 @@ async def say(
                 resp = await bot.api.conversations.open(users=[user])
                 target = resp.body["channel"]["id"]
     else:
-        text = "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user)
+        text = f"<@{event.user}> 이 명령어는 아빠만 사용할 수 있어요!"
 
     await bot.say(
         target,

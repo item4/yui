@@ -36,8 +36,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2008년 10월 07일 출생자는 2008년 10월 07일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2008년 10월 07일 출생자는 2008년 10월 07일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 1세\n"
         "* 연 나이(한국 일부 법령상 나이) 0세\n"
         "* 만 나이(전세계 표준) 0세\n\n"
@@ -48,8 +49,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2003년 06월 03일 출생자는 2003년 06월 03일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2003년 06월 03일 출생자는 2003년 06월 03일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 1세\n"
         "* 연 나이(한국 일부 법령상 나이) 0세\n"
         "* 만 나이(전세계 표준) 0세\n\n"
@@ -60,8 +62,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2000년 02월 29일 출생자는 2000년 02월 29일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2000년 02월 29일 출생자는 2000년 02월 29일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 1세\n"
         "* 연 나이(한국 일부 법령상 나이) 0세\n"
         "* 만 나이(전세계 표준) 0세\n\n"
@@ -72,8 +75,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2008년 10월 07일 출생자는 2009년 01월 01일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2008년 10월 07일 출생자는 2009년 01월 01일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 2세\n"
         "* 연 나이(한국 일부 법령상 나이) 1세\n"
         "* 만 나이(전세계 표준) 0세\n\n"
@@ -84,8 +88,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2003년 06월 03일 출생자는 2004년 01월 01일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2003년 06월 03일 출생자는 2004년 01월 01일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 2세\n"
         "* 연 나이(한국 일부 법령상 나이) 1세\n"
         "* 만 나이(전세계 표준) 0세\n\n"
@@ -96,8 +101,9 @@ async def test_age_command(bot):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "2000년 02월 29일 출생자는 2001년 01월 01일 기준으로 다음과 같아요!\n\n"
+    assert (
+        said.data["text"]
+        == "2000년 02월 29일 출생자는 2001년 01월 01일 기준으로 다음과 같아요!\n\n"
         "* 세는 나이(한국식 나이) 2세\n"
         "* 연 나이(한국 일부 법령상 나이) 1세\n"
         "* 만 나이(전세계 표준) 0세\n\n"

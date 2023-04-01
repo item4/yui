@@ -58,28 +58,40 @@ async def test_collect(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
+    assert (
+        said.data["text"]
+        == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
+    )
 
     await g.collect(g, bot, event, "3/1")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
+    assert (
+        said.data["text"]
+        == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
+    )
 
     await g.collect(g, bot, event, "10000/3")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
+    assert (
+        said.data["text"]
+        == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
+    )
 
     await g.collect(g, bot, event, "3/10000")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
+    assert (
+        said.data["text"]
+        == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
+    )
 
     await g.collect(g, bot, event, "3/2")
 
@@ -93,8 +105,10 @@ async def test_collect(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "상품 1개 구입시 30종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때"
+    assert (
+        said.data["text"]
+        == "상품 1개 구입시 30종류의 특전 중 하나를 무작위로 100%확률로"
+        " 준다고 가정할 때"
         " 30종류의 특전을 모두 모으려면, 평균적으로 120(`119.85`)개의 상품을 구입해야"
         " 수집에 성공할 수 있어요!"
     )
@@ -104,9 +118,12 @@ async def test_collect(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때"
-        " 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의 상품을 구입해야"
+    assert (
+        said.data["text"]
+        == "상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로"
+        " 준다고 가정할 때"
+        " 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의"
+        " 상품을 구입해야"
         " 수집에 성공할 수 있어요!"
     )
 
@@ -115,9 +132,12 @@ async def test_collect(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로 준다고 가정할 때"
-        " 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의 상품을 구입해야"
+    assert (
+        said.data["text"]
+        == "상품 1개 구입시 40종류의 특전 중 하나를 무작위로 100%확률로"
+        " 준다고 가정할 때"
+        " 30종류의 특전을 부분적으로 모으려면, 평균적으로 160(`159.80`)개의"
+        " 상품을 구입해야"
         " 수집에 성공할 수 있어요!"
     )
 
@@ -135,14 +155,20 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
+    assert (
+        said.data["text"]
+        == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
+    )
 
     await g.challenge(g, bot, event, 9999999, "0.05")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
+    assert (
+        said.data["text"]
+        == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
+    )
 
     await g.challenge(g, bot, event, 1, "아무말 대잔치")
 
@@ -170,15 +196,18 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "입력하신 확률값에 비해 성공 횟수가 너무 많아요!"
+    assert (
+        said.data["text"] == "입력하신 확률값에 비해 성공 횟수가 너무 많아요!"
+    )
 
     await g.challenge(g, bot, event, 1, "0.05")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "5% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
+    assert (
+        said.data["text"]
+        == "5% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
         "- 1번 시도하시면 5% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 6번 시도하시면 26.49% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 14번 시도하시면 51.23% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
@@ -192,8 +221,9 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "3% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
+    assert (
+        said.data["text"]
+        == "3% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
         "- 1번 시도하시면 3% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 10번 시도하시면 26.25% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 23번 시도하시면 50.36% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
@@ -207,8 +237,10 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "95% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
+    assert (
+        said.data["text"]
+        == "95% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지"
+        " 알려드릴게요!\n"
         "- 1번 시도하시면 95% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 2번 시도하시면 99.74% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
@@ -218,8 +250,10 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "98% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
+    assert (
+        said.data["text"]
+        == "98% 확률의 도전을 1번 성공시키려면 몇 회의 도전이 필요한지"
+        " 알려드릴게요!\n"
         "- 1번 시도하시면 98% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 2번 시도하시면 99.96% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
@@ -229,8 +263,10 @@ async def test_challenge(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "0.1% 확률의 도전을 10번 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n"
+    assert (
+        said.data["text"]
+        == "0.1% 확률의 도전을 10번 성공시키려면 몇 회의 도전이 필요한지"
+        " 알려드릴게요!\n"
         "- 2,964번 시도하시면 0.1% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 7,727번 시도하시면 25% 확률로 목표 횟수만큼 성공할 수 있어요!\n"
         "- 9,669번 시도하시면 50% 확률로 목표 횟수만큼 성공할 수 있어요!\n"

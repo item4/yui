@@ -7,7 +7,10 @@ from ...utils import json
 
 
 async def get_emoji_by_sun(
-    input: datetime.datetime, offset: int, lat: float, lng: float
+    input: datetime.datetime,
+    offset: int,
+    lat: float,
+    lng: float,
 ) -> Literal[":sunny:", ":crescent_moon:"]:
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -26,5 +29,4 @@ async def get_emoji_by_sun(
     sunset = datetime.datetime.fromisoformat(result["sunset"]).astimezone(tz)
     if sunrise <= input < sunset:
         return ":sunny:"
-    else:
-        return ":crescent_moon:"
+    return ":crescent_moon:"

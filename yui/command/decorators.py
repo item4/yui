@@ -16,14 +16,13 @@ if TYPE_CHECKING:
 
 ARGUMENT_TYPE_ERROR = "{name}: invalid type of argument value({e})"
 ARGUMENT_COUNT_ERROR = (
-    "{name}: incorrect argument value count."
-    " expected {expected}, {given} given."
+    "{name}: incorrect argument value count. expected {expected}, {given}"
+    " given."
 )
 ARGUMENT_TRANSFORM_ERROR = "{name}: fail to transform argument value ({e})"
 OPTION_TYPE_ERROR = "{name}: invalid type of option value({e})"
 OPTION_COUNT_ERROR = (
-    "{name}: incorrect option value count."
-    " expected {expected}, {given} given."
+    "{name}: incorrect option value count. expected {expected}, {given} given."
 )
 OPTION_TRANSFORM_ERROR = "{name}: fail to transform option value ({e})"
 
@@ -77,10 +76,7 @@ def argument(
         else:
             container_cls = tuple
 
-    if dest is None:
-        _dest = name
-    else:
-        _dest = dest
+    _dest = name if dest is None else dest
 
     _dest = _dest.lower()
 
@@ -170,10 +166,11 @@ def option(
 
     key: str = " ".join(args)
 
-    if dest is None:
-        _dest = args[0].lstrip("-").split("/")[0].replace("-", "_")
-    else:
-        _dest = dest
+    _dest = (
+        args[0].lstrip("-").split("/")[0].replace("-", "_")
+        if dest is None
+        else dest
+    )
 
     for name in args:
         if "/" in name:
@@ -194,7 +191,7 @@ def option(
                     type_error=type_error,
                     count_error=count_error,
                     transform_error=transform_error,
-                )
+                ),
             )
             options.append(
                 Option(
@@ -212,7 +209,7 @@ def option(
                     type_error=type_error,
                     count_error=count_error,
                     transform_error=transform_error,
-                )
+                ),
             )
         elif is_flag:
             options.append(
@@ -231,7 +228,7 @@ def option(
                     type_error=type_error,
                     count_error=count_error,
                     transform_error=transform_error,
-                )
+                ),
             )
         else:
             options.append(
@@ -250,7 +247,7 @@ def option(
                     type_error=type_error,
                     count_error=count_error,
                     transform_error=transform_error,
-                )
+                ),
             )
 
     def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:

@@ -1,8 +1,8 @@
 import types
 from typing import Any
-from typing import TypeVar
 from typing import get_args
 from typing import get_origin
+from typing import TypeVar
 
 from ..utils.attrs import make_instance
 
@@ -61,8 +61,7 @@ class TypeVarCaster(BaseCaster):
                 except CastError:
                     continue
             raise CastError
-        else:
-            return value
+        return value
 
 
 class NewTypeCaster(BaseCaster):
@@ -101,9 +100,11 @@ class TupleCaster(BaseCaster):
 
     def cast(self, caster_box, t, value):
         if args := get_args(t):
-            return tuple(caster_box.cast(ty, x) for ty, x in zip(args, value))
-        else:
-            return tuple(value)
+            return tuple(
+                caster_box.cast(ty, x)
+                for ty, x in zip(args, value, strict=True)
+            )
+        return tuple(value)
 
 
 class SetCaster(BaseCaster):
@@ -113,8 +114,7 @@ class SetCaster(BaseCaster):
     def cast(self, caster_box, t, value):
         if args := get_args(t):
             return {caster_box.cast(args[0], x) for x in value}
-        else:
-            return set(value)
+        return set(value)
 
 
 class ListCaster(BaseCaster):
@@ -124,8 +124,7 @@ class ListCaster(BaseCaster):
     def cast(self, caster_box, t, value):
         if args := get_args(t):
             return [caster_box.cast(args[0], x) for x in value]
-        else:
-            return list(value)
+        return list(value)
 
 
 class DictCaster(BaseCaster):
@@ -141,8 +140,7 @@ class DictCaster(BaseCaster):
                 ): caster_box.cast(args[1], v)
                 for k, v in value.items()
             }
-        else:
-            return dict(value)
+        return dict(value)
 
 
 class NoHandleCaster(BaseCaster):
@@ -203,5 +201,5 @@ cast = CasterBox(
         ListCaster(),
         DictCaster(),
         AttrCaster(),
-    ]
+    ],
 )

@@ -40,8 +40,9 @@ async def test_css_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+        assert (
+            said.data["text"]
+            == "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
 
         await fetch_css_ref(bot)
@@ -50,8 +51,9 @@ async def test_css_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "CSS `font-family` - "
+        assert (
+            said.data["text"]
+            == "CSS `font-family` - "
             "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
         )
 
@@ -73,8 +75,9 @@ async def test_html_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+        assert (
+            said.data["text"]
+            == "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
 
         await fetch_html_ref(bot)
@@ -83,8 +86,9 @@ async def test_html_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "HTML `<section>` - "
+        assert (
+            said.data["text"]
+            == "HTML `<section>` - "
             "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"
         )
 
@@ -106,8 +110,9 @@ async def test_python_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+        assert (
+            said.data["text"]
+            == "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
         )
 
         await fetch_python_ref(bot)
@@ -116,8 +121,9 @@ async def test_python_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "Python Built-in Functions - "
+        assert (
+            said.data["text"]
+            == "Python Built-in Functions - "
             "https://docs.python.org/3/library/functions.html"
         )
 
@@ -125,8 +131,9 @@ async def test_python_command(bot):
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
         assert said.data["channel"] == "C1"
-        assert said.data["text"] == (
-            "Python re — Regular expression operations - "
+        assert (
+            said.data["text"]
+            == "Python re — Regular expression operations - "
             "https://docs.python.org/3/library/re.html"
         )
 

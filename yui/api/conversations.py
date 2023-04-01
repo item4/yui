@@ -1,4 +1,4 @@
-from typing import List
+from typing import TypeAlias
 
 from ..types.base import ChannelID
 from ..types.base import Ts
@@ -6,6 +6,8 @@ from ..types.base import UserID
 from ..types.slack.response import APIResponse
 from .encoder import bool2str
 from .endpoint import Endpoint
+
+List: TypeAlias = list
 
 
 class Conversations(Endpoint):

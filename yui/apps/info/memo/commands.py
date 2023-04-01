@@ -21,8 +21,10 @@ async def memo_add(
     """
     기억 레코드 생성
 
-    `{PREFIX}기억 키리토 귀엽다` (`키리토`라는 단어를 `귀엽다`라는 내용으로 저장)
-    `{PREFIX}기억 "키리가야 카즈토" "키리토의 본명"` (`키리가야 카즈토`에 대한 정보를 저장)
+    `{PREFIX}기억 키리토 귀엽다`
+    (`키리토`라는 단어를 `귀엽다`라는 내용으로 저장)
+    `{PREFIX}기억 "키리가야 카즈토" "키리토의 본명"`
+    (`키리가야 카즈토`에 대한 정보를 저장)
 
     """
 
@@ -72,7 +74,7 @@ async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
             select(Memo)
             .options(undefer(Memo.text))
             .where(Memo.keyword == keyword)
-            .order_by(Memo.created_at.asc())
+            .order_by(Memo.created_at.asc()),
         )
     ).all()
     if memos:
@@ -104,5 +106,6 @@ async def memo_delete(bot, event: Message, sess: AsyncSession, keyword: str):
     await sess.commit()
 
     await bot.say(
-        event.channel, f"{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!"
+        event.channel,
+        f"{format.code(keyword)}에 관한 기억 레코드를 모두 삭제했어요!",
     )

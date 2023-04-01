@@ -1,3 +1,5 @@
+import contextlib
+
 from aiohttp.client_exceptions import ClientError
 
 from ...box import box
@@ -52,7 +54,10 @@ async def say_start_work(bot):
 async def say_knife(bot, hour: int):
     await bot.api.chat.postMessage(
         channel=bot.config.CHANNELS["general"],
-        text=f"{hour}시가 되었습니다. {hour+3}시에 출근하신 분들은" f" 칼같이 퇴근하시길 바랍니다.",
+        text=(
+            f"{hour}시가 되었습니다. {hour+3}시에 출근하신 분들은 칼같이"
+            " 퇴근하시길 바랍니다."
+        ),
         icon_url="https://i.imgur.com/9asRVeZ.png",
         username="칼퇴의 요정",
     )
@@ -62,18 +67,15 @@ async def say_knife(bot, hour: int):
 async def work_start(bot):
     holidays = None
     today = now()
-    try:
+    with contextlib.suppress(ClientError):
         holidays = await get_holiday_names(today)
-    except ClientError:
-        pass
 
     if holidays:
         await say_raccoon_man(bot, holidays[0])
+    elif today.isoweekday() == 1:
+        await say_start_monday(bot)
     else:
-        if today.isoweekday() == 1:
-            await say_start_monday(bot)
-        else:
-            await say_start_work(bot)
+        await say_start_work(bot)
 
 
 @box.cron("0 18,19 * * 1-5")
@@ -81,10 +83,8 @@ async def work_end(bot):
     holidays = None
     today = now()
     hour = today.hour - 12
-    try:
+    with contextlib.suppress(ClientError):
         holidays = await get_holiday_names(today)
-    except ClientError:
-        pass
 
     if holidays:
         await say_happy_cat(bot, holidays[0], hour)

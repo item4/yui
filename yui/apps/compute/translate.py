@@ -141,7 +141,9 @@ async def _translate(
             return result["message"]["result"]["translatedText"]
 
 
-@box.command("번역", aliases=["번역기", "translate", "tr", "t"], use_shlex=False)
+@box.command(
+    "번역", aliases=["번역기", "translate", "tr", "t"], use_shlex=False
+)
 @option("--source", "-s")
 @option("--target", "-t", default="ko")
 @argument("text", nargs=-1, concat=True)
@@ -151,17 +153,22 @@ async def translate(bot, event: Message, source, target, text: str):
 
     파파고 NMT 번역을 활용하여 주어진 문장을 다른 언어로 번역합니다.
 
-    `{PREFIX}번역 ソードアート・オンライン` (주어진 문장의 언어를 자동으로 추론해서 한국어로 번역)
-    `{PREFIX}번역 --source=ja ソードアート・オンライン` (`--source` 옵션으로 원문 언어 지정)
-    `{PREFIX}번역 --target=en ソードアート・オンライン` (`--target` 옵션으로 결과 언어 지정)
+    `{PREFIX}번역 ソードアート・オンライン`
+    (주어진 문장의 언어를 자동으로 추론해서 한국어로 번역)
+    `{PREFIX}번역 --source=ja ソードアート・オンライン`
+    (`--source` 옵션으로 원문 언어 지정)
+    `{PREFIX}번역 --target=en ソードアート・オンライン`
+    (`--target` 옵션으로 결과 언어 지정)
 
-    쾌적한 Slack 환경 유지를 위해 번역할 원문 문장은 최대 500자까지만 지원합니다.
-    `--source`/`-s`와 `--target`/`-t` 옵션은 한국어도 인식합니다. (`--target=일본어`)
+    번역할 원문 문장은 최대 500자까지만 지원합니다.
 
     """
 
     if len(text) > 500:
-        await bot.say(event.channel, "500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!")
+        await bot.say(
+            event.channel,
+            "500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!",
+        )
         return
 
     headers = {
@@ -188,14 +195,19 @@ async def translate(bot, event: Message, source, target, text: str):
     elif (source_code, target_code) not in AVAILABLE_COMBINATIONS:
         await bot.say(
             event.channel,
-            f"{LANGUAGE_NAME[source_code]}에서 {LANGUAGE_NAME[target_code]}로의"
-            f" 번역은 현재 지원되지 않아요!",
+            (
+                f"{LANGUAGE_NAME[source_code]}에서"
+                f" {LANGUAGE_NAME[target_code]}로의 번역은 현재 지원되지"
+                " 않아요!"
+            ),
         )
     else:
         result = await _translate(headers, source_code, target_code, text)
 
         await bot.say(
             event.channel,
-            f"{LANGUAGE_NAME[source_code]} 원문: {text}\n"
-            f"{LANGUAGE_NAME[target_code]} 번역: {result}",
+            (
+                f"{LANGUAGE_NAME[source_code]} 원문: {text}\n"
+                f"{LANGUAGE_NAME[target_code]} 번역: {result}"
+            ),
         )

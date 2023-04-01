@@ -15,5 +15,5 @@ class Base(DeclarativeBase):
             PrimaryKey: types.Integer,
             Text: types.Text,
             datetime: DateTime(timezone=True),
-        }
+        },
     )

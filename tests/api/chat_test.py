@@ -10,7 +10,7 @@ async def test_slack_api_chat_delete(bot):
     channel_id = "C1234"
 
     ts = "1234.56"
-    alternative_token = "1234567890"
+    alternative_token = "1234567890"  # noqa: S105
 
     await bot.api.chat.delete(channel_id, ts)
 
@@ -111,7 +111,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
         thread_ts=thread_ts,
         user=user_id,
         username=username,
-        token="KIRITO",
+        token="KIRITO",  # noqa: S106
     )
 
     call = bot.call_queue.pop()
@@ -142,7 +142,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
         "thread_ts": thread_ts,
     }
     assert call.json_mode
-    assert call.token == "KIRITO"
+    assert call.token == "KIRITO"  # noqa: S105
 
 
 @pytest.mark.asyncio
@@ -218,7 +218,7 @@ async def test_slack_api_chat_post_message(bot):
         unfurl_links=False,
         unfurl_media=True,
         username=username,
-        token="KIRITO",
+        token="KIRITO",  # noqa: S106
     )
 
     call = bot.call_queue.pop()
@@ -252,4 +252,4 @@ async def test_slack_api_chat_post_message(bot):
         "mrkdwn": mrkdwn,
     }
     assert call.json_mode
-    assert call.token == "KIRITO"
+    assert call.token == "KIRITO"  # noqa: S105

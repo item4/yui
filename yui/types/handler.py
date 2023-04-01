@@ -81,11 +81,8 @@ class Handler:
             if o.type_ is None:
                 type_ = self.params[o.dest].annotation
 
-                if type_ == inspect._empty:
+                if type_ == inspect._empty or o.transform_func:
                     type_ = str
-                else:
-                    if o.transform_func:
-                        type_ = str
 
                 o.type_ = type_
 
@@ -93,11 +90,8 @@ class Handler:
             if a.type_ is None:
                 type_ = self.params[a.dest].annotation
 
-                if type_ == inspect._empty:
+                if type_ == inspect._empty or a.transform_func:
                     type_ = str
-                else:
-                    if a.transform_func:
-                        type_ = str
 
                 a.type_ = type_
                 if is_container(a.type_):

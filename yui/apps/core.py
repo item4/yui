@@ -17,4 +17,4 @@ async def on_start(bot):
 @box.on(TeamMigrationStarted)
 async def team_migration_started():
     logger.info("Slack sent team_migration_started. restart bot")
-    raise BotReconnect()
+    raise BotReconnect

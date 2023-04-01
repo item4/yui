@@ -32,6 +32,4 @@ def downgrade():
         "rss_feed_url", "updated_at", new_column_name="updated_datetime"
     )
     op.add_column("memo", sa.Column("created_timezone", TimezoneType()))
-    op.add_column(
-        "rss_feed_url", sa.Column("updated_timezone", TimezoneType())
-    )
+    op.add_column("rss_feed_url", sa.Column("updated_timezone", TimezoneType()))

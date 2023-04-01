@@ -96,5 +96,5 @@ async def update(bot, event: Message, raw: str):
     else:
         await bot.say(
             event.channel,
-            "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user),
+            f"<@{event.user}> 이 명령어는 아빠만 사용할 수 있어요!",
         )

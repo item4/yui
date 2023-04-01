@@ -21,9 +21,7 @@ COOLTIME = datetime.timedelta(minutes=5)
 @option(
     "--mode",
     "m",
-    transform_func=choice(
-        ["log", "history"], fallback="history", case="lower"
-    ),
+    transform_func=choice(["log", "history"], fallback="history", case="lower"),
     default="log",
 )
 async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
@@ -31,7 +29,8 @@ async def cleanup(bot, sess: AsyncSession, event: Message, mode: str):
     채널 청소
 
     해당 채널의 메시지 최근 100개를 즉각적으로 삭제합니다.
-    채널당 5분의 쿨타임을 가지며, 자동 청소 채널 이외의 채널은 관리자만 사용 가능합니다.
+    청소 기능이 허용된 채널은 서버별 설정마다 다릅니다.
+    채널당 5분의 쿨타임이 있습니다.
 
     """
 

@@ -3,7 +3,6 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
-    - id: check-ast
     - id: check-case-conflict
     - id: check-json
     - id: check-merge-conflict
@@ -11,30 +10,17 @@ repos:
     - id: check-toml
     - id: check-xml
     - id: check-yaml
-    - id: debug-statements
-    - id: detect-private-key
-    - id: end-of-file-fixer
     - id: fix-byte-order-marker
-    - id: trailing-whitespace
-  - repo: https://github.com/asottile/yesqa
-    rev: v1.4.0
-    hooks:
-    - id: yesqa
   - repo: local
     hooks:
-      - id: isort
-        name: isort
-        entry: isort
-        language: system
-        types: [ python ]
       - id: black
         name: black
-        entry: black
+        entry: black --preview
         language: system
         types: [ python ]
-      - id: flake8
-        name: flake8
-        entry: flake8
+      - id: ruff
+        name: ruff
+        entry: ruff check --fix
         language: system
         types: [ python ]
       - id: mypy

@@ -10,4 +10,4 @@ async def ping(bot, event: Message):
     `{PREFIX}ping`
 
     """
-    await bot.say(event.channel, "<@{}>, pong!".format(event.user))
+    await bot.say(event.channel, f"<@{event.user}>, pong!")

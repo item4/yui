@@ -111,7 +111,7 @@ async def cleanup_by_history(
                         delete(EventLog).where(
                             EventLog.channel == channel_id,
                             EventLog.ts == message["ts"],
-                        )
+                        ),
                     )
                     await sess.commit()
 
@@ -134,7 +134,7 @@ async def collect_history_from_channel(
                 )
             except APICallError as e:
                 await report(bot, exception=e)
-                raise RuntimeError
+                raise RuntimeError from e
 
             history = resp.body
             if not history["ok"]:
@@ -148,10 +148,11 @@ async def collect_history_from_channel(
                 )
                 raise RuntimeError
 
-            if "response_metadata" in history:
-                cursor = history["response_metadata"]["next_cursor"]
-            else:
-                cursor = None
+            cursor = (
+                history["response_metadata"]["next_cursor"]
+                if "response_metadata" in history
+                else None
+            )
 
             messages = simplify_history_result(history["messages"])
             while messages:
@@ -167,7 +168,7 @@ async def collect_history_from_channel(
                         await report(bot, exception=e)
                     else:
                         messages += simplify_history_result(
-                            r.body.get("messages", [])[1:]
+                            r.body.get("messages", [])[1:],
                         )
                 collected.add((channel_id, message["ts"]))
             if cursor is None:
@@ -176,12 +177,12 @@ async def collect_history_from_channel(
         if collected:
             await sess.execute(
                 insert(EventLog)
-                .values([dict(channel=cid, ts=ts) for cid, ts in collected])
+                .values([{"channel": cid, "ts": ts} for cid, ts in collected])
                 .on_conflict_do_nothing()
-                .inline()
+                .inline(),
             )
             await sess.commit()
-        return len(collected)
+    return len(collected)
 
 
 def simplify_history_result(rows: list[dict]) -> list[dict]:
@@ -191,6 +192,6 @@ def simplify_history_result(rows: list[dict]) -> list[dict]:
             {
                 "ts": row["ts"],
                 "reply_count": row.get("reply_count", 0),
-            }
+            },
         )
     return results

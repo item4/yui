@@ -7,18 +7,18 @@ from ..types.slack.response import APIResponse
 
 
 def prepare_for_json(obj):
-    if isinstance(obj, (list, tuple, set)):
+    if isinstance(obj, list | tuple | set):
         return [prepare_for_json(x) for x in obj]
-    elif issubclass(obj.__class__, enum.Enum):
+    if issubclass(obj.__class__, enum.Enum):
         return obj.value
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         return {
             prepare_for_json(k): prepare_for_json(v)
             for k, v in obj.items()
             if v is not None
             and ((isinstance(v, list) and v) or not isinstance(v, list))
         }
-    elif isinstance(obj, str):
+    if isinstance(obj, str):
         return obj
     try:
         return prepare_for_json(attrs.asdict(obj))

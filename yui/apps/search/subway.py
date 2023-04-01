@@ -63,7 +63,7 @@ async def on_start(bot):
         tasks.append(
             asyncio.create_task(
                 fetch_station_db(bot, service_region, api_version)
-            )
+            ),
         )
     await asyncio.wait(tasks)
     return True
@@ -77,7 +77,7 @@ async def refresh_db(bot):
         tasks.append(
             asyncio.create_task(
                 fetch_station_db(bot, service_region, api_version)
-            )
+            ),
         )
     await asyncio.wait(tasks)
 
@@ -88,7 +88,8 @@ async def body(bot, event: Message, region: str, start: str, end: str):
     data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
     if data is None:
         await bot.say(
-            event.channel, "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+            event.channel,
+            "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!",
         )
         return
 
@@ -108,17 +109,24 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             find_end_ratio = end_ratio
 
     if find_start_ratio < 40:
-        await bot.say(event.channel, "출발역으로 지정하신 역 이름을 찾지 못하겠어요!")
+        await bot.say(
+            event.channel, "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
+        )
         return
-    elif find_end_ratio < 40:
-        await bot.say(event.channel, "도착역으로 지정하신 역 이름을 찾지 못하겠어요!")
+    if find_end_ratio < 40:
+        await bot.say(
+            event.channel, "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
+        )
         return
-    elif find_start and find_end:
+    if find_start and find_end:
         if find_start["id"] == find_end["id"]:
             await bot.say(
                 event.channel,
-                f"출발역과 도착역이 동일한 역인 것 같아요!"
-                f" (참고로 제가 인식한 역 이름은 '{find_start['name']}' 이에요!)",
+                (
+                    "출발역과 도착역이 동일한 역인 것 같아요!"
+                    f" (참고로 제가 인식한 역 이름은 '{find_start['name']}'"
+                    " 이에요!)"
+                ),
             )
             return
 
@@ -204,8 +212,10 @@ async def subway(bot, event: Message, region: str, start: str, end: str):
     """
     전철/지하철의 예상 소요시간 및 탑승 루트 안내
 
-    `{PREFIX}지하철 부천 선릉` (수도권 전철 부천역에서 선릉역까지 가는 가장 빠른 방법 안내)
-    `{PREFIX}지하철 --region 부산 가야대 노포` (부산 전철 가야대역 출발 노포역 도착으로 조회)
+    `{PREFIX}지하철 부천 선릉`
+    (수도권 전철 부천역에서 선릉역까지 가는 가장 빠른 방법 안내)
+    `{PREFIX}지하철 --region 부산 가야대 노포`
+    (부산 전철 가야대역 출발 노포역 도착으로 조회)
 
     """
 

@@ -16,9 +16,7 @@ SHORTCUT_TABLE: dict[str, str] = {
     "엔": "JPY",
     "유로": "EUR",
 }
-CURRENCY = (
-    r"|".join(re.escape(key) for key in SHORTCUT_TABLE.keys()) + r"|[a-z]+"
-)
+CURRENCY = r"|".join(re.escape(key) for key in SHORTCUT_TABLE) + r"|[a-z]+"
 BASE = r"(?P<base>" + CURRENCY + r")"
 QUANTITY = r"(?P<quantity>\d+(?:\.\d+)?)"
 TO = r"(?P<to>" + CURRENCY + r")"
@@ -48,7 +46,7 @@ async def get_exchange_rate(base: str, to: str) -> dict:
     """Get exchange rate."""
 
     if base == to:
-        raise SameBaseAndTo()
+        raise SameBaseAndTo
 
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -58,8 +56,7 @@ async def get_exchange_rate(base: str, to: str) -> dict:
             data = await resp.json(loads=json.loads)
             if isinstance(data, list):
                 return data[0]
-            else:
-                raise WrongUnit()
+            raise WrongUnit
 
 
 @box.command("환율", ["exchange"])
@@ -105,6 +102,9 @@ async def exchange(bot, event: Message, query: str):
                 f"{quantity} {base} == {result:.2f} {to} ({date})",
             )
         else:
-            await bot.say(event.channel, "알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!")
+            await bot.say(
+                event.channel,
+                "알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!",
+            )
     else:
         await bot.say(event.channel, "주문을 이해하는데에 실패했어요!")

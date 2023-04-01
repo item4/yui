@@ -58,8 +58,7 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
 
     file = fx_tmpdir / "yui.config.toml"
     with file.open("w") as f:
-        f.write(
-            """
+        f.write("""
 APP_TOKEN = 'TEST_APP_TOKEN'
 BOT_TOKEN = 'TEST_BOT_TOKEN'
 DATABASE_URL = 'sqlite:///:memory:'
@@ -73,18 +72,17 @@ general = 'C1'
 [USERS]
 owner = 'U111'
 
-        """
-        )
+        """)
     config = load(file)
 
-    assert config.APP_TOKEN == "TEST_APP_TOKEN"
-    assert config.BOT_TOKEN == "TEST_BOT_TOKEN"
+    assert config.APP_TOKEN == "TEST_APP_TOKEN"  # noqa: S105
+    assert config.BOT_TOKEN == "TEST_BOT_TOKEN"  # noqa: S105
     assert config.DEBUG
     assert config.PREFIX == "."
-    assert config.APPS == ["a", "b"]
-    assert config.CHANNELS == {
+    assert ["a", "b"] == config.APPS
+    assert {
         "general": "C1",
-    }
+    } == config.CHANNELS
 
 
 def test_config_check(bot_config):
@@ -100,7 +98,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.APP_TOKEN = "TEST_APP_TOKEN"
+    bot_config.APP_TOKEN = "TEST_APP_TOKEN"  # noqa: S105
     err = "Wrong config value type: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
@@ -111,7 +109,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.APP_TOKEN = "XXXX"
+    bot_config.APP_TOKEN = "XXXX"  # noqa: S105
     assert bot_config.check(
         {"APP_TOKEN": str},
         set(),

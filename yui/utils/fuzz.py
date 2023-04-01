@@ -41,9 +41,11 @@ def normalize_korean_nfc_to_nfd(value: str) -> str:
         value = value.replace(from_, to_)
 
     return "".join(
-        unicodedata.normalize("NFD", x)
-        if KOREAN_START <= ord(x) <= KOREAN_END
-        else x
+        (
+            unicodedata.normalize("NFD", x)
+            if KOREAN_START <= ord(x) <= KOREAN_END
+            else x
+        )
         for x in list(value)
     )
 
@@ -55,7 +57,7 @@ def ratio(str1: str, str2: str) -> int:
         fuzz.ratio(
             normalize_korean_nfc_to_nfd(str1),
             normalize_korean_nfc_to_nfd(str2),
-        )
+        ),
     )
 
 
@@ -66,7 +68,7 @@ def partial_ratio(str1: str, str2: str) -> int:
         fuzz.partial_ratio(
             normalize_korean_nfc_to_nfd(str1),
             normalize_korean_nfc_to_nfd(str2),
-        )
+        ),
     )
 
 
@@ -77,7 +79,7 @@ def token_sort_ratio(str1: str, str2: str) -> int:
         fuzz.token_sort_ratio(
             normalize_korean_nfc_to_nfd(str1),
             normalize_korean_nfc_to_nfd(str2),
-        )
+        ),
     )
 
 

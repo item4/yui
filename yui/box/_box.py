@@ -80,7 +80,7 @@ class Box:
                     help=help,
                     is_command=True,
                     use_shlex=use_shlex,
-                )
+                ),
             )
 
             return handler
@@ -95,10 +95,7 @@ class Box:
     ) -> DECORATOR_TYPE:
         """Decorator for make app."""
 
-        if isinstance(type_, str):
-            event_type = type_
-        else:
-            event_type = type_.type
+        event_type = type_ if isinstance(type_, str) else type_.type
 
         def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
             handler = get_handler(target)
@@ -108,7 +105,7 @@ class Box:
                     event_type,
                     subtype,
                     handler,
-                )
+                ),
             )
 
             return handler

@@ -61,7 +61,8 @@ async def get_weather_by_coordinate(
 
     async with aiohttp.ClientSession() as session:
         async with session.get(
-            "https://api.openweathermap.org/data/2.5/weather", params=params
+            "https://api.openweathermap.org/data/2.5/weather",
+            params=params,
         ) as resp:
             if resp.status != 200:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")

@@ -37,7 +37,7 @@ def parse(
             (
                 name,
                 link,
-            )
+            ),
         )
     return result
 
@@ -97,7 +97,7 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
                         str(code_el.text_content()).strip(),
                         name,
                         link,
-                    )
+                    ),
                 )
         else:
             result.append(
@@ -105,7 +105,7 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
                     "",
                     name,
                     link,
-                )
+                ),
             )
     return result
 
@@ -164,7 +164,8 @@ async def html(bot, event: Message, keyword: str):
     data = await bot.cache.get("REF_HTML")
     if data is None:
         await bot.say(
-            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+            event.channel,
+            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!",
         )
         return
 
@@ -197,7 +198,8 @@ async def css(bot, event: Message, keyword: str):
     data = await bot.cache.get("REF_CSS")
     if data is None:
         await bot.say(
-            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+            event.channel,
+            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!",
         )
         return
 
@@ -269,7 +271,9 @@ async def php(bot, event: Message, keyword: str):
                         )
                         break
         else:
-            await bot.say(event.channel, "비슷한 PHP 관련 요소를 찾지 못하겠어요!")
+            await bot.say(
+                event.channel, "비슷한 PHP 관련 요소를 찾지 못하겠어요!"
+            )
 
 
 @box.command("python", ["py"])
@@ -285,7 +289,8 @@ async def python(bot, event: Message, keyword: str):
     data = await bot.cache.get("REF_PYTHON")
     if data is None:
         await bot.say(
-            event.channel, "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+            event.channel,
+            "아직 레퍼런스 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!",
         )
         return
 
@@ -293,10 +298,9 @@ async def python(bot, event: Message, keyword: str):
     link = None
     ratio = -100.0
     for code, _name, _link in data:
-        if code:
-            _ratio = fuzz.ratio(keyword, code)
-        else:
-            _ratio = fuzz.ratio(keyword, _name)
+        _ratio = (
+            fuzz.ratio(keyword, code) if code else fuzz.ratio(keyword, _name)
+        )
         if _ratio > ratio:
             name = _name
             link = _link

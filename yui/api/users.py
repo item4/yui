@@ -11,10 +11,7 @@ class Users(Endpoint):
     async def info(self, user: User | UserID) -> APIResponse:
         """https://api.slack.com/methods/users.info"""
 
-        if isinstance(user, User):
-            user_id = user.id
-        else:
-            user_id = user
+        user_id = user.id if isinstance(user, User) else user
 
         return await self._call("info", {"user": user_id})
 

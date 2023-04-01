@@ -1,8 +1,8 @@
 from typing import Any
 from typing import ClassVar
 from typing import Literal
-from typing import TypeAlias
 from typing import overload
+from typing import TypeAlias
 
 from .types.base import ChannelID
 from .types.base import Ts
@@ -150,7 +150,8 @@ def create_event(type_: TeamJoinType, source: Source) -> TeamJoin:
 
 @overload
 def create_event(
-    type_: TeamMigrationStartedType, source: Source
+    type_: TeamMigrationStartedType,
+    source: Source,
 ) -> TeamMigrationStarted:
     ...
 
@@ -170,4 +171,4 @@ def create_event(type_, source):
             source["type"] = type_
         return make_instance(cls, **source)
     except TypeError as e:
-        raise TypeError(f"Error at creating {cls.__name__}: {e}")
+        raise TypeError(f"Error at creating {cls.__name__}: {e}") from e

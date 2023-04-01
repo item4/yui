@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from ...event import Event
 from ...event import Message
-from ...types.handler import HANDLER_CALL_TYPE
 from ...types.handler import Handler
+from ...types.handler import HANDLER_CALL_TYPE
 from ...utils.handler import get_handler
 from ..parsers import parse_option_and_arguments
 from ..utils import SPACE_RE
@@ -109,7 +109,7 @@ class RouteApp(BaseApp):
                     chunks,
                 )
             except SyntaxError as e:
-                await bot.say(event.channel, "*Error*\n{}".format(e))
+                await bot.say(event.channel, f"*Error*\n{e}")
                 return False
             async with self.prepare_kwargs(
                 bot=bot,

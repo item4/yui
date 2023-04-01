@@ -118,21 +118,13 @@ def test_choice(items):
     with pytest.raises(ValueError):
         choice(items, case_insensitive=True)("bird")
 
-    assert (
-        choice(items, fallback="fish", case_insensitive=True)("cat") == "cat"
-    )
+    assert choice(items, fallback="fish", case_insensitive=True)("cat") == "cat"
     assert (
         choice(items, fallback="fish", case_insensitive=True)("bird") == "fish"
     )
-    assert (
-        choice(items, fallback="fish", case_insensitive=True)("dog") == "dog"
-    )
-    assert (
-        choice(items, fallback="fish", case_insensitive=True)("Dog") == "Dog"
-    )
-    assert (
-        choice(items, fallback="fish", case_insensitive=True)("DOG") == "DOG"
-    )
+    assert choice(items, fallback="fish", case_insensitive=True)("dog") == "dog"
+    assert choice(items, fallback="fish", case_insensitive=True)("Dog") == "Dog"
+    assert choice(items, fallback="fish", case_insensitive=True)("DOG") == "DOG"
 
 
 def test_value_range():

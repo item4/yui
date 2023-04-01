@@ -37,7 +37,7 @@ def test_bot_init(monkeypatch, bot_config):
 
 @pytest.mark.asyncio
 async def test_call(bot_config, response_mock):
-    token = "asdf1234"
+    token = "asdf1234"  # noqa: S105
 
     response_mock.post(
         "https://slack.com/api/test11",

@@ -77,4 +77,7 @@ async def test_exchange_error(bot, response_mock):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!"
+    assert (
+        said.data["text"]
+        == "알 수 없는 에러가 발생했어요! 아빠에게 문의해주세요!"
+    )

@@ -25,8 +25,8 @@ START_SPACE = re.compile(r" {4,}")
 
 def get_simple_tb_text(tb: list[str]) -> list[str]:
     result: list[str] = []
-    for line in tb:
-        line = SITE_PACKAGES.sub('File "site-packages/', line)
+    for row in tb:
+        line = SITE_PACKAGES.sub('File "site-packages/', row)
         line = BUILTIN_PACKAGES.sub('File "python/', line)
         line = IN_YUI.sub('File "proj/yui/', line)
         line = START_SPACE.sub("  ", line)
@@ -36,7 +36,7 @@ def get_simple_tb_text(tb: list[str]) -> list[str]:
 
 
 async def report(
-    bot: "Bot",
+    bot: Bot,
     *,
     event: Event | None = None,
     exception: APICallError | None = None,

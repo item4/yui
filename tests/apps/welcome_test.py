@@ -54,7 +54,9 @@ async def test_welcome_9xd_handler(bot_config):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"].startswith("<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:")
+    assert said.data["text"].startswith(
+        "<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:"
+    )
     assert "`.도움`" in said.data["text"]
 
     thread = bot.call_queue.pop(0)

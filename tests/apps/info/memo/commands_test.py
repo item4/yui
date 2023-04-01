@@ -25,7 +25,9 @@ async def test_memo_flow(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == f"`{keyword1}`란 이름을 가진 기억 레코드가 없어요!"
+    assert (
+        said.data["text"] == f"`{keyword1}`란 이름을 가진 기억 레코드가 없어요!"
+    )
 
     assert (
         await fx_sess.scalar(
@@ -39,7 +41,10 @@ async def test_memo_flow(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == f"`{keyword2}`이란 이름을 가진 기억 레코드가 없어요!"
+    assert (
+        said.data["text"]
+        == f"`{keyword2}`이란 이름을 가진 기억 레코드가 없어요!"
+    )
 
     assert (
         await fx_sess.scalar(
@@ -109,7 +114,10 @@ async def test_memo_flow(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == f"`{keyword1}`에 관한 기억 레코드를 모두 삭제했어요!"
+    assert (
+        said.data["text"]
+        == f"`{keyword1}`에 관한 기억 레코드를 모두 삭제했어요!"
+    )
 
     assert (
         await fx_sess.scalar(
@@ -129,7 +137,10 @@ async def test_memo_flow(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == f"`{keyword2}`에 관한 기억 레코드를 모두 삭제했어요!"
+    assert (
+        said.data["text"]
+        == f"`{keyword2}`에 관한 기억 레코드를 모두 삭제했어요!"
+    )
 
     assert (
         await fx_sess.scalar(
@@ -156,11 +167,17 @@ async def test_length_limit(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!"
+    assert (
+        said.data["text"]
+        == "기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!"
+    )
 
     await memo_add(bot, event, fx_sess, "test", "long" * 1000)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!"
+    assert (
+        said.data["text"]
+        == "기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!"
+    )

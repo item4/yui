@@ -30,7 +30,7 @@ COLLECT_QUERY1 = re.compile(r"^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$")
 COLLECT_QUERY2 = re.compile(
     r"^(?:(?:총|전체)\s*)?"
     r"(?P<total>\d+)\s*(?:종류?|개)?\s*중(?:에서?)?\s*"
-    r"(?P<n>\d+)\s*(?:종류?|개)?$"
+    r"(?P<n>\d+)\s*(?:종류?|개)?$",
 )
 
 
@@ -55,26 +55,30 @@ class Gacha(route.RouteApp):
         return f"`{prefix}가챠`: 가챠 계산기"
 
     def get_full_help(self, prefix: str):
-        return inspect.cleandoc(
-            f"""
+        return inspect.cleandoc(f"""
 *가챠 계산기*
 
 해로운 문명, 가챠에 관련된 계산을 도와줍니다.
 
-`{prefix}가챠 수집 10` (총 10종을 모두 수집하려면 얼마나 구입해야하는지 계산)
-`{prefix}가챠 수집 10/20` (총 20종 중에 10종을 수집하려면 얼마나 구입해야하는지 계산)
-`{prefix}가챠 수집 전체 20종류중에 10종류` (위와 동일한 주문을 한국어 표현식으로도 가능합니다.)
-`{prefix}가챠 도전 5%` (5% 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
-`{prefix}가챠 도전 0.1` (10%(`0.1`) 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
-`{prefix}가챠 도전 --성공 10 3%` (3% 확률요소의 10회 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 수집 10`
+(총 10종을 모두 수집하려면 얼마나 구입해야하는지 계산)
+`{prefix}가챠 수집 10/20`
+(총 20종 중에 10종을 수집하려면 얼마나 구입해야하는지 계산)
+`{prefix}가챠 수집 전체 20종류중에 10종류`
+(위와 동일한 주문을 한국어 표현식으로도 가능합니다.)
+`{prefix}가챠 도전 5%`
+(5% 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 도전 0.1`
+(10%(`0.1`) 확률요소의 성공을 위해 필요한 도전 횟수를 계산)
+`{prefix}가챠 도전 --성공 10 3%`
+(3% 확률요소의 10회 성공을 위해 필요한 도전 횟수를 계산)
 
 Aliases
 
 - `수집`대신 `collect`를 사용할 수 있습니다.
 - `도전`대신 `challenge`를 사용할 수 있습니다.
 - `도전`에서 `--성공`대신 `--성공횟수`/`--successes`/`-s`를 사용할 수 있습니다.
-"""
-        )
+""")
 
     async def fallback(self, bot, event: Message):
         await bot.say(event.channel, f"Usage: `{bot.config.PREFIX}help 가챠`")
@@ -91,45 +95,56 @@ Aliases
         if successes < SUCCESSES_MIN or successes > SUCCESSES_MAX:
             await bot.say(
                 event.channel,
-                f"성공횟수는 {SUCCESSES_MIN}회 이상,"
-                f" {SUCCESSES_MAX:,}회 이하로 입력해주세요!",
+                (
+                    f"성공횟수는 {SUCCESSES_MIN}회 이상, {SUCCESSES_MAX:,}회"
+                    " 이하로 입력해주세요!"
+                ),
             )
             return
         try:
-            if chance.endswith("%"):
-                p = Decimal(chance[:-1]) / 100
-            else:
-                p = Decimal(chance)
+            p = (
+                Decimal(chance[:-1]) / 100
+                if chance.endswith("%")
+                else Decimal(chance)
+            )
         except InvalidOperation:
             await bot.say(event.channel, "정상적인 확률을 입력해주세요!")
             return
         if p < CHANCE_MIN or p > CHANCE_MAX:
             await bot.say(
                 event.channel,
-                f"확률값은 {to_percent(CHANCE_MIN)}% 이상,"
-                f" {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!",
+                (
+                    f"확률값은 {to_percent(CHANCE_MIN)}% 이상,"
+                    f" {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!"
+                ),
             )
             return
         if p / successes < CHANCE_MIN:
-            await bot.say(event.channel, "입력하신 확률값에 비해 성공 횟수가 너무 많아요!")
+            await bot.say(
+                event.channel,
+                "입력하신 확률값에 비해 성공 횟수가 너무 많아요!",
+            )
             return
         counts = {
             int(math.ceil(nbinom.ppf(float(q), successes, float(p))))
-            for q in filter(lambda x: x >= p, CHANCES + [p])
+            for q in filter(lambda x: x >= p, [*CHANCES, p])
         }
         results = [
             (x, Decimal(str(nbinom.cdf(x, successes, float(p)))))
             for x in sorted(counts)
         ]
         text = "\n".join(
-            f"- {tries+successes:,}번 시도하시면 {to_percent(ch, D001)}% 확률로"
-            f" 목표 횟수만큼 성공할 수 있어요!"
+            f"- {tries+successes:,}번 시도하시면"
+            f" {to_percent(ch, D001)}% 확률로"
+            " 목표 횟수만큼 성공할 수 있어요!"
             for tries, ch in results
         )
         await bot.say(
             event.channel,
-            f"{to_percent(p)}% 확률의 도전을 {successes:,}번"
-            f" 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}",
+            (
+                f"{to_percent(p)}% 확률의 도전을 {successes:,}번"
+                f" 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}"
+            ),
         )
 
     @argument("query", nargs=-1, concat=True)
@@ -147,13 +162,21 @@ Aliases
                 await bot.say(event.channel, "요청을 해석하는데에 실패했어요!")
                 return
         if total < 2 or total > 512:
-            await bot.say(event.channel, "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)")
+            await bot.say(
+                event.channel,
+                "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)",
+            )
             return
         if n < 1 or n > 512:
-            await bot.say(event.channel, "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)")
+            await bot.say(
+                event.channel,
+                "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)",
+            )
             return
         if total < n:
-            await bot.say(event.channel, "원하는 갯수가 전체 갯수보다 많을 수 없어요!")
+            await bot.say(
+                event.channel, "원하는 갯수가 전체 갯수보다 많을 수 없어요!"
+            )
             return
 
         result = n * harmonic(n)
@@ -165,10 +188,13 @@ Aliases
 
         await bot.say(
             event.channel,
-            f"상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%"
-            f"확률로 준다고 가정할 때 {n}종류의 특전을 {text} 모으려면, 평균적으로"
-            f" {math.ceil(result)}(`{float(result):.2f}`)개의 상품을"
-            " 구입해야 수집에 성공할 수 있어요!",
+            (
+                f"상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%"
+                f"확률로 준다고 가정할 때 {n}종류의 특전을"
+                f" {text} 모으려면, 평균적으로"
+                f" {math.ceil(result)}(`{float(result):.2f}`)개의 상품을"
+                " 구입해야 수집에 성공할 수 있어요!"
+            ),
         )
 
 

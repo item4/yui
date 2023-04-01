@@ -1,8 +1,8 @@
 from decimal import Decimal
 from typing import TypeAlias
 
-from emcache.client import Client
 from emcache.client import _Client
+from emcache.client import Client
 
 from .utils import json
 
@@ -52,7 +52,7 @@ class Cache:
         prefixed_keys = [self._key(k) for k in keys]
         values = await self.mc.get_many(prefixed_keys)
         return {
-            k.decode(): (None if v is None else json.loads(v.value.decode()))
+            k.decode(): None if v is None else json.loads(v.value.decode())
             for k, v in values.items()
         }
 

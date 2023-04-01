@@ -62,7 +62,7 @@ class Caption:
 
 
 def print_time(t: str) -> str:
-    return "{}:{}".format(t[:2], t[2:])
+    return f"{t[:2]}:{t[2:]}"
 
 
 def encode_url(u: str) -> str:
@@ -73,9 +73,14 @@ def encode_url(u: str) -> str:
 
 def make_caption_list(origin: list[Caption]) -> list[Attachment]:
     if not origin:
-        return [Attachment(fallback="자막 제작자가 없습니다.", text="자막 제작자가 없습니다.")]
+        return [
+            Attachment(
+                fallback="자막 제작자가 없습니다.",
+                text="자막 제작자가 없습니다.",
+            ),
+        ]
 
-    captions = list(sorted(origin, key=lambda x: x.episode_num, reverse=True))
+    captions = sorted(origin, key=lambda x: x.episode_num, reverse=True)
 
     result: list[Attachment] = []
     makers: defaultdict[str, list[int]] = defaultdict(list)
@@ -87,10 +92,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
         known_episode_nums: set[str] = set()
         known_urls: set[str] = set()
         for item in items:
-            if (
-                item.episode_num in known_episode_nums
-                or item.url in known_urls
-            ):
+            if item.episode_num in known_episode_nums or item.url in known_urls:
                 continue
 
             same_urls = list(filter(lambda x: x.url == item.url, items))
@@ -121,7 +123,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                         episode_num=episode_num,
                         url=item.url,
                         released_at=earliest_released_at,
-                    )
+                    ),
                 )
                 known_episode_nums.add(episode_num)
                 known_urls.add(item.url)
@@ -133,20 +135,18 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                 known_episode_nums.add("1")
                 episode_num = "0"
                 same_episode_nums = list(
-                    filter(lambda x: x.episode_num in {"0", "1"}, items)
+                    filter(lambda x: x.episode_num in {"0", "1"}, items),
                 )
             else:
                 episode_num = item.episode_num
                 same_episode_nums = list(
-                    filter(lambda x: x.episode_num == episode_num, items)
+                    filter(lambda x: x.episode_num == episode_num, items),
                 )
             if len(same_episode_nums) > 1:
-                latest_release = list(
-                    sorted(
-                        same_episode_nums,
-                        key=lambda x: x.released_at,
-                        reverse=True,
-                    )
+                latest_release = sorted(
+                    same_episode_nums,
+                    key=lambda x: x.released_at,
+                    reverse=True,
                 )[0]
                 selected_captions.append(
                     Caption(
@@ -154,7 +154,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                         episode_num=episode_num,
                         url=latest_release.url,
                         released_at=latest_release.released_at,
-                    )
+                    ),
                 )
                 known_episode_nums.add(episode_num)
                 known_urls.add(latest_release.url)
@@ -174,34 +174,39 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
             num = f"{num}화"
 
         date = caption.released_at
-        if date:
-            text = f"{num} {date} {caption.url}"
-        else:
-            text = f"{num} {caption.url}"
+        text = f"{num} {date} {caption.url}" if date else f"{num} {caption.url}"
         result.append(Attachment(author_name=caption.maker, text=text))
     return result
 
 
 @box.command("자막", ["cap", "sub", "애니자막"])
-@option("--finished/--on-air", "--종영/--방영", "--완결/--방송", "--fin/--on", "-f/-o")
-@argument("title", nargs=-1, concat=True, count_error="애니 제목을 입력해주세요")
+@option(
+    "--finished/--on-air",
+    "--종영/--방영",
+    "--완결/--방송",
+    "--fin/--on",
+    "-f/-o",
+)
+@argument(
+    "title", nargs=-1, concat=True, count_error="애니 제목을 입력해주세요"
+)
 async def caption(bot, event: Message, finished: bool, title: str):
     """
     애니메이션 자막을 검색합니다
 
-    OHLI와 애니시아 자막 편성표에서 주어진 제목과 가장 근접한 제목의 애니를 검색하여 보여줍니다.
+    자막 편성표에서 키워드와 가장 유사한 제목의 애니를 검색하여 보여줍니다.
 
-    방영중 애니 검색은 기본적으로 OHLI의 자막 목록에서 fuzzy search 후, OHLI에서 제공하는
-    ALIAS를 기준으로 삼아 애니시아의 자막 목록에서 검색합니다. 따라서 OHLI와 애니시아의 애니명이
-    다른 경우에는 검색이 가능하지만, OHLI에 아예 없는 애니는 검색이 불가능합니다.
+    방영중 애니 검색: OHLI + 애니시아 (fuzz search)
+    종영 애니 포함 검색: OHLI (fuzzy search 지원 안 함)
 
-    종영 애니 포함 검색은 OHLI만을 검색합니다. OHLI의 검색 API를 이용하기 때문에
-    fuzzy search를 지원하지 않습니다.
-
-    `{PREFIX}cap 이나즈마 일레븐` (제목이 `'이나즈마 일레븐'` 에 근접하는 것을 검색)
-    `{PREFIX}cap 나 히 아` (제목이 `'나 히 아'` 에 근접하는 것을 검색)
-    `{PREFIX}cap 히로아카` (OHLI의 애니 별칭 목록에 있는것은 별칭으로도 검색 가능)
-    `{PREFIX}cap --완결 aldnoah` (제목에 `'aldnoah'`가 들어가는 애니 + 완결애니를 검색)
+    `{PREFIX}cap 이나즈마 일레븐`
+    (제목이 `'이나즈마 일레븐'` 에 근접하는 것을 검색)
+    `{PREFIX}cap 나 히 아`
+    (제목이 `'나 히 아'` 에 근접하는 것을 검색)
+    `{PREFIX}cap 히로아카`
+    (OHLI의 애니 별칭 목록에 있는것은 별칭으로도 검색 가능)
+    `{PREFIX}cap --완결 aldnoah`
+    (제목에 `'aldnoah'`가 들어가는 애니 + 완결애니를 검색)
 
     """
 
@@ -232,7 +237,9 @@ async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
 
     for row in data:
         episode_num = row["s"]
-        if episode_num == 0.0:  # OHLI에서는 0.0이 업로드 안 함을 의미, 단편은 1.0 사용
+        if (
+            episode_num == 0.0
+        ):  # OHLI에서는 0.0이 업로드 안 함을 의미, 단편은 1.0 사용
             continue
         if int(math.ceil(episode_num)) == int(episode_num):
             episode_num = int(episode_num)
@@ -255,7 +262,7 @@ async def get_anissia_weekly_json(
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://anissia.net/api/anime/schedule/{week}"
+                f"https://anissia.net/api/anime/schedule/{week}",
             ) as resp:
                 return await resp.json(loads=json.loads)
 
@@ -267,7 +274,7 @@ async def get_annissia_caption_list_json(
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://anissia.net/api/anime/caption/animeNo/{anime_no}"
+                f"https://anissia.net/api/anime/caption/animeNo/{anime_no}",
             ) as resp:
                 return await resp.json(loads=json.loads)
 
@@ -282,14 +289,14 @@ def select_animes_from_ohli(title, ohli_all):
                 [
                     match(title, ani["s"].lower()),
                     max(match(title, a["s"].lower()) for a in ani["n"]),
-                ]
+                ],
             )
 
             if any(
                 [
                     title in ani["s"].lower(),
                     *[title in a["s"].lower() for a in ani["n"]],
-                ]
+                ],
             ):
                 ani["ratio"] += 10
             data.append(ani)
@@ -422,13 +429,19 @@ async def search_finished(
                 ) as resp:
                     data = await resp.json(loads=json.loads)
     except asyncio.TimeoutError:
-        await bot.say(event.channel, "OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!")
+        await bot.say(
+            event.channel,
+            "OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!",
+        )
         return
 
     if data:
         await bot.say(
             event.channel,
-            f"완결애니를 포함하여 OHLI DB에서 검색한 결과 총 {len(data):,}개의 애니가 검색되었어요!",
+            (
+                "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
+                f" {len(data):,}개의 애니가 검색되었어요!"
+            ),
             thread_ts=event.event_ts,
         )
         for ani in data:

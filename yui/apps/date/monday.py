@@ -1,3 +1,4 @@
+import contextlib
 import functools
 import random
 
@@ -28,10 +29,8 @@ async def monday_dog(bot):
     )
     today = now()
     holidays = None
-    try:
+    with contextlib.suppress(aiohttp.client_exceptions.ClientOSError):
         holidays = await get_holiday_names(today)
-    except aiohttp.client_exceptions.ClientOSError:
-        pass
 
     if holidays:
         says = [

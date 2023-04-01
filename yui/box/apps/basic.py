@@ -49,9 +49,8 @@ class App(BaseApp):
             if doc:
                 if "\n\n" in doc:
                     short_help, help = doc.split("\n\n", 1)
-                else:
-                    if short_help is None:
-                        short_help = doc
+                elif short_help is None:
+                    short_help = doc
 
         self.short_help = short_help
         self.help = help
@@ -126,9 +125,7 @@ class App(BaseApp):
 
         match = True
         if self.is_command:
-            match = any(
-                call == bot.config.PREFIX + name for name in self.names
-            )
+            match = any(call == bot.config.PREFIX + name for name in self.names)
 
         if match:
             func_params = self.handler.params
@@ -146,7 +143,7 @@ class App(BaseApp):
                     chunks,
                 )
             except SyntaxError as e:
-                await bot.say(event.channel, "*Error*\n{}".format(e))
+                await bot.say(event.channel, f"*Error*\n{e}")
                 return False
 
             if "raw" in func_params:

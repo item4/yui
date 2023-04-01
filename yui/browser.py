@@ -12,9 +12,7 @@ async def new_page(bot):
         async with session.get(bot.config.WEBSOCKETDEBUGGERURL) as resp:
             data = await resp.json(loads=json.loads)
 
-    browser = await connect(
-        {"browserWSEndpoint": data["webSocketDebuggerUrl"]}
-    )
+    browser = await connect({"browserWSEndpoint": data["webSocketDebuggerUrl"]})
 
     page = await browser.newPage()
 

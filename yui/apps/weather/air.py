@@ -56,10 +56,11 @@ class AirPollutionRecord:
                 value = cubic_to_ppm(value, weight, temperature, atm)
                 unit = "ppm"  # unicode 문자는 가독성이 너무 낮음
             shorten_value = shorten(value)
-            if shorten_value == "0":
-                text = "관측 정밀도 미만"
-            else:
-                text = f"{shorten_value} {unit}"
+            text = (
+                "관측 정밀도 미만"
+                if shorten_value == "0"
+                else f"{shorten_value} {unit}"
+            )
             results.append(f"* {name}: {text}")
 
         return "\n".join(results)
@@ -77,18 +78,20 @@ def get_emoji_by_aqi(aqi: int) -> str:
 
 def get_aqi_description(aqi_level: int) -> str:
     if aqi_level >= 5:
-        return "매우 나쁨(환자군 및 민감군에게 노출시 심각한 영향 유발, " "일반인도 유해한 영향이 유발될 수 있는 수준)"
-    elif aqi_level == 4:
         return (
-            "나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발, "
-            "일반인도 건강상 불쾌감을 경험할 수 있는 수준)"
+            "매우 나쁨(환자군 및 민감군에게 노출시 심각한 영향 유발, 일반인도"
+            " 유해한 영향이 유발될 수 있는 수준)"
         )
-    elif aqi_level == 3:
+    if aqi_level == 4:
+        return (
+            "나쁨(환자군 및 민감군[어린이, 노약자 등]에게 유해한 영향 유발,"
+            " 일반인도 건강상 불쾌감을 경험할 수 있는 수준)"
+        )
+    if aqi_level == 3:
         return "민감군 영향(환자군 및 민감군에게 유해한 영향이 유발될 수 있는 수준)"
-    elif aqi_level == 2:
+    if aqi_level == 2:
         return "보통(환자군에게 만성 노출시 경미한 영향이 유발될 수 있는 수준)"
-    else:
-        return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
+    return "좋음(대기오염 관련 질환자군에서도 영향이 유발되지 않을 수준)"
 
 
 async def get_air_pollution_by_coordinate(

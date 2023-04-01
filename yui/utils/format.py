@@ -47,16 +47,15 @@ def quote(text: str) -> str:
 def link(x) -> str:
     if isinstance(x, User):
         return f"<@{x.id}>"
-    elif isinstance(x, PublicChannel):
+    if isinstance(x, PublicChannel):
         return f"<#{x.id}>"
-    elif isinstance(x, str):
-        if x.startswith("U") or x.startswith("W"):
+    if isinstance(x, str):
+        if x.startswith(("U", "W")):
             return f"<@{x}>"
-        elif x.startswith("C"):
+        if x.startswith("C"):
             return f"<#{x}>"
-        elif x.startswith("S"):
+        if x.startswith("S"):
             return f"<!subteam^{x}>"
-        return f"<{x}>"
     return f"<{x}>"
 
 

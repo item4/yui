@@ -1,3 +1,4 @@
+import contextlib
 import re
 
 from ..box import box
@@ -16,9 +17,7 @@ HI_RE2 = re.compile(
 @box.on(Message)
 async def hi(bot, event: Message):
     if HI_RE1.search(event.text) or HI_RE2.search(event.text):
-        try:
-            await bot.say(event.channel, "안녕하세요! <@{}>".format(event.user))
-        except AttributeError:
-            pass
+        with contextlib.suppress(AttributeError):
+            await bot.say(event.channel, f"안녕하세요! <@{event.user}>")
         return False
     return True

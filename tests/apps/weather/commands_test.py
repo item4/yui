@@ -4,7 +4,6 @@ import pytest
 from yarl import URL
 
 from tests.util import FakeBot
-
 from yui.apps.weather.commands import weather
 
 # AQI 이외의 데이터는 모두 Optional한 데이터이므로 정규식 매치에서 제외함.
@@ -44,7 +43,8 @@ async def test_weather(
     assert weather_said.data["text"] != "해당 주소는 찾을 수 없어요!"
     assert weather_said.data["text"] != "날씨 API 접근 중 에러가 발생했어요!"
     assert (
-        weather_said.data["text"] != "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!"
+        weather_said.data["text"]
+        != "검색 결과가 없어요! OpenWeather로 검색할 수 없는 곳 같아요!"
     )
 
     air_pollution_said = bot.call_queue.pop(0)
@@ -122,9 +122,7 @@ async def test_weather_openweather_error(
         status=401,
     )
     response_mock.get(
-        URL(
-            "https://api.openweathermap.org/data/2.5/air_pollution"
-        ).with_query(
+        URL("https://api.openweathermap.org/data/2.5/air_pollution").with_query(
             appid="DUMMY_OPENWEATHER_KEY",
             lat="37.5034138",
             lon="126.7660309",

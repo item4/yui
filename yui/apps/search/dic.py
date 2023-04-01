@@ -9,9 +9,9 @@ from ...command import option
 from ...event import Message
 from ...transform import choice
 from ...types.slack.attachment import Attachment
-from ...utils.html import USELESS_TAGS
 from ...utils.html import get_root
 from ...utils.html import strip_tags
+from ...utils.html import USELESS_TAGS
 from ...utils.http import USER_AGENT
 
 headers: dict[str, str] = {
@@ -59,29 +59,31 @@ def parse(html: str) -> tuple[str | None, list[Attachment]]:
     meta = h.cssselect("meta[http-equiv=Refresh]")
     if meta:
         return fix_url(meta[0].get("content")[7:]), []
-    else:
-        words = h.cssselect("div.search_type")
+    words = h.cssselect("div.search_type")
 
-        attachments: list[Attachment] = []
+    attachments: list[Attachment] = []
 
-        for word in words:
-            w = word.cssselect(".txt_searchword")[0]
-            attachments.append(
-                Attachment(
-                    title=strip_tags(str(w.text_content())),
-                    title_link=fix_url(str(w.get("href"))),
-                    text=fix_blank(
-                        str(word.cssselect(".list_search")[0].text_content())
-                    ),
-                )
-            )
+    for word in words:
+        w = word.cssselect(".txt_searchword")[0]
+        attachments.append(
+            Attachment(
+                title=strip_tags(str(w.text_content())),
+                title_link=fix_url(str(w.get("href"))),
+                text=fix_blank(
+                    str(word.cssselect(".list_search")[0].text_content()),
+                ),
+            ),
+        )
 
-        return None, attachments
+    return None, attachments
 
 
 @box.command("dic", ["사전"])
 @option(
-    "--category", "-c", transform_func=choice(list(DICS.keys())), default="영어"
+    "--category",
+    "-c",
+    transform_func=choice(list(DICS.keys())),
+    default="영어",
 )
 @argument("keyword", nargs=-1, concat=True)
 async def dic(bot: Bot, event: Message, category: str, keyword: str):
@@ -117,5 +119,5 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
         await bot.api.chat.postMessage(
             channel=event.channel,
             attachments=attachments,
-            text="검색결과 {}개의 링크를 찾았어요!".format(len(attachments)),
+            text=f"검색결과 {len(attachments)}개의 링크를 찾았어요!",
         )

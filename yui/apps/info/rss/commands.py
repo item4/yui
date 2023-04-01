@@ -38,8 +38,7 @@ class RSS(route.RouteApp):
         return f"`{prefix}rss`: RSS Feed 구독"
 
     def get_full_help(self, prefix: str):
-        return inspect.cleandoc(
-            f"""
+        return inspect.cleandoc(f"""
         *RSS Feed 구독*
 
         채널에서 RSS를 구독할 때 사용됩니다.
@@ -51,8 +50,7 @@ class RSS(route.RouteApp):
 
         `add` 대신 `추가` 를 사용할 수 있습니다.
         `list` 대신 `목록` 을 사용할 수 있습니다.
-        `del` 대신 `delete`, `삭제`, `제거` 를 사용할 수 있습니다."""
-        )
+        `del` 대신 `delete`, `삭제`, `제거` 를 사용할 수 있습니다.""")
 
     async def fallback(self, bot, event: Message):
         await bot.say(event.channel, f"Usage: `{bot.config.PREFIX}help rss`")
@@ -64,7 +62,9 @@ class RSS(route.RouteApp):
                 async with session.get(url) as res:
                     data: bytes = await res.read()
             except aiohttp.client_exceptions.InvalidURL:
-                await bot.say(event.channel, f"`{url}`은 올바른 URL이 아니에요!")
+                await bot.say(
+                    event.channel, f"`{url}`은 올바른 URL이 아니에요!"
+                )
                 return
             except aiohttp.client_exceptions.ClientConnectorError:
                 await bot.say(event.channel, f"`{url}`에 접속할 수 없어요!")
@@ -77,7 +77,9 @@ class RSS(route.RouteApp):
         f = feedparser.parse(data)
 
         if f.bozo != 0:
-            await bot.say(event.channel, f"`{url}`은 올바른 RSS 문서가 아니에요!")
+            await bot.say(
+                event.channel, f"`{url}`은 올바른 RSS 문서가 아니에요!"
+            )
             return
 
         feed = RSSFeedURL()
@@ -87,20 +89,21 @@ class RSS(route.RouteApp):
             [
                 dateutil.parser.parse(entry.published).astimezone(UTC)
                 for entry in f.entries
-            ]
+            ],
         )
 
         sess.add(feed)
         await sess.commit()
 
         await bot.say(
-            event.channel, f"<#{event.channel}> 채널에서 `{url}`을 구독하기 시작했어요!"
+            event.channel,
+            f"<#{event.channel}> 채널에서 `{url}`을 구독하기 시작했어요!",
         )
 
     async def list(self, bot, event: Message, sess: AsyncSession):
         feeds = (
             await sess.scalars(
-                select(RSSFeedURL).where(RSSFeedURL.channel == event.channel)
+                select(RSSFeedURL).where(RSSFeedURL.channel == event.channel),
             )
         ).all()
 
@@ -109,12 +112,16 @@ class RSS(route.RouteApp):
 
             await bot.say(
                 event.channel,
-                f"<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!"
-                f"\n```\n{feed_list}\n```",
+                (
+                    f"<#{event.channel}> 채널에서 구독중인"
+                    " RSS 목록은 다음과 같아요!"
+                    f"\n```\n{feed_list}\n```"
+                ),
             )
         else:
             await bot.say(
-                event.channel, f"<#{event.channel}> 채널에서 구독중인 RSS가 없어요!"
+                event.channel,
+                f"<#{event.channel}> 채널에서 구독중인 RSS가 없어요!",
             )
 
     @argument("id")
@@ -122,7 +129,9 @@ class RSS(route.RouteApp):
         feed = await sess.get(RSSFeedURL, id)
 
         if feed is None:
-            await bot.say(event.channel, f"{id}번 RSS 구독 레코드는 존재하지 않아요!")
+            await bot.say(
+                event.channel, f"{id}번 RSS 구독 레코드는 존재하지 않아요!"
+            )
             return
 
         await bot.say(
@@ -146,13 +155,15 @@ async def crawl(bot, sess: AsyncSession):
                     data = await res.read()
             except aiohttp.client_exceptions.ClientConnectorError:
                 await bot.say(
-                    feed.channel, f"*Error*: `{feed.url}`에 접속할 수 없어요!"
+                    feed.channel,
+                    f"*Error*: `{feed.url}`에 접속할 수 없어요!",
                 )
                 continue
 
         if not data:
             await bot.say(
-                feed.channel, f"*Error*: `{feed.url}`에 접속해도 자료를 가져올 수 없어요!"
+                feed.channel,
+                f"*Error*: `{feed.url}`에 접속해도 자료를 가져올 수 없어요!",
             )
             continue
 
@@ -160,7 +171,8 @@ async def crawl(bot, sess: AsyncSession):
 
         if f.bozo != 0:
             await bot.say(
-                feed.channel, f"*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!"
+                feed.channel,
+                f"*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!",
             )
             continue
 
@@ -184,7 +196,7 @@ async def crawl(bot, sess: AsyncSession):
                             :100
                         ],
                         author_name=str(f.feed.title),
-                    )
+                    ),
                 )
                 last_updated = t
 

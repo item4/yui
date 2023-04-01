@@ -18,7 +18,8 @@ async def get_geometric_info_by_address(
         headers={"Accept-Language": "ko-KR"}
     ) as session:
         async with session.get(
-            "https://maps.googleapis.com/maps/api/geocode/json", params=params
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            params=params,
         ) as resp:
             if resp.status != 200:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")

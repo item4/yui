@@ -1,22 +1,73 @@
 [tool.black]
-line-length = 79
+line-length = 80
 
 
-[tool.isort]
-py_version = "311"
+[tool.ruff]
+line-length = 120
+target-version = 'py311'
+select = [
+    # Pyflakes
+    "E",
+    # pycodestyle
+    "F",
+    "W",
+    # isort
+    "I",
+    # pyupgrade
+    "UP",
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-comprehensions
+    "C4",
+    # flake8-pie
+    "PIE",
+    # flake8-raise
+    "RSE",
+    # flake8-return
+    "RET",
+    # flake8-simplify
+    "SIM",
+    # flake8-use-pathlib
+    "PTH",
+    # Pylint
+    "PLE",
+    "PLR0133",
+    "PLR0206",
+    "PLR0402",
+    "PLR1701",
+    "PLR1711",
+    "PLR1722",
+    "PLR5501",
+    "PLW",
+    # tryceratops
+    "TRY",
+    # Ruff-specific rules
+    "RUF",
+]
+ignore = [
+    # flake8-bandit
+    "S311",  # Standard pseudo-random generators are not suitable for cryptographic purposes
+    # tryceratops
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "TRY301",  # Abstract raise to an inner function
+]
+[tool.ruff.per-file-ignores]
+"tests/*" = [
+    # flake8-bandit
+    "S101",  # Use of assert detected
+]
 
-# isort에 의한 파일 파괴 방지
-atomic = true
-
-# zimports style과 가능한 유사하게
-force_single_line = true  # 한 줄 당 1개의 import 문
-order_by_type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
-case_sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
-
-# 프로젝트 감지 - tests와 yui 단락을 강제로 분리
-known_first_party = ["yui"]
-known_tests = ["tests"]
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTS", "FIRSTPARTY", "LOCALFOLDER"]
+[tool.ruff.isort]
+force-single-line = true  # 한 줄 당 1개의 import 문
+order-by-type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
+# case_sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
+known-first-party = ["yui"]
+# known_tests = ["tests"]
+# sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTS", "FIRSTPARTY", "LOCALFOLDER"]
 
 
 [tool.pytest.ini_options]
@@ -40,7 +91,7 @@ description = "YUI is Multi-purpose Slack Bot."
 authors = ["Kim, Jin Su <item4hun@gmail.com>"]
 license = "MIT"
 
-[tool.poetry.group.main.dependencies]
+[tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 Babel = "^2.11.0"
 SQLAlchemy = {version = "^2.0.8", extras = ["asyncio"]}
@@ -53,6 +104,7 @@ attrdict = "^2.0.1"
 attrs = "^22.2.0"
 click = "^8.1.3"
 cssselect = "^1.2.0"
+defusedxml = "^0.7.1"
 emcache = "^1.0.0"
 feedparser = "^6.0.10"
 lxml = "^4.9.2"
@@ -70,13 +122,12 @@ tzlocal = "^4.2"
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.4"
 black = "^23.3.0"
-flake8 = "^6.0.0"
-isort = "^5.12.0"
 mypy = "^1.1.1"
 pre-commit = "^3.2.1"
 pytest = "^7.2.2"
 pytest-asyncio = "^0.20.3"
 pytest-cov = "^4.0.0"
+ruff = "^0.0.260"
 time-machine = "^2.9.0"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.8.19"

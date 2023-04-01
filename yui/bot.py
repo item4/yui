@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import functools
 import importlib
 import logging
@@ -63,7 +64,7 @@ class APICallError(Exception):
         headers: dict[str, str],
         data: dict[str, str] | None,
     ) -> None:
-        super(APICallError, self).__init__()
+        super().__init__()
 
         self.method = method
         self.headers = headers
@@ -152,7 +153,7 @@ class Bot:
             if "bot" in func_params:
                 kw["bot"] = bot
 
-            @aiocron.crontab(c.spec, tz=UTC9, loop=loop, *c.args, **c.kwargs)
+            @aiocron.crontab(c.spec, *c.args, **c.kwargs, tz=UTC9, loop=loop)
             async def task():
                 log = logging.getLogger(repr(c.handler))
 
@@ -205,8 +206,8 @@ class Bot:
                     emcache.MemcachedHostAddress(
                         self.config.CACHE["HOST"],
                         self.config.CACHE["PORT"],
-                    )
-                ]
+                    ),
+                ],
             )
             self.cache = Cache(
                 self.mc,
@@ -266,10 +267,8 @@ class Bot:
         if (gap := now() - method_dt) < tier_min:
             await asyncio.sleep(delay=gap.microseconds / 1_000_000)
         self.method_last_call[method] = now()
-        try:
+        with contextlib.suppress(KeyError):
             q.pop(0)
-        except KeyError:
-            pass
 
     async def call(
         self,
@@ -292,7 +291,7 @@ class Bot:
                 payload = json.dumps(data)
                 headers["Content-Type"] = "application/json; charset=utf-8"
                 headers["Authorization"] = "Bearer {}".format(
-                    token or self.config.BOT_TOKEN
+                    token or self.config.BOT_TOKEN,
                 )
             else:
                 payload = aiohttp.FormData(data or {})
@@ -300,7 +299,7 @@ class Bot:
 
             try:
                 async with session.post(
-                    "https://slack.com/api/{}".format(method),
+                    f"https://slack.com/api/{method}",
                     data=payload,
                     headers=headers,
                 ) as response:
@@ -391,7 +390,7 @@ class Bot:
                 self.restart = False
                 await ws.close()
                 break
-            elif ws.closed:
+            if ws.closed:
                 await ws.close()
                 break
 
@@ -447,8 +446,8 @@ class Bot:
                 resp = await self.api.apps.connections.open(
                     token=self.config.APP_TOKEN
                 )
-            except Exception as e:
-                logger.exception(e)
+            except Exception:
+                logger.exception()
                 continue
             if not resp.body["ok"]:
                 if resp.body["error"] in {
@@ -493,7 +492,7 @@ class Bot:
                             return_when=asyncio.FIRST_COMPLETED,
                         )
 
-                raise BotReconnect()
+                raise BotReconnect
             except BotReconnect:
                 logger.info("BotReconnect raised. I will reconnect soon.")
                 continue

@@ -26,7 +26,7 @@ IMAGES = {
 
 async def write_code_review(bot, event: Message, *, seed=None):
     random.seed(seed)
-    image_url = random.choices(*zip(*IMAGES.items()))[0]
+    image_url = random.choices(*zip(*IMAGES.items(), strict=True))[0]
     random.seed(None)
     await bot.api.chat.postMessage(
         channel=event.channel,

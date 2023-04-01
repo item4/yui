@@ -7,9 +7,9 @@ from datetime import datetime
 import pytest
 
 from yui.apps.compute.calc import BadSyntax
+from yui.apps.compute.calc import calculate
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
-from yui.apps.compute.calc import calculate
 
 from ...util import FakeBot
 
@@ -104,13 +104,11 @@ def test_asyncfor():
     e.symbol_table["r"] = 0
     err = "You can not use `async for` loop syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 async for x in [1, 2, 3, 4]:
     r += x
 
-"""
-        )
+""")
     assert e.symbol_table["r"] == 0
 
 
@@ -118,13 +116,11 @@ def test_asyncfunctiondef():
     e = Evaluator()
     err = "Defining new coroutine via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 async def abc():
     pass
 
-"""
-        )
+""")
     assert "abc" not in e.symbol_table
 
 
@@ -133,13 +129,11 @@ def test_asyncwith():
     e.symbol_table["r"] = 0
     err = "You can not use `async with` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 async with x():
     r += 100
 
-"""
-        )
+""")
     assert e.symbol_table["r"] == 0
 
 
@@ -217,8 +211,8 @@ def test_binop():
 
 def test_boolop():
     e = Evaluator()
-    assert e.run("True and False") == (True and False)
-    assert e.run("True or False") == (True or False)
+    assert e.run("True and False") is (True and False)  # noqa: SIM222 SIM223
+    assert e.run("True or False") is (True or False)  # noqa: SIM222 SIM223
 
 
 def test_break():
@@ -253,27 +247,27 @@ def test_classdef():
     e = Evaluator()
     err = "Defining new class via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 class ABCD:
     pass
 
-"""
-        )
+""")
     assert "ABCD" not in e.symbol_table
 
 
 def test_compare():
     e = Evaluator()
-    assert e.run("1 == 2") == (1 == 2)
-    assert e.run("3 > 2") == (3 > 2)
-    assert e.run("3 >= 2") == (3 >= 2)
-    assert e.run('"A" in "America"') == ("A" in "America")
-    assert e.run('"E" not in "America"') == ("E" not in "America")
-    assert e.run("1 is 2") == (1 is 2)  # noqa
-    assert e.run("1 is not 2") == (1 is not 2)  # noqa
-    assert e.run("3 < 2") == (3 < 2)
-    assert e.run("3 <= 2") == (3 <= 2)
+    assert e.run("1 == 2") is (1 == 2)  # noqa: PLR0133
+    assert e.run("3 > 2") is (3 > 2)  # noqa: PLR0133
+    assert e.run("3 >= 2") is (3 >= 2)  # noqa: PLR0133
+    assert e.run('"A" in "America"') is ("A" in "America")  # noqa: PLR0133
+    assert e.run('"E" not in "America"') is (
+        "E" not in "America"  # noqa: PLR0133
+    )
+    assert e.run("1 is 2") is (1 is 2)  # noqa: F632 PLR0133
+    assert e.run("1 is not 2") is (1 is not 2)  # noqa: F632 PLR0133
+    assert e.run("3 < 2") is (3 < 2)  # noqa: PLR0133
+    assert e.run("3 <= 2") is (3 <= 2)  # noqa: PLR0133
 
 
 def test_continue():
@@ -353,13 +347,11 @@ def test_functiondef():
     e = Evaluator()
     err = "Defining new function via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 def abc():
     pass
 
-"""
-        )
+""")
     assert "abc" not in e.symbol_table
 
 
@@ -370,11 +362,10 @@ def test_for():
         if total > 10:
             continue
         total = total * 2
-    else:
+    else:  # noqa: PLW0120
         total = total + 10000
     e = Evaluator()
-    e.run(
-        """
+    e.run("""
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total = total + x
@@ -383,8 +374,7 @@ for x in [1, 2, 3, 4, 5, 6]:
     total = total * 2
 else:
     total = total + 10000
-"""
-    )
+""")
     assert e.symbol_table["total"] == total
 
     total2 = 0
@@ -396,8 +386,7 @@ else:
     else:
         total2 = total2 + 10000
 
-    e.run(
-        """
+    e.run("""
 total2 = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 + x
@@ -406,8 +395,7 @@ for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 * 2
 else:
     total2 = total2 + 10000
-"""
-    )
+""")
     assert e.symbol_table["total2"] == total2
 
 
@@ -437,18 +425,15 @@ def test_global():
 def test_if():
     e = Evaluator()
     e.symbol_table["a"] = 1
-    e.run(
-        """
+    e.run("""
 if a == 1:
     a = 2
     b = 3
-"""
-    )
+""")
     assert e.symbol_table["a"] == 2
     assert e.symbol_table["b"] == 3
 
-    e.run(
-        """
+    e.run("""
 if a == 1:
     a = 2
     b = 3
@@ -457,15 +442,13 @@ else:
     a = 3
     b = 4
     c = 5
-"""
-    )
+""")
     assert e.symbol_table["a"] == 3
     assert e.symbol_table["b"] == 4
     assert e.symbol_table["c"] == 5
     assert "z" not in e.symbol_table
 
-    e.run(
-        """
+    e.run("""
 if a == 1:
     a = 2
     b = 3
@@ -479,8 +462,7 @@ else:
     b = 4
     c = 5
     y = 7
-"""
-    )
+""")
     assert e.symbol_table["a"] == 3
     assert e.symbol_table["b"] == 4
     assert e.symbol_table["c"] == 5
@@ -651,14 +633,12 @@ def test_try():
     e = Evaluator()
     err = "You can not use `try` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 try:
     x = 1
 except:
     pass
-"""
-        )
+""")
     assert "x" not in e.symbol_table
 
 
@@ -685,11 +665,10 @@ def test_while():
         i += i
         if i % 10 == 0:
             i += 1
-    else:
+    else:  # noqa: PLW0120
         total = total + 10000
     e = Evaluator()
-    e.run(
-        """
+    e.run("""
 total = 0
 i = 1
 while total > 100:
@@ -699,8 +678,7 @@ while total > 100:
         i += 1
 else:
     total = total + 10000
-"""
-    )
+""")
     assert e.symbol_table["total"] == total
 
     r = 0
@@ -709,15 +687,13 @@ else:
     else:
         r += 10
 
-    e.run(
-        """
+    e.run("""
 r = 0
 while True:
     break
 else:
     r += 10
-"""
-    )
+""")
     assert e.symbol_table["r"] == 0
 
 
@@ -725,12 +701,10 @@ def test_with():
     e = Evaluator()
     err = "You can not use `with` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run(
-            """
+        e.run("""
 with some:
     x = 1
-"""
-        )
+""")
     assert "x" not in e.symbol_table
 
 
@@ -862,7 +836,7 @@ async def test_calculate_fine(
     assert expected_decimal_result == decimal_result
     assert expected_decimal_local.keys() == decimal_local.keys()
 
-    for key in decimal_local.keys():
+    for key in decimal_local:
         expected = expected_decimal_local[key]
         local = decimal_local[key]
 
@@ -876,7 +850,7 @@ async def test_calculate_fine(
     assert expected_num_result == num_result
     assert expected_num_local.keys() == num_local.keys()
 
-    for key in num_local.keys():
+    for key in num_local:
         expected = expected_num_local[key]
         local = num_local[key]
 

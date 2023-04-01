@@ -1,8 +1,8 @@
 from typing import AnyStr
 
 from lxml.etree import strip_elements
-from lxml.html import HTMLParser
 from lxml.html import fromstring
+from lxml.html import HTMLParser
 
 USELESS_TAGS = frozenset(
     {
@@ -11,7 +11,7 @@ USELESS_TAGS = frozenset(
         "style",
         "iframe",
         "noscript",
-    }
+    },
 )
 
 
@@ -27,7 +27,7 @@ def get_root(
     h = fromstring(html, parser=parser)
     if useless_tags is None:
         useless_tags = list(USELESS_TAGS)
-    strip_elements(h, with_tail=False, *useless_tags)
+    strip_elements(h, *useless_tags, with_tail=False)
     return h
 
 

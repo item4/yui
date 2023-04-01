@@ -16,9 +16,7 @@ LOGS = set[tuple[str, str]]
 
 @box.cron("0,10,20,30,40,50 * * * *")
 async def cleanup_channels(bot, sess: AsyncSession):
-    logger = logging.getLogger(
-        "yui.apps.manage.cleanup.tasks.cleanup_channels"
-    )
+    logger = logging.getLogger("yui.apps.manage.cleanup.tasks.cleanup_channels")
     try:
         channels = bot.config.CHANNELS["auto_cleanup_targets"]
     except KeyError:
@@ -55,6 +53,8 @@ async def get_old_history(bot, sess: AsyncSession):
         logger.info(f"Start collect message in channel: {channel}")
         collected = await collect_history_from_channel(bot, channel, sess)
         logger.info(
-            f"Finish collect message in channel: {channel}"
-            f", {collected} collected"
+            (
+                f"Finish collect message in channel: {channel},"
+                f" {collected} collected"
+            ),
         )

@@ -17,9 +17,8 @@ async def quit(bot, event: Message):
 
     if event.user == bot.config.USERS["owner"]:
         await bot.say(event.channel, "안녕히 주무세요!")
-        raise SystemExit()
-    else:
-        await bot.say(
-            event.channel,
-            "<@{}> 이 명령어는 아빠만 사용할 수 있어요!".format(event.user),
-        )
+        raise SystemExit
+    await bot.say(
+        event.channel,
+        f"<@{event.user}> 이 명령어는 아빠만 사용할 수 있어요!",
+    )

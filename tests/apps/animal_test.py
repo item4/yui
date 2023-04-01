@@ -13,9 +13,15 @@ from yui.apps.animal import get_cat_image_url
 from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
 
-cat_cooltime_re = re.compile(r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!")
-dog_cooltime_re = re.compile(r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!")
-fox_cooltime_re = re.compile(r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!")
+cat_cooltime_re = re.compile(
+    r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!"
+)
+dog_cooltime_re = re.compile(
+    r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!"
+)
+fox_cooltime_re = re.compile(
+    r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!"
+)
 
 
 CAT_API_URL = URL("https://thecatapi.com/api/images/get").with_query(
@@ -221,7 +227,10 @@ async def test_cat_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == ("냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!")
+    assert (
+        said.data["text"]
+        == "냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!"
+    )
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
@@ -256,7 +265,10 @@ async def test_cat_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "D1"
-    assert said.data["text"] == "냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!"
+    assert (
+        said.data["text"]
+        == "냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!"
+    )
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
@@ -317,7 +329,10 @@ async def test_dog_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
+    assert (
+        said.data["text"]
+        == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
+    )
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
@@ -352,7 +367,10 @@ async def test_dog_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "D1"
-    assert said.data["text"] == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
+    assert (
+        said.data["text"]
+        == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
+    )
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
@@ -427,7 +445,10 @@ async def test_fox_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
+    assert (
+        said.data["text"]
+        == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
+    )
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
@@ -462,7 +483,10 @@ async def test_fox_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "D1"
-    assert said.data["text"] == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
+    assert (
+        said.data["text"]
+        == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
+    )
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 

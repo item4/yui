@@ -42,8 +42,12 @@ def header(naver_client_id, naver_client_secret):
 
 @pytest.mark.asyncio
 async def test_detect_language(header):
-    assert await detect_language(header, "안녕하세요. 제 이름은 유이에요.") == "ko"
-    assert await detect_language(header, "こんにちは。私の名前はユです。") == "ja"
+    assert (
+        await detect_language(header, "안녕하세요. 제 이름은 유이에요.") == "ko"
+    )
+    assert (
+        await detect_language(header, "こんにちは。私の名前はユです。") == "ja"
+    )
     assert await detect_language(header, "Hi. My name is Yui.") == "en"
 
 
@@ -61,11 +65,16 @@ async def test_translate_command(bot):
 
     event = bot.create_message("C1", "U1")
 
-    await translate(bot, event, None, "ja", "안녕하세요. 제 이름은 YUI에요." * 100)
+    await translate(
+        bot, event, None, "ja", "안녕하세요. 제 이름은 YUI에요." * 100
+    )
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!"
+    assert (
+        said.data["text"]
+        == "500자 이상의 긴 문장의 번역은 다른 번역기를 사용해주세요!"
+    )
 
     await translate(bot, event, "php", "ja", "안녕하세요. 제 이름은 YUI에요.")
     said = bot.call_queue.pop(0)
@@ -95,20 +104,27 @@ async def test_translate_command(bot):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == "인도네시아어에서 태국어로의 번역은 현재 지원되지 않아요!"
+    assert (
+        said.data["text"]
+        == "인도네시아어에서 태국어로의 번역은 현재 지원되지 않아요!"
+    )
 
     await translate(bot, event, None, "ja", "안녕하세요. 제 이름은 YUI에요.")
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"] == (
-        "한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n일본어 번역: こんにちは。私の名前はYUIです。"
+    assert (
+        said.data["text"]
+        == "한국어 원문: 안녕하세요. 제 이름은 YUI에요.\n일본어 번역:"
+        " こんにちは。私の名前はYUIです。"
     )
 
     await translate(bot, event, "ko", "ko", "안녕하세요. 제 이름은 YUI에요.")
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
-    assert said.data["text"].lower() == (
-        "한국어 원문: 안녕하세요. 제 이름은 yui에요.\n영어 번역: hello, my name is yui."
+    assert (
+        said.data["text"].lower()
+        == "한국어 원문: 안녕하세요. 제 이름은 yui에요.\n영어 번역: hello, my"
+        " name is yui."
     )

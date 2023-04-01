@@ -5,8 +5,8 @@ import tomllib
 from types import SimpleNamespace
 from typing import Any
 
-from .utils.cast import CastError
 from .utils.cast import cast
+from .utils.cast import CastError
 
 REQUIRED = {
     "APPS",
@@ -94,24 +94,26 @@ class Config(SimpleNamespace):
         for key, value in configs.items():
             try:
                 config = getattr(self, key)
-            except AttributeError:
+            except AttributeError as e:
                 raise ConfigurationError(
                     f"Required config key was not defined: {key}"
-                )
+                ) from e
             try:
                 casted = cast(value, config)
                 if config != casted:
                     raise CastError
-            except CastError:
-                raise ConfigurationError(f"Wrong config value type: {key}")
+            except CastError as e:
+                raise ConfigurationError(
+                    f"Wrong config value type: {key}"
+                ) from e
 
         for key in single_channels:
             try:
                 value = self.CHANNELS[key]
-            except KeyError:
+            except KeyError as e:
                 raise ConfigurationError(
                     f"Required channel key was not defined: {key}"
-                )
+                ) from e
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
@@ -121,26 +123,27 @@ class Config(SimpleNamespace):
         for key in multiple_channels:
             try:
                 value = self.CHANNELS[key]
-            except KeyError:
+            except KeyError as e:
                 raise ConfigurationError(
                     f"Required channel key was not defined: {key}"
-                )
+                ) from e
             else:
                 if value == "*":
                     continue
-                elif isinstance(value, list):
-                    if all(isinstance(x, str) for x in value):
-                        continue
+                if isinstance(value, list) and all(
+                    isinstance(x, str) for x in value
+                ):
+                    continue
                 raise ConfigurationError(
                     f"Channel config has wrong type: {key}"
                 )
         for key in single_users:
             try:
                 value = self.USERS[key]
-            except KeyError:
+            except KeyError as e:
                 raise ConfigurationError(
                     f"Required user key was not defined: {key}"
-                )
+                ) from e
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
@@ -150,16 +153,17 @@ class Config(SimpleNamespace):
         for key in multiple_users:
             try:
                 value = self.USERS[key]
-            except KeyError:
+            except KeyError as e:
                 raise ConfigurationError(
                     f"Required user key was not defined: {key}"
-                )
+                ) from e
             else:
                 if value == "*":
                     continue
-                elif isinstance(value, list):
-                    if all(isinstance(x, str) for x in value):
-                        continue
+                if isinstance(value, list) and all(
+                    isinstance(x, str) for x in value
+                ):
+                    continue
                 raise ConfigurationError(f"User config has wrong type: {key}")
         return True
 

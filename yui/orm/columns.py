@@ -5,7 +5,7 @@ from sqlalchemy.types import DateTime as _DateTime
 from sqlalchemy.types import TypeDecorator
 
 KST = ZoneInfo("Asia/Seoul")
-UTC = datetime.timezone.utc
+UTC = datetime.UTC
 
 
 class DateTime(TypeDecorator):

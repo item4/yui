@@ -9,7 +9,7 @@ from typing import TypeVar
 T = TypeVar("T", int, float, Decimal)
 
 DATE_FORMAT_RE = re.compile(
-    r"(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?"
+    r"(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?",
 )
 
 
@@ -19,8 +19,7 @@ def str_to_date(
     """Helper to make date object from given string."""
 
     def callback(value: str) -> datetime.date:
-        match = DATE_FORMAT_RE.match(value)
-        if match:
+        if match := DATE_FORMAT_RE.match(value):
             try:
                 return datetime.date(
                     int(match.group(1)),
@@ -30,8 +29,7 @@ def str_to_date(
             except ValueError:
                 if fallback is None:
                     raise
-                else:
-                    return fallback()
+                return fallback()
         raise ValueError("Incorrect date string")
 
     return callback
@@ -41,8 +39,7 @@ def _extract(text: str) -> str:
     if text.startswith("<") and text.endswith(">"):
         if "|" in text:
             return text[1:-1].split("|", 1)[0]
-        else:
-            return text[1:-1]
+        return text[1:-1]
     return text
 
 
@@ -94,8 +91,7 @@ def enum_getitem(
         except KeyError as e:
             if fallback:
                 return cls[fallback]
-            else:
-                raise ValueError(e)
+            raise ValueError from e
 
     return callback
 
@@ -133,21 +129,16 @@ def choice(
 
     def callback(val):
         if case_insensitive:
-            if val.lower() in map(lambda x: x.lower(), items):
+            if val.lower() in (x.lower() for x in items):
                 return transform_case(val)
-            else:
-                if fallback is not None:
-                    return transform_case(fallback)
-                else:
-                    raise ValueError("given value is not in allowed cases")
-        else:
-            if val in items:
-                return transform_case(val)
-            else:
-                if fallback is not None:
-                    return transform_case(fallback)
-                else:
-                    raise ValueError("given value is not in allowed cases")
+            if fallback is not None:
+                return transform_case(fallback)
+            raise ValueError("given value is not in allowed cases")
+        if val in items:
+            return transform_case(val)
+        if fallback is not None:
+            return transform_case(fallback)
+        raise ValueError("given value is not in allowed cases")
 
     return callback
 
@@ -180,15 +171,12 @@ def value_range(
     def callback(val: T) -> T:
         if start <= val <= end:
             return val
-        elif start > val:
+        if start > val:
             if autofix:
                 return start
-            else:
-                raise ValueError("given value is too small.")
-        else:
-            if autofix:
-                return end
-            else:
-                raise ValueError("given value is too big.")
+            raise ValueError("given value is too small.")
+        if autofix:
+            return end
+        raise ValueError("given value is too big.")
 
     return callback

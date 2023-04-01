@@ -1,7 +1,6 @@
 import asyncio
 import functools
-import os.path
-import pathlib
+from pathlib import Path
 
 import click
 from alembic import command
@@ -29,7 +28,7 @@ def load_config(func):
             click.echo("--config option is required.", err=True)
             raise SystemExit(1)
 
-        config = load(pathlib.Path(filename))
+        config = load(Path(filename))
         kwargs["config"] = config
         return func(*args, **kwargs)
 
@@ -99,8 +98,8 @@ def revision(
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -147,8 +146,8 @@ def migrate(
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -170,8 +169,8 @@ def edit(config, revision: str):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -208,8 +207,8 @@ def merge(
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -233,8 +232,8 @@ def upgrade(config, revision: str, sql: bool, tag: str | None):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -258,8 +257,8 @@ def downgrade(config, revision: str, sql: bool, tag: str):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -281,8 +280,8 @@ def show(config, revision: str):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -305,8 +304,8 @@ def history(config, verbose: bool, rev_range: str | None):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -331,8 +330,8 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -354,8 +353,8 @@ def branches(config, verbose: bool):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -377,8 +376,8 @@ def current(config, verbose: bool):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
@@ -403,8 +402,8 @@ def stamp(config, revision: str, sql: bool, tag: str | None):
 
     async def main():
         bot = Bot(config)
-        directory = os.path.join("yui", "migrations")
-        c = Config(os.path.join(directory, "alembic.ini"))
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
         c.set_main_option("script_location", directory)
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base

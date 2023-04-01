@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
@@ -37,7 +38,7 @@ class FakeBot(Bot):
 
     def __init__(
         self,
-        config: Config = None,
+        config: Config | None = None,
         *,
         loop=None,
         cache=None,
@@ -47,16 +48,14 @@ class FakeBot(Bot):
         if config is None:
             config = Config(
                 **DEFAULT,
-                APP_TOKEN="TEST_APP_TOKEN",
-                BOT_TOKEN="TEST_BOT_TOKEN",
+                APP_TOKEN="TEST_APP_TOKEN",  # noqa: S106
+                BOT_TOKEN="TEST_BOT_TOKEN",  # noqa: S106
                 CHANNELS={},
                 USERS={},
             )
 
-        try:
+        with contextlib.suppress(RuntimeError):
             self.loop = loop or asyncio.get_running_loop()
-        except RuntimeError:
-            pass
 
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
@@ -85,6 +84,7 @@ class FakeBot(Bot):
         callback = self.responses.get(method)
         if callback:
             return callback(data)
+        return None
 
     @asynccontextmanager
     async def begin(self):

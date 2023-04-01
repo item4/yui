@@ -18,15 +18,13 @@ jobs:
           python-version: '3.11'
       # Install Dependencies
       - name: Install Checkers
-        run: pip install black flake8 isort
+        run: pip install black ruff
 
       # Lint
       - name: Check coding convention
-        run: flake8 yui tests
+        run: ruff check yui tests
       - name: Check missing autofix
         run: black --check .
-      - name: Check import convention
-        run: isort yui tests --check-only
 
   test-program:
     name: Test Program

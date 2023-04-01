@@ -53,7 +53,7 @@ async def body(
     except (SyntaxError, BadSyntax) as e:
         await bot.say(
             event.channel,
-            "입력해주신 수식에 문법 오류가 있어요! {}".format(e),
+            f"입력해주신 수식에 문법 오류가 있어요! {e}",
             thread_ts=ts,
         )
         return
@@ -74,7 +74,7 @@ async def body(
     except Exception as e:
         await bot.say(
             event.channel,
-            "예기치 않은 에러가 발생했어요! {}: {}".format(e.__class__.__name__, e),
+            f"예기치 않은 에러가 발생했어요! {e.__class__.__name__}: {e}",
             thread_ts=ts,
         )
         return
@@ -88,7 +88,7 @@ async def body(
                 if result_string.strip()
                 else "_Empty_"
             )
-            text = f"*Input*\n```\n{expr}\n```\n" f"*Output*\n{r}"
+            text = f"*Input*\n```\n{expr}\n```\n*Output*\n{r}"
             if ts is None:
                 ts = event.ts
         else:
@@ -100,9 +100,9 @@ async def body(
             thread_ts=ts,
         )
     elif local:
-        r = "\n".join(
-            "{} = {}".format(key, repr(value)) for key, value in local.items()
-        )[:1500].strip()
+        r = "\n".join(f"{key} = {repr(value)}" for key, value in local.items())[
+            :1500
+        ].strip()
         if ts is None:
             ts = event.ts
         await bot.say(
@@ -133,7 +133,7 @@ async def calc_decimal(bot, event: Message, raw: str):
         bot,
         event,
         raw,
-        "사용법: `{}= <계산할 수식>`".format(bot.config.PREFIX),
+        f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
         True,
     )
 
@@ -145,7 +145,7 @@ async def calc_decimal_on_change(bot, event: Message, raw: str):
             bot,
             event,
             raw,
-            "사용법: `{}= <계산할 수식>`".format(bot.config.PREFIX),
+            f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
             True,
         )
 
@@ -165,7 +165,7 @@ async def calc_num(bot, event: Message, raw: str):
         bot,
         event,
         raw,
-        "사용법: `{}== <계산할 수식>`".format(bot.config.PREFIX),
+        f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
         False,
     )
 
@@ -177,100 +177,100 @@ async def calc_num_on_change(bot, event: Message, raw: str):
             bot,
             event,
             raw,
-            "사용법: `{}== <계산할 수식>`".format(bot.config.PREFIX),
+            f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
             False,
         )
 
 
 class Decimal(decimal.Decimal):
     def __neg__(self, context=None):
-        return Decimal(super(Decimal, self).__neg__())
+        return Decimal(super().__neg__())
 
     def __pos__(self, context=None):
-        return Decimal(super(Decimal, self).__pos__())
+        return Decimal(super().__pos__())
 
     def __abs__(self, round=True, context=None):
-        return Decimal(super(Decimal, self).__abs__())
+        return Decimal(super().__abs__())
 
     def __add__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__add__(other))
+        return Decimal(super().__add__(other))
 
     def __radd__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__add__(self))
 
     def __sub__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__sub__(other))
+        return Decimal(super().__sub__(other))
 
     def __rsub__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__sub__(self))
 
     def __mul__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__mul__(other))
+        return Decimal(super().__mul__(other))
 
     def __rmul__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__mul__(self))
 
     def __truediv__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__truediv__(other))
+        return Decimal(super().__truediv__(other))
 
     def __rtruediv__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__truediv__(self))
 
     def __floordiv__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__floordiv__(other))
+        return Decimal(super().__floordiv__(other))
 
     def __rfloordiv__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__floordiv__(self))
 
     def __mod__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        return Decimal(super(Decimal, self).__mod__(other))
+        return Decimal(super().__mod__(other))
 
     def __rmod__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__mod__(self))
 
     def __divmod__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
-        quotient, remainder = super(Decimal, self).__divmod__(other)
+        quotient, remainder = super().__divmod__(other)
         return Decimal(quotient), Decimal(remainder)
 
     def __rdivmod__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         quotient, remainder = super(Decimal, other).__divmod__(self)
         return Decimal(quotient), Decimal(remainder)
 
     def __pow__(self, power, modulo=None, context=None):
-        if isinstance(power, (int, float)):
+        if isinstance(power, int | float):
             power = Decimal(power)
-        return Decimal(super(Decimal, self).__pow__(power, modulo))
+        return Decimal(super().__pow__(power, modulo))
 
     def __rpow__(self, other, context=None):
-        if isinstance(other, (int, float)):
+        if isinstance(other, int | float):
             other = Decimal(other)
         return Decimal(super(Decimal, other).__pow__(self))
 
@@ -489,7 +489,7 @@ class Evaluator:
             datetime.datetime: {
                 "today",
                 "now",
-                "utcnow" "fromtimestamp",
+                "utcnowfromtimestamp",
                 "utcfromtimestamp",
                 "fromordinal",
                 "combine",
@@ -564,7 +564,7 @@ class Evaluator:
             datetime.datetime: {
                 "year",
                 "month",
-                "day" "hour",
+                "dayhour",
                 "minute",
                 "second",
                 "microsecond",
@@ -842,7 +842,7 @@ class Evaluator:
                 raise TypeError(
                     "cannot unpack non-iterable {} object".format(
                         type(val).__name__,
-                    )
+                    ),
                 )
             for telem, tval in itertools.zip_longest(
                 node.elts,
@@ -886,7 +886,6 @@ class Evaluator:
         value = self._run(node.value)
         for tnode in node.targets:
             self.assign(tnode, value)
-        return
 
     def visit_asyncfor(self, node: _ast.AsyncFor):
         raise BadSyntax("You can not use `async for` loop syntax")
@@ -932,9 +931,7 @@ class Evaluator:
         elif target_cls == _ast.Subscript:
             sym = self._run(target.value)  # type: ignore
             xslice = self._run(target.slice)  # type: ignore
-            if not isinstance(
-                target.slice, (_ast.Tuple, _ast.Slice)  # type: ignore
-            ):
+            if not isinstance(target.slice, _ast.Tuple | _ast.Slice):  # type: ignore
                 sym[xslice] = BINOP_TABLE[op_cls](
                     sym[xslice],
                     value,
@@ -943,7 +940,6 @@ class Evaluator:
                 raise BadSyntax("This assign method is not allowed")
         else:
             raise BadSyntax("This assign method is not allowed")
-        return
 
     def visit_await(self, node: _ast.Await):
         raise BadSyntax("You can not await anything")
@@ -974,7 +970,7 @@ class Evaluator:
     def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
         out = True
-        for op, rnode in zip(node.ops, node.comparators):
+        for op, rnode in zip(node.ops, node.comparators, strict=True):
             rval = self._run(rnode)
             cmpop = COMPARE_TABLE.get(op.__class__)
             if cmpop:
@@ -985,7 +981,7 @@ class Evaluator:
         return out
 
     def visit_constant(self, node: _ast.Constant):  # value, kind
-        if self.decimal_mode and isinstance(node.value, (int, float)):
+        if self.decimal_mode and isinstance(node.value, int | float):
             return Decimal(str(node.value))
         return node.value
 
@@ -1005,18 +1001,18 @@ class Evaluator:
                 xslice = self._run(target.slice)  # type: ignore
                 if not isinstance(
                     target.slice,  # type: ignore
-                    (_ast.Tuple, _ast.Slice),
+                    _ast.Tuple | _ast.Slice,
                 ):
                     del sym[xslice]
                 else:
                     raise BadSyntax("This delete method is not allowed")
             else:
                 raise BadSyntax("This delete method is not allowed")
-        return
 
     def visit_dict(self, node: _ast.Dict):  # keys, values
         return {
-            self._run(k): self._run(v) for k, v in zip(node.keys, node.values)
+            self._run(k): self._run(v)
+            for k, v in zip(node.keys, node.values, strict=True)
         }
 
     def visit_dictcomp(self, node: _ast.DictComp):  # key, value, generators
@@ -1035,7 +1031,7 @@ class Evaluator:
                                 key=node.key,
                                 value=node.value,
                                 generators=node.generators[1:],
-                            )
+                            ),
                         )
                         result.update(r)
                     else:
@@ -1085,7 +1081,6 @@ class Evaluator:
         stmts = node.body if self._run(node.test) else node.orelse
         for stmt in stmts:
             self._run(stmt)
-        return
 
     def visit_ifexp(self, node: _ast.IfExp):  # test, body, orelse
         return self._run(node.body if self._run(node.test) else node.orelse)
@@ -1101,7 +1096,7 @@ class Evaluator:
 
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax(
-            "Defining new function via lambda" " syntax is not allowed"
+            "Defining new function via lambda syntax is not allowed"
         )
 
     def visit_list(self, node: _ast.List):  # elts, ctx
@@ -1122,7 +1117,7 @@ class Evaluator:
                             _ast.ListComp(
                                 elt=node.elt,
                                 generators=node.generators[1:],
-                            )
+                            ),
                         )
                         result += r
                     else:
@@ -1141,12 +1136,11 @@ class Evaluator:
         ctx = node.ctx.__class__
         if ctx == ast.Del:
             return node.id
-        else:
-            if node.id in self.symbol_table:
-                return self.symbol_table[node.id]
-            if node.id in self.global_symbol_table:
-                return self.global_symbol_table[node.id]
-            raise NameError()
+        if node.id in self.symbol_table:
+            return self.symbol_table[node.id]
+        if node.id in self.global_symbol_table:
+            return self.global_symbol_table[node.id]
+        raise NameError
 
     def visit_nonlocal(self, node: _ast.Nonlocal):
         raise BadSyntax("You can not use `nonlocal` syntax")
@@ -1178,7 +1172,7 @@ class Evaluator:
                             _ast.SetComp(
                                 elt=node.elt,
                                 generators=node.generators[1:],
-                            )
+                            ),
                         )
                         result |= r
                     else:
