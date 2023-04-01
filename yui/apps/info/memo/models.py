@@ -1,10 +1,10 @@
-from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer
-from sqlalchemy.types import String
-from sqlalchemy.types import Text
+from datetime import datetime
+
+from sqlalchemy.orm import Mapped
 
 from ....orm import Base
-from ....orm.columns import DateTime
+from ....orm.types import PrimaryKey
+from ....orm.types import Text
 
 
 class Memo(Base):
@@ -12,12 +12,12 @@ class Memo(Base):
 
     __tablename__ = "memo"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[PrimaryKey]
 
-    keyword = Column(String, nullable=False)
+    keyword: Mapped[str]
 
-    text = Column(Text, nullable=False)
+    text: Mapped[Text]
 
-    author = Column(String, nullable=False)
+    author: Mapped[str]
 
-    created_at = Column(DateTime(timezone=True))
+    created_at: Mapped[datetime]

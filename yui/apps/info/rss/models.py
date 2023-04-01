@@ -1,9 +1,9 @@
-from sqlalchemy.schema import Column
-from sqlalchemy.types import Integer
-from sqlalchemy.types import String
+from datetime import datetime
+
+from sqlalchemy.orm import Mapped
 
 from ....orm import Base
-from ....orm.columns import DateTime
+from ....orm.types import PrimaryKey
 
 
 class RSSFeedURL(Base):
@@ -11,10 +11,10 @@ class RSSFeedURL(Base):
 
     __tablename__ = "rss_feed_url"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[PrimaryKey]
 
-    url = Column(String, nullable=False)
+    url: Mapped[str]
 
-    channel = Column(String, nullable=False)
+    channel: Mapped[str]
 
-    updated_at = Column(DateTime(timezone=True))
+    updated_at: Mapped[datetime]

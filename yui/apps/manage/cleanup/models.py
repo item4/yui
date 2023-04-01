@@ -1,9 +1,8 @@
-from sqlalchemy.schema import Column
+from sqlalchemy.orm import Mapped
 from sqlalchemy.schema import UniqueConstraint
-from sqlalchemy.types import Integer
-from sqlalchemy.types import String
 
 from ....orm import Base
+from ....orm.types import PrimaryKey
 
 
 class EventLog(Base):
@@ -11,10 +10,10 @@ class EventLog(Base):
 
     __tablename__ = "event_log"
 
-    id = Column(Integer, primary_key=True)
+    id: Mapped[PrimaryKey]
 
-    ts = Column(String, nullable=False)
+    ts: Mapped[str]
 
-    channel = Column(String, nullable=False)
+    channel: Mapped[str]
 
     __table_args__ = (UniqueConstraint("ts", "channel"),)
