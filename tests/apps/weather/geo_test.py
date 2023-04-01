@@ -23,8 +23,7 @@ async def test_get_geometric_info_by_address(
     )
 
     assert full_address == expected_full_address
-    assert lat == expected_lat
-    assert lng == expected_lng
+    assert (lat, lng) == (expected_lat, expected_lng)
 
 
 @pytest.mark.asyncio
