@@ -12,7 +12,7 @@ APPS = [
     'yui.apps.hi',
 ]
 
-DATABASE_URL = 'postgresql://postgres:DEV_ONLY@localhost/yui_item4'
+DATABASE_URL = 'postgresql+psycopg://postgres:DEV_ONLY@localhost/yui_item4'
 DATABASE_ECHO = false
 
 NAVER_CLIENT_ID = 'FILL_ME'
