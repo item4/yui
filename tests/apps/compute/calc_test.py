@@ -211,8 +211,8 @@ def test_binop():
 
 def test_boolop():
     e = Evaluator()
-    assert e.run("True and False") is (True and False)  # noqa: SIM222 SIM223
-    assert e.run("True or False") is (True or False)  # noqa: SIM222 SIM223
+    assert e.run("True and False") is (True and False)  # noqa: SIM223
+    assert e.run("True or False") is (True or False)  # noqa: SIM222
 
 
 def test_break():
