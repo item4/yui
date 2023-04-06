@@ -93,17 +93,17 @@ plugins = [
 name = "yui"
 version = "0.0.0"
 description = "YUI is Multi-purpose Slack Bot."
-authors = ["Kim, Jin Su <item4hun@gmail.com>"]
+authors = ["Kim, Jin Su <item4@localhost.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-Babel = "^2.11.0"
-SQLAlchemy = {version = "^2.0.8", extras = ["asyncio"]}
+Babel = "^2.12.1"
+SQLAlchemy = {version = "^2.0.9", extras = ["asyncio"]}
 SQLAlchemy-Utils = "^0.40.0"
 aiocron = "^1.8"
 aiohttp = "^3.8.4"
-alembic = "^1.10.2"
+alembic = "^1.10.3"
 async-timeout = "^4.0.2"
 attrdict = "^2.0.1"
 attrs = "^22.2.0"
@@ -122,22 +122,22 @@ rapidfuzz = "^2.15.0"
 scipy = "^1.10.1"
 sympy = "^1.11.1"
 tossi = "^0.3.1"
-tzlocal = "^4.2"
+tzlocal = "^4.3"
 
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.4"
 black = "^23.3.0"
 mypy = "^1.1.1"
-pre-commit = "^3.2.1"
+pre-commit = "^3.2.2"
 pytest = "^7.2.2"
-pytest-asyncio = "^0.20.3"
+pytest-asyncio = "^0.21.0"
 pytest-cov = "^4.0.0"
-ruff = "^0.0.260"
+ruff = "^0.0.261"
 time-machine = "^2.9.0"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.8.19"
 types-six = "^1.16.21"
-types-tzlocal = "^4.2.2"
+types-tzlocal = "^4.3.0"
 yarl = "^1.8.2"
 
 [tool.poetry.scripts]
