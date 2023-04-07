@@ -262,7 +262,7 @@ async def get_anissia_weekly_json(
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://anissia.net/api/anime/schedule/{week}",
+                f"https://api.anissia.net/anime/schedule/{week}",
             ) as resp:
                 return await resp.json(loads=json.loads)
 
@@ -274,7 +274,7 @@ async def get_annissia_caption_list_json(
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                f"https://anissia.net/api/anime/caption/animeNo/{anime_no}",
+                f"https://api.anissia.net/anime/caption/animeNo/{anime_no}",
             ) as resp:
                 return await resp.json(loads=json.loads)
 
