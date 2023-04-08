@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 from time_machine import travel
 
 from yui.apps.date.utils import APIDoesNotSupport
@@ -11,7 +12,7 @@ from yui.utils.datetime import now
 from ...util import FakeBot
 
 
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True)
 async def _api_server_check():
     try:
         await get_holiday_names(now())
