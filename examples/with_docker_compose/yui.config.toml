@@ -1,4 +1,5 @@
-TOKEN = 'YOUR_TOKEN_HERE'
+APP_TOKEN = 'FILL_ME'
+BOT_TOKEN = 'FILL_ME'
 
 PREFIX = '.'
 
@@ -6,54 +7,11 @@ APPS = [
     # Core apps
     'yui.apps.core',
 
-    # Root apps
-    'yui.apps.animal',
+    # Add your apps
     'yui.apps.hi',
-    'yui.apps.ping',
-
-    # Compute apps
-    'yui.apps.compute.calc',
-    'yui.apps.compute.exchange',
-    'yui.apps.compute.gacha',
-    'yui.apps.compute.gamble',
-    'yui.apps.compute.select',
-    'yui.apps.compute.translate',
-
-    # Date apps
-    'yui.apps.date.age',
-    'yui.apps.date.day',
-    'yui.apps.date.dday',
-    'yui.apps.date.monday',
-    'yui.apps.date.weekend',
-    'yui.apps.date.work',
-
-    # Funny apps
-    'yui.apps.fun.answer',
-    'yui.apps.fun.code',
-    'yui.apps.fun.hassan',
-    'yui.apps.fun.relax',
-
-    # Info apps
-    'yui.apps.info.memo',
-    'yui.apps.info.about',
-    'yui.apps.info.help',
-    'yui.apps.info.packtpub.commands',
-    'yui.apps.info.packtpub.tasks',
-
-    # Search apps
-    'yui.apps.search.book',
-    'yui.apps.search.dic',
-    'yui.apps.search.dns',
-    'yui.apps.search.nyaa',
-    'yui.apps.search.ref',
-    'yui.apps.search.sub',
-    'yui.apps.search.subway',
-
-    # Weather apps
-    'yui.apps.weather.weather',
 ]
-
-DATABASE_URL = 'postgresql://postgres:MYSECRET@db/dbname'
+# MYSECRET is your postgres password (see compose.yaml)
+DATABASE_URL = 'postgresql://postgres+psycopg:MYSECRET@db/dbname'
 DATABASE_ECHO = false
 
 NAVER_CLIENT_ID = 'NAVER_CLIENT_ID'

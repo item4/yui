@@ -17,7 +17,7 @@ YUI는 다용도 Slack App 입니다.
 - Git
 - Slack App 설치 및 App Token/Bot Token
 - Python 3.11.3 혹은 그 이상 버전
-- PostgresSQL
+- PostgresSQL 15
 - memcached
 - Poetry_ 1.4.2 이상
 
@@ -209,34 +209,34 @@ YUI의 CLI는 대부분의 Alembic_ 명령어를 지원합니다.
 YUI with Docker-compose
 ------------------------
 
-YUI의 여러 요구사항을 docker-compose를 이용하면 간단히 관리할 수 있습니다.
+YUI의 여러 요구사항을 Docker Compose를 이용하면 간단히 관리할 수 있습니다.
 
-1. docker와 docker-compose를 설치해주세요.
-2. ``docker-compose.yml`` 파일을 만들어주세요. (내용은 예제 폴더를 참조)
+1. Docker를 설치해주세요.
+2. ``compose.yaml`` 파일을 만들어주세요. (내용은 예제 폴더를 참조)
 3. YUI가 사용하는 이미지를 다운로드 받아주세요.
 
    .. code-block:: bash
 
       $ docker pull item4/yui
-      $ docker pull postgres:14
+      $ docker pull postgres:15
 
 4. 먼저 DB 컨테이너만 실행하여 사용자와 database를 생성합니다.
 
    .. code-block:: bash
 
-      $ docker-compose up -d db
-      $ docker-compose exec db createuser [사용자명]
-      $ docker-compose exec db psql -U postgres
+      $ docker compose up -d db
+      $ docker compose exec db createuser [사용자명]
+      $ docker compose exec db psql -U postgres
       # on psql console
       \password [사용자명]
       create database [DB명]
 
 5. 위 단락에서 지정한 값을 config 파일에 반영합니다.
-6. YUI를 docker-compose로 실행합니다.
+6. YUI를 Docker Compose로 실행합니다.
 
    .. code-block:: bash
 
-      $ docker-compose up -d
+      $ docker compose up -d
 
 자세한 내용은 예제 폴더를 참조해주세요.
 
