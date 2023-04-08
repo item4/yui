@@ -69,8 +69,9 @@ async def work_start(bot):
     today = now()
     with contextlib.suppress(APIDoesNotSupport, ClientError):
         holidays = await get_holiday_names(today)
-        await say_raccoon_man(bot, holidays[0])
-        return
+        if holidays:
+            await say_raccoon_man(bot, holidays[0])
+            return
 
     if today.isoweekday() == 1:
         await say_start_monday(bot)
@@ -84,7 +85,8 @@ async def work_end(bot):
     hour = today.hour - 12
     with contextlib.suppress(APIDoesNotSupport, ClientError):
         holidays = await get_holiday_names(today)
-        await say_happy_cat(bot, holidays[0], hour)
-        return
+        if holidays:
+            await say_happy_cat(bot, holidays[0], hour)
+            return
 
     await say_knife(bot, hour)
