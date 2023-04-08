@@ -6,8 +6,8 @@ from datetime import datetime
 from typing import Any
 
 import aiohttp
-import aiohttp.client_exceptions
 import async_timeout
+from aiohttp.client_exceptions import ContentTypeError
 from attrs import define
 from attrs import field
 from rapidfuzz import fuzz
@@ -32,6 +32,10 @@ DOW = [
     "기타",
 ]
 DATE_FORMAT = "%Y년 %m월 %d일 %H시"
+
+OHLI_IS_NOT_AVAILABLE = (
+    "OHLI 서버 상태가 원활하지 않아요! 나중에 다시 시도해주세요!"
+)
 
 
 def remove_protocol(url: str) -> str:
@@ -226,7 +230,7 @@ async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
 
 
 async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
-    result: list[Caption] = []
+    results: list[Caption] = []
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -243,16 +247,16 @@ async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
             continue
         if int(math.ceil(episode_num)) == int(episode_num):
             episode_num = int(episode_num)
-        caption = Caption(
+        result = Caption(
             maker=row["n"],
             episode_num=str(episode_num),
             url=row["a"],
             released_at=row["d"],
         )
-        if caption.url:
-            result.append(caption)
+        if result.url:
+            results.append(result)
 
-    return result
+    return results
 
 
 async def get_anissia_weekly_json(
@@ -332,10 +336,10 @@ def select_one_anime_from_anissia(ohli_ani, anissia_week):
 async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
     try:
         ohli_all = await get_ohli_now_json(timeout)
-    except asyncio.TimeoutError:
+    except (ContentTypeError, asyncio.TimeoutError):
         await bot.say(
             event.channel,
-            "OHLI 서버가 너무 느려요! 자막 검색이 곤란하니 나중에 다시 시도해주세요!",
+            OHLI_IS_NOT_AVAILABLE,
         )
         return
 
@@ -348,15 +352,19 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
     for ohli_ani in matched:
         try:
             captions = await get_ohli_caption_list(ohli_ani["i"], timeout)
-        except asyncio.TimeoutError:
-            captions = []
+        except (ContentTypeError, asyncio.TimeoutError):
+            await bot.say(
+                event.channel,
+                OHLI_IS_NOT_AVAILABLE,
+            )
+            return
 
         try:
             anissia_week = await get_anissia_weekly_json(
                 ohli_ani["week"],
                 timeout,
             )
-        except asyncio.TimeoutError:
+        except (ContentTypeError, asyncio.TimeoutError):
             anissia_week = []
 
         use_anissia = False
@@ -372,7 +380,7 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
                         anissia_ani["animeNo"],
                         timeout,
                     )
-                except asyncio.TimeoutError:
+                except (ContentTypeError, asyncio.TimeoutError):
                     anissia_captions = []
                 use_anissia = False
                 for row in anissia_captions:
@@ -428,27 +436,33 @@ async def search_finished(
                     params={"query": title},
                 ) as resp:
                     data = await resp.json(loads=json.loads)
-    except asyncio.TimeoutError:
+    except (ContentTypeError, asyncio.TimeoutError):
         await bot.say(
             event.channel,
-            "OHLI 서버 상태가 좋지 않아요! 다음에 시도해주세요!",
+            OHLI_IS_NOT_AVAILABLE,
         )
         return
 
     if data:
-        await bot.say(
-            event.channel,
-            (
-                "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
-                f" {len(data):,}개의 애니가 검색되었어요!"
-            ),
-            thread_ts=event.event_ts,
-        )
+        coros = [
+            bot.say(
+                event.channel,
+                (
+                    "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
+                    f" {len(data):,}개의 애니가 검색되었어요!"
+                ),
+                thread_ts=event.event_ts,
+            )
+        ]
         for ani in data:
             try:
                 captions = await get_ohli_caption_list(ani["i"], timeout)
-            except asyncio.TimeoutError:
-                captions = []
+            except (ContentTypeError, asyncio.TimeoutError):
+                await bot.say(
+                    event.channel,
+                    OHLI_IS_NOT_AVAILABLE,
+                )
+                return
 
             attachments: list[Attachment] = [
                 Attachment(
@@ -463,11 +477,17 @@ async def search_finished(
             ]
             attachments.extend(make_caption_list(captions))
 
-            await bot.api.chat.postMessage(
-                channel=event.channel,
-                attachments=attachments,
-                thread_ts=event.event_ts,
+            coros.append(
+                bot.api.chat.postMessage(
+                    channel=event.channel,
+                    attachments=attachments,
+                    thread_ts=event.event_ts,
+                )
             )
+
+            for coro in coros:
+                await coro
+
     else:
         await bot.say(
             event.channel,
