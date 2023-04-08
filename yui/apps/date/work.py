@@ -5,6 +5,7 @@ from aiohttp.client_exceptions import ClientError
 from ...box import box
 from ...types.slack.attachment import Attachment
 from ...utils.datetime import now
+from .utils import APIDoesNotSupport
 from .utils import get_holiday_names
 
 box.assert_channel_required("general")
@@ -65,14 +66,13 @@ async def say_knife(bot, hour: int):
 
 @box.cron("0 9 * * 1-5")
 async def work_start(bot):
-    holidays = None
     today = now()
-    with contextlib.suppress(ClientError):
+    with contextlib.suppress(APIDoesNotSupport, ClientError):
         holidays = await get_holiday_names(today)
-
-    if holidays:
         await say_raccoon_man(bot, holidays[0])
-    elif today.isoweekday() == 1:
+        return
+
+    if today.isoweekday() == 1:
         await say_start_monday(bot)
     else:
         await say_start_work(bot)
@@ -80,13 +80,11 @@ async def work_start(bot):
 
 @box.cron("0 18,19 * * 1-5")
 async def work_end(bot):
-    holidays = None
     today = now()
     hour = today.hour - 12
-    with contextlib.suppress(ClientError):
+    with contextlib.suppress(APIDoesNotSupport, ClientError):
         holidays = await get_holiday_names(today)
-
-    if holidays:
         await say_happy_cat(bot, holidays[0], hour)
-    else:
-        await say_knife(bot, hour)
+        return
+
+    await say_knife(bot, hour)

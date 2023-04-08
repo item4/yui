@@ -1,20 +1,35 @@
 import pytest
 from time_machine import travel
 
+from yui.apps.date.utils import APIDoesNotSupport
+from yui.apps.date.utils import get_holiday_names
 from yui.apps.date.work import work_end
 from yui.apps.date.work import work_start
 from yui.utils.datetime import datetime
+from yui.utils.datetime import now
 
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio()
-@travel(datetime(2018, 10, 8, 9), tick=False)
-async def test_work_start_monday(bot_config):
+@pytest.fixture(autouse=True)
+async def _api_server_check():
+    try:
+        await get_holiday_names(now())
+    except APIDoesNotSupport:
+        pytest.skip("API server is not available")
+
+
+@pytest.fixture()
+def bot(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot = FakeBot(bot_config)
     bot.add_channel("C1", "general")
+    return bot
 
+
+@pytest.mark.asyncio()
+@travel(datetime(2018, 10, 8, 9), tick=False)
+async def test_work_start_monday(bot):
     await work_start(bot)
 
     said = bot.call_queue.pop()
@@ -26,11 +41,7 @@ async def test_work_start_monday(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 10, 9), tick=False)
-async def test_work_start_normal(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_start_normal(bot):
     await work_start(bot)
 
     said = bot.call_queue.pop()
@@ -45,11 +56,7 @@ async def test_work_start_normal(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 9), tick=False)
-async def test_work_start_holiday(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_start_holiday(bot):
     await work_start(bot)
 
     said = bot.call_queue.pop()
@@ -64,11 +71,7 @@ async def test_work_start_holiday(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 18), tick=False)
-async def test_work_end_18_normal(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_end_18_normal(bot):
     await work_end(bot)
 
     said = bot.call_queue.pop()
@@ -83,11 +86,7 @@ async def test_work_end_18_normal(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 18), tick=False)
-async def test_work_end_18_holiday(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_end_18_holiday(bot):
     await work_end(bot)
 
     said = bot.call_queue.pop()
@@ -102,11 +101,7 @@ async def test_work_end_18_holiday(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 19), tick=False)
-async def test_work_end_19_normal(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_end_19_normal(bot):
     await work_end(bot)
 
     said = bot.call_queue.pop()
@@ -121,11 +116,7 @@ async def test_work_end_19_normal(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 9, 19), tick=False)
-async def test_work_end_19_holiday(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-
+async def test_work_end_19_holiday(bot):
     await work_end(bot)
 
     said = bot.call_queue.pop()
