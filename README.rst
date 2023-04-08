@@ -206,7 +206,7 @@ YUI의 CLI는 대부분의 Alembic_ 명령어를 지원합니다.
 .. _Alembic: http://alembic.zzzcomputing.com/en/latest/
 
 
-YUI with Docker-compose
+YUI with Docker Compose
 ------------------------
 
 YUI의 여러 요구사항을 Docker Compose를 이용하면 간단히 관리할 수 있습니다.
@@ -217,8 +217,7 @@ YUI의 여러 요구사항을 Docker Compose를 이용하면 간단히 관리할
 
    .. code-block:: bash
 
-      $ docker pull item4/yui
-      $ docker pull postgres:15
+      $ docker compose pull
 
 4. 먼저 DB 컨테이너만 실행하여 사용자와 database를 생성합니다.
 
