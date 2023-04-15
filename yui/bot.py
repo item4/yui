@@ -21,9 +21,9 @@ import aiocron
 import aiohttp
 import emcache
 from aiohttp.client_exceptions import ClientError
-from aiohttp.client_exceptions import ContentTypeError
 from aiohttp.client_ws import ClientWebSocketResponse
 from dateutil.tz import tzoffset
+from emcache.client_errors import CommandError
 
 from .api import SlackAPI
 from .box import Box
@@ -32,6 +32,7 @@ from .box.tasks import CronTask
 from .cache import Cache
 from .config import Config
 from .event import create_event
+from .log import GetLoggerMixin
 from .orm import Base
 from .orm import create_database_engine
 from .orm import sessionmaker
@@ -71,7 +72,7 @@ class APICallError(Exception):
         self.data = data
 
 
-class Bot:
+class Bot(GetLoggerMixin):
     """Yui."""
 
     api: SlackAPI
@@ -89,7 +90,7 @@ class Bot:
 
         logging.config.dictConfig(config.LOGGING)
 
-        logger = logging.getLogger(f"{__name__}.Bot.__init__")
+        logger = self.get_logger()
 
         logger.info("start")
 
@@ -142,7 +143,7 @@ class Bot:
     async def register_tasks(self):
         """Register cronjob to bot from box."""
 
-        logger = logging.getLogger(f"{__name__}.Bot.register_tasks")
+        logger = self.get_logger("register_tasks")
         loop = asyncio.get_running_loop()
 
         def register(bot, c: CronTask):
@@ -194,11 +195,13 @@ class Bot:
     async def run(self):
         """Run"""
 
-        logger = logging.getLogger(f"{__name__}.Bot.run")
+        logger = self.get_logger("run")
 
         if self.config.REGISTER_CRONTAB:
             logger.info("register crontab")
             await self.register_tasks()
+
+        memcache_retries = 0
 
         while True:
             self.mc = await emcache.create_client(
@@ -213,6 +216,24 @@ class Bot:
                 self.mc,
                 self.config.CACHE.get("PREFIX", "YUI_"),
             )
+            try:
+                await self.cache.touch("test", 1)
+            except (
+                RuntimeError,
+                asyncio.TimeoutError,
+                asyncio.CancelledError,
+                CommandError,
+            ) as e:
+                logger.exception("fail to connect to memcache")
+                memcache_retries += 1
+                if memcache_retries < 3:
+                    await self.cache.close()
+                    await asyncio.sleep(1)
+                    continue
+                logger.fatal("can not connect to memcache. stop to run")
+                raise SystemExit from e
+
+            memcache_retries = 0
 
             tasks = [
                 asyncio.create_task(self.connect()),
@@ -222,6 +243,8 @@ class Bot:
                 tasks,
                 return_when=asyncio.FIRST_EXCEPTION,
             )
+
+            await self.cache.close()
 
     async def run_in_other_process(
         self,
@@ -282,31 +305,28 @@ class Bot:
         """Call API methods."""
         if throttle_check:
             await self.throttle(method)
-        async with aiohttp.ClientSession() as session:
-            headers = {
-                "Content-Type": "application/x-www-form-urlencoded",
-            }
-            payload: str | aiohttp.FormData
-            if json_mode:
-                payload = json.dumps(data)
-                headers["Content-Type"] = "application/json; charset=utf-8"
-                headers["Authorization"] = "Bearer {}".format(
-                    token or self.config.BOT_TOKEN,
-                )
-            else:
-                payload = aiohttp.FormData(data or {})
-                payload.add_field("token", token or self.config.BOT_TOKEN)
 
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        payload: str | aiohttp.FormData
+        if json_mode:
+            payload = json.dumps(data)
+            headers["Content-Type"] = "application/json; charset=utf-8"
+            headers["Authorization"] = "Bearer {}".format(
+                token or self.config.BOT_TOKEN,
+            )
+        else:
+            payload = aiohttp.FormData(data or {})
+            payload.add_field("token", token or self.config.BOT_TOKEN)
+
+        async with aiohttp.ClientSession(headers=headers) as session:
             try:
                 async with session.post(
                     f"https://slack.com/api/{method}",
                     data=payload,
-                    headers=headers,
                 ) as response:
-                    try:
-                        result = await response.json(loads=json.loads)
-                    except ContentTypeError:
-                        result = await response.text()
+                    result = await response.json(loads=json.loads)
                     return APIResponse(
                         body=result,
                         status=response.status,
@@ -339,7 +359,7 @@ class Bot:
     async def process(self):
         """Process messages."""
 
-        logger = logging.getLogger(f"{__name__}.Bot.process")
+        logger = self.get_logger("process")
 
         async def handle(handler, event):
             try:
@@ -383,7 +403,7 @@ class Bot:
             )
 
     async def receive(self, ws: ClientWebSocketResponse):
-        logger = logging.getLogger(f"{__name__}.Bot.receive")
+        logger = self.get_logger("receive")
 
         while not ws.closed:
             if self.restart:
@@ -435,7 +455,7 @@ class Bot:
 
     async def connect(self):
         """Connect Slack RTM."""
-        logger = logging.getLogger(f"{__name__}.Bot.connect")
+        logger = self.get_logger("connect")
 
         while True:
             await self.queue.put(create_event("yui_system_start", {}))
