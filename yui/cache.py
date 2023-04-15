@@ -60,10 +60,6 @@ class Cache:
         key = self._key(key)
         await self.mc.delete(key)
 
-    async def touch(self, key: str | bytes, exptime: int):
-        key = self._key(key)
-        await self.mc.touch(key, exptime=exptime)
-
     async def flush_all(self):
         await self.mc.flush_all(
             self.mc._cluster.nodes[0].memcached_host_address

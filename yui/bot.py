@@ -217,7 +217,7 @@ class Bot(GetLoggerMixin):
                 self.config.CACHE.get("PREFIX", "YUI_"),
             )
             try:
-                await self.cache.touch("test", 1)
+                await self.cache.set("__test__", 1)
             except (
                 RuntimeError,
                 asyncio.TimeoutError,
@@ -228,7 +228,7 @@ class Bot(GetLoggerMixin):
                 memcache_retries += 1
                 if memcache_retries < 3:
                     await self.cache.close()
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(memcache_retries * 5)
                     continue
                 logger.fatal("can not connect to memcache. stop to run")
                 raise SystemExit from e
