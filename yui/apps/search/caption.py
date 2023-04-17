@@ -4,6 +4,9 @@ import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 from typing import Any
+from typing import Generic
+from typing import TypedDict
+from typing import TypeVar
 
 import aiohttp
 import async_timeout
@@ -19,6 +22,8 @@ from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.fuzz import match
+
+T = TypeVar("T")
 
 MIN_RATIO = 60
 DOW = [
@@ -36,6 +41,30 @@ DATE_FORMAT = "%Y년 %m월 %d일 %H시"
 OHLI_IS_NOT_AVAILABLE = (
     "OHLI 서버 상태가 원활하지 않아요! 나중에 다시 시도해주세요!"
 )
+
+
+class AnissiaAnimeInfo(TypedDict):
+    animeNo: int
+    status: str
+    time: str
+    subject: str
+    genres: str
+    captionCount: int
+    startDate: str
+    endDate: str
+    website: str
+
+
+class AnissiaCaptionInfo(TypedDict):
+    episode: str
+    updDt: str
+    website: str
+    name: str
+
+
+class AnissiaResponse(TypedDict, Generic[T]):
+    code: str
+    data: list[T]
 
 
 def remove_protocol(url: str) -> str:
@@ -262,7 +291,7 @@ async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
 async def get_anissia_weekly_json(
     week: int,
     timeout: float,
-) -> list[dict[str, Any]]:
+) -> AnissiaResponse[AnissiaAnimeInfo]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -274,7 +303,7 @@ async def get_anissia_weekly_json(
 async def get_annissia_caption_list_json(
     anime_no: int,
     timeout: float,
-) -> list[dict]:
+) -> AnissiaResponse[AnissiaCaptionInfo]:
     async with async_timeout.timeout(timeout):
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -360,26 +389,30 @@ async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
             return
 
         try:
-            anissia_week = await get_anissia_weekly_json(
+            anissia_week_response = await get_anissia_weekly_json(
                 ohli_ani["week"],
                 timeout,
             )
+            anissia_animes = anissia_week_response["data"]
         except (ContentTypeError, asyncio.TimeoutError):
-            anissia_week = []
+            anissia_animes = []
 
         use_anissia = False
         anissia_ani = None
-        if anissia_week:
+        if anissia_animes:
             anissia_ani = select_one_anime_from_anissia(
                 ohli_ani,
-                anissia_week,
+                anissia_animes,
             )
             if anissia_ani["ratio"] > MIN_RATIO:
                 try:
-                    anissia_captions = await get_annissia_caption_list_json(
-                        anissia_ani["animeNo"],
-                        timeout,
+                    anissia_caption_response = (
+                        await get_annissia_caption_list_json(
+                            anissia_ani["animeNo"],
+                            timeout,
+                        )
                     )
+                    anissia_captions = anissia_caption_response["data"]
                 except (ContentTypeError, asyncio.TimeoutError):
                     anissia_captions = []
                 use_anissia = False
