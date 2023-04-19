@@ -71,9 +71,10 @@ force-single-line = true  # 한 줄 당 1개의 import 문
 order-by-type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
 # case_sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
 known-first-party = ["yui"]
-# known_tests = ["tests"]
-# sections = ["FUTURE", "STDLIB", "THIRDPARTY", "TESTS", "FIRSTPARTY", "LOCALFOLDER"]
+section-order = ["future", "standard-library", "third-party", "tests", "first-party", "local-folder"]
 
+[tool.ruff.isort.sections]
+tests = ["tests"]
 
 [tool.pytest.ini_options]
 asyncio_mode = 'auto'
@@ -132,7 +133,7 @@ pre-commit = "^3.2.2"
 pytest = "^7.3.1"
 pytest-asyncio = "^0.21.0"
 pytest-cov = "^4.0.0"
-ruff = "^0.0.261"
+ruff = "^0.0.262"
 time-machine = "^2.9.0"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.8.19"

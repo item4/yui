@@ -4,6 +4,7 @@ import pytest
 from yarl import URL
 
 from tests.util import FakeBot
+
 from yui.apps.weather.commands import weather
 
 # AQI 이외의 데이터는 모두 Optional한 데이터이므로 정규식 매치에서 제외함.
