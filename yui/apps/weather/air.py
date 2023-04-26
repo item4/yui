@@ -31,6 +31,10 @@ FIELDS: dict[str, tuple[str, float | None]] = {
 
 @define
 class AirPollutionRecord:
+    # debug data
+    url: str
+
+    # air pollution data
     aqi: int  # 1~5까지의 AQI Index
     co: float | None = None  # 일산화 탄소 (Carbon Monoxide)
     no: float | None = None  # 일산화 질소
@@ -42,7 +46,11 @@ class AirPollutionRecord:
     nh3: float | None = None  # 암모니아
 
     def to_display(
-        self, temperature: float, pressure: float | None = None
+        self,
+        temperature: float,
+        pressure: float | None = None,
+        *,
+        debug: bool = False,
     ) -> str:
         results = []
         for key, v in FIELDS.items():
@@ -63,7 +71,10 @@ class AirPollutionRecord:
             )
             results.append(f"* {name}: {text}")
 
-        return "\n".join(results)
+        result = "\n".join(results)
+        if debug:  # pragma: no cover
+            result += f"\n\n* URL: {self.url}"
+        return result
 
 
 def get_emoji_by_aqi(aqi: int) -> str:
@@ -114,6 +125,7 @@ async def get_air_pollution_by_coordinate(
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
             data = await resp.json(loads=json.loads)
+            url = resp.url.update_query(appid="<REDACTED>").human_repr()
 
     if not data["list"]:
         raise WeatherResponseError("No air pollution data")
@@ -131,4 +143,5 @@ async def get_air_pollution_by_coordinate(
         pm25=components.get("pm2_5"),
         pm10=components.get("pm10"),
         nh3=components.get("nh3"),
+        url=url,
     )

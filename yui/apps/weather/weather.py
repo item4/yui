@@ -46,6 +46,9 @@ class WeatherRecord:
     # UTC 기준에서 얼마나 시간 차가 나는지 초 단위로 제공됨
     timezone: int
 
+    # debug data
+    url: str
+
 
 async def get_weather_by_coordinate(
     lat: float,
@@ -68,6 +71,7 @@ async def get_weather_by_coordinate(
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
             data = await resp.json(loads=json.loads)
+            url = resp.url.update_query(appid="<REDACTED>").human_repr()
 
     is_rain = data.get("rain") is not None
     is_snow = data.get("snow") is not None
@@ -96,4 +100,5 @@ async def get_weather_by_coordinate(
         description=data["weather"][0]["description"],
         timestamp=data["dt"],
         timezone=data["timezone"],
+        url=url,
     )

@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import asyncio
 from hashlib import md5
+from typing import TYPE_CHECKING
 
 from ...box import box
 from ...command import argument
-from ...event import Message
+from ...command import option
 from ...utils.datetime import fromtimestampoffset
-from .air import AirPollutionRecord
 from .air import get_air_pollution_by_coordinate
 from .air import get_aqi_description
 from .air import get_emoji_by_aqi
@@ -15,18 +17,25 @@ from .sun import get_emoji_by_sun
 from .temperature import clothes_by_temperature
 from .utils import shorten
 from .weather import get_weather_by_coordinate
-from .weather import WeatherRecord
 from .wind import degree_to_direction
+
+if TYPE_CHECKING:
+    from ...event import Message
+    from .air import AirPollutionRecord  # noqa: F401
+    from .weather import WeatherRecord  # noqa: F401
+
 
 box.assert_config_required("GOOGLE_API_KEY", str)
 box.assert_config_required("OPENWEATHER_API_KEY", str)
 
 
 @box.command("날씨", ["aws", "weather", "aqi", "공기", "먼지", "미세먼지"])
+@option("--debug", default=False, is_flag=True)
 @argument("address", nargs=-1, concat=True)
 async def weather(
     bot,
     event: Message,
+    debug: bool,
     address: str,
 ):
     """
@@ -74,14 +83,16 @@ async def weather(
             return
 
     try:
-        result: tuple[WeatherRecord, AirPollutionRecord] = await asyncio.gather(
+        result = await asyncio.gather(
             get_weather_by_coordinate(lat, lng, bot.config.OPENWEATHER_API_KEY),
             get_air_pollution_by_coordinate(
                 lat, lng, bot.config.OPENWEATHER_API_KEY
             ),
         )
 
-        weather_result, air_pollution_result = result
+        weather_result, air_pollution_result = (
+            result
+        )  # type: WeatherRecord, AirPollutionRecord
     except EXCEPTIONS:
         await bot.say(event.channel, "날씨 API 접근 중 에러가 발생했어요!")
         return
@@ -155,6 +166,9 @@ async def weather(
     recommend = clothes_by_temperature(weather_result.current_temp)
     weather_text += f"\n\n추천 의상: {recommend}"
 
+    if debug:  # pragma: no cover
+        weather_text += f"\n\n* URL: {weather_result.url}"
+
     await bot.api.chat.postMessage(
         channel=event.channel,
         text=weather_text,
@@ -169,6 +183,7 @@ async def weather(
         + air_pollution_result.to_display(
             weather_result.current_temp,
             weather_result.pressure,
+            debug=debug,
         )
     )
 
