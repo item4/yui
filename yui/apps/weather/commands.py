@@ -35,8 +35,8 @@ box.assert_config_required("OPENWEATHER_API_KEY", str)
 async def weather(
     bot,
     event: Message,
-    debug: bool,
     address: str,
+    debug: bool = False,
 ):
     """
     지역의 현재 기상상태를 조회합니다.
