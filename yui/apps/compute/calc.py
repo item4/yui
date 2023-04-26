@@ -13,6 +13,8 @@ import statistics
 from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any
+from typing import Self
+from typing import TypeAlias
 
 from async_timeout import timeout
 from more_itertools import numeric_range
@@ -23,6 +25,7 @@ from ...event import Message
 from ...utils import json
 
 TIMEOUT = 1
+MAYBE_DECIMAL: TypeAlias = int | float | decimal.Decimal
 
 
 class PLACEHOLDER:
@@ -264,9 +267,15 @@ class Decimal(decimal.Decimal):
         quotient, remainder = super(Decimal, other).__divmod__(self)
         return Decimal(quotient), Decimal(remainder)
 
-    def __pow__(self, power, modulo=None, context=None):
+    def __pow__(
+        self,
+        power: Self | MAYBE_DECIMAL,
+        modulo: Self | MAYBE_DECIMAL | None = None,
+    ):
         if isinstance(power, int | float):
             power = Decimal(power)
+        if isinstance(modulo, int | float):
+            modulo = Decimal(modulo)
         return Decimal(super().__pow__(power, modulo))
 
     def __rpow__(self, other, context=None):
