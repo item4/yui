@@ -103,7 +103,7 @@ async def body(
             thread_ts=ts,
         )
     elif local:
-        r = "\n".join(f"{key} = {repr(value)}" for key, value in local.items())[
+        r = "\n".join(f"{key} = {value!r}" for key, value in local.items())[
             :1500
         ].strip()
         if ts is None:

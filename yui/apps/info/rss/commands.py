@@ -186,8 +186,8 @@ async def crawl(bot, sess: AsyncSession):
                     Attachment(
                         fallback=(
                             "RSS Feed: "
-                            f"{str(f.feed.title)} - "
-                            f"{str(entry.title)} - "
+                            f"{f.feed.title!s} - "
+                            f"{entry.title!s} - "
                             f"{entry.links[0].href}"
                         ),
                         title=str(entry.title),
