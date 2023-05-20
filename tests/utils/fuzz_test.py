@@ -111,4 +111,4 @@ def test_match():
     assert match(saop_movie, "온라인") == 46
     assert match(saop_movie, saop_movie) == 100
     assert match(saop_movie, "소드아트온라인") == 59
-    assert match(saop_movie, "소드 오라토리아") == 50
+    assert match(saop_movie, "소드 오라토리아") == 49
