@@ -36,7 +36,7 @@ def test_cast(bot):
     assert cast(dict[str, str], {1: 1, 2: 2.2}) == {"1": "1", "2": "2.2"}
     assert cast(list, ("kirito", "asuna", 16.5)) == ["kirito", "asuna", 16.5]
     assert cast(tuple, ["1", 2, 3.0]) == ("1", 2, 3.0)
-    assert cast(set, {"1", 2, 3.0, 2}) == {"1", 2, 3.0}
+    assert cast(set, ["1", 2, 3.0, 2]) == {"1", 2, 3.0}
     assert cast(dict, {"1": "kirito", 2: "asuna", 3: 16.5}) == {
         "1": "kirito",
         2: "asuna",
