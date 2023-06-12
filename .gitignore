@@ -182,6 +182,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 .dmypy.json
+.ruff_cache
 
 # yui only
 *.iml
