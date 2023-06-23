@@ -57,9 +57,10 @@ SERVER_LIST_V6: list[DNSServer] = [
 
 async def is_ipv6_enabled() -> bool:
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://ipv6.icanhazip.com"):
-                return True
+        async with aiohttp.ClientSession() as session, session.get(
+            "https://ipv6.icanhazip.com"
+        ):
+            return True
     except:  # noqa
         return False
 
@@ -75,34 +76,32 @@ async def query_custom(domain: str, ip: str) -> Result:
 
 
 async def query(domain: str, server: DNSServer) -> Result:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://checkdnskr.appspot.com/api/lookup",
-            params={"domain": domain, "ip": server.ip},
-        ) as resp:
-            async with resp:
-                if resp.status == 200:
-                    try:
-                        data = await resp.json(loads=json.loads)
-                        data["error"] = False
-                    except ContentTypeError:
-                        data = {
-                            "A": "",
-                            "error": True,
-                        }
-                    return Result(
-                        server_name=server.name,
-                        server_ip=server.ip,
-                        a_record=data["A"],
-                        error=data["error"],
-                    )
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://checkdnskr.appspot.com/api/lookup",
+        params={"domain": domain, "ip": server.ip},
+    ) as resp, resp:
+        if resp.status == 200:
+            try:
+                data = await resp.json(loads=json.loads)
+                data["error"] = False
+            except ContentTypeError:
+                data = {
+                    "A": "",
+                    "error": True,
+                }
+            return Result(
+                server_name=server.name,
+                server_ip=server.ip,
+                a_record=data["A"],
+                error=data["error"],
+            )
 
-                return Result(
-                    server_name=server.name,
-                    server_ip=server.ip,
-                    a_record="",
-                    error=False,
-                )
+        return Result(
+            server_name=server.name,
+            server_ip=server.ip,
+            a_record="",
+            error=False,
+        )
 
 
 @box.command("dns")

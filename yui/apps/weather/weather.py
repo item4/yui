@@ -62,16 +62,15 @@ async def get_weather_by_coordinate(
         "units": "metric",
     }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.openweathermap.org/data/2.5/weather",
-            params=params,
-        ) as resp:
-            if resp.status != 200:
-                raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://api.openweathermap.org/data/2.5/weather",
+        params=params,
+    ) as resp:
+        if resp.status != 200:
+            raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
-            data = await resp.json(loads=json.loads)
-            url = resp.url.update_query(appid="<REDACTED>").human_repr()
+        data = await resp.json(loads=json.loads)
+        url = resp.url.update_query(appid="<REDACTED>").human_repr()
 
     is_rain = data.get("rain") is not None
     is_snow = data.get("snow") is not None

@@ -117,10 +117,11 @@ AVAILABLE_COMBINATIONS |= {(t, s) for s, t in AVAILABLE_COMBINATIONS}
 
 async def detect_language(headers: dict[str, str], text: str) -> str:
     url = "https://openapi.naver.com/v1/papago/detectLangs"
-    async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.post(url, data={"query": text}) as resp:
-            result: dict[str, Any] = await resp.json(loads=json.loads)
-            return result["langCode"]
+    async with aiohttp.ClientSession(headers=headers) as session, session.post(
+        url, data={"query": text}
+    ) as resp:
+        result: dict[str, Any] = await resp.json(loads=json.loads)
+        return result["langCode"]
 
 
 async def _translate(
@@ -135,10 +136,11 @@ async def _translate(
         "target": target,
         "text": text,
     }
-    async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.post(url, data=data) as resp:
-            result: dict[str, Any] = await resp.json(loads=json.loads)
-            return result["message"]["result"]["translatedText"]
+    async with aiohttp.ClientSession(headers=headers) as session, session.post(
+        url, data=data
+    ) as resp:
+        result: dict[str, Any] = await resp.json(loads=json.loads)
+        return result["message"]["result"]["translatedText"]
 
 
 @box.command(

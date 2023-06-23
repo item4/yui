@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+from typing import ClassVar
 from typing import TYPE_CHECKING
 
 from ...event import Event
@@ -36,7 +37,7 @@ class Route:
 class RouteApp(BaseApp):
     use_shlex: bool = True
     name: str
-    route_list: list[Route] = []
+    route_list: ClassVar[list[Route]] = []
 
     def get_short_help(self, prefix: str) -> str:
         raise NotImplementedError

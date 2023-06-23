@@ -35,9 +35,10 @@ async def book(bot, event: Message, keyword: str):
         "X-Naver-Client-Secret": bot.config.NAVER_CLIENT_SECRET,
     }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, headers=headers) as resp:
-            data = await resp.json(loads=json.loads)
+    async with aiohttp.ClientSession() as session, session.get(
+        url, params=params, headers=headers
+    ) as resp:
+        data = await resp.json(loads=json.loads)
 
     attachments: list[Attachment] = []
 

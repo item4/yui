@@ -116,16 +116,15 @@ async def get_air_pollution_by_coordinate(
         "appid": api_key,
     }
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.openweathermap.org/data/2.5/air_pollution",
-            params=params,
-        ) as resp:
-            if resp.status != 200:
-                raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://api.openweathermap.org/data/2.5/air_pollution",
+        params=params,
+    ) as resp:
+        if resp.status != 200:
+            raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
-            data = await resp.json(loads=json.loads)
-            url = resp.url.update_query(appid="<REDACTED>").human_repr()
+        data = await resp.json(loads=json.loads)
+        url = resp.url.update_query(appid="<REDACTED>").human_repr()
 
     if not data["list"]:
         raise WeatherResponseError("No air pollution data")

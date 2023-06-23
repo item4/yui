@@ -30,21 +30,21 @@ async def get_cat_image_url(timeout: float) -> str:
                 async with session.get(
                     api_url,
                     params={"format": "xml", "type": "jpg,png"},
-                ) as res:
-                    if res.status != 200:
+                ) as resp:
+                    if resp.status != 200:
                         raise APIServerError
-                    xml_result = await res.read()
+                    xml_result = await resp.read()
                     tree = ElementTree.fromstring(xml_result)
                     url = tree.find("data/images/image/url").text
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(delay=timeout):
-                    async with session.get(url) as res:
-                        async with res:
-                            if res.status == 200:
-                                return url
+                async with async_timeout.timeout(delay=timeout), session.get(
+                    url
+                ) as resp, resp:
+                    if resp.status == 200:
+                        return url
             except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
                 continue
 
@@ -54,30 +54,30 @@ async def get_dog_image_url(timeout: float) -> str:
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                async with session.get(api_url) as res:
-                    if res.status != 200:
+                async with session.get(api_url) as resp:
+                    if resp.status != 200:
                         raise APIServerError
-                    data = await res.json(loads=json.loads)
+                    data = await resp.json(loads=json.loads)
                     url = data["message"]
             except aiohttp.client_exceptions.ServerDisconnectedError:
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(delay=timeout):
-                    async with session.get(url) as res:
-                        async with res:
-                            if res.status == 200:
-                                return url
+                async with async_timeout.timeout(delay=timeout), session.get(
+                    url
+                ) as resp, resp:
+                    if resp.status == 200:
+                        return url
             except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
                 continue
 
 
 async def get_fox_image_url(timeout: float) -> str:
     url = "http://fox-info.net/fox-gallery"
-    async with async_timeout.timeout(delay=timeout):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                data = await resp.text()
+    async with async_timeout.timeout(
+        delay=timeout
+    ), aiohttp.ClientSession() as session, session.get(url) as resp:
+        data = await resp.text()
     h = get_root(data)
     image_els = h.cssselect("#gallery-1 img.attachment-thumbnail")
     try:

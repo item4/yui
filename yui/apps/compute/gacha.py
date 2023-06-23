@@ -44,12 +44,14 @@ def to_percent(v: Decimal, q=CHANCE_MIN) -> str:
 class Gacha(route.RouteApp):
     def __init__(self) -> None:
         self.name = "가챠"
-        self.route_list = [
-            route.Route(name="수집", callback=self.collect),
-            route.Route(name="collect", callback=self.collect),
-            route.Route(name="도전", callback=self.challenge),
-            route.Route(name="challenge", callback=self.challenge),
-        ]
+        self.route_list.extend(
+            [
+                route.Route(name="수집", callback=self.collect),
+                route.Route(name="collect", callback=self.collect),
+                route.Route(name="도전", callback=self.challenge),
+                route.Route(name="challenge", callback=self.challenge),
+            ]
+        )
 
     def get_short_help(self, prefix: str):
         return f"`{prefix}가챠`: 가챠 계산기"

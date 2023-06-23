@@ -14,9 +14,10 @@ HEADERS = {
 async def say_packtpub_dotd(bot: Bot, channel):
     attachments: list[Attachment] = []
     url = "https://www.packtpub.com/free-learning"
-    async with aiohttp.ClientSession(headers=HEADERS) as session:
-        async with session.get(url) as resp:
-            data = await resp.read()
+    async with aiohttp.ClientSession(headers=HEADERS) as session, session.get(
+        url
+    ) as resp:
+        data = await resp.read()
 
     h = get_root(data)
 

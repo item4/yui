@@ -23,16 +23,18 @@ SPACE_RE = re.compile(r"\s{2,}")
 class RSS(route.RouteApp):
     def __init__(self) -> None:
         self.name = "rss"
-        self.route_list = [
-            route.Route(name="add", callback=self.add),
-            route.Route(name="추가", callback=self.add),
-            route.Route(name="list", callback=self.list),
-            route.Route(name="목록", callback=self.list),
-            route.Route(name="del", callback=self.delete),
-            route.Route(name="delete", callback=self.delete),
-            route.Route(name="삭제", callback=self.delete),
-            route.Route(name="제거", callback=self.delete),
-        ]
+        self.route_list.extend(
+            [
+                route.Route(name="add", callback=self.add),
+                route.Route(name="추가", callback=self.add),
+                route.Route(name="list", callback=self.list),
+                route.Route(name="목록", callback=self.list),
+                route.Route(name="del", callback=self.delete),
+                route.Route(name="delete", callback=self.delete),
+                route.Route(name="삭제", callback=self.delete),
+                route.Route(name="제거", callback=self.delete),
+            ]
+        )
 
     def get_short_help(self, prefix: str):
         return f"`{prefix}rss`: RSS Feed 구독"

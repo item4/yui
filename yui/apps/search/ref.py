@@ -46,9 +46,8 @@ async def fetch_css_ref(bot: Bot):
     logger.info("fetch css ref start")
 
     url = "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            blob = await resp.read()
+    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+        blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
@@ -66,9 +65,8 @@ async def fetch_html_ref(bot: Bot):
     logger.info("fetch html ref start")
 
     url = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            blob = await resp.read()
+    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+        blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
@@ -114,9 +112,8 @@ async def fetch_python_ref(bot: Bot):
     logger.info("fetch python ref start")
 
     url = "https://docs.python.org/3/library/"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as resp:
-            blob = await resp.read()
+    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+        blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse_python,
@@ -260,16 +257,13 @@ async def php(bot, event: Message, keyword: str):
 
     async with aiohttp.ClientSession() as session:
         for url in urls:
-            async with session.get(url) as res:
-                async with res:
-                    res_url = str(res.url)
-                    if "manual-lookup.php" in res_url:
-                        continue
-                    if res.status == 200:
-                        await bot.say(
-                            event.channel, f"PHP `{keyword}` - {res_url}"
-                        )
-                        break
+            async with session.get(url) as res, res:
+                res_url = str(res.url)
+                if "manual-lookup.php" in res_url:
+                    continue
+                if res.status == 200:
+                    await bot.say(event.channel, f"PHP `{keyword}` - {res_url}")
+                    break
         else:
             await bot.say(
                 event.channel, "비슷한 PHP 관련 요소를 찾지 못하겠어요!"

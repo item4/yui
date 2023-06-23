@@ -12,17 +12,16 @@ async def get_emoji_by_sun(
     lat: float,
     lng: float,
 ) -> Literal[":sunny:", ":crescent_moon:"]:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            "https://api.sunrise-sunset.org/json",
-            params={
-                "lat": lat,
-                "lng": lng,
-                "formatted": 0,
-                "date": input.date().isoformat(),
-            },
-        ) as resp:
-            data = await resp.json(loads=json.loads)
+    async with aiohttp.ClientSession() as session, session.get(
+        "https://api.sunrise-sunset.org/json",
+        params={
+            "lat": lat,
+            "lng": lng,
+            "formatted": 0,
+            "date": input.date().isoformat(),
+        },
+    ) as resp:
+        data = await resp.json(loads=json.loads)
     result = data["results"]
     tz = datetime.timezone(datetime.timedelta(seconds=offset))
     sunrise = datetime.datetime.fromisoformat(result["sunrise"]).astimezone(tz)

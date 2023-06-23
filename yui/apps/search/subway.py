@@ -37,18 +37,17 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f"subway-{service_region}-{api_version}"
     logger.info(f"fetch {name} start")
 
-    async with aiohttp.ClientSession(headers=headers) as session:
-        async with session.get(
-            "https://map.naver.com/v5/api/subway/provide",
-            params={
-                "requestFile": "metaData.json",
-                "readPath": service_region,
-                "version": api_version,
-                "language": "ko",
-                "caller": "NaverMapPcBetaWeb",
-            },
-        ) as resp:
-            data = await resp.json(loads=json.loads)
+    async with aiohttp.ClientSession(headers=headers) as session, session.get(
+        "https://map.naver.com/v5/api/subway/provide",
+        params={
+            "requestFile": "metaData.json",
+            "readPath": service_region,
+            "version": api_version,
+            "language": "ko",
+            "caller": "NaverMapPcBetaWeb",
+        },
+    ) as resp:
+        data = await resp.json(loads=json.loads)
 
     await bot.cache.set(f"SUBWAY_{service_region}_{api_version}", data)
 
@@ -130,18 +129,19 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             )
             return
 
-        async with aiohttp.ClientSession(headers=headers) as session:
-            async with session.get(
-                "https://map.naver.com/v5/api/transit/directions/subway",
-                params={
-                    "start": find_start["id"],
-                    "goal": find_end["id"],
-                    "lang": "ko",
-                    "includeDetailOperation": "true",
-                    "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
-                },
-            ) as resp:
-                result = await resp.json(loads=json.loads)
+        async with aiohttp.ClientSession(
+            headers=headers
+        ) as session, session.get(
+            "https://map.naver.com/v5/api/transit/directions/subway",
+            params={
+                "start": find_start["id"],
+                "goal": find_end["id"],
+                "lang": "ko",
+                "includeDetailOperation": "true",
+                "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
+            },
+        ) as resp:
+            result = await resp.json(loads=json.loads)
 
         text = ""
 
