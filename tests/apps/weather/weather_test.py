@@ -1,10 +1,9 @@
 import pytest
-from yarl import URL
+from aiohttp.client_exceptions import ClientConnectorCertificateError
+from aiohttp.client_reqrep import ConnectionKey
 
 from yui.apps.weather.exceptions import WeatherResponseError
-from yui.apps.weather.geo import get_geometric_info_by_address
-from yui.apps.weather.weather import get_weather_by_coordinate
-from yui.utils.datetime import fromtimestampoffset
+from yui.apps.weather.weather import get_weather_by_keyword
 from yui.utils.datetime import now
 
 
@@ -12,37 +11,45 @@ from yui.utils.datetime import now
 async def test_get_weather_datetime_is_correct(
     google_api_key, openweather_api_key, address
 ):
-    full_address, lat, lng = await get_geometric_info_by_address(
-        address,
-        google_api_key,
-    )
-    weather_data = await get_weather_by_coordinate(
-        lat,
-        lng,
-        openweather_api_key,
-    )
+    weather_data = await get_weather_by_keyword(address)
 
-    # don't add or remove offset in timestamp
-    dt = fromtimestampoffset(
-        timestamp=weather_data.timestamp,
-        offset=weather_data.timezone,
-    )
-
-    assert dt.timestamp() < now().timestamp()
+    assert weather_data.observed_at < now()
 
 
 @pytest.mark.asyncio()
-async def test_get_weather_with_wrong_openweather_coordination(response_mock):
+async def test_get_weather_with_bad_response(response_mock, address):
     response_mock.get(
-        URL("https://api.openweathermap.org/data/2.5/weather").with_query(
-            lat=123,
-            lon=456,
-            appid="asdf",
-            units="metric",
-        ),
+        "https://item4.net/api/weather/",
         payload={},
-        status=404,
+        status=400,
     )
 
-    with pytest.raises(WeatherResponseError):
-        await get_weather_by_coordinate(123, 456, "asdf")
+    with pytest.raises(WeatherResponseError, match="Bad HTTP Response"):
+        await get_weather_by_keyword(address)
+
+
+@pytest.mark.asyncio()
+async def test_get_weather_with_bad_json(response_mock, address):
+    response_mock.get(
+        "https://item4.net/api/weather/",
+        body="[}",
+        status=200,
+    )
+
+    with pytest.raises(WeatherResponseError, match="JSON 파싱 실패"):
+        await get_weather_by_keyword(address)
+
+
+@pytest.mark.asyncio()
+async def test_get_weather_with_expired_cert(response_mock, address):
+    response_mock.get(
+        "https://item4.net/api/weather/",
+        payload={},
+        exception=ClientConnectorCertificateError(
+            ConnectionKey("item4.net", 433, True, True, None, None, None),
+            Exception("test"),
+        ),
+    )
+
+    with pytest.raises(WeatherResponseError, match="인증서 만료"):
+        await get_weather_by_keyword(address)

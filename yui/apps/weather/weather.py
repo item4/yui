@@ -46,12 +46,10 @@ async def get_weather_by_keyword(keyword: str) -> WeatherRecord:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
             data = await resp.json(loads=json.loads)
+    except ClientConnectorCertificateError as e:
+        raise WeatherResponseError("인증서 만료") from e
     except ValueError as e:
         raise WeatherResponseError("JSON 파싱 실패") from e
-    except ClientConnectorCertificateError as e:
-        raise WeatherResponseError("TLS 만료") from e
-    except WeatherResponseError:
-        raise
 
     matched = None
     for record in data["records"]:

@@ -59,13 +59,17 @@ async def weather(
                 shorten(result.rain_15 or 0),
                 shorten(result.rain_day or 0),
             )
-        case "Unavailabe":
+        case "Unavailable":
             rain = "확인 불가"
         case "Unknown":
             rain = "알 수 없음"
 
-    temperature = "기온: {}℃".format(
-        shorten(result.temperature),
+    temperature = (
+        "기온: 알 수 없음"
+        if result.temperature is None
+        else "기온: {}℃".format(
+            shorten(result.temperature),
+        )
     )
 
     wind = "{} {}㎧".format(
@@ -73,9 +77,15 @@ async def weather(
         shorten(result.wind_velocity),
     )
 
-    humidity = f"{shorten(result.humidity)}%"
+    humidity = (
+        None if result.humidity is None else f"{shorten(result.humidity)}%"
+    )
 
-    atmospheric = f"{shorten(result.atmospheric)}㍱"
+    atmospheric = (
+        None
+        if result.atmospheric is None
+        else f"{shorten(result.atmospheric)}㍱"
+    )
 
     weather_text = "[{} / {}] ".format(
         result.location,
@@ -83,7 +93,7 @@ async def weather(
     )
 
     if result.is_rain:
-        if result.temperature > 0:
+        if result.temperature is not None and result.temperature > 0:
             weather_text += f"강수 {rain} / "
             weather_emoji = ":umbrella_with_rain_drops:"
         else:
@@ -96,8 +106,10 @@ async def weather(
 
     weather_text += temperature
     weather_text += f" / 바람: {wind}"
-    weather_text += f" / 습도: {humidity}"
-    weather_text += f" / 해면기압: {atmospheric}"
+    if humidity:
+        weather_text += f" / 습도: {humidity}"
+    if atmospheric:
+        weather_text += f" / 해면기압: {atmospheric}"
 
     recommend = clothes_by_temperature(result.temperature)
     weather_text += f"\n\n추천 의상: {recommend}"
