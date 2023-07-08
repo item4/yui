@@ -92,7 +92,7 @@ async def weather(
         result.observed_at.strftime("%H시 %M분 기준"),
     )
 
-    if result.is_rain:
+    if result.is_rain and rain:
         if result.temperature is not None and result.temperature > 0:
             weather_text += f"강수 {rain} / "
             weather_emoji = ":umbrella_with_rain_drops:"
@@ -111,8 +111,9 @@ async def weather(
     if atmospheric:
         weather_text += f" / 해면기압: {atmospheric}"
 
-    recommend = clothes_by_temperature(result.temperature)
-    weather_text += f"\n\n추천 의상: {recommend}"
+    if result.temperature is not None:
+        recommend = clothes_by_temperature(result.temperature)
+        weather_text += f"\n\n추천 의상: {recommend}"
 
     await bot.api.chat.postMessage(
         channel=event.channel,
