@@ -6,6 +6,10 @@ class WeatherResponseError(Exception):
     pass
 
 
+class WeatherRequestError(Exception):
+    pass
+
+
 EXCEPTIONS = (
     ClientPayloadError,  # Bad HTTP Response
     ValueError,  # JSON Error
