@@ -313,8 +313,8 @@ class Bot(GetLoggerMixin):
         if json_mode:
             payload = json.dumps(data)
             headers["Content-Type"] = "application/json; charset=utf-8"
-            headers["Authorization"] = "Bearer {}".format(
-                token or self.config.BOT_TOKEN,
+            headers["Authorization"] = (
+                f"Bearer {token or self.config.BOT_TOKEN}"
             )
         else:
             payload = aiohttp.FormData(data or {})
@@ -431,7 +431,7 @@ class Bot(GetLoggerMixin):
                 type_ = event.pop("type", None)
                 try:
                     event = create_event(type_, event)
-                except:  # noqa:
+                except:  # noqa: E722
                     logger.exception(msg.data)
                 else:
                     await self.queue.put(event)

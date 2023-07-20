@@ -71,9 +71,7 @@ async def fx_sess(fx_engine):
             try:
                 await conn.execute(
                     text(
-                        "TRUNCATE TABLE {} RESTART IDENTITY CASCADE;".format(
-                            table.name,
-                        )
+                        f"TRUNCATE TABLE {table.name} RESTART IDENTITY CASCADE;"
                     )
                 )
             except ProgrammingError:

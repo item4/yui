@@ -55,9 +55,9 @@ async def weather(
     rain = None
     match result.is_rain:
         case "Rain":
-            rain = "예(15분: {}㎜ / 일일: {}㎜)".format(
-                shorten(result.rain_15 or 0),
-                shorten(result.rain_day or 0),
+            rain = (
+                f"예(15분: {shorten(result.rain_15 or 0)}㎜ / 일일:"
+                f" {shorten(result.rain_day or 0)}㎜)"
             )
         case "Unavailable":
             rain = "확인 불가"
@@ -67,15 +67,10 @@ async def weather(
     temperature = (
         "기온: 알 수 없음"
         if result.temperature is None
-        else "기온: {}℃".format(
-            shorten(result.temperature),
-        )
+        else f"기온: {shorten(result.temperature)}℃"
     )
 
-    wind = "{} {}㎧".format(
-        result.wind_direction,
-        shorten(result.wind_velocity),
-    )
+    wind = f"{result.wind_direction} {shorten(result.wind_velocity)}㎧"
 
     humidity = (
         None if result.humidity is None else f"{shorten(result.humidity)}%"

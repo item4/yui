@@ -849,9 +849,7 @@ class Evaluator:
         elif cls in (_ast.Tuple, _ast.List):
             if not isinstance(val, Iterable):
                 raise TypeError(
-                    "cannot unpack non-iterable {} object".format(
-                        type(val).__name__,
-                    ),
+                    f"cannot unpack non-iterable {type(val).__name__} object",
                 )
             for telem, tval in itertools.zip_longest(
                 node.elts,
