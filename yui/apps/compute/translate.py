@@ -197,19 +197,15 @@ async def translate(bot, event: Message, source, target, text: str):
     elif (source_code, target_code) not in AVAILABLE_COMBINATIONS:
         await bot.say(
             event.channel,
-            (
-                f"{LANGUAGE_NAME[source_code]}에서"
-                f" {LANGUAGE_NAME[target_code]}로의 번역은 현재 지원되지"
-                " 않아요!"
-            ),
+            f"{LANGUAGE_NAME[source_code]}에서"
+            f" {LANGUAGE_NAME[target_code]}로의 번역은 현재 지원되지"
+            " 않아요!",
         )
     else:
         result = await _translate(headers, source_code, target_code, text)
 
         await bot.say(
             event.channel,
-            (
-                f"{LANGUAGE_NAME[source_code]} 원문: {text}\n"
-                f"{LANGUAGE_NAME[target_code]} 번역: {result}"
-            ),
+            f"{LANGUAGE_NAME[source_code]} 원문: {text}\n"
+            f"{LANGUAGE_NAME[target_code]} 번역: {result}",
         )

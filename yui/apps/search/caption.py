@@ -480,10 +480,8 @@ async def search_finished(
         coros = [
             bot.say(
                 event.channel,
-                (
-                    "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
-                    f" {len(data):,}개의 애니가 검색되었어요!"
-                ),
+                "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
+                f" {len(data):,}개의 애니가 검색되었어요!",
                 thread_ts=event.event_ts,
             )
         ]

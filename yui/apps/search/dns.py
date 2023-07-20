@@ -124,10 +124,8 @@ async def dns(bot, event: Message, server_list: list[str], domain: str):
 
     chat = await bot.say(
         event.channel,
-        (
-            f"`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니"
-            " 기다려주세요!"
-        ),
+        f"`{domain}`에 대해 조회를 시작합니다. 조회에는 시간이 소요되니"
+        " 기다려주세요!",
     )
     if chat.body["ok"]:
         tasks = []

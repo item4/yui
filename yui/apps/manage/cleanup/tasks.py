@@ -53,8 +53,6 @@ async def get_old_history(bot, sess: AsyncSession):
         logger.info(f"Start collect message in channel: {channel}")
         collected = await collect_history_from_channel(bot, channel, sess)
         logger.info(
-            (
-                f"Finish collect message in channel: {channel},"
-                f" {collected} collected"
-            ),
+            f"Finish collect message in channel: {channel},"
+            f" {collected} collected",
         )

@@ -97,10 +97,8 @@ Aliases
         if successes < SUCCESSES_MIN or successes > SUCCESSES_MAX:
             await bot.say(
                 event.channel,
-                (
-                    f"성공횟수는 {SUCCESSES_MIN}회 이상, {SUCCESSES_MAX:,}회"
-                    " 이하로 입력해주세요!"
-                ),
+                f"성공횟수는 {SUCCESSES_MIN}회 이상, {SUCCESSES_MAX:,}회"
+                " 이하로 입력해주세요!",
             )
             return
         try:
@@ -115,10 +113,8 @@ Aliases
         if p < CHANCE_MIN or p > CHANCE_MAX:
             await bot.say(
                 event.channel,
-                (
-                    f"확률값은 {to_percent(CHANCE_MIN)}% 이상,"
-                    f" {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!"
-                ),
+                f"확률값은 {to_percent(CHANCE_MIN)}% 이상,"
+                f" {to_percent(CHANCE_MAX)}% 이하로 입력해주세요!",
             )
             return
         if p / successes < CHANCE_MIN:
@@ -143,10 +139,8 @@ Aliases
         )
         await bot.say(
             event.channel,
-            (
-                f"{to_percent(p)}% 확률의 도전을 {successes:,}번"
-                f" 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}"
-            ),
+            f"{to_percent(p)}% 확률의 도전을 {successes:,}번"
+            f" 성공시키려면 몇 회의 도전이 필요한지 알려드릴게요!\n{text}",
         )
 
     @argument("query", nargs=-1, concat=True)
@@ -190,13 +184,11 @@ Aliases
 
         await bot.say(
             event.channel,
-            (
-                f"상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%"
-                f"확률로 준다고 가정할 때 {n}종류의 특전을"
-                f" {text} 모으려면, 평균적으로"
-                f" {math.ceil(result)}(`{float(result):.2f}`)개의 상품을"
-                " 구입해야 수집에 성공할 수 있어요!"
-            ),
+            f"상품 1개 구입시 {total}종류의 특전 중 하나를 무작위로 100%"
+            f"확률로 준다고 가정할 때 {n}종류의 특전을"
+            f" {text} 모으려면, 평균적으로"
+            f" {math.ceil(result)}(`{float(result):.2f}`)개의 상품을"
+            " 구입해야 수집에 성공할 수 있어요!",
         )
 
 

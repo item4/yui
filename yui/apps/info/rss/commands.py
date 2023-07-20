@@ -114,11 +114,9 @@ class RSS(route.RouteApp):
 
             await bot.say(
                 event.channel,
-                (
-                    f"<#{event.channel}> 채널에서 구독중인"
-                    " RSS 목록은 다음과 같아요!"
-                    f"\n```\n{feed_list}\n```"
-                ),
+                f"<#{event.channel}> 채널에서 구독중인"
+                " RSS 목록은 다음과 같아요!"
+                f"\n```\n{feed_list}\n```",
             )
         else:
             await bot.say(

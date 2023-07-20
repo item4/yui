@@ -121,11 +121,9 @@ async def body(bot, event: Message, region: str, start: str, end: str):
         if find_start["id"] == find_end["id"]:
             await bot.say(
                 event.channel,
-                (
-                    "출발역과 도착역이 동일한 역인 것 같아요!"
-                    f" (참고로 제가 인식한 역 이름은 '{find_start['name']}'"
-                    " 이에요!)"
-                ),
+                "출발역과 도착역이 동일한 역인 것 같아요!"
+                f" (참고로 제가 인식한 역 이름은 '{find_start['name']}'"
+                " 이에요!)",
             )
             return
 
