@@ -66,7 +66,11 @@ async def test_translate_command(bot):
     event = bot.create_message("C1", "U1")
 
     await translate(
-        bot, event, None, "ja", "안녕하세요. 제 이름은 YUI에요." * 100
+        bot,
+        event,
+        None,
+        "ja",
+        "안녕하세요. 제 이름은 YUI에요." * 100,
     )
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"

@@ -71,8 +71,9 @@ async def fx_sess(fx_engine):
             try:
                 await conn.execute(
                     text(
-                        f"TRUNCATE TABLE {table.name} RESTART IDENTITY CASCADE;"
-                    )
+                        f"TRUNCATE TABLE {table.name} RESTART IDENTITY"
+                        " CASCADE;",
+                    ),
                 )
             except ProgrammingError:
                 error = True
@@ -109,7 +110,7 @@ def gen_config(request):
             "CHANNELS": {},
             "USERS": {},
             "WEBSOCKETDEBUGGERURL": "",
-        }
+        },
     )
     config = Config(**cfg)
     config.LOGGING["loggers"]["yui"]["handlers"] = ["console"]
@@ -130,7 +131,7 @@ def bot_config(request):
 @pytest.fixture(scope="module")
 async def cache():
     mc = await emcache.create_client(
-        [emcache.MemcachedHostAddress("localhost", 11211)]
+        [emcache.MemcachedHostAddress("localhost", 11211)],
     )  # FIXME
     yield Cache(mc, "YUI_TEST_")
     await mc.close()

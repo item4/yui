@@ -36,7 +36,9 @@ async def book(bot, event: Message, keyword: str):
     }
 
     async with aiohttp.ClientSession() as session, session.get(
-        url, params=params, headers=headers
+        url,
+        params=params,
+        headers=headers,
     ) as resp:
         data = await resp.json(loads=json.loads)
 

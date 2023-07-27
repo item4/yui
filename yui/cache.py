@@ -62,7 +62,7 @@ class Cache:
 
     async def flush_all(self):
         await self.mc.flush_all(
-            self.mc._cluster.nodes[0].memcached_host_address
+            self.mc._cluster.nodes[0].memcached_host_address,
         )
 
     async def close(self):

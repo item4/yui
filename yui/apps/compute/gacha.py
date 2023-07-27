@@ -50,7 +50,7 @@ class Gacha(route.RouteApp):
                 route.Route(name="collect", callback=self.collect),
                 route.Route(name="도전", callback=self.challenge),
                 route.Route(name="challenge", callback=self.challenge),
-            ]
+            ],
         )
 
     def get_short_help(self, prefix: str):
@@ -171,7 +171,8 @@ Aliases
             return
         if total < n:
             await bot.say(
-                event.channel, "원하는 갯수가 전체 갯수보다 많을 수 없어요!"
+                event.channel,
+                "원하는 갯수가 전체 갯수보다 많을 수 없어요!",
             )
             return
 

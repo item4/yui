@@ -9,7 +9,9 @@ from yui.utils.datetime import now
 
 @pytest.mark.asyncio()
 async def test_get_weather_datetime_is_correct(
-    google_api_key, openweather_api_key, address
+    google_api_key,
+    openweather_api_key,
+    address,
 ):
     weather_data = await get_weather_by_keyword(address)
 

@@ -25,7 +25,10 @@ from ...transform import str_to_date
     transform_error="인식할 수 있는 날짜가 아니에요!",
 )
 async def age(
-    bot, event: Message, today: datetime.date, birthday: datetime.date
+    bot,
+    event: Message,
+    today: datetime.date,
+    birthday: datetime.date,
 ):
     """
     나이 계산

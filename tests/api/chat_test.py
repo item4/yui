@@ -42,7 +42,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
             fallback="fallback val",
             title="title val",
             fields=[Field("field title1", "field value1", False)],
-        )
+        ),
     ]
     blocks = [Divider()]
     text = "text val"
@@ -153,7 +153,7 @@ async def test_slack_api_chat_post_message(bot):
             fallback="fallback val",
             title="title val",
             fields=[Field("field title1", "field value1", False)],
-        )
+        ),
     ]
     blocks = [Divider()]
     text = "text val"

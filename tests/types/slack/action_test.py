@@ -22,14 +22,14 @@ def test_action_class():
         OptionField(
             text="test",
             value="test",
-        )
+        ),
     ]
     selected_options = [
         OptionField(
             text="text",
             value="value",
             description="some description",
-        )
+        ),
     ]
     style = "danger"
     text = "Test Text"
@@ -73,19 +73,20 @@ def test_action_class():
             OptionField(
                 text="test",
                 value="test",
-            )
+            ),
         ],
         option_groups=[
             OptionFieldGroup(
                 text="text",
                 options=[OptionField(text="test2", value="test2")],
-            )
+            ),
         ],
     )
 
     assert action.options is None
     assert action.option_groups == [
         OptionFieldGroup(
-            text="text", options=[OptionField(text="test2", value="test2")]
+            text="text",
+            options=[OptionField(text="test2", value="test2")],
         ),
     ]

@@ -100,7 +100,8 @@ class RouteApp(BaseApp):
                 chunks = split_chunks(raw, self.use_shlex)
             except ValueError:
                 await bot.say(
-                    event.channel, "*Error*: Can not parse this command"
+                    event.channel,
+                    "*Error*: Can not parse this command",
                 )
                 return False
 

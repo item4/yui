@@ -9,7 +9,7 @@ from .utils import json
 @asynccontextmanager
 async def new_page(bot):
     async with aiohttp.ClientSession() as session, session.get(
-        bot.config.WEBSOCKETDEBUGGERURL
+        bot.config.WEBSOCKETDEBUGGERURL,
     ) as resp:
         data = await resp.json(loads=json.loads)
 

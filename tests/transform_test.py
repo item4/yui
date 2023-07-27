@@ -26,10 +26,14 @@ def test_str_to_date():
         str_to_date()("2017-10-99")
 
     assert str_to_date(datetime.date.today)("2017-10-07") == datetime.date(
-        2017, 10, 7
+        2017,
+        10,
+        7,
     )
     assert str_to_date(datetime.date.today)("2017년 10월 7일") == datetime.date(
-        2017, 10, 7
+        2017,
+        10,
+        7,
     )
     assert (
         str_to_date(datetime.date.today)("2017-10-99") == datetime.date.today()
@@ -84,7 +88,8 @@ def test_get_user_id(bot):
 
 
 @pytest.mark.parametrize(
-    "items", [["Dog", "cat", "fish"], ("Dog", "cat", "fish")]
+    "items",
+    [["Dog", "cat", "fish"], ("Dog", "cat", "fish")],
 )
 def test_choice(items):
     assert choice(items)("cat") == "cat"

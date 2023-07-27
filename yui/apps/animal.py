@@ -41,7 +41,7 @@ async def get_cat_image_url(timeout: float) -> str:
                 continue
             try:
                 async with async_timeout.timeout(delay=timeout), session.get(
-                    url
+                    url,
                 ) as resp, resp:
                     if resp.status == 200:
                         return url
@@ -64,7 +64,7 @@ async def get_dog_image_url(timeout: float) -> str:
                 continue
             try:
                 async with async_timeout.timeout(delay=timeout), session.get(
-                    url
+                    url,
                 ) as resp, resp:
                     if resp.status == 200:
                         return url
@@ -75,7 +75,7 @@ async def get_dog_image_url(timeout: float) -> str:
 async def get_fox_image_url(timeout: float) -> str:
     url = "http://fox-info.net/fox-gallery"
     async with async_timeout.timeout(
-        delay=timeout
+        delay=timeout,
     ), aiohttp.ClientSession() as session, session.get(url) as resp:
         data = await resp.text()
     h = get_root(data)

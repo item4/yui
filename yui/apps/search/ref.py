@@ -266,7 +266,8 @@ async def php(bot, event: Message, keyword: str):
                     break
         else:
             await bot.say(
-                event.channel, "비슷한 PHP 관련 요소를 찾지 못하겠어요!"
+                event.channel,
+                "비슷한 PHP 관련 요소를 찾지 못하겠어요!",
             )
 
 

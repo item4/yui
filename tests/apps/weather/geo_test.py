@@ -15,7 +15,11 @@ from yui.apps.weather.geo import get_geometric_info_by_address
 )
 @pytest.mark.asyncio()
 async def test_get_geometric_info_by_address(
-    google_api_key, keyword, expected_full_address, expected_lat, expected_lng
+    google_api_key,
+    keyword,
+    expected_full_address,
+    expected_lat,
+    expected_lng,
 ):
     full_address, lat, lng = await get_geometric_info_by_address(
         keyword,
@@ -28,7 +32,8 @@ async def test_get_geometric_info_by_address(
 
 @pytest.mark.asyncio()
 async def test_get_weather_wrong_geometric_info(
-    response_mock, unavailable_address
+    response_mock,
+    unavailable_address,
 ):
     key = "XXX"
     response_mock.get(

@@ -1103,7 +1103,7 @@ class Evaluator:
 
     def visit_lambda(self, node: _ast.Lambda):
         raise BadSyntax(
-            "Defining new function via lambda syntax is not allowed"
+            "Defining new function via lambda syntax is not allowed",
         )
 
     def visit_list(self, node: _ast.List):  # elts, ctx

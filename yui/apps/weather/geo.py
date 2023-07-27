@@ -15,7 +15,7 @@ async def get_geometric_info_by_address(
     }
 
     async with aiohttp.ClientSession(
-        headers={"Accept-Language": "ko-KR"}
+        headers={"Accept-Language": "ko-KR"},
     ) as session, session.get(
         "https://maps.googleapis.com/maps/api/geocode/json",
         params=params,

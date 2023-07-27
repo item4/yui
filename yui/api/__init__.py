@@ -35,7 +35,7 @@ class SlackAPI:
         self.users = Users(bot)
 
         self.throttle_interval: defaultdict[str, timedelta] = defaultdict(
-            lambda: TIER3
+            lambda: TIER3,
         )
 
         # apps.connections tier 1

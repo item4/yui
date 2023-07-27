@@ -16,7 +16,11 @@ from .models import Memo
 @argument("keyword")
 @argument("text")
 async def memo_add(
-    bot, event: Message, sess: AsyncSession, keyword: str, text: str
+    bot,
+    event: Message,
+    sess: AsyncSession,
+    keyword: str,
+    text: str,
 ):
     """
     기억 레코드 생성

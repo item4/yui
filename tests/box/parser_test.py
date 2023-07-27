@@ -70,7 +70,7 @@ def test_parse_option_and_arguments():
         "--transform-non-type 2017-10-07 "
         "--transform-container 4 6 2 "
         "--transform-two 2017-10-07 2017-10-24 "
-        "--required-option 1111 "
+        "--required-option 1111 ",
     )
 
     kw, remain_chunks = parse_option_and_arguments(app.handler, chunks)
@@ -121,7 +121,7 @@ def test_parse_option_and_arguments():
     )
 
     chunks = shlex.split(
-        "--required-option 1111 --transform-non-type 2017-10-99"
+        "--required-option 1111 --transform-non-type 2017-10-99",
     )
 
     with pytest.raises(SyntaxError) as e:
@@ -133,7 +133,7 @@ def test_parse_option_and_arguments():
     )
 
     chunks = shlex.split(
-        "--required-option 1111 --transform-two 2017-10-99 2017-10-00"
+        "--required-option 1111 --transform-two 2017-10-99 2017-10-00",
     )
 
     with pytest.raises(SyntaxError) as e:
@@ -166,7 +166,7 @@ def test_parse_option_and_arguments():
     app: App = box.apps.pop()
 
     chunks = shlex.split(
-        "hello 2017-10-07 3.3 1.1 2.2 1 2 3 2017-10-07 2017-10-24 "
+        "hello 2017-10-07 3.3 1.1 2.2 1 2 3 2017-10-07 2017-10-24 ",
     )
 
     kw, remain_chunks = parse_option_and_arguments(app.handler, chunks)

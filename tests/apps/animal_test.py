@@ -14,18 +14,19 @@ from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
 
 cat_cooltime_re = re.compile(
-    r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!"
+    r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!",
 )
 dog_cooltime_re = re.compile(
-    r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!"
+    r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!",
 )
 fox_cooltime_re = re.compile(
-    r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!"
+    r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!",
 )
 
 
 CAT_API_URL = URL("https://thecatapi.com/api/images/get").with_query(
-    format="xml", type="jpg,png"
+    format="xml",
+    type="jpg,png",
 )
 
 

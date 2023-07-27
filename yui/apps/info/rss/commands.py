@@ -33,7 +33,7 @@ class RSS(route.RouteApp):
                 route.Route(name="delete", callback=self.delete),
                 route.Route(name="삭제", callback=self.delete),
                 route.Route(name="제거", callback=self.delete),
-            ]
+            ],
         )
 
     def get_short_help(self, prefix: str):
@@ -65,7 +65,8 @@ class RSS(route.RouteApp):
                     data: bytes = await res.read()
             except aiohttp.client_exceptions.InvalidURL:
                 await bot.say(
-                    event.channel, f"`{url}`은 올바른 URL이 아니에요!"
+                    event.channel,
+                    f"`{url}`은 올바른 URL이 아니에요!",
                 )
                 return
             except aiohttp.client_exceptions.ClientConnectorError:
@@ -80,7 +81,8 @@ class RSS(route.RouteApp):
 
         if f.bozo != 0:
             await bot.say(
-                event.channel, f"`{url}`은 올바른 RSS 문서가 아니에요!"
+                event.channel,
+                f"`{url}`은 올바른 RSS 문서가 아니에요!",
             )
             return
 
@@ -130,7 +132,8 @@ class RSS(route.RouteApp):
 
         if feed is None:
             await bot.say(
-                event.channel, f"{id}번 RSS 구독 레코드는 존재하지 않아요!"
+                event.channel,
+                f"{id}번 RSS 구독 레코드는 존재하지 않아요!",
             )
             return
 

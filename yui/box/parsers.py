@@ -68,7 +68,7 @@ def parse_option_and_arguments(
                         r = cast(option.type_, args[0])
                 except (ValueError, CastError) as e:
                     raise SyntaxError(
-                        option.type_error.format(name=option.name, e=e)
+                        option.type_error.format(name=option.name, e=e),
                     ) from e
 
                 if option.transform_func:

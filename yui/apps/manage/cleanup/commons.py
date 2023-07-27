@@ -49,7 +49,7 @@ async def cleanup_by_event_logs(
 
     if deleted:
         await sess.execute(
-            delete(EventLog).where(EventLog.id.in_(list(deleted)))
+            delete(EventLog).where(EventLog.id.in_(list(deleted))),
         )
         await sess.commit()
 
@@ -92,7 +92,7 @@ async def cleanup_by_history(
                         await report(bot, exception=e)
                         break
                     messages += simplify_history_result(
-                        r.body.get("messages", [])[1:]
+                        r.body.get("messages", [])[1:],
                     )
                 try:
                     res = await bot.api.chat.delete(

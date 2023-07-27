@@ -325,7 +325,9 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
     def op(connection, c):
         c.attributes["connection"] = connection
         command.heads(
-            c, verbose=verbose, resolve_dependencies=resolve_dependencies
+            c,
+            verbose=verbose,
+            resolve_dependencies=resolve_dependencies,
         )
 
     async def main():

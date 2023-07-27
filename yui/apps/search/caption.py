@@ -221,7 +221,10 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
     "-f/-o",
 )
 @argument(
-    "title", nargs=-1, concat=True, count_error="애니 제목을 입력해주세요"
+    "title",
+    nargs=-1,
+    concat=True,
+    count_error="애니 제목을 입력해주세요",
 )
 async def caption(bot, event: Message, finished: bool, title: str):
     """
@@ -251,9 +254,9 @@ async def caption(bot, event: Message, finished: bool, title: str):
 
 async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
     async with async_timeout.timeout(
-        timeout
+        timeout,
     ), aiohttp.ClientSession() as session, session.get(
-        "https://api.OHLI.moe/timetable/list/now"
+        "https://api.OHLI.moe/timetable/list/now",
     ) as resp:
         return await resp.json(loads=json.loads)
 
@@ -261,7 +264,7 @@ async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
 async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
     results: list[Caption] = []
     async with async_timeout.timeout(
-        timeout
+        timeout,
     ), aiohttp.ClientSession() as session, session.get(
         "https://api.OHLI.moe/timetable/cap",
         params={"i": i},
@@ -293,7 +296,7 @@ async def get_anissia_weekly_json(
     timeout: float,
 ) -> AnissiaResponse[AnissiaAnimeInfo]:
     async with async_timeout.timeout(
-        timeout
+        timeout,
     ), aiohttp.ClientSession() as session, session.get(
         f"https://api.anissia.net/anime/schedule/{week}",
     ) as resp:
@@ -305,7 +308,7 @@ async def get_annissia_caption_list_json(
     timeout: float,
 ) -> AnissiaResponse[AnissiaCaptionInfo]:
     async with async_timeout.timeout(
-        timeout
+        timeout,
     ), aiohttp.ClientSession() as session, session.get(
         f"https://api.anissia.net/anime/caption/animeNo/{anime_no}",
     ) as resp:
@@ -463,7 +466,7 @@ async def search_finished(
 ):
     try:
         async with async_timeout.timeout(
-            timeout
+            timeout,
         ), aiohttp.ClientSession() as session, session.get(
             "https://ohli.moe/timetable/search",
             params={"query": title},
@@ -483,7 +486,7 @@ async def search_finished(
                 "완결애니를 포함하여 OHLI DB에서 검색한 결과 총"
                 f" {len(data):,}개의 애니가 검색되었어요!",
                 thread_ts=event.event_ts,
-            )
+            ),
         ]
         for ani in data:
             try:
@@ -513,7 +516,7 @@ async def search_finished(
                     channel=event.channel,
                     attachments=attachments,
                     thread_ts=event.event_ts,
-                )
+                ),
             )
 
             for coro in coros:

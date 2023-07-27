@@ -6,7 +6,7 @@ from yarl import URL
 from yui.apps.compute.exchange import exchange
 
 YEN_PATTERN = re.compile(
-    r"100 JPY == (?:\.?\d+,?)+ KRW \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\)"
+    r"100 JPY == (?:\.?\d+,?)+ KRW \(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\)",
 )
 
 

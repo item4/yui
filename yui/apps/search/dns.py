@@ -58,7 +58,7 @@ SERVER_LIST_V6: list[DNSServer] = [
 async def is_ipv6_enabled() -> bool:
     try:
         async with aiohttp.ClientSession() as session, session.get(
-            "https://ipv6.icanhazip.com"
+            "https://ipv6.icanhazip.com",
         ):
             return True
     except:  # noqa

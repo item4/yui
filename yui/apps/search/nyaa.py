@@ -72,7 +72,9 @@ TABLE_ROW_SELECTOR = "table.torrent-list > tbody > tr"
     default="anime-raw",
     transform_error="지원되지 않는 카테고리에요!",
     transform_func=choice(
-        list(CATEGORIES.keys()), case_insensitive=True, case="lower"
+        list(CATEGORIES.keys()),
+        case_insensitive=True,
+        case="lower",
     ),
 )
 @argument("keyword", nargs=-1, concat=True, count_error="검색어를 입력해주세요")

@@ -96,7 +96,7 @@ class Config(SimpleNamespace):
                 config = getattr(self, key)
             except AttributeError as e:
                 raise ConfigurationError(
-                    f"Required config key was not defined: {key}"
+                    f"Required config key was not defined: {key}",
                 ) from e
             try:
                 casted = cast(value, config)
@@ -104,7 +104,7 @@ class Config(SimpleNamespace):
                     raise CastError
             except CastError as e:
                 raise ConfigurationError(
-                    f"Wrong config value type: {key}"
+                    f"Wrong config value type: {key}",
                 ) from e
 
         for key in single_channels:
@@ -112,12 +112,12 @@ class Config(SimpleNamespace):
                 value = self.CHANNELS[key]
             except KeyError as e:
                 raise ConfigurationError(
-                    f"Required channel key was not defined: {key}"
+                    f"Required channel key was not defined: {key}",
                 ) from e
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
-                        f"Channel config has wrong type: {key}"
+                        f"Channel config has wrong type: {key}",
                     )
 
         for key in multiple_channels:
@@ -125,7 +125,7 @@ class Config(SimpleNamespace):
                 value = self.CHANNELS[key]
             except KeyError as e:
                 raise ConfigurationError(
-                    f"Required channel key was not defined: {key}"
+                    f"Required channel key was not defined: {key}",
                 ) from e
             else:
                 if value == "*":
@@ -135,19 +135,19 @@ class Config(SimpleNamespace):
                 ):
                     continue
                 raise ConfigurationError(
-                    f"Channel config has wrong type: {key}"
+                    f"Channel config has wrong type: {key}",
                 )
         for key in single_users:
             try:
                 value = self.USERS[key]
             except KeyError as e:
                 raise ConfigurationError(
-                    f"Required user key was not defined: {key}"
+                    f"Required user key was not defined: {key}",
                 ) from e
             else:
                 if not isinstance(value, str):
                     raise ConfigurationError(
-                        f"User config has wrong type: {key}"
+                        f"User config has wrong type: {key}",
                     )
 
         for key in multiple_users:
@@ -155,7 +155,7 @@ class Config(SimpleNamespace):
                 value = self.USERS[key]
             except KeyError as e:
                 raise ConfigurationError(
-                    f"Required user key was not defined: {key}"
+                    f"Required user key was not defined: {key}",
                 ) from e
             else:
                 if value == "*":

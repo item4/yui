@@ -11,7 +11,10 @@ def hpa_to_atm(hpa: float) -> float:
 
 
 def cubic_to_ppm(
-    value: float, weight: float, temperature: float, atm: float
+    value: float,
+    weight: float,
+    temperature: float,
+    atm: float,
 ) -> float:
     # https://www.breeze-technologies.de/blog/air-pollution-how-to-convert-between-mgm3-%C2%B5gm3-ppm-ppb/
     return value * (22.41 * (1 + temperature / 273.15) / atm) / weight / 1000

@@ -18,7 +18,13 @@ def datetime(
     tzname: str = "Asia/Seoul",
 ) -> dt.datetime:
     return dt.datetime(
-        year, month, day, hour, minute, second, tzinfo=ZoneInfo(tzname)
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        second,
+        tzinfo=ZoneInfo(tzname),
     )
 
 

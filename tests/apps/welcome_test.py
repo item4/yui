@@ -25,7 +25,7 @@ async def test_welcome_item4_handler(bot_config):
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"].startswith(
-        "<@U1>님 item4 개인 Slack에 오신걸 환영합니다! :tada:"
+        "<@U1>님 item4 개인 Slack에 오신걸 환영합니다! :tada:",
     )
     assert "`.도움`" in said.data["text"]
 
@@ -55,7 +55,7 @@ async def test_welcome_9xd_handler(bot_config):
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"].startswith(
-        "<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:"
+        "<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:",
     )
     assert "`.도움`" in said.data["text"]
 
@@ -63,6 +63,6 @@ async def test_welcome_9xd_handler(bot_config):
     assert thread.method == "chat.postMessage"
     assert thread.data["channel"] == "C1"
     assert thread.data["text"].startswith(
-        "9XD Slack에는 다음과 같은 채널들이 있으니 참가해보셔도 좋을 것 같아요!"
+        "9XD Slack에는 다음과 같은 채널들이 있으니 참가해보셔도 좋을 것 같아요!",
     )
     assert thread.data["thread_ts"] == "1234.5678"

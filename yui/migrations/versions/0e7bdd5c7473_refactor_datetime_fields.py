@@ -32,7 +32,9 @@ def upgrade():
         sa.Column("text", sa.Text(), nullable=False),
         sa.Column("author", sa.String(), nullable=False),
         sa.Column(
-            "created_datetime", sa.DateTime(timezone=True), nullable=False
+            "created_datetime",
+            sa.DateTime(timezone=True),
+            nullable=False,
         ),
         sa.Column("created_timezone", TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
@@ -43,7 +45,9 @@ def upgrade():
         sa.Column("url", sa.String(), nullable=False),
         sa.Column("channel", sa.String(), nullable=False),
         sa.Column(
-            "updated_datetime", sa.DateTime(timezone=True), nullable=False
+            "updated_datetime",
+            sa.DateTime(timezone=True),
+            nullable=False,
         ),
         sa.Column("updated_timezone", TimezoneType(), nullable=True),
         sa.PrimaryKeyConstraint("id"),

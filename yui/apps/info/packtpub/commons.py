@@ -15,7 +15,7 @@ async def say_packtpub_dotd(bot: Bot, channel):
     attachments: list[Attachment] = []
     url = "https://www.packtpub.com/free-learning"
     async with aiohttp.ClientSession(headers=HEADERS) as session, session.get(
-        url
+        url,
     ) as resp:
         data = await resp.read()
 

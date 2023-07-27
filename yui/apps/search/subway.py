@@ -61,7 +61,7 @@ async def on_start(bot):
     for service_region, api_version in REGION_TABLE.values():
         tasks.append(
             asyncio.create_task(
-                fetch_station_db(bot, service_region, api_version)
+                fetch_station_db(bot, service_region, api_version),
             ),
         )
     await asyncio.wait(tasks)
@@ -75,7 +75,7 @@ async def refresh_db(bot):
     for service_region, api_version in REGION_TABLE.values():
         tasks.append(
             asyncio.create_task(
-                fetch_station_db(bot, service_region, api_version)
+                fetch_station_db(bot, service_region, api_version),
             ),
         )
     await asyncio.wait(tasks)
@@ -109,12 +109,14 @@ async def body(bot, event: Message, region: str, start: str, end: str):
 
     if find_start_ratio < 40:
         await bot.say(
-            event.channel, "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
+            event.channel,
+            "출발역으로 지정하신 역 이름을 찾지 못하겠어요!",
         )
         return
     if find_end_ratio < 40:
         await bot.say(
-            event.channel, "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
+            event.channel,
+            "도착역으로 지정하신 역 이름을 찾지 못하겠어요!",
         )
         return
     if find_start and find_end:
@@ -128,7 +130,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             return
 
         async with aiohttp.ClientSession(
-            headers=headers
+            headers=headers,
         ) as session, session.get(
             "https://map.naver.com/v5/api/transit/directions/subway",
             params={

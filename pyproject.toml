@@ -8,9 +8,9 @@ line-length = 120
 target-version = 'py311'
 select = [
     # Pyflakes
-    "E",
-    # pycodestyle
     "F",
+    # pycodestyle
+    "E",
     "W",
     # isort
     "I",
@@ -18,16 +18,28 @@ select = [
     "UP",
     # flake8-2020
     "YTT",
+    # flake8-async
+    "ASYNC",
     # flake8-bandit
     "S",
     # flake8-bugbear
     "B",
+    # flake8-commas
+    "COM",
     # flake8-comprehensions
     "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-future-annotations
+    "FA",
+    # flake8-implicit-str-concat
+    "ISC",
     # flake8-pie
     "PIE",
     # flake8-pytest-style
     "PT",
+    # flake8-quotes
+    "Q",
     # flake8-raise
     "RSE",
     # flake8-return
@@ -48,10 +60,14 @@ select = [
     "PLW",
     # tryceratops
     "TRY",
+    # flynt
+    "FLY",
     # Ruff-specific rules
     "RUF",
 ]
 ignore = [
+    # flake8-async
+    "ASYNC102",  # Checks that async functions do not contain calls to blocking synchronous process calls via the os module.
     # flake8-bandit
     "S311",  # Standard pseudo-random generators are not suitable for cryptographic purposes
     # flake8-pytest-style

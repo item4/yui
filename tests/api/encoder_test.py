@@ -38,7 +38,7 @@ def test_to_json():
                     type="button",
                     data_source="external",
                     options=[
-                        OptionField(text="a1 o1 text", value="a1 o1 value")
+                        OptionField(text="a1 o1 text", value="a1 o1 value"),
                     ],
                     style="danger",
                     min_query_length=100,
@@ -47,7 +47,7 @@ def test_to_json():
                         OptionField(
                             text="a1 so1 text",
                             value="a1 so1 value",
-                        )
+                        ),
                     ],
                     value="action1 value",
                     url="action1 url",
@@ -65,17 +65,17 @@ def test_to_json():
                                     value="a2 og1 o1 value",
                                 ),
                             ],
-                        )
+                        ),
                     ],
                 ),
             ],
-        )
+        ),
     )
     assert attachment == {
         "fallback": "fallback val",
         "title": "title val",
         "fields": [
-            {"title": "field title1", "value": "field value1", "short": "0"}
+            {"title": "field title1", "value": "field value1", "short": "0"},
         ],
         "actions": [
             {

@@ -31,7 +31,7 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1),
         )
         == 0
     )
@@ -48,7 +48,7 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2),
         )
         == 0
     )
@@ -62,7 +62,7 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1),
         )
         == 1
     )
@@ -76,7 +76,7 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2),
         )
         == 1
     )
@@ -90,7 +90,7 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1),
         )
         == 2
     )
@@ -121,13 +121,13 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1),
         )
         == 0
     )
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2),
         )
         == 1
     )
@@ -144,13 +144,13 @@ async def test_memo_flow(bot, fx_sess):
 
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword1)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword1),
         )
         == 0
     )
     assert (
         await fx_sess.scalar(
-            select(func.count(Memo.id)).where(Memo.keyword == keyword2)
+            select(func.count(Memo.id)).where(Memo.keyword == keyword2),
         )
         == 0
     )
