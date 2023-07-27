@@ -114,7 +114,7 @@ def parse_option_and_arguments(
                     given=0,
                 )
                 for o in (
-                    list(filter(lambda x: x.dest == o, options))[0]
+                    next(iter(filter(lambda x: x.dest == o, options)))
                     for o in required
                 )
             ),
