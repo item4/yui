@@ -7,9 +7,9 @@ from datetime import datetime
 import pytest
 
 from yui.apps.compute.calc import BadSyntax
-from yui.apps.compute.calc import calculate
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
+from yui.apps.compute.calc import calculate
 
 from ...util import FakeBot
 

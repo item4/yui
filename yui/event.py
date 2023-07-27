@@ -1,8 +1,8 @@
 from typing import Any
 from typing import ClassVar
 from typing import Literal
-from typing import overload
 from typing import TypeAlias
+from typing import overload
 
 from .types.base import ChannelID
 from .types.base import Ts

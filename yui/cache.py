@@ -1,8 +1,8 @@
 from decimal import Decimal
 from typing import TypeAlias
 
-from emcache.client import _Client
 from emcache.client import Client
+from emcache.client import _Client
 
 from .utils import json
 

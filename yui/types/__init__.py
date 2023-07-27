@@ -13,9 +13,9 @@ from .channel import PublicChannel
 from .handler import Argument
 from .handler import DECORATOR_ARGS_TYPE
 from .handler import DECORATOR_TYPE
-from .handler import Handler
 from .handler import HANDLER_CALL_RETURN_TYPE
 from .handler import HANDLER_CALL_TYPE
+from .handler import Handler
 from .handler import Option
 from .objects import MessageMessage
 from .objects import MessageMessageEdited

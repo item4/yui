@@ -9,9 +9,9 @@ from ...command import option
 from ...event import Message
 from ...transform import choice
 from ...types.slack.attachment import Attachment
+from ...utils.html import USELESS_TAGS
 from ...utils.html import get_root
 from ...utils.html import strip_tags
-from ...utils.html import USELESS_TAGS
 from ...utils.http import USER_AGENT
 
 headers: dict[str, str] = {

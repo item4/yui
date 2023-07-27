@@ -1,8 +1,8 @@
 import datetime
 from functools import partial
-from typing import get_args
 from typing import TYPE_CHECKING
 from typing import TypeVar
+from typing import get_args
 
 import attrs
 

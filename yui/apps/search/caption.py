@@ -5,8 +5,8 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Any
 from typing import Generic
-from typing import TypedDict
 from typing import TypeVar
+from typing import TypedDict
 
 import aiohttp
 import async_timeout

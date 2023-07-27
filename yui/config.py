@@ -5,8 +5,8 @@ import tomllib
 from types import SimpleNamespace
 from typing import Any
 
-from .utils.cast import cast
 from .utils.cast import CastError
+from .utils.cast import cast
 
 REQUIRED = {
     "APPS",

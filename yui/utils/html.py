@@ -1,8 +1,8 @@
 from typing import AnyStr
 
 from lxml.etree import strip_elements
-from lxml.html import fromstring
 from lxml.html import HTMLParser
+from lxml.html import fromstring
 
 USELESS_TAGS = frozenset(
     {

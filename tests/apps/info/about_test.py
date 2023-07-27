@@ -1,7 +1,7 @@
 import pytest
 
-from yui.apps.info.about import about
 from yui.apps.info.about import MESSAGE
+from yui.apps.info.about import about
 
 
 @pytest.mark.asyncio()

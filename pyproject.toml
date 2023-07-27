@@ -85,7 +85,7 @@ ignore = [
 [tool.ruff.isort]
 force-single-line = true  # 한 줄 당 1개의 import 문
 order-by-type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
-# case_sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
+case-sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
 known-first-party = ["yui"]
 section-order = ["future", "standard-library", "third-party", "tests", "first-party", "local-folder"]
 

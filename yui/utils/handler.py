@@ -1,5 +1,5 @@
-from ..types.handler import Handler
 from ..types.handler import HANDLER_CALL_TYPE
+from ..types.handler import Handler
 
 
 def get_handler(obj: HANDLER_CALL_TYPE | Handler) -> Handler:

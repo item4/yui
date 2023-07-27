@@ -6,8 +6,8 @@ from .parsers import KWARGS_DICT
 from .parsers import parse_option_and_arguments
 from .tasks import CronTask
 from .utils import CONTAINER
-from .utils import is_container
 from .utils import SPACE_RE
+from .utils import is_container
 
 # (:class:`Box`) Default Box instance
 box = Box()

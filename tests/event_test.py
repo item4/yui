@@ -1,7 +1,7 @@
-from yui.event import create_event
 from yui.event import Hello
 from yui.event import TeamMigrationStarted
 from yui.event import UnknownEvent
+from yui.event import create_event
 
 
 def test_create_event():

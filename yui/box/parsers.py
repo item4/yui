@@ -2,8 +2,8 @@ from typing import Any
 from typing import TypeAlias
 
 from ..types.handler import Handler
-from ..utils.cast import cast
 from ..utils.cast import CastError
+from ..utils.cast import cast
 
 KWARGS_DICT: TypeAlias = dict[str, Any]
 

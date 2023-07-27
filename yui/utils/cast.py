@@ -1,8 +1,8 @@
 import types
 from typing import Any
+from typing import TypeVar
 from typing import get_args
 from typing import get_origin
-from typing import TypeVar
 
 from ..utils.attrs import make_instance
 
