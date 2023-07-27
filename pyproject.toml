@@ -5,7 +5,7 @@ preview = true
 
 [tool.ruff]
 line-length = 120
-target-version = 'py311'
+target-version = "py311"
 select = [
     # Pyflakes
     "F",
@@ -93,7 +93,7 @@ section-order = ["future", "standard-library", "third-party", "tests", "first-pa
 tests = ["tests"]
 
 [tool.pytest.ini_options]
-asyncio_mode = 'auto'
+asyncio_mode = "auto"
 
 
 [tool.mypy]
