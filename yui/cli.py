@@ -100,7 +100,7 @@ def revision(
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -148,7 +148,7 @@ def migrate(
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -171,7 +171,7 @@ def edit(config, revision: str):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -209,7 +209,7 @@ def merge(
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -234,7 +234,7 @@ def upgrade(config, revision: str, sql: bool, tag: str | None):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -259,7 +259,7 @@ def downgrade(config, revision: str, sql: bool, tag: str):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -282,7 +282,7 @@ def show(config, revision: str):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -306,7 +306,7 @@ def history(config, verbose: bool, rev_range: str | None):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -334,7 +334,7 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -357,7 +357,7 @@ def branches(config, verbose: bool):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -380,7 +380,7 @@ def current(config, verbose: bool):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -406,7 +406,7 @@ def stamp(config, revision: str, sql: bool, tag: str | None):
         bot = Bot(config)
         directory = Path("yui", "migrations")
         c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", directory)
+        c.set_main_option("script_location", str(directory))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
