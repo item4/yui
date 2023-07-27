@@ -119,7 +119,7 @@ orjson = "^3.9.2"
 psycopg = {version = "^3.1.9", extras = ["binary"]}
 pyppeteer = "^1.0.2"
 python-dateutil = "^2.8.2"
-rapidfuzz = "^3.1.1"
+rapidfuzz = "^3.1.2"
 scipy = "^1.11.1"
 sympy = "^1.12"
 tossi = "^0.3.1"
