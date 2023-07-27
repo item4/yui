@@ -92,23 +92,23 @@ def test_token_sort_ratio():
 
 def test_match():
     sao = "소드 아트 온라인"
-    assert match(sao, "소아온") == 70
-    assert match(sao, "소드") == 61
-    assert match(sao, "소드아트") == 82
-    assert match(sao, "소드 아트") == 91
-    assert match(sao, "아트") == 61
-    assert match(sao, "온라인") == 86
+    assert match(sao, "소아온") == 56
+    assert match(sao, "소드") == 74
+    assert match(sao, "소드아트") == 76
+    assert match(sao, "소드 아트") == 86
+    assert match(sao, "아트") == 74
+    assert match(sao, "온라인") == 84
     assert match(sao, sao) == 100
-    assert match(sao, "소드아트온라인") == 100
-    assert match(sao, "소드 오라토리아") == 84
+    assert match(sao, "소드아트온라인") == 92
+    assert match(sao, "소드 오라토리아") == 70
 
     saop_movie = "극장판 소드 아트 온라인 -프로그레시브- 별 없는 밤의 아리아"
-    assert match(saop_movie, "소아온") == 32
-    assert match(saop_movie, "소드") == 36
-    assert match(saop_movie, "소드아트") == 42
-    assert match(saop_movie, "소드 아트") == 48
-    assert match(saop_movie, "아트") == 36
-    assert match(saop_movie, "온라인") == 46
+    assert match(saop_movie, "소아온") == 41
+    assert match(saop_movie, "소드") == 64
+    assert match(saop_movie, "소드아트") == 60
+    assert match(saop_movie, "소드 아트") == 69
+    assert match(saop_movie, "아트") == 64
+    assert match(saop_movie, "온라인") == 68
     assert match(saop_movie, saop_movie) == 100
-    assert match(saop_movie, "소드아트온라인") == 59
-    assert match(saop_movie, "소드 오라토리아") == 49
+    assert match(saop_movie, "소드아트온라인") == 67
+    assert match(saop_movie, "소드 오라토리아") == 56

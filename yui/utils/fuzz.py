@@ -85,11 +85,11 @@ def token_sort_ratio(str1: str, str2: str) -> int:
 
 def match(s1: str, s2: str) -> int:
     """Get custom ratio for yui functions"""
+    if s1 == s2:
+        return 100
 
-    pr = partial_ratio(s1, s2) // 2
+    pr = partial_ratio(s1, s2)
     r = ratio(s1, s2)
-
-    if " " in s1 or " " in s2:
-        tsr = token_sort_ratio(s1, s2)
-        return min(100, int((r + pr + tsr) / 2))
-    return min(100, r + pr)
+    tsr = token_sort_ratio(s1, s2)
+    maximum_ratio = max(pr, r, tsr)
+    return min(100, int((pr + r + tsr + maximum_ratio * 2) / 5))
