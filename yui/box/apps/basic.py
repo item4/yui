@@ -87,7 +87,7 @@ class App(BaseApp):
         event_subtype = getattr(event, "subtype", None)
         subtype = (
             self.subtype is not None and self.subtype in {"*", event_subtype}
-        ) or self.subtype is None
+        ) or (self.subtype is None and event_subtype is None)
         if event.type == self.type and subtype:
             if isinstance(event, Message):
                 return await self._run_message_event(bot, event)

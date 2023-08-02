@@ -76,7 +76,7 @@ class RouteApp(BaseApp):
                 if (
                     c.subtype
                     and (c.subtype == event.subtype or c.subtype == "*")
-                ) or not c.subtype:
+                ) or (not c.subtype and not event.subtype):
                     if root_args is None:
                         if c.name is None:
                             handler = c.handler
