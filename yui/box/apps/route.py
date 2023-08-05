@@ -73,10 +73,14 @@ class RouteApp(BaseApp):
 
         if root_call == bot.config.PREFIX + self.name:
             for c in self.route_list:
-                if (
-                    c.subtype
-                    and (c.subtype == event.subtype or c.subtype == "*")
-                ) or (not c.subtype and not event.subtype):
+                event_subtype = getattr(event, "subtype", None)
+                subtype_cond1 = c.subtype is None and event_subtype is None
+                subtype_cond2 = (
+                    c.subtype is not None
+                    and event_subtype is not None
+                    and c.subtype in {"*", event_subtype}
+                )
+                if subtype_cond1 or subtype_cond2:
                     if root_args is None:
                         if c.name is None:
                             handler = c.handler
