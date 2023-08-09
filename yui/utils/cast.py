@@ -82,7 +82,7 @@ class AnyCaster(BaseCaster):
 
 class UnionCaster(BaseCaster):
     def check(self, t, value):
-        return get_origin(t) is types.UnionType  # noqa: E721
+        return get_origin(t) is types.UnionType
 
     def cast(self, caster_box, t, value):
         types = caster_box.sort(get_args(t), value)
@@ -156,7 +156,7 @@ class NoHandleCaster(BaseCaster):
 
 class NoneTypeCaster(BaseCaster):
     def check(self, t, value):
-        return t is types.NoneType  # noqa: E721
+        return t is types.NoneType
 
     def cast(self, caster_box, t, value):
         return None

@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 
-def shorten(input_value: int | float) -> str:
+def shorten(input_value: float) -> str:
     decimal_string = (
         str(Decimal(format(input_value, "f")).quantize(Decimal("1.00")))
         if input_value
