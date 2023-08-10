@@ -38,12 +38,13 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     logger.info(f"fetch {name} start")
 
     async with aiohttp.ClientSession(headers=headers) as session, session.get(
-        "https://map.naver.com/v5/api/subway/provide",
+        "https://map.naver.com/p/api/subway/meta",
         params={
-            "requestFile": "metaData.json",
             "readPath": service_region,
             "version": api_version,
             "language": "ko",
+            "style": "normal",
+            "requestFile": "metaData.json",
             "caller": "NaverMapPcBetaWeb",
         },
     ) as resp:
