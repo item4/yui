@@ -12,14 +12,6 @@ def event_loop():
 
 
 @pytest.fixture()
-def openweather_api_key():
-    token = os.getenv("OPENWEATHER_API_KEY")
-    if not token:
-        pytest.skip("Can not test this without OPENWEATHER_API_KEY envvar")
-    return token
-
-
-@pytest.fixture()
 def google_api_key():
     key = os.getenv("GOOGLE_API_KEY")
     if not key:

@@ -124,12 +124,6 @@ GOOGLE_API_TOKEN
 
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
-OPENWEATHER_API_KEY
-  ``str``. OpenWeather API 사용을 위한 API 키입니다.
-  해당 값은 `OpenWeather 공식 웹사이트`_에서 발급받을 수 있습니다.
-
-  **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
-
 WEBSOCKETDEBUGGERURL
   ``str``. Chrome websocket debugger URL.
   headless chrome을 통해 웹페이지에 접속해야하는 경우 사용됩니다.
