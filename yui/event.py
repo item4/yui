@@ -124,41 +124,37 @@ class YuiSystemStart(Event):
 
 
 @overload
-def create_event(type_: GoodByeType, source: Source) -> GoodBye:
-    ...
+def create_event(type_: GoodByeType, source: Source) -> GoodBye: ...
 
 
 @overload
-def create_event(type_: HelloType, source: Source) -> Hello:
-    ...
+def create_event(type_: HelloType, source: Source) -> Hello: ...
 
 
 @overload
-def create_event(type_: MessageType, source: Source) -> Message:
-    ...
+def create_event(type_: MessageType, source: Source) -> Message: ...
 
 
 @overload
-def create_event(type_: PongType, source: Source) -> Pong:
-    ...
+def create_event(type_: PongType, source: Source) -> Pong: ...
 
 
 @overload
-def create_event(type_: TeamJoinType, source: Source) -> TeamJoin:
-    ...
+def create_event(type_: TeamJoinType, source: Source) -> TeamJoin: ...
 
 
 @overload
 def create_event(
     type_: TeamMigrationStartedType,
     source: Source,
-) -> TeamMigrationStarted:
-    ...
+) -> TeamMigrationStarted: ...
 
 
 @overload
-def create_event(type_: YuiSystemStartType, source: Source) -> YuiSystemStart:
-    ...
+def create_event(
+    type_: YuiSystemStartType,
+    source: Source,
+) -> YuiSystemStart: ...
 
 
 def create_event(type_, source):
