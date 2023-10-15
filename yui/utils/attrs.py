@@ -21,7 +21,7 @@ def make_instance(
     cls: type[_C],
     **kwargs,
 ) -> _C:
-    expected_attrs = {x.name for x in attrs.fields(cls)}
+    expected_attrs = {x.name for x in attrs.fields(cls)}  # type: ignore[misc]
     actual_attrs = set(kwargs.keys())
     for key in actual_attrs - expected_attrs:
         del kwargs[key]
