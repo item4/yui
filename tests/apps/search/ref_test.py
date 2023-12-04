@@ -2,6 +2,7 @@ import asyncio
 from concurrent.futures.process import ProcessPoolExecutor
 
 import pytest
+import pytest_asyncio
 
 from yui.apps.search.ref import css
 from yui.apps.search.ref import fetch_css_ref
@@ -13,14 +14,14 @@ from yui.apps.search.ref import python
 from ...util import FakeBot
 
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
 
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def bot(event_loop, cache):
     return FakeBot(
         loop=event_loop,
@@ -30,7 +31,7 @@ async def bot(event_loop, cache):
 
 
 @pytest.mark.asyncio()
-async def test_css_command(bot):
+async def test_css_command(bot: FakeBot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
@@ -39,6 +40,7 @@ async def test_css_command(bot):
         await css(bot, event, "font-family")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -50,6 +52,7 @@ async def test_css_command(bot):
         await css(bot, event, "font-family")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -60,12 +63,13 @@ async def test_css_command(bot):
         await css(bot, event, "쀍뗗")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert said.data["text"] == "비슷한 CSS 관련 요소를 찾지 못하겠어요!"
 
 
 @pytest.mark.asyncio()
-async def test_html_command(bot):
+async def test_html_command(bot: FakeBot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
@@ -74,6 +78,7 @@ async def test_html_command(bot):
         await html(bot, event, "section")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -85,6 +90,7 @@ async def test_html_command(bot):
         await html(bot, event, "section")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -95,12 +101,13 @@ async def test_html_command(bot):
         await html(bot, event, "쀍뗗")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert said.data["text"] == "비슷한 HTML Element를 찾지 못하겠어요!"
 
 
 @pytest.mark.asyncio()
-async def test_python_command(bot):
+async def test_python_command(bot: FakeBot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
@@ -109,6 +116,7 @@ async def test_python_command(bot):
         await python(bot, event, "builtin function")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -120,6 +128,7 @@ async def test_python_command(bot):
         await python(bot, event, "builtin function")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -130,6 +139,7 @@ async def test_python_command(bot):
         await python(bot, event, "re")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
             said.data["text"]
@@ -140,5 +150,6 @@ async def test_python_command(bot):
         await python(bot, event, "쀍뗗")
         said = bot.call_queue.pop()
         assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert said.data["text"] == "비슷한 Python library를 찾지 못하겠어요!"
