@@ -1,4 +1,5 @@
 import pytest
+import pytest_asyncio
 
 from yui.apps.search.ref import css
 from yui.apps.search.ref import fetch_css_ref
@@ -8,6 +9,11 @@ from yui.apps.search.ref import html
 from yui.apps.search.ref import python
 
 from ...util import FakeBot
+
+
+@pytest_asyncio.fixture()
+async def bot(event_loop, cache) -> FakeBot:
+    return FakeBot(loop=event_loop, cache=cache)
 
 
 @pytest.mark.asyncio()
