@@ -128,7 +128,7 @@ def bot_config(request):
     return gen_config(request)
 
 
-@pytest.fixture(scope="module")
+@pytest_asyncio.fixture(scope="module")
 async def cache():
     mc = await emcache.create_client(
         [emcache.MemcachedHostAddress("localhost", 11211)],
