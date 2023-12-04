@@ -1,8 +1,4 @@
-import asyncio
-from concurrent.futures.process import ProcessPoolExecutor
-
 import pytest
-import pytest_asyncio
 
 from yui.apps.search.ref import css
 from yui.apps.search.ref import fetch_css_ref
@@ -12,22 +8,6 @@ from yui.apps.search.ref import html
 from yui.apps.search.ref import python
 
 from ...util import FakeBot
-
-
-@pytest_asyncio.fixture(scope="module")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest_asyncio.fixture(scope="module")
-async def bot(event_loop, cache):
-    return FakeBot(
-        loop=event_loop,
-        cache=cache,
-        process_pool_executor=ProcessPoolExecutor(),
-    )
 
 
 @pytest.mark.asyncio()
