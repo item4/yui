@@ -129,8 +129,7 @@ def bot_config(request):
 
 
 @pytest_asyncio.fixture(scope="module")
-@pytest.mark.usefixtures("event_loop")
-async def cache():
+async def cache(event_loop):
     mc = await emcache.create_client(
         [emcache.MemcachedHostAddress("localhost", 11211)],
     )  # FIXME
