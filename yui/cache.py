@@ -1,8 +1,7 @@
 from decimal import Decimal
 from typing import TypeAlias
 
-from emcache.client import Client
-from emcache.client import _Client
+from redis.asyncio import Redis
 
 from .utils import json
 
@@ -12,8 +11,8 @@ DATA_TYPE: TypeAlias = (
 
 
 class Cache:
-    def __init__(self, mc: Client | _Client, prefix: str = "") -> None:
-        self.mc = mc
+    def __init__(self, redis_client: Redis, prefix: str = "") -> None:
+        self.redis_client = redis_client
         self.prefix = prefix.encode()
 
     def _key(self, key: str | bytes) -> bytes:
@@ -25,45 +24,25 @@ class Cache:
         self,
         key: str | bytes,
         value: DATA_TYPE,
-        exptime: int = 0,
+        exptime: int | None = None,
     ):
         data = json.dumps(value).encode()
         key = self._key(key)
-        await self.mc.set(key, data, exptime=exptime)
-
-    async def add(
-        self,
-        key: str | bytes,
-        value: DATA_TYPE,
-        exptime: int = 0,
-    ):
-        data = json.dumps(value).encode()
-        key = self._key(key)
-        await self.mc.add(key, data, exptime=exptime)
+        await self.redis_client.set(key, data, ex=exptime)
 
     async def get(self, key: str | bytes, default=None) -> DATA_TYPE:
         key = self._key(key)
-        data = await self.mc.get(key)
+        data = await self.redis_client.get(key)
         if data is None:
             return default
-        return json.loads(data.value.decode())
-
-    async def get_many(self, *keys: str | bytes) -> dict[str, DATA_TYPE]:
-        prefixed_keys = [self._key(k) for k in keys]
-        values = await self.mc.get_many(prefixed_keys)
-        return {
-            k.decode(): None if v is None else json.loads(v.value.decode())
-            for k, v in values.items()
-        }
+        return json.loads(data.decode())
 
     async def delete(self, key: str | bytes):
         key = self._key(key)
-        await self.mc.delete(key)
+        await self.redis_client.delete(key)
 
-    async def flush_all(self):
-        await self.mc.flush_all(
-            self.mc._cluster.nodes[0].memcached_host_address,
-        )
+    async def flushall(self):
+        await self.redis_client.flushall()
 
     async def close(self):
-        await self.mc.close()
+        await self.redis_client.aclose()

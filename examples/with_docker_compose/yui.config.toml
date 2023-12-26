@@ -31,8 +31,7 @@ welcome = 'C1111'
 owner = 'U11111111'
 
 [CACHE]
-HOST = 'memcached'
-PORT = 11211
+URL = 'redis://redis:6379/0'
 PREFIX = 'YUI_'
 
 [LOGGING]

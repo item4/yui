@@ -257,7 +257,7 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    event = event = bot.create_message("D1", "U1")
+    event = bot.create_message("D1", "U1")
 
     assert cat.last_call.get("D1") is None
 

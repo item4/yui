@@ -3,9 +3,9 @@ import os
 import pathlib
 
 import aioresponses
-import emcache
 import pytest
 import pytest_asyncio
+from redis.asyncio import Redis
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.sql.expression import text
 
@@ -130,11 +130,9 @@ def bot_config(request):
 
 @pytest_asyncio.fixture()
 async def cache():
-    mc = await emcache.create_client(
-        [emcache.MemcachedHostAddress("localhost", 11211)],
-    )  # FIXME
-    yield Cache(mc, "YUI_TEST_")
-    await mc.close()
+    redis_client = Redis.from_url("redis://localhost")
+    yield Cache(redis_client, "YUI_TEST_")
+    await redis_client.aclose()
 
 
 @pytest.fixture()

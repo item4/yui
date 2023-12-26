@@ -16,9 +16,9 @@ YUI는 다용도 Slack App 입니다.
 
 - Git
 - Slack App 설치 및 App Token/Bot Token
-- Python 3.11.5 혹은 그 이상 버전
+- Python 3.12.1 혹은 그 이상 버전
 - PostgresSQL 15
-- memcached
+- Redis 5.0 이상
 - Poetry_ 1.6.1 이상
 
 
@@ -145,8 +145,7 @@ CACHE
   .. code-block:: toml
 
      [CACHE]
-     HOST = 'localhost'
-     PORT = 11211
+     URL = 'redis://localhost:6379/0'
      PREFIX = 'YUI_'
 
 

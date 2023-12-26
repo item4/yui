@@ -91,7 +91,7 @@ class FakeBot(Bot):
         try:
             yield
         finally:
-            await self.cache.flush_all()
+            await self.cache.flushall()
 
     def response(self, method: str):
         def decorator(func):

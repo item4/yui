@@ -15,7 +15,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       # Install Dependencies
       - name: Install Checkers
         run: pip install black ruff
@@ -44,10 +44,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      memcached:
-        image: memcached
+      redis:
+        image: redis/redis-stack:latest
         ports:
-          - 11211:11211
+          - 6379:6379
 
     steps:
       # Set-up
@@ -56,7 +56,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: Setup Poetry
         run: |
           pipx install --python $(which python) poetry

@@ -59,7 +59,7 @@ DEFAULT = {
             },
         },
     },
-    "CACHE": {"HOST": "localhost", "PORT": 11211, "PREFIX": "YUI_"},
+    "CACHE": {"URL": "redis://localhost:6379/0", "PREFIX": "YUI_"},
 }
 
 

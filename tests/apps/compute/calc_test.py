@@ -513,14 +513,14 @@ def test_listcomp():
     e = Evaluator()
     assert e.run("[x ** 2 for x in [1, 2, 3]]") == [1, 4, 9]
     assert "x" not in e.symbol_table
-    assert e.run("[x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]]") == ([
-        x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]
-    ])
+    assert e.run("[x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]]") == (
+        [x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]]
+    )
     assert "x" not in e.symbol_table
     assert "y" not in e.symbol_table
-    assert e.run("[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]") == ([
-        y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]
-    ])
+    assert e.run("[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]") == (
+        [y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
+    )
     assert "x" not in e.symbol_table
     assert "y" not in e.symbol_table
 
@@ -582,14 +582,14 @@ def test_setcomp():
     e = Evaluator()
     assert e.run("{x ** 2 for x in [1, 2, 3, 3]}") == {1, 4, 9}
     assert "x" not in e.symbol_table
-    assert e.run("{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}") == ({
-        x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]
-    })
+    assert e.run("{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}") == (
+        {x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
+    )
     assert "x" not in e.symbol_table
     assert "y" not in e.symbol_table
-    assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == ({
-        y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]
-    })
+    assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == (
+        {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
+    )
     assert "x" not in e.symbol_table
     assert "y" not in e.symbol_table
 
@@ -741,15 +741,13 @@ async def bot(event_loop):
 
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
-    (
-        (
-            "expr",
-            "expected_decimal_result",
-            "expected_num_result",
-            "expected_decimal_local",
-            "expected_num_local",
-        )
-    ),
+    ((
+        "expr",
+        "expected_decimal_result",
+        "expected_num_result",
+        "expected_decimal_local",
+        "expected_num_local",
+    )),
     [
         ("1", D("1"), 1, {}, {}),
         ("1+2", D("3"), 3, {}, {}),

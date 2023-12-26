@@ -19,11 +19,10 @@ from typing import TypeVar
 
 import aiocron
 import aiohttp
-import emcache
 from aiohttp.client_exceptions import ClientError
 from aiohttp.client_ws import ClientWebSocketResponse
 from dateutil.tz import tzoffset
-from emcache.client_errors import CommandError
+from redis.asyncio.client import Redis
 
 from .api import SlackAPI
 from .box import Box
@@ -76,7 +75,7 @@ class Bot(GetLoggerMixin):
     """Yui."""
 
     api: SlackAPI
-    mc: emcache.Client
+    redis_client: Redis
     cache: Cache
 
     def __init__(
@@ -201,19 +200,12 @@ class Bot(GetLoggerMixin):
             logger.info("register crontab")
             await self.register_tasks()
 
-        memcache_retries = 0
+        redis_retries = 0
 
         while True:
-            self.mc = await emcache.create_client(
-                [
-                    emcache.MemcachedHostAddress(
-                        self.config.CACHE["HOST"],
-                        self.config.CACHE["PORT"],
-                    ),
-                ],
-            )
+            self.redis_client = Redis.from_url(self.config.CACHE["URL"])
             self.cache = Cache(
-                self.mc,
+                self.redis_client,
                 self.config.CACHE.get("PREFIX", "YUI_"),
             )
             try:
@@ -222,18 +214,17 @@ class Bot(GetLoggerMixin):
                 RuntimeError,
                 asyncio.TimeoutError,
                 asyncio.CancelledError,
-                CommandError,
             ) as e:
-                logger.exception("fail to connect to memcache")
-                memcache_retries += 1
-                if memcache_retries < 3:
+                logger.exception("fail to connect to redis")
+                redis_retries += 1
+                if redis_retries < 3:
                     await self.cache.close()
-                    await asyncio.sleep(memcache_retries * 5)
+                    await asyncio.sleep(redis_retries * 5)
                     continue
-                logger.fatal("can not connect to memcache. stop to run")
+                logger.fatal("can not connect to redis. stop to run")
                 raise SystemExit from e
 
-            memcache_retries = 0
+            redis_retries = 0
 
             tasks = [
                 asyncio.create_task(self.connect()),
