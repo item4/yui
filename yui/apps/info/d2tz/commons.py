@@ -1,8 +1,12 @@
+import asyncio
+import random
+
 import aiohttp
 
 from ....bot import Bot
 from ....utils import json
 from ....utils.datetime import fromtimestamp
+from ....utils.datetime import now
 from ....utils.http import USER_AGENT
 
 HEADERS = {
@@ -50,12 +54,46 @@ CODE_MAPPING = {
 }
 
 
-async def say_d2r_terror_zone_info(bot: Bot, channel):
+async def get_d2r_terror_zone_info():
     async with aiohttp.ClientSession(headers=HEADERS) as session, session.get(
         "https://api.d2tz.info/terror_zone",
     ) as resp:
         blob = await resp.text()
-        data = json.loads(blob)
+        return json.loads(blob)
+
+
+async def say_d2r_terror_zone_info(bot: Bot, channel):
+    data = await get_d2r_terror_zone_info()
+
+    results = []
+    limit_dt = data["data"][1]["time"]
+    for x in data["data"]:
+        if x["time"] < limit_dt:
+            break
+        dt = fromtimestamp(x["time"])
+        fallback_time = dt.strftime("%Y-%m-%d %H:%M")
+        zone = CODE_MAPPING.get(x["zone"], x["zone"])
+        results.append(
+            f"[<!date^{x['time']}^{{date_num}} {{time}}|{fallback_time}>]"
+            f" {zone}",
+        )
+
+    text = "\n".join(results)
+    await bot.say(channel, text)
+
+
+async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
+    data = await get_d2r_terror_zone_info()
+    this_time = now().replace(minute=0, second=0, microsecond=0).timestamp()
+
+    loop_count = 0
+    while data["data"][1]["time"] < this_time:
+        data = await get_d2r_terror_zone_info()
+        await asyncio.sleep(random.randint(1, 5))
+        loop_count += 1
+        if loop_count > 300:
+            data = await get_d2r_terror_zone_info()
+            break
 
     results = []
     limit_dt = data["data"][1]["time"]
