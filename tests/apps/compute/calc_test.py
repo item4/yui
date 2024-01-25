@@ -51,7 +51,7 @@ def test_annassign():
     with pytest.raises(BadSyntax, match=err):
         e.run("a: int = 10")
 
-    assert "a" not in e.symbol_table
+    assert "a" not in e.scope
 
 
 def test_assert():
@@ -67,12 +67,12 @@ def test_assert():
 def test_assign():
     e = Evaluator()
     e.run("a = 1 + 2")
-    assert e.symbol_table["a"] == 3
+    assert e.scope["a"] == 3
     e.run("x, y = 10, 20")
-    assert e.symbol_table["x"] == 10
-    assert e.symbol_table["y"] == 20
+    assert e.scope["x"] == 10
+    assert e.scope["y"] == 20
 
-    e.symbol_table["dt"] = datetime.now()
+    e.scope["dt"] = datetime.now()
     err = "This assign method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("dt.year = 2000")
@@ -90,18 +90,18 @@ def test_assign():
         e.run("year, month, day = 1")
 
     e.run("arr = [1, 2, 3]")
-    assert e.symbol_table["arr"] == [1, 2, 3]
+    assert e.scope["arr"] == [1, 2, 3]
 
     e.run("arr[1] = 5")
-    assert e.symbol_table["arr"] == [1, 5, 3]
+    assert e.scope["arr"] == [1, 5, 3]
 
     e.run("arr[:] = [10, 20, 30]")
-    assert e.symbol_table["arr"] == [10, 20, 30]
+    assert e.scope["arr"] == [10, 20, 30]
 
 
 def test_asyncfor():
     e = Evaluator()
-    e.symbol_table["r"] = 0
+    e.scope["r"] = 0
     err = "You can not use `async for` loop syntax"
     with pytest.raises(BadSyntax, match=err):
         e.run("""
@@ -109,7 +109,7 @@ async for x in [1, 2, 3, 4]:
     r += x
 
 """)
-    assert e.symbol_table["r"] == 0
+    assert e.scope["r"] == 0
 
 
 def test_asyncfunctiondef():
@@ -121,12 +121,12 @@ async def abc():
     pass
 
 """)
-    assert "abc" not in e.symbol_table
+    assert "abc" not in e.scope
 
 
 def test_asyncwith():
     e = Evaluator()
-    e.symbol_table["r"] = 0
+    e.scope["r"] = 0
     err = "You can not use `async with` syntax"
     with pytest.raises(BadSyntax, match=err):
         e.run("""
@@ -134,31 +134,31 @@ async with x():
     r += 100
 
 """)
-    assert e.symbol_table["r"] == 0
+    assert e.scope["r"] == 0
 
 
 def test_attribute():
     e = Evaluator()
-    e.symbol_table["dt"] = datetime.now()
+    e.scope["dt"] = datetime.now()
     e.run("x = dt.year")
-    assert e.symbol_table["x"] == e.symbol_table["dt"].year
+    assert e.scope["x"] == e.scope["dt"].year
 
     err = "You can not access `test_test_test` attribute"
     with pytest.raises(BadSyntax, match=err):
         e.run("y = dt.test_test_test")
 
-    assert "y" not in e.symbol_table
+    assert "y" not in e.scope
 
     err = "You can not access `asdf` attribute"
     with pytest.raises(BadSyntax, match=err):
         e.run("z = x.asdf")
 
-    e.symbol_table["math"] = math
+    e.scope["math"] = math
     err = "You can not access `__module__` attribute"
     with pytest.raises(BadSyntax, match=err):
         e.run("math.__module__")
 
-    e.symbol_table["datetime"] = datetime
+    e.scope["datetime"] = datetime
     err = "You can not access `test_test` attribute"
     with pytest.raises(BadSyntax, match=err):
         e.run("datetime.test_test")
@@ -166,18 +166,18 @@ def test_attribute():
 
 def test_augassign():
     e = Evaluator()
-    e.symbol_table["a"] = 0
+    e.scope["a"] = 0
     e.run("a += 1")
-    assert e.symbol_table["a"] == 1
-    e.symbol_table["l"] = [1, 2, 3, 4]
+    assert e.scope["a"] == 1
+    e.scope["l"] = [1, 2, 3, 4]
     e.run("l[0] -= 1")
-    assert e.symbol_table["l"] == [0, 2, 3, 4]
+    assert e.scope["l"] == [0, 2, 3, 4]
 
     err = "This assign method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("l[2:3] += 20")
 
-    e.symbol_table["dt"] = datetime.now()
+    e.scope["dt"] = datetime.now()
     err = "This assign method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("dt.year += 2000")
@@ -188,7 +188,7 @@ def test_await():
     err = "You can not await anything"
     with pytest.raises(BadSyntax, match=err):
         e.run("r = await x()")
-    assert "r" not in e.symbol_table
+    assert "r" not in e.scope
 
 
 def test_binop():
@@ -225,22 +225,22 @@ def test_bytes():
     e = Evaluator()
     assert e.run('b"asdf"') == b"asdf"
     e.run('a = b"asdf"')
-    assert e.symbol_table["a"] == b"asdf"
+    assert e.scope["a"] == b"asdf"
 
 
 def test_call():
     e = Evaluator()
-    e.symbol_table["date"] = date
+    e.scope["date"] = date
     e.run("x = date(2019, 10, day=7)")
-    assert e.symbol_table["x"] == date(2019, 10, day=7)
+    assert e.scope["x"] == date(2019, 10, day=7)
 
-    e.symbol_table["math"] = math
+    e.scope["math"] = math
     e.run("y = math.sqrt(121)")
-    assert e.symbol_table["y"] == math.sqrt(121)
+    assert e.scope["y"] == math.sqrt(121)
 
-    e.symbol_table["datetime"] = datetime
+    e.scope["datetime"] = datetime
     e.run("z = datetime.now().date()")
-    assert e.symbol_table["z"] == datetime.now().date()
+    assert e.scope["z"] == datetime.now().date()
 
 
 def test_classdef():
@@ -252,7 +252,7 @@ class ABCD:
     pass
 
 """)
-    assert "ABCD" not in e.symbol_table
+    assert "ABCD" not in e.scope
 
 
 def test_compare():
@@ -278,22 +278,22 @@ def test_continue():
 
 def test_delete():
     e = Evaluator()
-    e.symbol_table["a"] = 0
-    e.symbol_table["b"] = 0
-    e.symbol_table["c"] = 0
+    e.scope["a"] = 0
+    e.scope["b"] = 0
+    e.scope["c"] = 0
     e.run("del a, b, c")
-    assert "a" not in e.symbol_table
-    assert "b" not in e.symbol_table
-    assert "c" not in e.symbol_table
-    e.symbol_table["l"] = [1, 2, 3, 4]
+    assert "a" not in e.scope
+    assert "b" not in e.scope
+    assert "c" not in e.scope
+    e.scope["l"] = [1, 2, 3, 4]
     e.run("del l[0]")
-    assert e.symbol_table["l"] == [2, 3, 4]
+    assert e.scope["l"] == [2, 3, 4]
 
     err = "This delete method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("del l[2:3]")
 
-    e.symbol_table["dt"] = datetime.now()
+    e.scope["dt"] = datetime.now()
     err = "This delete method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("del dt.year")
@@ -303,7 +303,7 @@ def test_dict():
     e = Evaluator()
     assert e.run("{1: 111, 2: 222}") == {1: 111, 2: 222}
     e.run("a = {1: 111, 2: 222}")
-    assert e.symbol_table["a"] == {1: 111, 2: 222}
+    assert e.scope["a"] == {1: 111, 2: 222}
 
 
 def test_dictcomp():
@@ -313,16 +313,27 @@ def test_dictcomp():
         3: 121,
         4: 12321,
     }
-    assert "k" not in e.symbol_table
-    assert "v" not in e.symbol_table
+    assert "k" not in e.scope
+    assert "v" not in e.scope
+
     e.run("a = {k+1: v**2 for k, v in {1: 1, 2: 11, 3: 111}.items()}")
-    assert e.symbol_table["a"] == {
+    assert e.scope["a"] == {
         2: 1,
         3: 121,
         4: 12321,
     }
-    assert "k" not in e.symbol_table
-    assert "v" not in e.symbol_table
+    assert "k" not in e.scope
+    assert "v" not in e.scope
+
+    e.run("k = 'test k'")
+    e.run("v = 'test v'")
+    assert e.run("{k+1: v**2 for k, v in {1: 1, 2: 11, 3: 111}.items()}") == {
+        2: 1,
+        3: 121,
+        4: 12321,
+    }
+    assert e.scope["k"] == "test k"
+    assert e.scope["v"] == "test v"
 
 
 def test_ellipsis():
@@ -352,7 +363,7 @@ def abc():
     pass
 
 """)
-    assert "abc" not in e.symbol_table
+    assert "abc" not in e.scope
 
 
 def test_for():
@@ -375,7 +386,7 @@ for x in [1, 2, 3, 4, 5, 6]:
 else:
     total = total + 10000
 """)
-    assert e.symbol_table["total"] == total
+    assert e.scope["total"] == total
 
     total2 = 0
     for x in [1, 2, 3, 4, 5, 6]:
@@ -396,23 +407,23 @@ for x in [1, 2, 3, 4, 5, 6]:
 else:
     total2 = total2 + 10000
 """)
-    assert e.symbol_table["total2"] == total2
+    assert e.scope["total2"] == total2
 
 
 def test_formattedvalue():
     e = Evaluator()
-    e.symbol_table["before"] = 123456
+    e.scope["before"] = 123456
     e.run('after = f"change {before} to {before:,}!"')
-    assert e.symbol_table["after"] == "change 123456 to 123,456!"
+    assert e.scope["after"] == "change 123456 to 123,456!"
 
 
 def test_generator_exp():
     e = Evaluator()
-    e.symbol_table["r"] = [1, 2, 3]
+    e.scope["r"] = [1, 2, 3]
     err = "Defining new generator expression is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("x = (i ** 2 for i in r)")
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
 
 
 def test_global():
@@ -424,14 +435,14 @@ def test_global():
 
 def test_if():
     e = Evaluator()
-    e.symbol_table["a"] = 1
+    e.scope["a"] = 1
     e.run("""
 if a == 1:
     a = 2
     b = 3
 """)
-    assert e.symbol_table["a"] == 2
-    assert e.symbol_table["b"] == 3
+    assert e.scope["a"] == 2
+    assert e.scope["b"] == 3
 
     e.run("""
 if a == 1:
@@ -443,10 +454,10 @@ else:
     b = 4
     c = 5
 """)
-    assert e.symbol_table["a"] == 3
-    assert e.symbol_table["b"] == 4
-    assert e.symbol_table["c"] == 5
-    assert "z" not in e.symbol_table
+    assert e.scope["a"] == 3
+    assert e.scope["b"] == 4
+    assert e.scope["c"] == 5
+    assert "z" not in e.scope
 
     e.run("""
 if a == 1:
@@ -463,14 +474,14 @@ else:
     c = 5
     y = 7
 """)
-    assert e.symbol_table["a"] == 3
-    assert e.symbol_table["b"] == 4
-    assert e.symbol_table["c"] == 5
-    assert e.symbol_table["d"] == 4
-    assert e.symbol_table["e"] == 5
-    assert e.symbol_table["f"] == 6
-    assert "y" not in e.symbol_table
-    assert "z" not in e.symbol_table
+    assert e.scope["a"] == 3
+    assert e.scope["b"] == 4
+    assert e.scope["c"] == 5
+    assert e.scope["d"] == 4
+    assert e.scope["e"] == 5
+    assert e.scope["f"] == 6
+    assert "y" not in e.scope
+    assert "z" not in e.scope
 
 
 def test_ifexp():
@@ -484,7 +495,7 @@ def test_import():
     err = "You can not import anything"
     with pytest.raises(BadSyntax, match=err):
         e.run("import sys")
-    assert "sys" not in e.symbol_table
+    assert "sys" not in e.scope
 
 
 def test_importfrom():
@@ -492,7 +503,7 @@ def test_importfrom():
     err = "You can not import anything"
     with pytest.raises(BadSyntax, match=err):
         e.run("from os import path")
-    assert "path" not in e.symbol_table
+    assert "path" not in e.scope
 
 
 def test_lambda():
@@ -506,23 +517,33 @@ def test_list():
     e = Evaluator()
     assert e.run("[1, 2, 3]") == [1, 2, 3]
     e.run("a = [1, 2, 3]")
-    assert e.symbol_table["a"] == [1, 2, 3]
+    assert e.scope["a"] == [1, 2, 3]
 
 
 def test_listcomp():
     e = Evaluator()
     assert e.run("[x ** 2 for x in [1, 2, 3]]") == [1, 4, 9]
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
+
     assert e.run("[x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]]") == (
         [x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]]
     )
-    assert "x" not in e.symbol_table
-    assert "y" not in e.symbol_table
+    assert "x" not in e.scope
+    assert "y" not in e.scope
+
     assert e.run("[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]") == (
         [y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
     )
-    assert "x" not in e.symbol_table
-    assert "y" not in e.symbol_table
+    assert "x" not in e.scope
+    assert "y" not in e.scope
+
+    e.run("x = 'test x'")
+    e.run("y = 'test y'")
+    assert e.run("[y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]]") == (
+        [y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]]
+    )
+    assert e.scope["x"] == "test x"
+    assert e.scope["y"] == "test y"
 
 
 def test_nameconstant():
@@ -533,9 +554,9 @@ def test_nameconstant():
     e.run("x = True")
     e.run("y = False")
     e.run("z = None")
-    assert e.symbol_table["x"] is True
-    assert e.symbol_table["y"] is False
-    assert e.symbol_table["z"] is None
+    assert e.scope["x"] is True
+    assert e.scope["y"] is False
+    assert e.scope["z"] is None
 
 
 def test_nonlocal():
@@ -549,7 +570,7 @@ def test_num():
     e = Evaluator()
     assert e.run("123") == 123
     e.run("a = 123")
-    assert e.symbol_table["a"] == 123
+    assert e.scope["a"] == 123
 
 
 def test_pass():
@@ -575,30 +596,40 @@ def test_set():
     e = Evaluator()
     assert e.run("{1, 1, 2, 3, 3}") == {1, 2, 3}
     e.run("a = {1, 1, 2, 3, 3}")
-    assert e.symbol_table["a"] == {1, 2, 3}
+    assert e.scope["a"] == {1, 2, 3}
 
 
 def test_setcomp():
     e = Evaluator()
     assert e.run("{x ** 2 for x in [1, 2, 3, 3]}") == {1, 4, 9}
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
+
     assert e.run("{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}") == (
         {x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
     )
-    assert "x" not in e.symbol_table
-    assert "y" not in e.symbol_table
+    assert "x" not in e.scope
+    assert "y" not in e.scope
+
     assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == (
         {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
     )
-    assert "x" not in e.symbol_table
-    assert "y" not in e.symbol_table
+    assert "x" not in e.scope
+    assert "y" not in e.scope
+
+    e.run("x = 'test x'")
+    e.run("y = 'test y'")
+    assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == (
+        {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
+    )
+    assert e.scope["x"] == "test x"
+    assert e.scope["y"] == "test y"
 
 
 def test_slice():
     e = Evaluator()
-    e.symbol_table["obj"] = GetItemSpy()
+    e.scope["obj"] = GetItemSpy()
     e.run("obj[10:20:3]")
-    s = e.symbol_table["obj"].queue.pop()
+    s = e.scope["obj"].queue.pop()
     assert isinstance(s, slice)
     assert s.start == 10
     assert s.stop == 20
@@ -609,7 +640,7 @@ def test_str():
     e = Evaluator()
     assert e.run('"asdf"') == "asdf"
     e.run('a = "asdf"')
-    assert e.symbol_table["a"] == "asdf"
+    assert e.scope["a"] == "asdf"
 
 
 def test_subscript():
@@ -620,13 +651,13 @@ def test_subscript():
     e.run("a = [10, 20, 30][0]")
     e.run("b = (100, 200, 300)[0]")
     e.run('c = {"a": 1000, "b": 2000, "c": 3000}["a"]')
-    assert e.symbol_table["a"] == 10
-    assert e.symbol_table["b"] == 100
-    assert e.symbol_table["c"] == 1000
-    e.symbol_table["l"] = [11, 22, 33]
+    assert e.scope["a"] == 10
+    assert e.scope["b"] == 100
+    assert e.scope["c"] == 1000
+    e.scope["l"] = [11, 22, 33]
     assert e.run("l[2]") == 33
     e.run("l[2] = 44")
-    assert e.symbol_table["l"] == [11, 22, 44]
+    assert e.scope["l"] == [11, 22, 44]
 
 
 def test_try():
@@ -639,14 +670,14 @@ try:
 except:
     pass
 """)
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
 
 
 def test_tuple():
     e = Evaluator()
     assert e.run("(1, 1, 2, 3, 3)") == (1, 1, 2, 3, 3)
     e.run("a = (1, 1, 2, 3, 3)")
-    assert e.symbol_table["a"] == (1, 1, 2, 3, 3)
+    assert e.scope["a"] == (1, 1, 2, 3, 3)
 
 
 def test_unaryop():
@@ -679,7 +710,7 @@ while total > 100:
 else:
     total = total + 10000
 """)
-    assert e.symbol_table["total"] == total
+    assert e.scope["total"] == total
 
     r = 0
     while True:
@@ -694,7 +725,7 @@ while True:
 else:
     r += 10
 """)
-    assert e.symbol_table["r"] == 0
+    assert e.scope["r"] == 0
 
 
 def test_with():
@@ -705,7 +736,7 @@ def test_with():
 with some:
     x = 1
 """)
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
 
 
 def test_yield():
@@ -713,7 +744,7 @@ def test_yield():
     err = "You can not use `yield` syntax"
     with pytest.raises(BadSyntax, match=err):
         e.run("x = yield f()")
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
 
 
 def test_yield_from():
@@ -721,7 +752,7 @@ def test_yield_from():
     err = "You can not use `yield from` syntax"
     with pytest.raises(BadSyntax, match=err):
         e.run("x = yield from f()")
-    assert "x" not in e.symbol_table
+    assert "x" not in e.scope
 
 
 @pytest.fixture(scope="module")
@@ -837,7 +868,7 @@ async def test_calculate_fine(
     )
 
     assert expected_decimal_result == decimal_result
-    assert expected_decimal_local.keys() == decimal_local.keys()
+    assert set(expected_decimal_local.keys()) == set(decimal_local.keys())
 
     for key in decimal_local:
         expected = expected_decimal_local[key]
@@ -851,7 +882,7 @@ async def test_calculate_fine(
             assert expected == local
 
     assert expected_num_result == num_result
-    assert expected_num_local.keys() == num_local.keys()
+    assert set(expected_num_local.keys()) == set(num_local.keys())
 
     for key in num_local:
         expected = expected_num_local[key]

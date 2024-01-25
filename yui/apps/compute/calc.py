@@ -333,6 +333,51 @@ UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
 }
 
 
+class ScopeStack:
+    stack: list[dict[str, Any]]
+
+    def __init__(self) -> None:
+        self.stack = [{}]
+
+    def create_new_scope(self):
+        self.stack.append({})
+
+    def remove_top_scope(self):
+        self.stack.pop()
+
+    def __getitem__(self, item: str) -> Any:
+        for scope in reversed(self.stack):
+            try:
+                return scope[item]
+            except KeyError:
+                continue
+        raise NameError(item)
+
+    def keys(self):
+        yield from {key for scope in self.stack for key in scope}
+
+    def __iter__(self):
+        return self.keys()
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.stack[-1][key] = value
+
+    def __delitem__(self, key: str) -> None:
+        try:
+            self.stack[-1].pop(key)
+        except KeyError as e:
+            raise NameError(key) from e
+
+    def __contains__(self, item: str) -> bool:
+        return any(item in x for x in self.stack)
+
+    def __enter__(self) -> None:
+        self.create_new_scope()
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        self.remove_top_scope()
+
+
 class Evaluator:
     last_dump: str
 
@@ -823,7 +868,7 @@ class Evaluator:
             "random": random,
             "statistics": statistics,
         }
-        self.symbol_table: dict[str, Any] = {}
+        self.scope = ScopeStack()
         self.current_interrupt: _ast.Break | _ast.Continue | None = None
 
     def run(self, expr: str):
@@ -845,7 +890,7 @@ class Evaluator:
         cls = node.__class__
 
         if cls == _ast.Name:
-            self.symbol_table[node.id] = val
+            self.scope[node.id] = val
         elif cls in (_ast.Tuple, _ast.List):
             if not isinstance(val, Iterable):
                 raise TypeError(
@@ -875,7 +920,7 @@ class Evaluator:
         cls = node.__class__
 
         if cls == _ast.Name:
-            del self.symbol_table[node.id]
+            del self.scope[node.id]
         elif cls == _ast.Tuple:
             for elt in node.elts:
                 self.delete(elt)
@@ -931,8 +976,8 @@ class Evaluator:
 
         if target_cls == _ast.Name:
             target_id = target.id  # type: ignore
-            self.symbol_table[target_id] = BINOP_TABLE[op_cls](
-                self.symbol_table[target_id],
+            self.scope[target_id] = BINOP_TABLE[op_cls](
+                self.scope[target_id],
                 value,
             )
         elif target_cls == _ast.Subscript:
@@ -1002,7 +1047,7 @@ class Evaluator:
         for target in node.targets:
             target_cls = target.__class__
             if target_cls == _ast.Name:
-                del self.symbol_table[target.id]  # type: ignore
+                del self.scope[target.id]  # type: ignore
             elif target_cls == _ast.Subscript:
                 sym = self._run(target.value)  # type: ignore
                 xslice = self._run(target.slice)  # type: ignore
@@ -1026,26 +1071,27 @@ class Evaluator:
         result: dict = {}
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
-            for val in self._run(current_gen.iter):
-                self.assign(current_gen.target, val)
-                add = True
-                for cond in current_gen.ifs:
-                    add = add and self._run(cond)
-                if add:
-                    if len(node.generators) > 1:
-                        r = self.visit_dictcomp(
-                            _ast.DictComp(
-                                key=node.key,
-                                value=node.value,
-                                generators=node.generators[1:],
-                            ),
-                        )
-                        result.update(r)
-                    else:
-                        key = self._run(node.key)
-                        value = self._run(node.value)
-                        result[key] = value
-                self.delete(current_gen.target)
+            with self.scope:
+                for val in self._run(current_gen.iter):
+                    self.assign(current_gen.target, val)
+                    add = True
+                    for cond in current_gen.ifs:
+                        add = add and self._run(cond)
+                    if add:
+                        if len(node.generators) > 1:
+                            r = self.visit_dictcomp(
+                                _ast.DictComp(
+                                    key=node.key,
+                                    value=node.value,
+                                    generators=node.generators[1:],
+                                ),
+                            )
+                            result.update(r)
+                        else:
+                            key = self._run(node.key)
+                            value = self._run(node.value)
+                            result[key] = value
+                    self.delete(current_gen.target)
         return result
 
     def visit_expr(self, node: _ast.Expr):  # value,
@@ -1113,24 +1159,25 @@ class Evaluator:
         result: list = []
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
-            for val in self._run(current_gen.iter):
-                self.assign(current_gen.target, val)
-                add = True
-                for cond in current_gen.ifs:
-                    add = add and self._run(cond)
-                if add:
-                    if len(node.generators) > 1:
-                        r = self.visit_listcomp(
-                            _ast.ListComp(
-                                elt=node.elt,
-                                generators=node.generators[1:],
-                            ),
-                        )
-                        result += r
-                    else:
-                        r = self._run(node.elt)
-                        result.append(r)
-                self.delete(current_gen.target)
+            with self.scope:
+                for val in self._run(current_gen.iter):
+                    self.assign(current_gen.target, val)
+                    add = True
+                    for cond in current_gen.ifs:
+                        add = add and self._run(cond)
+                    if add:
+                        if len(node.generators) > 1:
+                            r = self.visit_listcomp(
+                                _ast.ListComp(
+                                    elt=node.elt,
+                                    generators=node.generators[1:],
+                                ),
+                            )
+                            result += r
+                        else:
+                            r = self._run(node.elt)
+                            result.append(r)
+                    self.delete(current_gen.target)
         return result
 
     def visit_module(self, node: _ast.Module):  # body,
@@ -1143,8 +1190,8 @@ class Evaluator:
         ctx = node.ctx.__class__
         if ctx == ast.Del:
             return node.id
-        if node.id in self.symbol_table:
-            return self.symbol_table[node.id]
+        if node.id in self.scope:
+            return self.scope[node.id]
         if node.id in self.global_symbol_table:
             return self.global_symbol_table[node.id]
         raise NameError
@@ -1168,24 +1215,25 @@ class Evaluator:
         result = set()
         current_gen = node.generators[0]
         if current_gen.__class__ == _ast.comprehension:
-            for val in self._run(current_gen.iter):
-                self.assign(current_gen.target, val)
-                add = True
-                for cond in current_gen.ifs:
-                    add = add and self._run(cond)
-                if add:
-                    if len(node.generators) > 1:
-                        r = self.visit_setcomp(
-                            _ast.SetComp(
-                                elt=node.elt,
-                                generators=node.generators[1:],
-                            ),
-                        )
-                        result |= r
-                    else:
-                        r = self._run(node.elt)
-                        result.add(r)
-                self.delete(current_gen.target)
+            with self.scope:
+                for val in self._run(current_gen.iter):
+                    self.assign(current_gen.target, val)
+                    add = True
+                    for cond in current_gen.ifs:
+                        add = add and self._run(cond)
+                    if add:
+                        if len(node.generators) > 1:
+                            r = self.visit_setcomp(
+                                _ast.SetComp(
+                                    elt=node.elt,
+                                    generators=node.generators[1:],
+                                ),
+                            )
+                            result |= r
+                        else:
+                            r = self._run(node.elt)
+                            result.add(r)
+                    self.delete(current_gen.target)
         return result
 
     def visit_slice(self, node: _ast.Slice):  # lower, upper, step
@@ -1243,4 +1291,4 @@ def calculate(expr: str, *, decimal_mode: bool = True):
     e = Evaluator(decimal_mode=decimal_mode)
     result = e.run(expr)
 
-    return result, e.symbol_table
+    return result, e.scope
