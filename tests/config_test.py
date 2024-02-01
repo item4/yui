@@ -58,7 +58,8 @@ def test_load_fine(fx_tmpdir: pathlib.Path):
 
     file = fx_tmpdir / "yui.config.toml"
     with file.open("w") as f:
-        f.write("""
+        f.write(
+            """
 APP_TOKEN = 'TEST_APP_TOKEN'
 BOT_TOKEN = 'TEST_BOT_TOKEN'
 DATABASE_URL = 'sqlite:///:memory:'
@@ -72,7 +73,8 @@ general = 'C1'
 [USERS]
 owner = 'U111'
 
-        """)
+        """,
+        )
     config = load(file)
 
     assert config.APP_TOKEN == "TEST_APP_TOKEN"  # noqa: S105

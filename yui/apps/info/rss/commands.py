@@ -40,7 +40,8 @@ class RSS(route.RouteApp):
         return f"`{prefix}rss`: RSS Feed 구독"
 
     def get_full_help(self, prefix: str):
-        return inspect.cleandoc(f"""
+        return inspect.cleandoc(
+            f"""
         *RSS Feed 구독*
 
         채널에서 RSS를 구독할 때 사용됩니다.
@@ -52,7 +53,8 @@ class RSS(route.RouteApp):
 
         `add` 대신 `추가` 를 사용할 수 있습니다.
         `list` 대신 `목록` 을 사용할 수 있습니다.
-        `del` 대신 `delete`, `삭제`, `제거` 를 사용할 수 있습니다.""")
+        `del` 대신 `delete`, `삭제`, `제거` 를 사용할 수 있습니다.""",
+        )
 
     async def fallback(self, bot, event: Message):
         await bot.say(event.channel, f"Usage: `{bot.config.PREFIX}help rss`")

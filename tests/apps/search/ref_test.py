@@ -41,8 +41,7 @@ async def test_css_command(bot: FakeBot):
         assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
-            said.data["text"]
-            == "CSS `font-family` - "
+            said.data["text"] == "CSS `font-family` - "
             "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
         )
 
@@ -79,8 +78,7 @@ async def test_html_command(bot: FakeBot):
         assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
-            said.data["text"]
-            == "HTML `<section>` - "
+            said.data["text"] == "HTML `<section>` - "
             "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"
         )
 
@@ -117,8 +115,7 @@ async def test_python_command(bot: FakeBot):
         assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
-            said.data["text"]
-            == "Python Built-in Functions - "
+            said.data["text"] == "Python Built-in Functions - "
             "https://docs.python.org/3/library/functions.html"
         )
 
@@ -128,8 +125,7 @@ async def test_python_command(bot: FakeBot):
         assert isinstance(said.data, dict)
         assert said.data["channel"] == "C1"
         assert (
-            said.data["text"]
-            == "Python re — Regular expression operations - "
+            said.data["text"] == "Python re — Regular expression operations - "
             "https://docs.python.org/3/library/re.html"
         )
 

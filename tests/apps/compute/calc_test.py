@@ -104,11 +104,13 @@ def test_asyncfor():
     e.scope["r"] = 0
     err = "You can not use `async for` loop syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 async for x in [1, 2, 3, 4]:
     r += x
 
-""")
+""",
+        )
     assert e.scope["r"] == 0
 
 
@@ -116,11 +118,13 @@ def test_asyncfunctiondef():
     e = Evaluator()
     err = "Defining new coroutine via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 async def abc():
     pass
 
-""")
+""",
+        )
     assert "abc" not in e.scope
 
 
@@ -129,11 +133,13 @@ def test_asyncwith():
     e.scope["r"] = 0
     err = "You can not use `async with` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 async with x():
     r += 100
 
-""")
+""",
+        )
     assert e.scope["r"] == 0
 
 
@@ -247,11 +253,13 @@ def test_classdef():
     e = Evaluator()
     err = "Defining new class via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 class ABCD:
     pass
 
-""")
+""",
+        )
     assert "ABCD" not in e.scope
 
 
@@ -358,11 +366,13 @@ def test_functiondef():
     e = Evaluator()
     err = "Defining new function via def syntax is not allowed"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 def abc():
     pass
 
-""")
+""",
+        )
     assert "abc" not in e.scope
 
 
@@ -376,7 +386,8 @@ def test_for():
     else:  # noqa: PLW0120
         total = total + 10000
     e = Evaluator()
-    e.run("""
+    e.run(
+        """
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total = total + x
@@ -385,7 +396,8 @@ for x in [1, 2, 3, 4, 5, 6]:
     total = total * 2
 else:
     total = total + 10000
-""")
+""",
+    )
     assert e.scope["total"] == total
 
     total2 = 0
@@ -397,7 +409,8 @@ else:
     else:
         total2 = total2 + 10000
 
-    e.run("""
+    e.run(
+        """
 total2 = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 + x
@@ -406,7 +419,8 @@ for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 * 2
 else:
     total2 = total2 + 10000
-""")
+""",
+    )
     assert e.scope["total2"] == total2
 
 
@@ -436,15 +450,18 @@ def test_global():
 def test_if():
     e = Evaluator()
     e.scope["a"] = 1
-    e.run("""
+    e.run(
+        """
 if a == 1:
     a = 2
     b = 3
-""")
+""",
+    )
     assert e.scope["a"] == 2
     assert e.scope["b"] == 3
 
-    e.run("""
+    e.run(
+        """
 if a == 1:
     a = 2
     b = 3
@@ -453,13 +470,15 @@ else:
     a = 3
     b = 4
     c = 5
-""")
+""",
+    )
     assert e.scope["a"] == 3
     assert e.scope["b"] == 4
     assert e.scope["c"] == 5
     assert "z" not in e.scope
 
-    e.run("""
+    e.run(
+        """
 if a == 1:
     a = 2
     b = 3
@@ -473,7 +492,8 @@ else:
     b = 4
     c = 5
     y = 7
-""")
+""",
+    )
     assert e.scope["a"] == 3
     assert e.scope["b"] == 4
     assert e.scope["c"] == 5
@@ -664,12 +684,14 @@ def test_try():
     e = Evaluator()
     err = "You can not use `try` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 try:
     x = 1
 except:
     pass
-""")
+""",
+        )
     assert "x" not in e.scope
 
 
@@ -699,7 +721,8 @@ def test_while():
     else:  # noqa: PLW0120
         total = total + 10000
     e = Evaluator()
-    e.run("""
+    e.run(
+        """
 total = 0
 i = 1
 while total > 100:
@@ -709,7 +732,8 @@ while total > 100:
         i += 1
 else:
     total = total + 10000
-""")
+""",
+    )
     assert e.scope["total"] == total
 
     r = 0
@@ -718,13 +742,15 @@ else:
     else:
         r += 10
 
-    e.run("""
+    e.run(
+        """
 r = 0
 while True:
     break
 else:
     r += 10
-""")
+""",
+    )
     assert e.scope["r"] == 0
 
 
@@ -732,10 +758,12 @@ def test_with():
     e = Evaluator()
     err = "You can not use `with` syntax"
     with pytest.raises(BadSyntax, match=err):
-        e.run("""
+        e.run(
+            """
 with some:
     x = 1
-""")
+""",
+        )
     assert "x" not in e.scope
 
 

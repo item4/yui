@@ -57,7 +57,8 @@ class Gacha(route.RouteApp):
         return f"`{prefix}가챠`: 가챠 계산기"
 
     def get_full_help(self, prefix: str):
-        return inspect.cleandoc(f"""
+        return inspect.cleandoc(
+            f"""
 *가챠 계산기*
 
 해로운 문명, 가챠에 관련된 계산을 도와줍니다.
@@ -80,7 +81,8 @@ Aliases
 - `수집`대신 `collect`를 사용할 수 있습니다.
 - `도전`대신 `challenge`를 사용할 수 있습니다.
 - `도전`에서 `--성공`대신 `--성공횟수`/`--successes`/`-s`를 사용할 수 있습니다.
-""")
+""",
+        )
 
     async def fallback(self, bot, event: Message):
         await bot.say(event.channel, f"Usage: `{bot.config.PREFIX}help 가챠`")

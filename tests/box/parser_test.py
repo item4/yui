@@ -96,8 +96,7 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "--required-option: incorrect option value count."
+        e.value.msg == "--required-option: incorrect option value count."
         " expected 1, 0 given."
     )
 
@@ -115,8 +114,7 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "--container: invalid type of option value"
+        e.value.msg == "--container: invalid type of option value"
         "(Can not find matching caster)"
     )
 
@@ -127,8 +125,7 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "--transform-non-type: fail to transform option "
+        e.value.msg == "--transform-non-type: fail to transform option "
         "value (day is out of range for month)"
     )
 
@@ -139,8 +136,7 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "--transform-two: fail to transform option "
+        e.value.msg == "--transform-two: fail to transform option "
         "value (day is out of range for month)"
     )
 
@@ -248,8 +244,7 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "args: fail to transform argument value "
+        e.value.msg == "args: fail to transform argument value "
         "(day is out of range for month)"
     )
 
@@ -265,7 +260,6 @@ def test_parse_option_and_arguments():
     with pytest.raises(SyntaxError) as e:
         parse_option_and_arguments(app.handler, chunks)
     assert (
-        e.value.msg
-        == "args: fail to transform argument value "
+        e.value.msg == "args: fail to transform argument value "
         "(day is out of range for month)"
     )
