@@ -5,6 +5,7 @@ from datetime import date
 from datetime import datetime
 
 import pytest
+import pytest_asyncio
 
 from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
@@ -810,17 +811,10 @@ def test_yield_from():
     assert "x" not in e.scope
 
 
-@pytest.fixture(scope="module")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="module")
-async def bot(event_loop):
+@pytest_asyncio.fixture()
+async def bot():
     return FakeBot(
-        loop=event_loop,
+        loop=asyncio.get_running_loop(),
         process_pool_executor=ProcessPoolExecutor(),
     )
 
