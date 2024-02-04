@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       # Install Dependencies
@@ -54,7 +54,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Setup Poetry
@@ -90,12 +90,12 @@ jobs:
         run: |
           poetry export --without dev -o requirements.txt --without-hashes
       - name: Archive requirements.txt file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: python-deps
           path: requirements.txt
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
 
@@ -115,7 +115,7 @@ jobs:
           username: item4
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Fetch stored requirements.txt
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: python-deps
       - name: Build and push
