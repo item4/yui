@@ -5,7 +5,7 @@ preview = true
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+target-version = "py312"
 
 
 [tool.ruff.lint]
@@ -80,6 +80,8 @@ ignore = [
     # tryceratops
     "TRY003",  # Avoid specifying long messages outside the exception class
     "TRY301",  # Abstract raise to an inner function
+    # pyupgrade
+    "UP040",  # Type alias {name} uses TypeAlias annotation instead of the type keyword - mypy does not support this yet
 ]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
