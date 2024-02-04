@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from tests.util import FakeBot
@@ -6,8 +8,8 @@ from yui.apps.weather.commands import weather
 
 
 @pytest.mark.asyncio()
-async def test_weather_command(bot_config, event_loop, cache, address):
-    bot = FakeBot(bot_config, loop=event_loop, cache=cache)
+async def test_weather_command(bot_config, cache, address):
+    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
 
