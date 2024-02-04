@@ -717,6 +717,18 @@ def test_tuple():
     assert e.scope["a"] == (1, 1, 2, 3, 3)
 
 
+def test_typealias():
+    e = Evaluator()
+    err = "You can not define type alias"
+    with pytest.raises(BadSyntax, match=err):
+        e.run(
+            """
+type Number = int
+""",
+        )
+    assert "Number" not in e.scope
+
+
 def test_unaryop():
     e = Evaluator()
     assert e.run("~100") == ~100
