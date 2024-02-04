@@ -1,6 +1,5 @@
 import _ast
 import ast
-import asyncio
 import datetime
 import decimal
 import functools
@@ -67,7 +66,7 @@ async def body(
             thread_ts=ts,
         )
         return
-    except asyncio.TimeoutError:
+    except TimeoutError:
         await bot.say(
             event.channel,
             "입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!",

@@ -212,7 +212,7 @@ class Bot(GetLoggerMixin):
                 await self.cache.set("__test__", 1)
             except (
                 RuntimeError,
-                asyncio.TimeoutError,
+                TimeoutError,
                 asyncio.CancelledError,
             ) as e:
                 logger.exception("fail to connect to redis")

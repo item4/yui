@@ -1,4 +1,3 @@
-import asyncio
 import re
 
 import aiohttp
@@ -94,7 +93,7 @@ async def test_get_cat_image_url(response_mock):
     )
     response_mock.get(
         "http://timeout.com/200.jpg",
-        exception=asyncio.TimeoutError(),
+        exception=TimeoutError(),
     )
     response_mock.get("http://cat.com/404.jpg", status=404)
     response_mock.get("http://cat.com/200.jpg")
@@ -141,7 +140,7 @@ async def test_get_dog_image_url(response_mock):
     )
     response_mock.get(
         "http://timeout.com/200.jpg",
-        exception=asyncio.TimeoutError(),
+        exception=TimeoutError(),
     )
     response_mock.get("http://dog.com/404.jpg", status=404)
     response_mock.get("http://dog.com/200.jpg")

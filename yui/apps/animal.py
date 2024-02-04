@@ -45,7 +45,7 @@ async def get_cat_image_url(timeout: float) -> str:
                 ) as resp, resp:
                     if resp.status == 200:
                         return url
-            except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
+            except (aiohttp.ClientConnectorError, TimeoutError):
                 continue
 
 
@@ -68,7 +68,7 @@ async def get_dog_image_url(timeout: float) -> str:
                 ) as resp, resp:
                     if resp.status == 200:
                         return url
-            except (aiohttp.ClientConnectorError, asyncio.TimeoutError):
+            except (aiohttp.ClientConnectorError, TimeoutError):
                 continue
 
 
