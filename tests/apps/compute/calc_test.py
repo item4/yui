@@ -695,6 +695,21 @@ except:
     assert "x" not in e.scope
 
 
+def test_trystar():
+    e = Evaluator()
+    err = "You can not use `try` syntax with star"
+    with pytest.raises(BadSyntax, match=err):
+        e.run(
+            """
+try:
+    x = 1
+except* Exception:
+    pass
+""",
+        )
+    assert "x" not in e.scope
+
+
 def test_tuple():
     e = Evaluator()
     assert e.run("(1, 1, 2, 3, 3)") == (1, 1, 2, 3, 3)
