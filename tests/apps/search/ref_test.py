@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 import pytest_asyncio
 
@@ -12,8 +14,8 @@ from ...util import FakeBot
 
 
 @pytest_asyncio.fixture()
-async def bot(event_loop, cache) -> FakeBot:
-    return FakeBot(loop=event_loop, cache=cache)
+async def bot(cache) -> FakeBot:
+    return FakeBot(loop=asyncio.get_running_loop(), cache=cache)
 
 
 @pytest.mark.asyncio()
