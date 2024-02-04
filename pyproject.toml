@@ -132,8 +132,8 @@ defusedxml = "^0.7.1"
 feedparser = "^6.0.11"
 lxml = "^4.9.4"
 more-itertools = "^10.2.0"
-orjson = "^3.9.12"
-psycopg = {version = "^3.1.17", extras = ["binary"]}
+orjson = "^3.9.13"
+psycopg = {version = "^3.1.18", extras = ["binary"]}
 pyppeteer = "^1.0.2"
 python-dateutil = "^2.8.2"
 rapidfuzz = "^3.6.1"
