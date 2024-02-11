@@ -4,6 +4,7 @@ import pytest
 from time_machine import travel
 
 from yui.apps.date.weekend import auto_weekend_loading
+from yui.apps.date.weekend import auto_weekend_start
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
@@ -28,6 +29,27 @@ def test_auto_weekend_loading_spec():
 )
 def test_auto_weekend_loading_match(sunday, delta, result):
     assert auto_weekend_loading.match(sunday + delta) is result
+
+
+def test_auto_weekend_start_spec():
+    assert auto_weekend_start.has_valid_spec()
+
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), False),
+        (timedelta(days=1), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), True),
+        (timedelta(days=6, minutes=11), False),
+    ],
+)
+def test_auto_weekend_start_match(sunday, delta, result):
+    assert auto_weekend_start.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio()
