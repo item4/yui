@@ -216,61 +216,6 @@ async def css(bot, event: Message, keyword: str):
         await bot.say(event.channel, "비슷한 CSS 관련 요소를 찾지 못하겠어요!")
 
 
-@box.command("php")
-@argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
-async def php(bot, event: Message, keyword: str):
-    """
-    PHP 레퍼런스 링크
-
-    `{PREFIX}php json_encode` (`json_encode` 에 대한 레퍼런스 링크)
-
-    """
-
-    raw_path = keyword.replace("::", ".")
-    if "::" in keyword:
-        superclass, func = (
-            keyword.lower()
-            .replace("$", "")
-            .replace("__", "")
-            .replace("_", "-")
-            .split("::")
-        )
-    elif keyword.startswith("mysqli_stmt_"):
-        superclass = "mysqli-stmt"
-        func = keyword[12:].replace("_", "-")
-    elif keyword.startswith("mysqli_"):
-        superclass = "mysqli"
-        func = keyword[7:].replace("_", "-")
-    else:
-        superclass, func = (
-            "function",
-            keyword.lower()
-            .replace("$", "")
-            .replace("__", "")
-            .replace("_", "-"),
-        )
-
-    urls = [
-        f"http://www.php.net/manual/en/{superclass}.{func}.php",
-        f"http://php.net/{raw_path}",
-    ]
-
-    async with aiohttp.ClientSession() as session:
-        for url in urls:
-            async with session.get(url) as res, res:
-                res_url = str(res.url)
-                if "manual-lookup.php" in res_url:
-                    continue
-                if res.status == 200:
-                    await bot.say(event.channel, f"PHP `{keyword}` - {res_url}")
-                    break
-        else:
-            await bot.say(
-                event.channel,
-                "비슷한 PHP 관련 요소를 찾지 못하겠어요!",
-            )
-
-
 @box.command("python", ["py"])
 @argument("keyword", nargs=-1, concat=True, count_error="키워드를 입력해주세요")
 async def python(bot, event: Message, keyword: str):
