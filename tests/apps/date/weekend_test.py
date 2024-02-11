@@ -12,17 +12,22 @@ from ...util import FakeBot
 def test_auto_weekend_loading_spec():
     assert auto_weekend_loading.has_valid_spec
 
-    sunday = datetime(2022, 11, 6)
-    assert not auto_weekend_loading.match(sunday)
-    assert auto_weekend_loading.match(sunday + timedelta(days=1))
-    assert not auto_weekend_loading.match(
-        sunday + timedelta(days=1, minutes=11),
-    )
-    assert auto_weekend_loading.match(sunday + timedelta(days=2))
-    assert auto_weekend_loading.match(sunday + timedelta(days=3))
-    assert auto_weekend_loading.match(sunday + timedelta(days=4))
-    assert auto_weekend_loading.match(sunday + timedelta(days=5))
-    assert not auto_weekend_loading.match(sunday + timedelta(days=6))
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), False),
+        (timedelta(days=1), True),
+        (timedelta(days=1, minutes=11), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), False),
+    ],
+)
+def test_auto_weekend_loading_match(sunday, delta, result):
+    assert auto_weekend_loading.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio()

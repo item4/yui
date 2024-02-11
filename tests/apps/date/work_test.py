@@ -30,41 +30,78 @@ def bot(bot_config):
     return bot
 
 
+@pytest.fixture(scope="session")
+def sunday_9(sunday):
+    return sunday + timedelta(hours=9)
+
+
+@pytest.fixture(scope="session")
+def sunday_18(sunday):
+    return sunday + timedelta(hours=18)
+
+
+@pytest.fixture(scope="session")
+def sunday_19(sunday):
+    return sunday + timedelta(hours=19)
+
+
 def test_work_start_task_spec():
     assert work_start.has_valid_spec
 
-    sunday = datetime(2022, 11, 6, 9)
-    assert not work_start.match(sunday)
-    assert work_start.match(sunday + timedelta(days=1))
-    assert not work_start.match(sunday + timedelta(days=1, minutes=11))
-    assert work_start.match(sunday + timedelta(days=2))
-    assert work_start.match(sunday + timedelta(days=3))
-    assert work_start.match(sunday + timedelta(days=4))
-    assert work_start.match(sunday + timedelta(days=5))
-    assert not work_start.match(sunday + timedelta(days=6))
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), False),
+        (timedelta(days=1), True),
+        (timedelta(days=1, minutes=11), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), False),
+    ],
+)
+def test_work_start_task_match(sunday_9, delta, result):
+    assert work_start.match(sunday_9 + delta) is result
 
 
 def test_work_end_task_spec():
-    assert work_end.has_valid_spec
+    assert work_start.has_valid_spec
 
-    sunday_18 = datetime(2022, 11, 6, 18)
-    sunday_19 = datetime(2022, 11, 6, 19)
-    assert not work_end.match(sunday_18)
-    assert not work_end.match(sunday_19)
-    assert work_end.match(sunday_18 + timedelta(days=1))
-    assert work_end.match(sunday_19 + timedelta(days=1))
-    assert not work_end.match(sunday_18 + timedelta(days=1, minutes=11))
-    assert not work_end.match(sunday_19 + timedelta(days=1, minutes=11))
-    assert work_end.match(sunday_18 + timedelta(days=2))
-    assert work_end.match(sunday_19 + timedelta(days=2))
-    assert work_end.match(sunday_18 + timedelta(days=3))
-    assert work_end.match(sunday_19 + timedelta(days=3))
-    assert work_end.match(sunday_18 + timedelta(days=4))
-    assert work_end.match(sunday_19 + timedelta(days=4))
-    assert work_end.match(sunday_18 + timedelta(days=5))
-    assert work_end.match(sunday_19 + timedelta(days=5))
-    assert not work_end.match(sunday_18 + timedelta(days=6))
-    assert not work_end.match(sunday_19 + timedelta(days=6))
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), False),
+        (timedelta(days=1), True),
+        (timedelta(days=1, minutes=11), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), False),
+    ],
+)
+def test_work_end_task_match_at_18(sunday_18, delta, result):
+    assert work_start.match(sunday_18 + delta) is result
+
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), False),
+        (timedelta(days=1), True),
+        (timedelta(days=1, minutes=11), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), False),
+    ],
+)
+def test_work_end_task_match_at_19(sunday_19, delta, result):
+    assert work_start.match(sunday_19 + delta) is result
 
 
 @pytest.mark.asyncio()

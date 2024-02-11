@@ -15,6 +15,7 @@ from yui.config import DEFAULT
 from yui.orm import Base
 from yui.orm import create_database_engine
 from yui.orm import sessionmaker
+from yui.utils.datetime import datetime
 
 from .util import FakeBot
 
@@ -139,3 +140,8 @@ async def cache():
 def response_mock():
     with aioresponses.aioresponses() as m:
         yield m
+
+
+@pytest.fixture(scope="session")
+def sunday():
+    return datetime(2022, 11, 6)
