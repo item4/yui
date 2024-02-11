@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from time_machine import travel
 
@@ -82,10 +84,30 @@ async def test_packtpub_dotd(bot, response_mock):
     assert attachments[0]["image_url"] == image_url
 
 
+def test_auto_packtpub_dotd_spec():
+    assert auto_packtpub_dotd.has_valid_spec
+
+
+def test_auto_packtpub_dotd_match(sunday):
+    for days in range(7):
+        assert not auto_packtpub_dotd.match(sunday + timedelta(days=days))
+        assert not auto_packtpub_dotd.match(
+            sunday + timedelta(days=days, hours=9),
+        )
+        assert auto_packtpub_dotd.match(
+            sunday + timedelta(days=days, hours=9, minutes=5),
+        )
+        assert not auto_packtpub_dotd.match(
+            sunday + timedelta(days=days, hours=9, minutes=15),
+        )
+        assert not auto_packtpub_dotd.match(
+            sunday + timedelta(days=days, hours=10),
+        )
+
+
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 7), tick=False)
 async def test_auto_packtpub_dotd(bot_config, response_mock):
-    assert auto_packtpub_dotd.cron.spec == "5 9 * * *"
     title = "test book"
     image_url = "test url"
     response_mock.get(
