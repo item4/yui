@@ -1,3 +1,8 @@
+[run]
+omit =
+    yui/migrations/**/*.py
+    yui/mypy_plugin.py
+
 [report]
 exclude_lines =
     pragma: no cover
@@ -5,5 +10,5 @@ exclude_lines =
     raise NotImplementedError
     if TYPE_CHECKING:
 omit =
-    yui/migrations
-    yui/mypy_plugin
+    yui/migrations/**/*.py
+    yui/mypy_plugin.py
