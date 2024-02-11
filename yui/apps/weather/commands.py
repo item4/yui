@@ -13,7 +13,6 @@ from .weather import get_weather_by_keyword
 
 if TYPE_CHECKING:
     from ...event import Message
-    from .air import AirPollutionRecord  # noqa: F401
     from .weather import WeatherRecord  # noqa: F401
 
 
