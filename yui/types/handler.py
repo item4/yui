@@ -4,9 +4,12 @@ import inspect
 from collections.abc import Callable
 from collections.abc import Coroutine
 from collections.abc import Mapping
+from datetime import datetime
 from typing import Any
 from typing import TYPE_CHECKING
 from typing import TypeAlias
+
+from croniter import croniter
 
 from ..utils.attrs import define
 from ..utils.attrs import field
@@ -107,6 +110,13 @@ class Handler:
 
     def __repr__(self) -> str:
         return f"{self.f.__module__}.{self.f.__name__}"
+
+    @property
+    def has_valid_spec(self) -> bool:
+        return self.cron is not None and croniter.is_valid(self.cron.spec)
+
+    def match(self, dt: datetime) -> bool:
+        return self.cron is not None and croniter.match(self.cron.spec, dt)
 
 
 DECORATOR_ARGS_TYPE: TypeAlias = HANDLER_CALL_TYPE | Handler

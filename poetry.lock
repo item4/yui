@@ -2092,6 +2092,17 @@ slack = ["slack-sdk"]
 telegram = ["requests"]
 
 [[package]]
+name = "types-croniter"
+version = "2.0.0.20240106"
+description = "Typing stubs for croniter"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-croniter-2.0.0.20240106.tar.gz", hash = "sha256:a5c92566d750e025ab31279029ab44b479e2e3509cd8db3784574bdab1012571"},
+    {file = "types_croniter-2.0.0.20240106-py3-none-any.whl", hash = "sha256:266d9ecabbc06afab7cc0cfa7f2149eb36f613ed66ddd6c9bac4edcf727e9a58"},
+]
+
+[[package]]
 name = "types-orjson"
 version = "3.6.2"
 description = "Typing stubs for orjson"
@@ -2412,4 +2423,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "7cac755e1865aec52bf756fb5c88b848cdf20e5f9f713dcda073597ac37a8db5"
+content-hash = "60b2ac3044d20fa706c6791a74cc6b4382430b874706683d83ef3ead18f0cc0c"
