@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 import pytest_asyncio
 from time_machine import travel
@@ -26,6 +28,43 @@ def bot(bot_config):
     bot = FakeBot(bot_config)
     bot.add_channel("C1", "general")
     return bot
+
+
+def test_work_start_task_spec():
+    assert work_start.has_valid_spec
+
+    sunday = datetime(2022, 11, 6, 9)
+    assert not work_start.match(sunday)
+    assert work_start.match(sunday + timedelta(days=1))
+    assert not work_start.match(sunday + timedelta(days=1, minutes=11))
+    assert work_start.match(sunday + timedelta(days=2))
+    assert work_start.match(sunday + timedelta(days=3))
+    assert work_start.match(sunday + timedelta(days=4))
+    assert work_start.match(sunday + timedelta(days=5))
+    assert not work_start.match(sunday + timedelta(days=6))
+
+
+def test_work_end_task_spec():
+    assert work_end.has_valid_spec
+
+    sunday_18 = datetime(2022, 11, 6, 18)
+    sunday_19 = datetime(2022, 11, 6, 19)
+    assert not work_start.match(sunday_18)
+    assert not work_start.match(sunday_19)
+    assert work_start.match(sunday_18 + timedelta(days=1))
+    assert work_start.match(sunday_19 + timedelta(days=1))
+    assert not work_start.match(sunday_18 + timedelta(days=1, minutes=11))
+    assert not work_start.match(sunday_19 + timedelta(days=1, minutes=11))
+    assert work_start.match(sunday_18 + timedelta(days=2))
+    assert work_start.match(sunday_19 + timedelta(days=2))
+    assert work_start.match(sunday_18 + timedelta(days=3))
+    assert work_start.match(sunday_19 + timedelta(days=3))
+    assert work_start.match(sunday_18 + timedelta(days=4))
+    assert work_start.match(sunday_19 + timedelta(days=4))
+    assert work_start.match(sunday_18 + timedelta(days=5))
+    assert work_start.match(sunday_19 + timedelta(days=5))
+    assert not work_start.match(sunday_18 + timedelta(days=6))
+    assert not work_start.match(sunday_19 + timedelta(days=6))
 
 
 @pytest.mark.asyncio()
