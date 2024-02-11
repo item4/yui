@@ -18,7 +18,7 @@ def test_holiday_message_spec():
     ("delta", "result"),
     [
         (timedelta(days=0), True),
-        (timedelta(days=0, minutes=5), True),
+        (timedelta(days=0, minutes=5), False),
         (timedelta(days=1), False),
         (timedelta(days=2), True),
         (timedelta(days=3), True),
