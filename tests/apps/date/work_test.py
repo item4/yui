@@ -84,7 +84,7 @@ def test_work_end_task_spec():
     ],
 )
 def test_work_end_task_match_at_18(sunday_18, delta, result):
-    assert work_start.match(sunday_18 + delta) is result
+    assert work_end.match(sunday_18 + delta) is result
 
 
 @pytest.mark.parametrize(
@@ -101,7 +101,7 @@ def test_work_end_task_match_at_18(sunday_18, delta, result):
     ],
 )
 def test_work_end_task_match_at_19(sunday_19, delta, result):
-    assert work_start.match(sunday_19 + delta) is result
+    assert work_end.match(sunday_19 + delta) is result
 
 
 @pytest.mark.asyncio()
