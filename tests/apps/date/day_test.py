@@ -1,10 +1,34 @@
+from datetime import timedelta
+
 import pytest
 from time_machine import travel
 
 from yui.apps.date.day import holiday
+from yui.apps.date.day import holiday_message
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+
+
+def test_holiday_message_spec():
+    assert holiday_message.has_valid_spec
+
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    [
+        (timedelta(days=0), True),
+        (timedelta(days=0, minutes=5), True),
+        (timedelta(days=1), False),
+        (timedelta(days=2), True),
+        (timedelta(days=3), True),
+        (timedelta(days=4), True),
+        (timedelta(days=5), True),
+        (timedelta(days=6), True),
+    ],
+)
+def test_holiday_message_match(sunday, delta, result):
+    assert holiday_message.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio()
