@@ -1,13 +1,10 @@
 from datetime import timedelta
 
-import pytest
-
 from yui.apps.date.monday import monday_dog
 from yui.utils.datetime import datetime
 
 
-@pytest.mark.asyncio()
-async def test_monday_dog_task_spec():
+def test_monday_dog_task_spec():
     assert monday_dog.has_valid_spec
 
     sunday = datetime(2022, 11, 6)
