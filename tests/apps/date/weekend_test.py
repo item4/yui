@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from time_machine import travel
 
@@ -5,6 +7,22 @@ from yui.apps.date.weekend import auto_weekend_loading
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+
+
+def test_auto_weekend_loading_spec():
+    assert auto_weekend_loading.has_valid_spec
+
+    sunday = datetime(2022, 11, 6)
+    assert not auto_weekend_loading.match(sunday)
+    assert auto_weekend_loading.match(sunday + timedelta(days=1))
+    assert not auto_weekend_loading.match(
+        sunday + timedelta(days=1, minutes=11),
+    )
+    assert auto_weekend_loading.match(sunday + timedelta(days=2))
+    assert auto_weekend_loading.match(sunday + timedelta(days=3))
+    assert auto_weekend_loading.match(sunday + timedelta(days=4))
+    assert auto_weekend_loading.match(sunday + timedelta(days=5))
+    assert not auto_weekend_loading.match(sunday + timedelta(days=6))
 
 
 @pytest.mark.asyncio()
