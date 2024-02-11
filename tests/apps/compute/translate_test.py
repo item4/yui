@@ -129,6 +129,5 @@ async def test_translate_command(bot):
     assert said.data["channel"] == "C1"
     assert (
         said.data["text"].lower()
-        == "한국어 원문: 안녕하세요. 제 이름은 yui에요.\n영어 번역: hello, my"
-        " name is yui."
+        == "한국어 원문: 안녕하세요. 제 이름은 yui에요.\n영어 번역: hi, my name is yui."
     )
