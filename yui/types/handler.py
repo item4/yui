@@ -111,7 +111,6 @@ class Handler:
     def __repr__(self) -> str:
         return f"{self.f.__module__}.{self.f.__name__}"
 
-    @property
     def has_valid_spec(self) -> bool:
         return self.cron is not None and croniter.is_valid(self.cron.spec)
 

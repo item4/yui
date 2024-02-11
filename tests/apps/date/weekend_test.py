@@ -10,7 +10,7 @@ from ...util import FakeBot
 
 
 def test_auto_weekend_loading_spec():
-    assert auto_weekend_loading.has_valid_spec
+    assert auto_weekend_loading.has_valid_spec()
 
 
 @pytest.mark.parametrize(

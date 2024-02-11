@@ -46,7 +46,7 @@ def sunday_19(sunday):
 
 
 def test_work_start_task_spec():
-    assert work_start.has_valid_spec
+    assert work_start.has_valid_spec()
 
 
 @pytest.mark.parametrize(
@@ -67,7 +67,7 @@ def test_work_start_task_match(sunday_9, delta, result):
 
 
 def test_work_end_task_spec():
-    assert work_start.has_valid_spec
+    assert work_start.has_valid_spec()
 
 
 @pytest.mark.parametrize(

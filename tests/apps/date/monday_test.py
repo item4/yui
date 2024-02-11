@@ -6,7 +6,7 @@ from yui.apps.date.monday import monday_dog
 
 
 def test_monday_dog_task_spec():
-    assert monday_dog.has_valid_spec
+    assert monday_dog.has_valid_spec()
 
 
 @pytest.mark.parametrize(

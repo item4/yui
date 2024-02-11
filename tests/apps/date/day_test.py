@@ -11,7 +11,7 @@ from ...util import FakeBot
 
 
 def test_holiday_message_spec():
-    assert holiday_message.has_valid_spec
+    assert holiday_message.has_valid_spec()
 
 
 @pytest.mark.parametrize(
