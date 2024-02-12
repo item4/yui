@@ -821,13 +821,15 @@ async def bot():
 
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
-    ((
-        "expr",
-        "expected_decimal_result",
-        "expected_num_result",
-        "expected_decimal_local",
-        "expected_num_local",
-    )),
+    (
+        (
+            "expr",
+            "expected_decimal_result",
+            "expected_num_result",
+            "expected_decimal_local",
+            "expected_num_local",
+        )
+    ),
     [
         ("1", D("1"), 1, {}, {}),
         ("1+2", D("3"), 3, {}, {}),
