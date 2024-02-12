@@ -25,6 +25,8 @@ select = [
     "ASYNC",
     # flake8-bandit
     "S",
+    # flake8-blind-except
+    "BLE",
     # flake8-bugbear
     "B",
     # flake8-commas
@@ -37,6 +39,8 @@ select = [
     "FA",
     # flake8-implicit-str-concat
     "ISC",
+    # flake8-no-pep420
+    "INP",
     # flake8-pie
     "PIE",
     # flake8-pyi
@@ -49,24 +53,27 @@ select = [
     "RSE",
     # flake8-return
     "RET",
+    # flake8-slots
+    "SLOT",
     # flake8-simplify
     "SIM",
+    # flake8-type-checking
+    "TCH",
     # flake8-use-pathlib
     "PTH",
+    # eradicate
+    "ERA",
     # Pylint
+    "PLC",
     "PLE",
-    "PLR0133",
-    "PLR0206",
-    "PLR0402",
-    "PLR1701",
-    "PLR1711",
-    "PLR1722",
-    "PLR5501",
+    "PLR",
     "PLW",
     # tryceratops
     "TRY",
     # flynt
     "FLY",
+    # Perflint
+    "PERF",
     # Ruff-specific rules
     "RUF",
 ]
@@ -82,11 +89,22 @@ ignore = [
     "TRY301",  # Abstract raise to an inner function
     # pyupgrade
     "UP040",  # Type alias {name} uses TypeAlias annotation instead of the type keyword - mypy does not support this yet
+    # Pylint
+    "PLR09",  # Too many {problem}
+    "PLR2004",  # Magic value used in comparison, consider replacing {value} with a constant variable
 ]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     # flake8-bandit
     "S101",  # Use of assert detected
+]
+"yui/migrations/*" = [
+    # eradicate
+    "ERA001",  # Found commented-out code
+]
+"yui/migrations/versions/*" = [
+    # flake8-no-pep420
+    "INP001",  # File {filename} is part of an implicit namespace package. Add an __init__.py.
 ]
 
 [tool.ruff.lint.isort]

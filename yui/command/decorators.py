@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import Any
 from typing import TYPE_CHECKING
 
@@ -10,6 +9,8 @@ from ..types.handler import Option
 from ..utils.handler import get_handler
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from ..types.handler import DECORATOR_ARGS_TYPE
     from ..types.handler import DECORATOR_TYPE
 

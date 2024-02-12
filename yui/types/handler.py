@@ -4,7 +4,6 @@ import inspect
 from collections.abc import Callable
 from collections.abc import Coroutine
 from collections.abc import Mapping
-from datetime import datetime
 from typing import Any
 from typing import TYPE_CHECKING
 from typing import TypeAlias
@@ -15,6 +14,8 @@ from ..utils.attrs import define
 from ..utils.attrs import field
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from ..box.tasks import CronTask
 
 

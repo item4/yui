@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
-import inspect
-from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from ...event import Event
-
 if TYPE_CHECKING:
+    import inspect
+    from collections.abc import Mapping
+
     from ...bot import Bot
+    from ...event import Event
 
 
 class BaseApp:

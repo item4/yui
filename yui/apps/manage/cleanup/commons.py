@@ -186,12 +186,10 @@ async def collect_history_from_channel(
 
 
 def simplify_history_result(rows: list[dict]) -> list[dict]:
-    results = []
-    for row in rows:
-        results.append(
-            {
-                "ts": row["ts"],
-                "reply_count": row.get("reply_count", 0),
-            },
-        )
-    return results
+    return [
+        {
+            "ts": row["ts"],
+            "reply_count": row.get("reply_count", 0),
+        }
+        for row in rows
+    ]

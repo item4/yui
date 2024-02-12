@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 from ...event import Event
 from ...event import Message
-from ...types.handler import Handler
 from ...utils.format import bold
 from ..parsers import parse_option_and_arguments
 from ..utils import SPACE_RE
@@ -15,6 +14,7 @@ from .base import BaseApp
 
 if TYPE_CHECKING:
     from ...bot import Bot
+    from ...types.handler import Handler
 
 
 class App(BaseApp):

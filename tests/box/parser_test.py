@@ -1,15 +1,20 @@
+from __future__ import annotations
+
 import datetime
 import shlex
+from typing import TYPE_CHECKING
 
 import pytest
 
 from yui.box import Box
-from yui.box.apps.basic import App
 from yui.box.parsers import parse_option_and_arguments
 from yui.command.decorators import argument
 from yui.command.decorators import option
 from yui.transform import str_to_date
 from yui.transform import value_range
+
+if TYPE_CHECKING:
+    from yui.box.apps.basic import App
 
 
 def test_parse_option_and_arguments():

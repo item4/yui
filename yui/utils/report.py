@@ -6,7 +6,6 @@ import sys
 import traceback
 from typing import TYPE_CHECKING
 
-from ..event import Event
 from .format import bold
 from .format import code
 from .format import preformatted
@@ -14,7 +13,7 @@ from .format import preformatted
 if TYPE_CHECKING:
     from ..bot import APICallError
     from ..bot import Bot
-
+    from ..event import Event
 
 LIMIT = 3500
 SITE_PACKAGES = re.compile(r'(?:\s*File ")?/.+?/site-packages/')

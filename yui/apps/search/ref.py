@@ -89,14 +89,16 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
         name = str(a.text_content()).strip()
         link = f'https://docs.python.org/3/library/{a.get("href")}'
         if code_els:
-            for code_el in code_els:
-                result.append(
+            result.extend(
+                [
                     (
                         str(code_el.text_content()).strip(),
                         name,
                         link,
-                    ),
-                )
+                    )
+                    for code_el in code_els
+                ],
+            )
         else:
             result.append(
                 (

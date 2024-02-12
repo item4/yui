@@ -1,14 +1,15 @@
+from __future__ import annotations
+
 import asyncio
 import contextlib
-from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import Any
+from typing import TYPE_CHECKING
 
 from attrs import define
 
 from yui.api import SlackAPI
 from yui.bot import Bot
-from yui.cache import Cache
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.event import Message
@@ -21,6 +22,11 @@ from yui.types.channel import DirectMessageChannel
 from yui.types.channel import PrivateChannel
 from yui.types.channel import PublicChannel
 from yui.types.user import User
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from yui.cache import Cache
 
 
 @define

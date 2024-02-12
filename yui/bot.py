@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import asyncio
 import contextlib
 import functools
@@ -7,7 +9,6 @@ import logging.config
 import random
 import string
 from collections import defaultdict
-from collections.abc import Callable
 from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
@@ -15,36 +16,43 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Any
 from typing import ParamSpec
+from typing import TYPE_CHECKING
 from typing import TypeVar
 
 import aiocron
 import aiohttp
 from aiohttp.client_exceptions import ClientError
-from aiohttp.client_ws import ClientWebSocketResponse
 from dateutil.tz import tzoffset
 from redis.asyncio.client import Redis
 
 from .api import SlackAPI
 from .box import Box
 from .box import box
-from .box.tasks import CronTask
 from .cache import Cache
-from .config import Config
 from .event import create_event
 from .log import GetLoggerMixin
 from .orm import Base
 from .orm import create_database_engine
 from .orm import sessionmaker
-from .types.base import ChannelID
-from .types.base import UserID
-from .types.channel import DirectMessageChannel
-from .types.channel import PrivateChannel
-from .types.channel import PublicChannel
 from .types.slack.response import APIResponse
 from .types.user import User
 from .utils import json
 from .utils.datetime import now
 from .utils.report import report
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from aiohttp.client_ws import ClientWebSocketResponse
+
+    from .box.tasks import CronTask
+    from .config import Config
+    from .types.base import ChannelID
+    from .types.base import UserID
+    from .types.channel import DirectMessageChannel
+    from .types.channel import PrivateChannel
+    from .types.channel import PublicChannel
+
 
 P = ParamSpec("P")
 R = TypeVar("R")

@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from yui.box import Box
-from yui.box.apps.basic import App
 from yui.command.decorators import argument
 from yui.command.decorators import option
-from yui.event import Message
+
+if TYPE_CHECKING:
+    from yui.box.apps.basic import App
+    from yui.event import Message
 
 
 def test_basic_app():

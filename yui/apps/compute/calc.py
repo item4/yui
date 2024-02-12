@@ -73,7 +73,7 @@ async def body(
             thread_ts=ts,
         )
         return
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         await bot.say(
             event.channel,
             f"예기치 않은 에러가 발생했어요! {e.__class__.__name__}: {e}",
