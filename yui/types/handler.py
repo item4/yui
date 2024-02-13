@@ -7,6 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 from typing import TYPE_CHECKING
 from typing import TypeAlias
+from typing import get_type_hints
 
 from croniter import croniter
 
@@ -69,11 +70,13 @@ class Handler:
     last_call: Any = field(init=False)
     doc: str | None = field(init=False)
     params: Mapping[str, inspect.Parameter] = field(init=False)
+    annotations: dict[str, Any] = field(init=False)
     is_prepared: bool = field(init=False, default=False)
 
     def __attrs_post_init__(self):
         self.doc = inspect.getdoc(self.f)
         self.params = inspect.signature(self.f).parameters
+        self.annotations = get_type_hints(self.f)
         self.arguments = []
         self.options = []
         self.last_call = {}
@@ -83,18 +86,18 @@ class Handler:
 
         for o in self.options:
             if o.type_ is None:
-                type_ = self.params[o.dest].annotation
+                type_ = self.annotations.get(o.dest, None)
 
-                if type_ == inspect._empty or o.transform_func:
+                if type_ is None or o.transform_func:
                     type_ = str
 
                 o.type_ = type_
 
         for a in self.arguments:
             if a.type_ is None:
-                type_ = self.params[a.dest].annotation
+                type_ = self.annotations.get(a.dest, None)
 
-                if type_ == inspect._empty or a.transform_func:
+                if type_ is None or a.transform_func:
                     type_ = str
 
                 a.type_ = type_

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from ...box import box
 from ...command import argument
+from ...event import Message  # noqa: TCH001
 from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
 from .sun import get_emoji_by_sun
@@ -12,7 +13,6 @@ from .utils import shorten
 from .weather import get_weather_by_keyword
 
 if TYPE_CHECKING:
-    from ...event import Message
     from .weather import WeatherRecord  # noqa: F401
 
 
