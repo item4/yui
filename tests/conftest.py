@@ -132,8 +132,9 @@ def bot_config(request):
 @pytest_asyncio.fixture()
 async def cache():
     redis_client = Redis.from_url("redis://localhost")
-    yield Cache(redis_client, "YUI_TEST_")
-    await redis_client.aclose()
+    c = Cache(redis_client, "YUI_TEST_")
+    yield c
+    await c.close()
 
 
 @pytest.fixture()
