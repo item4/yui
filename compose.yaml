@@ -13,12 +13,6 @@ services:
       retries: 10
     ports:
       - "5432:5432"
-  headless_chrome:
-    image: yukinying/chrome-headless-browser
-    cap_add:
-      - SYS_ADMIN
-    ports:
-      - "9222:9222"
   redis:
     image: redis/redis-stack:latest
     ports:

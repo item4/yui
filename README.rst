@@ -124,20 +124,6 @@ GOOGLE_API_TOKEN
 
   **해당 토큰의 내용은 공개 GitHub 저장소 등의 다른 사람이 볼 수 있는 곳에 올려지면 안 됩니다.**
 
-WEBSOCKETDEBUGGERURL
-  ``str``. Chrome websocket debugger URL.
-  headless chrome을 통해 웹페이지에 접속해야하는 경우 사용됩니다.
-
-  .. code-block:: toml
-
-     WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
-
-  docker를 사용하면 편리합니다.
-
-  .. code-block:: bash
-
-     docker run --rm --name headless-chrome -d -p 9222:9222 --cap-add=SYS_ADMIN yukinying/chrome-headless-browser
-
 CACHE
   캐시 설정입니다.
   기본값을 그대로 사용하셔도 되지만 기본값을 덮어쓰고 싶으신 경우 아래와 같이 재정의해주세요.

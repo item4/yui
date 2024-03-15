@@ -158,7 +158,6 @@ lxml = "^4.9.4"
 more-itertools = "^10.2.0"
 orjson = "^3.9.15"
 psycopg = {version = "^3.1.18", extras = ["binary"]}
-pyppeteer = "^1.0.2"
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.6.2"
 redis = {version = "^5.0.3", extras = ["hiredis"]}

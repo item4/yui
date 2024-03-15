@@ -7,11 +7,9 @@ services:
       - YUI_CONFIG_FILE_PATH=data/yui.config.toml
     depends_on:
       - db
-      - headless_chrome
       - memcached
     links:
       - db
-      - headless_chrome
       - memcached
     command: ./data/run.sh
     networks:
@@ -31,13 +29,6 @@ services:
     networks:
       yuinet:
         ipv4_address: 10.5.0.2
-  headless_chrome:
-    image: yukinying/chrome-headless-browser
-    cap_add:
-      - SYS_ADMIN
-    networks:
-      yuinet:
-        ipv4_address: 10.5.0.3
   redis:
     image: redis/redis-stack:latest
     networks:
