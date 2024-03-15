@@ -161,7 +161,7 @@ psycopg = {version = "^3.1.18", extras = ["binary"]}
 pyppeteer = "^1.0.2"
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.6.2"
-redis = {version = "^5.0.2", extras = ["hiredis"]}
+redis = {version = "^5.0.3", extras = ["hiredis"]}
 scipy = "^1.12.0"
 sympy = "^1.12"
 tossi = "^0.3.1"
@@ -179,7 +179,7 @@ ruff = "^0.2.2"
 time-machine = "^2.14.0"
 types-croniter = "^2.0.0.20240106"
 types-orjson = "^3.6.2"
-types-python-dateutil = "^2.8.19"
+types-python-dateutil = "^2.9.0"
 types-tzlocal = "^5.1.0"
 yarl = "^1.9.4"
 
