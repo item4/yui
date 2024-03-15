@@ -168,7 +168,7 @@ tzlocal = "^5.2"
 
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.6"
-black = "^24.2.0"
+black = "^24.3.0"
 mypy = "^1.9.0"
 pre-commit = "^3.6.2"
 pytest = "^7.4.4"
