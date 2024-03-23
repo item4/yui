@@ -5,6 +5,7 @@ from time_machine import travel
 
 from yui.apps.date.weekend import auto_weekend_loading
 from yui.apps.date.weekend import auto_weekend_start
+from yui.apps.date.weekend import weekend_loading
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
@@ -53,8 +54,22 @@ def test_auto_weekend_start_match(sunday, delta, result):
 
 
 @pytest.mark.asyncio()
+async def test_auto_weekend_start(bot_config):
+    bot_config.CHANNELS["general"] = "C1"
+    bot = FakeBot(bot_config)
+    bot.add_channel("C1", "general")
+
+    await auto_weekend_start(bot)
+
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "주말이에요! 즐거운 주말 되세요!"
+
+
+@pytest.mark.asyncio()
 @travel(datetime(2018, 10, 8, 0), tick=False)
-async def test_weekend_start(bot_config):
+async def test_auto_weekend_loading_start(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
@@ -70,7 +85,7 @@ async def test_weekend_start(bot_config):
 
 @pytest.mark.asyncio()
 @travel(datetime(2018, 10, 10, 12), tick=False)
-async def test_weekend_half(bot_config):
+async def test_auto_weekend_loading_half(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
@@ -82,3 +97,71 @@ async def test_weekend_half(bot_config):
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%"
+
+
+@pytest.mark.asyncio()
+@travel(datetime(2018, 10, 8, 0), tick=False)
+async def test_weekend_loading_start(bot_config):
+    bot_config.CHANNELS["general"] = "C1"
+    bot_config.WEEKEND_LOADING_TIME = [0, 12]
+    bot = FakeBot(bot_config)
+    bot.add_channel("C1", "general")
+    event = bot.create_message("C1", "U1")
+
+    await weekend_loading(bot, event)
+
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%"
+
+
+@pytest.mark.asyncio()
+@travel(datetime(2018, 10, 10, 12), tick=False)
+async def test_weekend_loading_half(bot_config):
+    bot_config.CHANNELS["general"] = "C1"
+    bot_config.WEEKEND_LOADING_TIME = [0, 12]
+    bot = FakeBot(bot_config)
+    bot.add_channel("C1", "general")
+    event = bot.create_message("C1", "U1")
+
+    await weekend_loading(bot, event)
+
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%"
+
+
+@pytest.mark.asyncio()
+@travel(datetime(2018, 10, 13), tick=False)
+async def test_weekend_loading_end(bot_config):
+    bot_config.CHANNELS["general"] = "C1"
+    bot_config.WEEKEND_LOADING_TIME = [0, 12]
+    bot = FakeBot(bot_config)
+    bot.add_channel("C1", "general")
+    event = bot.create_message("C1", "U1")
+
+    await weekend_loading(bot, event)
+
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "주말이에요! 즐거운 주말 되세요!"
+
+
+@pytest.mark.asyncio()
+@travel(datetime(2018, 10, 14), tick=False)
+async def test_weekend_loading_over(bot_config):
+    bot_config.CHANNELS["general"] = "C1"
+    bot_config.WEEKEND_LOADING_TIME = [0, 12]
+    bot = FakeBot(bot_config)
+    bot.add_channel("C1", "general")
+    event = bot.create_message("C1", "U1")
+
+    await weekend_loading(bot, event)
+
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "주말이에요! 즐거운 주말 되세요!"
