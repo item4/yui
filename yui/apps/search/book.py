@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 import aiohttp
 import tossi
 
@@ -53,8 +51,6 @@ async def book(bot, event: Message, keyword: str):
             strip_tags(book["author"]),
             strip_tags(book["publisher"]),
         )
-        if "price" in book:
-            text += " / 가격: {}".format(Decimal(book["price"]))
         attachments.append(
             Attachment(
                 fallback="{} - {}".format(title, book["link"]),
