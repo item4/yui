@@ -48,7 +48,7 @@ async def book(bot, event: Message, keyword: str):
         book = data["items"][i]
         title = strip_tags(book["title"])
         text = "저자: {} / 출판사: {}".format(
-            strip_tags(book["author"]),
+            strip_tags(book["author"]).replace("^", ", "),
             strip_tags(book["publisher"]),
         )
         attachments.append(
