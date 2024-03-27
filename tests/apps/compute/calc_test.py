@@ -360,6 +360,12 @@ def test_dictcomp():
     assert e.scope["k"] == "test k"
     assert e.scope["v"] == "test v"
 
+    assert e.run(
+        "{k: v for k in [1, 2, 3] for v in [11, 22, 33] if k % 2 == 0 if v % 2 == 1}",
+    ) == {2: 33}
+    assert e.scope["k"] == "test k"
+    assert e.scope["v"] == "test v"
+
 
 def test_ellipsis():
     e = Evaluator()
