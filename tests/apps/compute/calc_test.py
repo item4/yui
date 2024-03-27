@@ -590,6 +590,12 @@ def test_listcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+    assert e.run(
+        "[x + y for x in [1, 2, 3] for y in [11, 22, 33] if x % 2 == 0 if y % 2 == 1]",
+    ) == [13, 35]
+    assert e.scope["x"] == "test x"
+    assert e.scope["y"] == "test y"
+
 
 def test_nameconstant():
     e = Evaluator()
