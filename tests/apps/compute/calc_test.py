@@ -280,6 +280,13 @@ def test_compare():
     assert e.run("3 <= 2") is (3 <= 2)  # noqa: PLR0133
 
 
+def test_constant():
+    e1 = Evaluator()
+    e2 = Evaluator(decimal_mode=True)
+    assert e1.run("1.2") == 1.2
+    assert e2.run("1.2") == D("1.2")
+
+
 def test_continue():
     e = Evaluator()
     e.run("continue")
