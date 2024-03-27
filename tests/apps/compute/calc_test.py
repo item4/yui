@@ -291,10 +291,14 @@ def test_delete():
     e.scope["a"] = 0
     e.scope["b"] = 0
     e.scope["c"] = 0
+    e.scope["d"] = 0
     e.run("del a, b, c")
     assert "a" not in e.scope
     assert "b" not in e.scope
     assert "c" not in e.scope
+    assert "d" in e.scope
+    e.run("del d")
+    assert "d" not in e.scope
     e.scope["l"] = [1, 2, 3, 4]
     e.run("del l[0]")
     assert e.scope["l"] == [2, 3, 4]
