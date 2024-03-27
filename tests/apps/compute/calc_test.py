@@ -366,6 +366,8 @@ def test_expr():
     assert e.run("(1, 2, 3, 3)") == (1, 2, 3, 3)
     assert e.run("{1, 2, 3, 3}") == {1, 2, 3}
     assert e.run("{1: 111, 2: 222}") == {1: 111, 2: 222}
+    with pytest.raises(NameError):
+        e.run("undefined_variable")
 
 
 def test_functiondef():
