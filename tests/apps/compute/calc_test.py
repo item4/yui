@@ -171,6 +171,10 @@ def test_attribute():
     with pytest.raises(BadSyntax, match=err):
         e.run("datetime.test_test")
 
+    err = "You can not access attributes of "
+    with pytest.raises(BadSyntax, match=err):
+        e.run("Decimal.test_test")
+
 
 def test_augassign():
     e = Evaluator()
