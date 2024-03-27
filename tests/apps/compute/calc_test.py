@@ -43,6 +43,7 @@ def test_decimal():
     assert divmod(5, D("2")) == (D("2"), D("1"))
     assert D("3") ** 2 == D("9")
     assert 3 ** D("2") == D("9")
+    assert pow(D("3"), D("2"), 2) == D("1")
 
 
 def test_annassign():
