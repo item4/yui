@@ -1186,9 +1186,6 @@ class Evaluator:
         return last
 
     def visit_name(self, node: _ast.Name):  # id, ctx
-        ctx = node.ctx.__class__
-        if ctx == ast.Del:
-            return node.id
         if node.id in self.scope:
             return self.scope[node.id]
         if node.id in self.global_symbol_table:
