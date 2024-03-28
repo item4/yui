@@ -597,6 +597,11 @@ def test_listcomp():
     assert e.scope["y"] == "test y"
 
 
+def test_name():
+    e = Evaluator()
+    assert e.run("int") == int
+
+
 def test_nameconstant():
     e = Evaluator()
     assert e.run("True") is True
