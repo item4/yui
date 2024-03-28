@@ -10,6 +10,7 @@ import pytest_asyncio
 from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
+from yui.apps.compute.calc import ScopeStack
 from yui.apps.compute.calc import calculate
 
 from ...util import FakeBot
@@ -44,6 +45,16 @@ def test_decimal():
     assert D("3") ** 2 == D("9")
     assert 3 ** D("2") == D("9")
     assert pow(D("3"), D("2"), 2) == D("1")
+
+
+def test_scope_stack():
+    scope = ScopeStack()
+
+    with pytest.raises(NameError):
+        _ = scope["undefined"]
+
+    with pytest.raises(NameError):
+        del scope["undefined"]
 
 
 def test_annassign():
