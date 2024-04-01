@@ -9,6 +9,8 @@ from ...utils import json
 from ...utils.datetime import fromisoformat
 from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
+from .temperature import clothes_by_temperature
+from .utils import shorten
 
 RainInfoType = Literal["Rain", "Clear", "Unavailable", "Unknown"]
 
@@ -36,12 +38,70 @@ class WeatherRecord:
     # 관측 시간
     observed_at: datetime
 
+    def as_str(self) -> str:
+        rain = None
+        match self.is_rain:
+            case "Rain":
+                rain = (
+                    f"예(15분: {shorten(self.rain_15 or 0)}㎜ / 일일:"
+                    f" {shorten(self.rain_day or 0)}㎜)"
+                )
+            case "Unavailable":
+                rain = "확인 불가"
+            case "Unknown":
+                rain = "알 수 없음"
+
+        temperature = (
+            "기온: 알 수 없음"
+            if self.temperature is None
+            else f"기온: {shorten(self.temperature)}℃"
+        )
+
+        wind = f"{self.wind_direction} {shorten(self.wind_velocity)}㎧"
+
+        humidity = (
+            None if self.humidity is None else f"{shorten(self.humidity)}%"
+        )
+
+        atmospheric = (
+            None
+            if self.atmospheric is None
+            else f"{shorten(self.atmospheric)}㍱"
+        )
+
+        weather_text = "[{} / {}] ".format(
+            self.location,
+            self.observed_at.strftime("%H시 %M분 기준"),
+        )
+
+        if self.is_rain and rain:
+            if self.temperature is not None and self.temperature > 0:
+                weather_text += f"강우 {rain} /"
+            else:
+                weather_text += f"강설 {rain} /"
+
+        weather_text += temperature
+        weather_text += f" / 바람: {wind}"
+        if humidity:
+            weather_text += f" / 습도: {humidity}"
+        if atmospheric:
+            weather_text += f" / 해면기압: {atmospheric}"
+
+        if self.temperature is not None:
+            recommend = clothes_by_temperature(self.temperature)
+            weather_text += f"\n\n추천 의상: {recommend}"
+
+        return weather_text
+
 
 async def get_weather_by_keyword(keyword: str) -> WeatherRecord:
     try:
-        async with aiohttp.ClientSession() as session, session.get(
-            "https://item4.net/api/weather/",
-        ) as resp:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.get(
+                "https://item4.net/api/weather/",
+            ) as resp,
+        ):
             if resp.status != 200:
                 raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 
