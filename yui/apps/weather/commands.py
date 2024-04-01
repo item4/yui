@@ -51,7 +51,7 @@ async def weather(
 
     weather_text = result.as_str()
 
-    if result.is_rain:
+    if result.is_rain == "Rain":
         if result.temperature is not None and result.temperature > 0:
             weather_emoji = ":umbrella_with_rain_drops:"
         else:

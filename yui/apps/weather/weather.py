@@ -74,7 +74,7 @@ class WeatherRecord:
             self.observed_at.strftime("%H시 %M분 기준"),
         )
 
-        if self.is_rain and rain:
+        if self.is_rain != "Clear" and rain:
             if self.temperature is not None and self.temperature > 0:
                 weather_text += f"강수 {rain} / "
             else:
