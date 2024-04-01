@@ -1,6 +1,7 @@
 import pytest
 from yarl import URL
 
+from yui.apps.weather.exceptions import WeatherResponseError
 from yui.apps.weather.geo import get_geometric_info_by_address
 
 
@@ -47,6 +48,30 @@ async def test_get_weather_wrong_geometric_info(
         },
     )
     with pytest.raises(IndexError):
+        await get_geometric_info_by_address(
+            unavailable_address,
+            key,
+        )
+
+
+@pytest.mark.asyncio()
+async def test_get_weather_google_427(
+    response_mock,
+    unavailable_address,
+):
+    key = "XXX"
+    response_mock.get(
+        URL("https://maps.googleapis.com/maps/api/geocode/json").with_query(
+            region="kr",
+            address=unavailable_address,
+            key=key,
+        ),
+        payload={
+            "results": [],
+        },
+        status=427,
+    )
+    with pytest.raises(WeatherResponseError):
         await get_geometric_info_by_address(
             unavailable_address,
             key,
