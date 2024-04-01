@@ -76,9 +76,9 @@ class WeatherRecord:
 
         if self.is_rain and rain:
             if self.temperature is not None and self.temperature > 0:
-                weather_text += f"강우 {rain} /"
+                weather_text += f"강수 {rain} / "
             else:
-                weather_text += f"강설 {rain} /"
+                weather_text += f"강설 {rain} / "
 
         weather_text += temperature
         weather_text += f" / 바람: {wind}"
