@@ -89,7 +89,9 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
     loop_count = 0
     while data["data"][1]["time"] < this_time:
         data = await get_d2r_terror_zone_info()
-        await asyncio.sleep(random.randint(11, 222) / 100)
+        await asyncio.sleep(
+            random.randint(55 + loop_count * 2, 333 + loop_count * 2) / 100,
+        )
         loop_count += 1
         if loop_count > 500:
             data = await get_d2r_terror_zone_info()
