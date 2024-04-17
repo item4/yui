@@ -2,7 +2,8 @@ import pytest
 
 from yui.types.slack.attachment import Attachment
 from yui.types.slack.attachment import Field
-from yui.types.slack.block import Divider
+from yui.types.slack.block import PlainTextField
+from yui.types.slack.block import Section
 
 
 @pytest.mark.asyncio()
@@ -44,7 +45,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
             fields=[Field("field title1", "field value1", False)],
         ),
     ]
-    blocks = [Divider()]
+    blocks = [Section(text=PlainTextField("plain text"))]
     text = "text val"
     parse = "text"
     username = "strea"
@@ -135,7 +136,12 @@ async def test_slack_api_chat_post_ephemeral(bot):
                 ],
             },
         ],
-        "blocks": [{"type": "divider"}],
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "plain_text", "text": "plain text"},
+            },
+        ],
         "username": username,
         "icon_url": icon_url,
         "icon_emoji": icon_emoji,
@@ -155,7 +161,7 @@ async def test_slack_api_chat_post_message(bot):
             fields=[Field("field title1", "field value1", False)],
         ),
     ]
-    blocks = [Divider()]
+    blocks = [Section(text=PlainTextField("plain text"))]
     text = "text val"
     parse = "text"
     username = "strea"
@@ -241,7 +247,12 @@ async def test_slack_api_chat_post_message(bot):
                 ],
             },
         ],
-        "blocks": [{"type": "divider"}],
+        "blocks": [
+            {
+                "type": "section",
+                "text": {"type": "plain_text", "text": "plain text"},
+            },
+        ],
         "unfurl_links": False,
         "unfurl_media": True,
         "username": username,
