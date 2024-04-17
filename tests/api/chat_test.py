@@ -45,7 +45,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
             fields=[Field("field title1", "field value1", False)],
         ),
     ]
-    blocks = [Section(text=PlainTextField("plain text"))]
+    blocks = [Section(text=PlainTextField(text="plain text"))]
     text = "text val"
     parse = "text"
     username = "strea"
@@ -161,7 +161,7 @@ async def test_slack_api_chat_post_message(bot):
             fields=[Field("field title1", "field value1", False)],
         ),
     ]
-    blocks = [Section(text=PlainTextField("plain text"))]
+    blocks = [Section(text=PlainTextField(text="plain text"))]
     text = "text val"
     parse = "text"
     username = "strea"
