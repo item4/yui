@@ -6,6 +6,8 @@ from yui.types.slack.action import OptionField
 from yui.types.slack.action import OptionFieldGroup
 from yui.types.slack.attachment import Attachment
 from yui.types.slack.attachment import Field
+from yui.types.slack.block import PlainTextField
+from yui.types.slack.block import Section
 from yui.utils import json
 
 
@@ -110,4 +112,10 @@ def test_to_json():
                 ],
             },
         ],
+    }
+
+    section = to_test_type(Section(text=PlainTextField(text="text")))
+    assert section == {
+        "type": "section",
+        "text": {"text": "text", "type": "plain_text"},
     }
