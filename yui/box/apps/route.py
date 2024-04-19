@@ -10,7 +10,6 @@ from ...types.handler import HANDLER_CALL_TYPE
 from ...types.handler import Handler
 from ...utils.handler import get_handler
 from ..parsers import parse_option_and_arguments
-from ..utils import SPACE_RE
 from ..utils import split_chunks
 from .base import BaseApp
 
@@ -56,24 +55,10 @@ class RouteApp(BaseApp):
         if not isinstance(event, Message):
             return True
 
-        root_args = ""
-        root_call = ""
         args = ""
         handler = None
-        if event.text:
-            try:
-                root_call, root_args = SPACE_RE.split(event.text, 1)
-            except ValueError:
-                root_call = event.text
-        elif (
-            event.message
-            and hasattr(event.message, "text")
-            and event.message.text
-        ):
-            try:
-                root_call, root_args = SPACE_RE.split(event.message.text, 1)
-            except ValueError:
-                root_call = event.message.text
+        root_text = self.get_event_text(event)
+        root_call, root_args = self.split_call_and_args(root_text)
 
         if root_call == bot.config.PREFIX + self.name:
             for c in self.route_list:
@@ -85,19 +70,15 @@ class RouteApp(BaseApp):
                     and c.subtype in {"*", event_subtype}
                 )
                 if subtype_cond1 or subtype_cond2:
-                    if root_args is None:
-                        if c.name is None:
-                            handler = c.handler
-                            break
-                    else:
-                        try:
-                            call, args = SPACE_RE.split(root_args, 1)
-                        except ValueError:
-                            call = root_args
+                    if root_args:
+                        call, args = self.split_call_and_args(root_args)
 
                         if c.name == call:
                             handler = c.handler
                             break
+                    elif c.name is None:
+                        handler = c.handler
+                        break
             else:
                 handler = Handler(f=self.fallback)
 

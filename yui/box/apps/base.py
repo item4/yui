@@ -4,12 +4,15 @@ import asyncio
 import contextlib
 from typing import TYPE_CHECKING
 
+from ..utils import SPACE_RE
+
 if TYPE_CHECKING:
     import inspect
     from collections.abc import Mapping
 
     from ...bot import Bot
     from ...event import Event
+    from ...event import Message
 
 
 class BaseApp:
@@ -39,6 +42,25 @@ class BaseApp:
 
     async def run(self, bot: Bot, event: Event):
         raise NotImplementedError
+
+    def get_event_text(self, event: Message) -> str:
+        if event.text:
+            return event.text
+        if (
+            event.message
+            and hasattr(event.message, "text")
+            and event.message.text
+        ):
+            return event.message.text
+        return ""
+
+    def split_call_and_args(self, text: str) -> tuple[str, str]:
+        try:
+            call, args = SPACE_RE.split(text, 1)
+        except ValueError:
+            call = text
+            args = ""
+        return call, args
 
     @contextlib.asynccontextmanager
     async def prepare_kwargs(

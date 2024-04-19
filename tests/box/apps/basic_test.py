@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from yui.box import Box
 from yui.command.decorators import argument
 from yui.command.decorators import option
-from yui.event import Message  # noqa: TCH001
+from yui.event import Message
+from yui.event import MessageMessage
 
 if TYPE_CHECKING:
     from yui.box.apps.basic import App
@@ -52,3 +53,25 @@ LONG"""
         app.get_full_help("=")
         == "*=test*\n(Aliases: `=tttt`)\nTEST TITLE\n\nLONG\nCAT\nIS\nLONG"
     )
+    event = Message(
+        channel="C1",
+        ts="1",
+        event_ts="2",
+        user="U1",
+        text="=test --foo 1 --bar 2 3 4 5",
+    )
+    assert app.get_event_text(event) == "=test --foo 1 --bar 2 3 4 5"
+    event = Message(
+        channel="C1",
+        ts="1",
+        event_ts="2",
+        user="U1",
+        message=MessageMessage(
+            user="U1",
+            ts="3",
+            text="=test --foo 1 --bar 2 3 4 5",
+        ),
+    )
+    assert app.get_event_text(event) == "=test --foo 1 --bar 2 3 4 5"
+    assert app.split_call_and_args("=test 1 2 3 4 5") == ("=test", "1 2 3 4 5")
+    assert app.split_call_and_args("=test") == ("=test", "")

@@ -8,7 +8,6 @@ from ...event import Event
 from ...event import Message
 from ...utils.format import bold
 from ..parsers import parse_option_and_arguments
-from ..utils import SPACE_RE
 from ..utils import split_chunks
 from .base import BaseApp
 
@@ -112,28 +111,17 @@ class App(BaseApp):
 
     async def _run_message_event(self, bot: Bot, event: Message):
         res: bool | None = True
-        call = ""
-        args = ""
-        if event.text:
-            try:
-                call, args = SPACE_RE.split(event.text, 1)
-            except ValueError:
-                call = event.text
-        elif (
-            event.message
-            and hasattr(event.message, "text")
-            and event.message.text
-        ):
-            try:
-                call, args = SPACE_RE.split(event.message.text, 1)
-            except ValueError:
-                call = event.message.text
+        text = self.get_event_text(event)
+        call, args = self.split_call_and_args(text)
 
         raw = html.unescape(args)
 
         match = True
         if self.is_command:
-            match = any(call == bot.config.PREFIX + name for name in self.names)
+            match = (
+                call.startswith(bot.config.PREFIX)
+                and call.removeprefix(bot.config.PREFIX) in self.names
+            )
 
         if match:
             func_params = self.handler.params
