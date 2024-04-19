@@ -1,5 +1,6 @@
 from typing import Any
 from typing import NewType
+from typing import TypeVar
 
 import pytest
 
@@ -22,9 +23,14 @@ def test_cast(bot):
     bot.add_private_channel("G1", "secret")
 
     ID = NewType("ID", str)
+    N = TypeVar("N", int, float)
+    T = TypeVar("T")
 
+    assert cast(bool, 1) is True
+    assert cast(bool, 0) is False
+    assert cast(type(None), 0) is None
     assert cast(int, "3") == 3
-    assert cast(list[str], ("kirito", "asuna")) == ["kirito", "asuna"]
+    assert cast(list[str], ("kirito", "eugeo")) == ["kirito", "eugeo"]
     assert cast(list[int], ("1", "2", "3")) == [1, 2, 3]
     assert cast(tuple[int, float, str], ["1", "2", "3"]) == (1, 2.0, "3")
     assert cast(set[int], ["1", "1", "2"]) == {1, 2}
@@ -32,15 +38,20 @@ def test_cast(bot):
     assert cast(int | None, None) is None
     assert cast(int | float, "3.2") == 3.2
     assert cast(list[ID], [1, 2, 3]) == [ID("1"), ID("2"), ID("3")]
+    assert cast(list[N], [1, 2, 3]) == [1, 2, 3]
+    assert cast(list[T], [1, 2, 3]) == [1, 2, 3]
     assert cast(dict[str, Any], {1: 1, 2: 2.2}) == {"1": 1, "2": 2.2}
     assert cast(dict[str, str], {1: 1, 2: 2.2}) == {"1": "1", "2": "2.2"}
-    assert cast(list, ("kirito", "asuna", 16.5)) == ["kirito", "asuna", 16.5]
+    assert cast(list, ("kirito", "eugeo", 0)) == ["kirito", "eugeo", 0]
     assert cast(tuple, ["1", 2, 3.0]) == ("1", 2, 3.0)
     assert cast(set, ["1", 2, 3.0, 2]) == {"1", 2, 3.0}
-    assert cast(dict, {"1": "kirito", 2: "asuna", 3: 16.5}) == {
-        "1": "kirito",
-        2: "asuna",
-        3: 16.5,
+    assert cast(
+        dict,
+        [("1p", "kirito"), ("2p", "eugeo"), ("boss", "admin")],
+    ) == {
+        "1p": "kirito",
+        "2p": "eugeo",
+        "boss": "admin",
     }
     user = cast(UserRecord, {"id": "item4", "pw": "supersecret"})
     assert user.id == "item4"

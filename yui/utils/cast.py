@@ -54,7 +54,7 @@ class TypeVarCaster(BaseCaster):
 
     def cast(self, caster_box, t, value):
         if t.__constraints__:
-            types = caster_box.sort(t.__constraints__)
+            types = caster_box.sort(t.__constraints__, value)
             for ty in types:
                 try:
                     return caster_box.cast(ty, value)
@@ -200,6 +200,7 @@ cast = CasterBox(
         SetCaster(),
         ListCaster(),
         DictCaster(),
+        NoneTypeCaster(),
         AttrCaster(),
     ],
 )
