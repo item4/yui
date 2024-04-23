@@ -15,7 +15,7 @@ from typing import Any
 from typing import Self
 from typing import TypeAlias
 
-from async_timeout import timeout
+import async_timeout
 from more_itertools import numeric_range
 
 from ...bot import Bot
@@ -37,6 +37,7 @@ async def body(
     expr: str,
     help: str,
     decimal_mode: bool = True,
+    timeout: float = 1,
 ):
     expr = expr.strip()
     expr_is_multiline = "\n" in expr
@@ -46,7 +47,7 @@ async def body(
         return
 
     try:
-        async with timeout(TIMEOUT):
+        async with async_timeout.timeout(timeout):
             result, local = await bot.run_in_other_process(
                 calculate,
                 expr,
@@ -354,6 +355,13 @@ class ScopeStack:
 
     def keys(self):
         yield from {key for scope in self.stack for key in scope}
+
+    def items(self):
+        for key in self.keys():
+            yield key, self[key]
+
+    def __bool__(self) -> bool:
+        return any(self.keys())
 
     def __iter__(self):
         return self.keys()

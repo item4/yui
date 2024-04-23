@@ -11,6 +11,7 @@ from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
 from yui.apps.compute.calc import ScopeStack
+from yui.apps.compute.calc import body
 from yui.apps.compute.calc import calculate
 
 from ...util import FakeBot
@@ -22,6 +23,167 @@ class GetItemSpy:
 
     def __getitem__(self, item):
         self.queue.append(item)
+
+
+@pytest.mark.asyncio()
+async def test_command_empty_expr(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "  "
+    help_text = "expected"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == help_text
+
+
+@pytest.mark.asyncio()
+async def test_command_bad_syntax(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "1++"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith(
+        "입력해주신 수식에 문법 오류가 있어요! ",
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_zero_division(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "1/0"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"]
+        == "입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!"
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_timeout(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "2**1000"
+    help_text = "help"
+    await body(bot, event, expr, help_text, timeout=0.0001)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"]
+        == "입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!"
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_unexpected_error(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "undefined_variable"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith(
+        "예기치 않은 에러가 발생했어요! NameError",
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_short_expr(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "1+2"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "`1+2` == `3`"
+
+
+@pytest.mark.asyncio()
+async def test_command_short_expr_empty_result(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "''"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == "`''` == _Empty_"
+
+
+@pytest.mark.asyncio()
+async def test_command_multiline_expr(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "1+\\\n2"
+    help_text = "help"
+    await body(bot, event, expr, help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"] == "*Input*\n```\n1+\\\n2\n```\n*Output*\n```\n3\n```"
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_multiline_expr_empty_result(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "'''\n'''[1:]"
+    help_text = "help"
+    await body(bot, event, expr, help_text, decimal_mode=False)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"] == f"*Input*\n```\n{expr}\n```\n*Output*\n_Empty_"
+
+
+@pytest.mark.asyncio()
+async def test_command_locals(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "sao = '키리토'"
+    help_text = "help"
+    await body(bot, event, expr, help_text, decimal_mode=False)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"]
+        == f"*Input*\n```\n{expr}\n```\n*Local State*\n```\nsao = '키리토'\n```"
+    )
+
+
+@pytest.mark.asyncio()
+async def test_command_none(bot):
+    event = bot.create_message("C1", "U1")
+    expr = "None"
+    help_text = "help"
+    await body(bot, event, expr, help_text, decimal_mode=False)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"]
+        == "입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!"
+    )
 
 
 def test_decimal():
