@@ -2,6 +2,7 @@ import re
 from decimal import Decimal
 
 import aiohttp
+import async_timeout
 
 from ...box import box
 from ...command import argument
@@ -42,13 +43,15 @@ class WrongUnit(ExchangeError):
     """Wrong unit."""
 
 
-async def get_exchange_rate(base: str, to: str) -> dict:
+async def get_exchange_rate(base: str, to: str, timeout: float = 3.0) -> dict:
     """Get exchange rate."""
 
     if base == to:
         raise SameBaseAndTo
 
-    async with aiohttp.ClientSession() as session, session.get(
+    async with async_timeout.timeout(
+        timeout,
+    ), aiohttp.ClientSession() as session, session.get(
         "https://api.manana.kr/exchange/rate.json",
         params={"base": to, "code": base},
     ) as resp:
@@ -60,7 +63,7 @@ async def get_exchange_rate(base: str, to: str) -> dict:
 
 @box.command("환율", ["exchange"])
 @argument("query", nargs=-1, concat=True)
-async def exchange(bot, event: Message, query: str):
+async def exchange(bot, event: Message, query: str, timeout: float = 3.0):
     """
     환전시 얼마가 되는지 계산.
 
@@ -80,7 +83,9 @@ async def exchange(bot, event: Message, query: str):
         data = None
         error = None
         try:
-            data = await get_exchange_rate(base, to)
+            data = await get_exchange_rate(base, to, timeout=timeout)
+        except TimeoutError:
+            error = "현재 환율 API의 상태가 원활하지 않아요!"
         except SameBaseAndTo:
             error = "변환하려는 두 화폐가 같은 단위에요!"
         except WrongUnit:
