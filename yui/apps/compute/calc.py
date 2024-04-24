@@ -1293,7 +1293,11 @@ class Evaluator:
         raise BadSyntax("You can not use `yield from` syntax")
 
 
-def calculate(expr: str, *, decimal_mode: bool = True):
+def calculate(
+    expr: str,
+    *,
+    decimal_mode: bool = True,
+):  # pragma: no cover  -- run on other process
     import resource
 
     limit = 2 * 1024 * 1024
