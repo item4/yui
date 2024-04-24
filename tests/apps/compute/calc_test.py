@@ -17,6 +17,7 @@ from yui.apps.compute.calc import calc_decimal_on_change
 from yui.apps.compute.calc import calc_num
 from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
+from yui.types.objects import MessageMessage
 
 from ...util import FakeBot
 
@@ -43,7 +44,11 @@ async def test_calc_decimal_command(bot):
 
 @pytest.mark.asyncio()
 async def test_calc_decimal_on_change_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message(
+        "C1",
+        "U1",
+        message=MessageMessage(user="U1", ts="1234.5678"),
+    )
     raw = ""
     await calc_decimal_on_change(bot, event, raw)
 
@@ -67,7 +72,11 @@ async def test_calc_num_command(bot):
 
 @pytest.mark.asyncio()
 async def test_calc_num_on_change_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message(
+        "C1",
+        "U1",
+        message=MessageMessage(user="U1", ts="1234.5678"),
+    )
     raw = ""
     await calc_num_on_change(bot, event, raw)
 
