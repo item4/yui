@@ -12,6 +12,10 @@ from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
 from yui.apps.compute.calc import ScopeStack
 from yui.apps.compute.calc import body
+from yui.apps.compute.calc import calc_decimal
+from yui.apps.compute.calc import calc_decimal_on_change
+from yui.apps.compute.calc import calc_num
+from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
 
 from ...util import FakeBot
@@ -23,6 +27,54 @@ class GetItemSpy:
 
     def __getitem__(self, item):
         self.queue.append(item)
+
+
+@pytest.mark.asyncio()
+async def test_calc_decimal_command(bot):
+    event = bot.create_message("C1", "U1")
+    raw = ""
+    await calc_decimal(bot, event, raw)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith("사용법: ")
+
+
+@pytest.mark.asyncio()
+async def test_calc_decimal_on_change_command(bot):
+    event = bot.create_message("C1", "U1")
+    raw = ""
+    await calc_decimal_on_change(bot, event, raw)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith("사용법: ")
+
+
+@pytest.mark.asyncio()
+async def test_calc_num_command(bot):
+    event = bot.create_message("C1", "U1")
+    raw = ""
+    await calc_num(bot, event, raw)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith("사용법: ")
+
+
+@pytest.mark.asyncio()
+async def test_calc_num_on_change_command(bot):
+    event = bot.create_message("C1", "U1")
+    raw = ""
+    await calc_num_on_change(bot, event, raw)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert said.data["text"].startswith("사용법: ")
 
 
 @pytest.mark.asyncio()
