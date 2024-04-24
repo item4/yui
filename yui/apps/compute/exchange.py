@@ -2,6 +2,7 @@ import re
 from decimal import Decimal
 
 import aiohttp
+import aiohttp.client_exceptions
 import async_timeout
 
 from ...box import box
@@ -84,7 +85,7 @@ async def exchange(bot, event: Message, query: str, timeout: float = 1.5):
         error = None
         try:
             data = await get_exchange_rate(base, to, timeout=timeout)
-        except TimeoutError:
+        except (TimeoutError, aiohttp.client_exceptions.ContentTypeError):
             error = "현재 환율 API의 상태가 원활하지 않아요!"
         except SameBaseAndTo:
             error = "변환하려는 두 화폐가 같은 단위에요!"

@@ -1,5 +1,6 @@
 import re
 
+import aiohttp.client_exceptions
 import pytest
 import pytest_asyncio
 from yarl import URL
@@ -16,7 +17,7 @@ YEN_PATTERN = re.compile(
 async def skip_if_no_exchange_api():
     try:
         await get_exchange_rate("KRW", "JPY", timeout=1.0)
-    except TimeoutError:
+    except (TimeoutError, aiohttp.client_exceptions.ContentTypeError):
         pytest.skip("Exchange API is not available")
 
 
