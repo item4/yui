@@ -3,12 +3,13 @@ from typing import NewType
 from typing import TypeVar
 
 import pytest
+from attrs import define
 
-from yui.utils.attrs import define
+from yui.utils.attrs import field_transformer
 from yui.utils.cast import cast
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class UserRecord:
     id: str
     pw: str

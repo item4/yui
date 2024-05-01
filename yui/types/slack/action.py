@@ -1,8 +1,9 @@
 import enum
 
+from attrs import define
 from attrs import field
 
-from ...utils.attrs import define
+from ...utils.attrs import field_transformer
 
 
 def call_or_none(c):
@@ -14,7 +15,7 @@ def call_or_none(c):
     return converter
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Confirmation:
     """Confirmation of Action"""
 
@@ -24,7 +25,7 @@ class Confirmation:
     title: str | None = None
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class OptionField:
     """Optional Option Field on Action"""
 
@@ -33,7 +34,7 @@ class OptionField:
     description: str | None = None
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class OptionFieldGroup:
     """Optional Option Group on Action"""
 
@@ -61,7 +62,7 @@ class ActionDataSource(enum.Enum):
     external = "external"
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Action:
     """Action of Attachment"""
 

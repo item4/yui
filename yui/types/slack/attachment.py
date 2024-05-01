@@ -1,11 +1,12 @@
 from attrs import Factory
+from attrs import define
 
-from ...utils.attrs import define
+from ...utils.attrs import field_transformer
 from .action import Action
 from .block import Block
 
 
-@define(kw_only=False)
+@define(field_transformer=field_transformer)
 class Field:
     """Field on Attachment"""
 
@@ -14,7 +15,7 @@ class Field:
     short: bool
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Attachment:
     """Slack Attachment"""
 

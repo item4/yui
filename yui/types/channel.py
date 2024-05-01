@@ -1,8 +1,10 @@
 from datetime import datetime
 
+from attrs import define
+
 from ..utils.attrs import channel_id_field
-from ..utils.attrs import define
 from ..utils.attrs import field
+from ..utils.attrs import field_transformer
 from ..utils.attrs import name_field
 from ..utils.attrs import ts_field
 from ..utils.attrs import user_id_field
@@ -13,7 +15,7 @@ from .base import Ts
 from .base import UserID
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ChannelTopic:
     """Topic of Channel."""
 
@@ -22,7 +24,7 @@ class ChannelTopic:
     last_set: datetime = field()
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ChannelPurpose:
     """Purpose of Channel."""
 
@@ -31,7 +33,7 @@ class ChannelPurpose:
     last_set: datetime = field()
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class PublicChannel:
     id: PublicChannelID = channel_id_field()
     name: str = name_field()
@@ -59,7 +61,7 @@ class PublicChannel:
     locale: str = field()
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class DirectMessageChannel:
     id: DirectMessageChannelID = channel_id_field()
     created: datetime = field()
@@ -76,7 +78,7 @@ class DirectMessageChannel:
     num_members: int = field()
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class PrivateChannel:
     id: PrivateChannelID = channel_id_field()
     name: str = field()

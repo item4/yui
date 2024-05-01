@@ -46,7 +46,7 @@ def _datetime_converter(value):
     return None
 
 
-def _field_transformer(cls, fields):
+def field_transformer(cls, fields):
     results = []
     for field in fields:
         t = field.type
@@ -64,11 +64,6 @@ def _field_transformer(cls, fields):
     return results
 
 
-define = partial(
-    attrs.define,
-    kw_only=True,
-    field_transformer=_field_transformer,
-)
 channel_id_field = partial(attrs.field, repr=True)
 user_id_field = partial(attrs.field, repr=True)
 name_field = partial(attrs.field, repr=True)

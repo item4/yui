@@ -4,13 +4,15 @@ from typing import Literal
 from typing import TypeAlias
 from typing import overload
 
+from attrs import define
+
 from .types.base import ChannelID
 from .types.base import Ts
 from .types.base import UserID
 from .types.objects import MessageMessage
 from .utils.attrs import channel_id_field
-from .utils.attrs import define
 from .utils.attrs import field
+from .utils.attrs import field_transformer
 from .utils.attrs import make_instance
 from .utils.attrs import ts_field
 from .utils.attrs import user_id_field
@@ -50,7 +52,7 @@ def event(cls):
     return cls
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class UnknownEvent:
     """Unknown Event."""
 
@@ -58,7 +60,7 @@ class UnknownEvent:
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class GoodBye(Event):
     """The server intends to close the connection soon."""
 
@@ -66,7 +68,7 @@ class GoodBye(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Hello(Event):
     """The client has successfully connected to the server."""
 
@@ -74,7 +76,7 @@ class Hello(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Message(Event):
     """A message was sent to a channel."""
 
@@ -91,7 +93,7 @@ class Message(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Pong(Event):
     """Ping-Pong"""
 
@@ -99,7 +101,7 @@ class Pong(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class TeamJoin(Event):
     """A new team member has joined."""
 
@@ -108,7 +110,7 @@ class TeamJoin(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class TeamMigrationStarted(Event):
     """The team is being migrated between servers."""
 
@@ -116,7 +118,7 @@ class TeamMigrationStarted(Event):
 
 
 @event
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class YuiSystemStart(Event):
     """System event for start system."""
 

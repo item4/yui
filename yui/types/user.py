@@ -1,12 +1,14 @@
 from datetime import datetime
 
-from ..utils.attrs import define
+from attrs import define
+
 from ..utils.attrs import field
+from ..utils.attrs import field_transformer
 from ..utils.attrs import name_field
 from ..utils.attrs import user_id_field
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class UserProfile:
     """Profile of User."""
 
@@ -27,7 +29,7 @@ class UserProfile:
     image_512: str = field()
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class User:
     id: str = user_id_field()
     name: str = name_field()

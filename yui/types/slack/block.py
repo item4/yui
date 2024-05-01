@@ -1,9 +1,10 @@
 import enum
 
 from attrs import Factory
+from attrs import define
 from attrs import field
 
-from ...utils.attrs import define
+from ...utils.attrs import field_transformer
 from ..base import ChannelID
 from ..base import PublicChannelID
 from ..base import UserID
@@ -14,7 +15,7 @@ class TextFieldType(enum.Enum):
     mrkdwn = "mrkdwn"
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class TextField:
     text: str
     type: TextFieldType = TextFieldType.mrkdwn
@@ -25,7 +26,7 @@ def enforce_plain_text(instance, attribute, value):
         raise ValueError("this field support only plain text")
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class PlainTextField(TextField):
     type: TextFieldType = field(
         validator=[enforce_plain_text],
@@ -43,7 +44,7 @@ class InteractiveElement(Element):
     """Abstract class of interactive element classes"""
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ImageElement(Element):
     image_url: str
     alt_text: str
@@ -56,7 +57,7 @@ class ButtonStyle(enum.Enum):
     danger = "danger"
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ConfirmationDialog:
     title: PlainTextField
     text: TextField
@@ -64,7 +65,7 @@ class ConfirmationDialog:
     deny: PlainTextField
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ButtonElement(InteractiveElement):
     text: TextField
     action_id: str
@@ -75,19 +76,19 @@ class ButtonElement(InteractiveElement):
     type: str = field(default="button", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Option:
     text: PlainTextField
     value: str
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class OptionGroup:
     label: PlainTextField
     options: list[Option] = Factory(list)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class StaticSelectElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -98,7 +99,7 @@ class StaticSelectElement(InteractiveElement):
     type: str = field(default="static_select", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ExternalSelectElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -108,7 +109,7 @@ class ExternalSelectElement(InteractiveElement):
     type: str = field(default="external_select", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class UsersSelectElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -117,7 +118,7 @@ class UsersSelectElement(InteractiveElement):
     type: str = field(default="users_select", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ConversationsSelectElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -126,7 +127,7 @@ class ConversationsSelectElement(InteractiveElement):
     type: str = field(default="conversations_select", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class ChannelsSelectElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -135,7 +136,7 @@ class ChannelsSelectElement(InteractiveElement):
     type: str = field(default="channels_select", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class OverflowElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -144,7 +145,7 @@ class OverflowElement(InteractiveElement):
     type: str = field(default="overflow", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class DatepickerElement(InteractiveElement):
     placeholder: PlainTextField
     action_id: str
@@ -160,7 +161,7 @@ class Block:
     block_id: str | None = None
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Section(Block):
     """Section Block"""
 
@@ -170,14 +171,14 @@ class Section(Block):
     accessory: Element | None = None
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Divider(Block):
     """Divider Block"""
 
     type: str = field(default="divider", init=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Image(Block):
     """Image Block"""
 
@@ -187,12 +188,12 @@ class Image(Block):
     title: TextField | None = None
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Action(Block):
     elements: list[InteractiveElement] = Factory(list)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Context(Block):
     """Context Block"""
 

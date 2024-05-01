@@ -1,7 +1,6 @@
 [run]
 omit =
     yui/migrations/**/*.py
-    yui/mypy_plugin.py
 
 [report]
 exclude_lines =
@@ -11,4 +10,3 @@ exclude_lines =
     if TYPE_CHECKING:
 omit =
     yui/migrations/**/*.py
-    yui/mypy_plugin.py

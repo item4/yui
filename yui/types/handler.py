@@ -9,10 +9,11 @@ from typing import TYPE_CHECKING
 from typing import TypeAlias
 from typing import get_type_hints
 
+from attrs import define
 from croniter import croniter
 
-from ..utils.attrs import define
 from ..utils.attrs import field
+from ..utils.attrs import field_transformer
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -24,7 +25,7 @@ HANDLER_CALL_RETURN_TYPE: TypeAlias = Coroutine[Any, Any, bool | None]
 HANDLER_CALL_TYPE: TypeAlias = Callable[..., HANDLER_CALL_RETURN_TYPE]
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Argument:
     """Argument"""
 
@@ -41,7 +42,7 @@ class Argument:
     typing_has_container: bool = field(init=False, default=False)
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Option:
     """Option"""
 
@@ -61,7 +62,7 @@ class Option:
     transform_error: str
 
 
-@define
+@define(kw_only=True, field_transformer=field_transformer)
 class Handler:
     f: HANDLER_CALL_TYPE
     arguments: list[Argument] = field(init=False)
