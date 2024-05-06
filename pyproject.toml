@@ -137,8 +137,8 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-Babel = "^2.14.0"
-SQLAlchemy = {version = "^2.0.29", extras = ["asyncio"]}
+Babel = "^2.15.0"
+SQLAlchemy = {version = "^2.0.30", extras = ["asyncio"]}
 SQLAlchemy-Utils = "^0.41.2"
 aiocron = "^1.8"
 aiohttp = "^3.9.5"
