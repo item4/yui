@@ -157,7 +157,7 @@ orjson = "^3.10.3"
 psycopg = {version = "^3.1.19", extras = ["binary"]}
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.9.3"
-redis = {version = "^5.0.4", extras = ["hiredis"]}
+redis = {version = "^5.0.5", extras = ["hiredis"]}
 scipy = "^1.13.1"
 sympy = "^1.12.1"
 tossi = "^0.3.1"
@@ -171,7 +171,7 @@ pre-commit = "^3.7.1"
 pytest = "^8.2.2"
 pytest-asyncio = "^0.23.7"
 pytest-cov = "^5.0.0"
-ruff = "^0.4.7"
+ruff = "^0.4.8"
 time-machine = "^2.14.1"
 types-croniter = "^2.0.0"
 types-orjson = "^3.6.2"
