@@ -42,7 +42,7 @@ def test_argument_decorator():
     assert args[2].nargs == 2
     assert args[2].transform_func is None
     assert not args[2].concat
-    assert args[2].container_cls == tuple
+    assert args[2].container_cls is tuple
     assert args[2].type_ is None
 
     assert args[3].name == "arg4"
@@ -51,7 +51,7 @@ def test_argument_decorator():
     assert args[3].transform_func is None
     assert args[3].concat
     assert args[3].container_cls is None
-    assert args[3].type_ == str
+    assert args[3].type_ is str
 
     assert args[4].name == "arg5"
     assert args[4].dest == "arg_five"
@@ -153,5 +153,5 @@ def test_option_decorator():
     assert all(isinstance(o, Option) for o in opts)
 
     assert opts[0].container_cls is None
-    assert opts[1].container_cls == tuple
-    assert opts[2].container_cls == tuple
+    assert opts[1].container_cls is tuple
+    assert opts[2].container_cls is tuple

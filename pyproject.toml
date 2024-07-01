@@ -78,8 +78,6 @@ select = [
     "RUF",
 ]
 ignore = [
-    # flake8-async
-    "ASYNC102",  # Checks that async functions do not contain calls to blocking synchronous process calls via the os module.
     # flake8-bandit
     "S311",  # Standard pseudo-random generators are not suitable for cryptographic purposes
     # flake8-pytest-style
@@ -142,7 +140,7 @@ SQLAlchemy = {version = "^2.0.31", extras = ["asyncio"]}
 SQLAlchemy-Utils = "^0.41.2"
 aiocron = "^1.8"
 aiohttp = "^3.9.5"
-alembic = "^1.13.1"
+alembic = "^1.13.2"
 async-timeout = "^4.0.3"
 attrdict = "^2.0.1"
 attrs = "^23.2.0"
@@ -154,11 +152,11 @@ feedparser = "^6.0.11"
 lxml = "^5.2.2"
 more-itertools = "^10.3.0"
 orjson = "^3.10.5"
-psycopg = {version = "^3.1.19", extras = ["binary"]}
+psycopg = {version = "^3.2.1", extras = ["binary"]}
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.9.3"
-redis = {version = "^5.0.6", extras = ["hiredis"]}
-scipy = "^1.13.1"
+redis = {version = "^5.0.7", extras = ["hiredis"]}
+scipy = "^1.14.0"
 sympy = "^1.12.1"
 tossi = "^0.3.1"
 tzlocal = "^5.2"
@@ -166,13 +164,13 @@ tzlocal = "^5.2"
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.6"
 black = "^24.4.2"
-mypy = "^1.10.0"
+mypy = "^1.10.1"
 pre-commit = "^3.7.1"
 pytest = "^8.2.2"
 pytest-asyncio = "^0.23.7"
 pytest-cov = "^5.0.0"
-ruff = "^0.4.10"
-time-machine = "^2.14.1"
+ruff = "^0.5.0"
+time-machine = "^2.14.2"
 types-croniter = "^2.0.0"
 types-orjson = "^3.6.2"
 types-python-dateutil = "^2.9.0"

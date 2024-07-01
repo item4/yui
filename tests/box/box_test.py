@@ -69,7 +69,7 @@ def test_box_class():
     assert h4.handler == test4
 
     box.assert_config_required("OWNER_TOKEN", str)
-    assert box.config_required["OWNER_TOKEN"] == str
+    assert box.config_required["OWNER_TOKEN"] is str
 
     box.assert_channel_required("game")
     assert box.channel_required == {"game"}

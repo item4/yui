@@ -81,7 +81,7 @@ owner = 'U111'
     assert config.BOT_TOKEN == "TEST_BOT_TOKEN"  # noqa: S105
     assert config.DEBUG
     assert config.PREFIX == "."
-    assert ["a", "b"] == config.APPS
+    assert config.APPS == ["a", "b"]
     assert {
         "general": "C1",
     } == config.CHANNELS

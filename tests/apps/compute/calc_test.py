@@ -833,7 +833,7 @@ def test_listcomp():
 
 def test_name():
     e = Evaluator()
-    assert e.run("int") == int
+    assert e.run("int") is int
 
 
 def test_nameconstant():

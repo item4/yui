@@ -28,7 +28,7 @@ class BaseCaster:
 
 class BoolCaster(BaseCaster):
     def check(self, t, value):
-        return t == bool
+        return t is bool
 
     def cast(self, caster_box, t, value):
         return t(value)
@@ -96,7 +96,7 @@ class UnionCaster(BaseCaster):
 
 class TupleCaster(BaseCaster):
     def check(self, t, value):
-        return t == tuple or get_origin(t) == tuple
+        return t is tuple or get_origin(t) is tuple
 
     def cast(self, caster_box, t, value):
         if args := get_args(t):
@@ -109,7 +109,7 @@ class TupleCaster(BaseCaster):
 
 class SetCaster(BaseCaster):
     def check(self, t, value):
-        return t == set or get_origin(t) == set
+        return t is set or get_origin(t) is set
 
     def cast(self, caster_box, t, value):
         if args := get_args(t):
@@ -119,7 +119,7 @@ class SetCaster(BaseCaster):
 
 class ListCaster(BaseCaster):
     def check(self, t, value):
-        return t == list or get_origin(t) == list
+        return t is list or get_origin(t) is list
 
     def cast(self, caster_box, t, value):
         if args := get_args(t):
@@ -129,7 +129,7 @@ class ListCaster(BaseCaster):
 
 class DictCaster(BaseCaster):
     def check(self, t, value):
-        return t == dict or get_origin(t) == dict
+        return t is dict or get_origin(t) is dict
 
     def cast(self, caster_box, t, value):
         if args := get_args(t):
