@@ -1200,7 +1200,7 @@ async def test_calculate_fine(
         expected = expected_decimal_local[key]
         local = decimal_local[key]
 
-        assert type(expected) == type(local)
+        assert type(expected) is type(local)
 
         if callable(expected):
             assert expected(1) == local(1)
@@ -1214,6 +1214,6 @@ async def test_calculate_fine(
         expected = expected_num_local[key]
         local = num_local[key]
 
-        assert type(expected) == type(local)
+        assert type(expected) is type(local)
 
         assert expected == local

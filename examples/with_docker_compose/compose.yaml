@@ -16,9 +16,9 @@ services:
       yuinet:
         ipv4_address: 10.5.0.101
   db:
-    image: postgres:15
+    image: postgres:16
     volumes:
-      - ./postgres@15data:/var/lib/postgresql/data
+      - ./postgres@16data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=MYSECRET
     healthcheck:
