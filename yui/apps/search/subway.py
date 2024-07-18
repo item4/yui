@@ -133,7 +133,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
         async with aiohttp.ClientSession(
             headers=headers,
         ) as session, session.get(
-            "https://map.naver.com/v5/api/transit/directions/subway",
+            "https://map.naver.com/p/api/pubtrans/subway-directions",
             params={
                 "start": find_start["id"],
                 "goal": find_end["id"],
