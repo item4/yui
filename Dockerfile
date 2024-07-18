@@ -1,6 +1,6 @@
 FROM python:3.12
 
-MAINTAINER item4 <item4@localhost>
+LABEL maintainer="item4 <item4@localhost>"
 
 ENV HOME="/home/kazuto"
 ENV TZ="Asia/Seoul"
