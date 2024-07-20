@@ -317,7 +317,7 @@ COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
     _ast.Eq: operator.eq,
     _ast.Gt: operator.gt,
     _ast.GtE: operator.ge,
-    _ast.In: operator.contains,
+    _ast.In: lambda a, b: a in b,
     _ast.Is: operator.is_,
     _ast.IsNot: operator.is_not,
     _ast.Lt: operator.lt,
