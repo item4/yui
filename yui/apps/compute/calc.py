@@ -287,7 +287,7 @@ class Decimal(decimal.Decimal):
 TYPE_STORE = type(ast.Store())
 TYPE_LOAD = type(ast.Load())
 TYPE_DEL = type(ast.Del())
-TYPE_EXPR = type(ast.Expr())
+TYPE_EXPR = type(ast.Expr(ast.expr()))
 
 
 class BadSyntax(Exception):
