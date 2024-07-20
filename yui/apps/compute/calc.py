@@ -295,41 +295,41 @@ class BadSyntax(Exception):
 
 
 BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
-    _ast.Add: lambda a, b: a + b,
-    _ast.BitAnd: lambda a, b: a & b,
-    _ast.BitOr: lambda a, b: a | b,
-    _ast.BitXor: lambda a, b: a ^ b,
-    _ast.Div: lambda a, b: a / b,
-    _ast.FloorDiv: lambda a, b: a // b,
-    _ast.LShift: lambda a, b: a << b,
-    _ast.MatMult: lambda a, b: a @ b,
-    _ast.Mult: lambda a, b: a * b,
-    _ast.Mod: lambda a, b: a % b,
-    _ast.Pow: lambda a, b: a**b,
-    _ast.RShift: lambda a, b: a >> b,
-    _ast.Sub: lambda a, b: a - b,
+    _ast.Add: operator.add,
+    _ast.BitAnd: operator.and_,
+    _ast.BitOr: operator.or_,
+    _ast.BitXor: operator.xor,
+    _ast.Div: operator.truediv,
+    _ast.FloorDiv: operator.floordiv,
+    _ast.LShift: operator.lshift,
+    _ast.MatMult: operator.matmul,
+    _ast.Mult: operator.mul,
+    _ast.Mod: operator.mod,
+    _ast.Pow: operator.pow,
+    _ast.RShift: operator.rshift,
+    _ast.Sub: operator.sub,
 }
 BOOLOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     _ast.And: lambda a, b: a and b,
     _ast.Or: lambda a, b: a or b,
 }
 COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
-    _ast.Eq: lambda a, b: a == b,
-    _ast.Gt: lambda a, b: a > b,
-    _ast.GtE: lambda a, b: a >= b,
-    _ast.In: lambda a, b: a in b,
-    _ast.Is: lambda a, b: a is b,
-    _ast.IsNot: lambda a, b: a is not b,
-    _ast.Lt: lambda a, b: a < b,
-    _ast.LtE: lambda a, b: a <= b,
-    _ast.NotEq: lambda a, b: a != b,
+    _ast.Eq: operator.eq,
+    _ast.Gt: operator.gt,
+    _ast.GtE: operator.ge,
+    _ast.In: operator.contains,
+    _ast.Is: operator.is_,
+    _ast.IsNot: operator.is_not,
+    _ast.Lt: operator.lt,
+    _ast.LtE: operator.le,
+    _ast.NotEq: operator.ne,
     _ast.NotIn: lambda a, b: a not in b,
 }
 UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
-    _ast.Invert: lambda x: ~x,
-    _ast.Not: lambda x: not x,
-    _ast.UAdd: lambda x: +x,
-    _ast.USub: lambda x: -x,
+    _ast.Invert: operator.invert,
+    _ast.Not: operator.not_,
+    _ast.UAdd: operator.pos,
+    _ast.USub: operator.neg,
 }
 
 
