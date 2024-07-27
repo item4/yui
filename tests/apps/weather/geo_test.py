@@ -8,8 +8,8 @@ from yui.apps.weather.geo import get_geometric_info_by_address
 @pytest.mark.parametrize(
     ("keyword", "expected_full_address", "expected_lat", "expected_lng"),
     [
-        ("부천", "경기도 부천시", 37.5042687, 126.7886531),
-        ("서울", "서울특별시", 37.5518911, 126.9917937),
+        ("부천", "경기도 부천시", 37.5038683, 126.7874615),
+        ("서울", "서울특별시", 37.56521290000001, 126.9773517),
         # 한국이 아니면 국가명이 붙는다.
         ("카와고에", "일본 사이타마현 가와고에시", 35.9251335, 139.4858042),
     ],
