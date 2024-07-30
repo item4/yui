@@ -154,7 +154,7 @@ more-itertools = "^10.3.0"
 orjson = "^3.10.6"
 psycopg = {version = "^3.2.1", extras = ["binary"]}
 python-dateutil = "^2.9.0"
-rapidfuzz = "^3.9.4"
+rapidfuzz = "^3.9.5"
 redis = {version = "^5.0.7", extras = ["hiredis"]}
 scipy = "^1.14.0"
 sympy = "^1.13.1"
