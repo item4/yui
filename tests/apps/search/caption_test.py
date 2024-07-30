@@ -23,6 +23,7 @@ def test_fix_url():
 def test_convert_released_dt():
     assert convert_released_dt("2021-01-02T03:04:05") == "2021년 01월 02일 03시"
     assert convert_released_dt("20210102030405") == "2021년 01월 02일 03시"
+    assert convert_released_dt("wrong format") == "wrong format"
 
 
 def test_print_time():
