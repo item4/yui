@@ -15,9 +15,9 @@ async def get_emoji_by_sun(
     async with aiohttp.ClientSession() as session, session.get(
         "https://api.sunrise-sunset.org/json",
         params={
-            "lat": 37.558213,  # NOTE: 서울역
-            "lng": 126.971354,  # NOTE: 서울역
-            "formatted": 0,
+            "lat": "37.558213",  # NOTE: 서울역
+            "lng": "126.971354",  # NOTE: 서울역
+            "formatted": "0",
             "date": dt.date().isoformat(),
         },
     ) as resp:
