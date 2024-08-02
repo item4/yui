@@ -61,19 +61,20 @@ class RSS(route.RouteApp):
 
     @argument("url", nargs=-1, concat=True, transform_func=extract_url)
     async def add(self, bot, event: Message, sess: AsyncSession, url: str):
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(url) as res:
-                    data: bytes = await res.read()
-            except aiohttp.client_exceptions.InvalidURL:
-                await bot.say(
-                    event.channel,
-                    f"`{url}`은 올바른 URL이 아니에요!",
-                )
-                return
-            except aiohttp.client_exceptions.ClientConnectorError:
-                await bot.say(event.channel, f"`{url}`에 접속할 수 없어요!")
-                return
+        try:
+            async with aiohttp.ClientSession() as session, session.get(
+                url,
+            ) as resp:
+                data: bytes = await resp.read()
+        except aiohttp.client_exceptions.InvalidURL:
+            await bot.say(
+                event.channel,
+                f"`{url}`은 올바른 URL이 아니에요!",
+            )
+            return
+        except aiohttp.client_exceptions.ClientConnectorError:
+            await bot.say(event.channel, f"`{url}`에 접속할 수 없어요!")
+            return
 
         if not data:
             await bot.say(event.channel, f"`{url}`은 빈 웹페이지에요!")
