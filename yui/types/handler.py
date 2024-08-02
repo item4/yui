@@ -73,6 +73,7 @@ class Handler:
     params: Mapping[str, inspect.Parameter] = field(init=False)
     annotations: dict[str, Any] = field(init=False)
     is_prepared: bool = field(init=False, default=False)
+    bound: Any = field(init=False)
 
     def __attrs_post_init__(self):
         self.doc = inspect.getdoc(self.f)
@@ -108,9 +109,8 @@ class Handler:
         self.is_prepared = True
 
     def __call__(self, *args, **kwargs) -> HANDLER_CALL_RETURN_TYPE:
-        _self = kwargs.pop("_self", None)
-        if _self:
-            kwargs["self"] = _self
+        if self.bound:
+            return self.f(self.bound, *args, **kwargs)
         return self.f(*args, **kwargs)
 
     def __repr__(self) -> str:

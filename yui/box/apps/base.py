@@ -72,8 +72,6 @@ class BaseApp:
         **kwargs,
     ):
         sess = bot.session_maker()
-        if "self" in func_params:
-            kwargs["_self"] = self
         if "bot" in func_params:
             kwargs["bot"] = bot
         if "loop" in func_params:

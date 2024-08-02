@@ -46,14 +46,14 @@ async def test_collect(bot):
 
     event = bot.create_message("C1", "U1")
 
-    await g.collect(g, bot, event, "아무말 대잔치")
+    await g.collect(bot, event, "아무말 대잔치")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "요청을 해석하는데에 실패했어요!"
 
-    await g.collect(g, bot, event, "0/3")
+    await g.collect(bot, event, "0/3")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -63,7 +63,7 @@ async def test_collect(bot):
         == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
     )
 
-    await g.collect(g, bot, event, "3/1")
+    await g.collect(bot, event, "3/1")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -73,7 +73,7 @@ async def test_collect(bot):
         == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
     )
 
-    await g.collect(g, bot, event, "10000/3")
+    await g.collect(bot, event, "10000/3")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -83,7 +83,7 @@ async def test_collect(bot):
         == "정상적인 수집 갯수를 입력해주세요! (1개 이상 512개 이하)"
     )
 
-    await g.collect(g, bot, event, "3/10000")
+    await g.collect(bot, event, "3/10000")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -93,14 +93,14 @@ async def test_collect(bot):
         == "정상적인 전체 갯수를 입력해주세요! (2개 이상 512개 이하)"
     )
 
-    await g.collect(g, bot, event, "3/2")
+    await g.collect(bot, event, "3/2")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "원하는 갯수가 전체 갯수보다 많을 수 없어요!"
 
-    await g.collect(g, bot, event, "30")
+    await g.collect(bot, event, "30")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -113,7 +113,7 @@ async def test_collect(bot):
         " 수집에 성공할 수 있어요!"
     )
 
-    await g.collect(g, bot, event, "30/40")
+    await g.collect(bot, event, "30/40")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -127,7 +127,7 @@ async def test_collect(bot):
         " 수집에 성공할 수 있어요!"
     )
 
-    await g.collect(g, bot, event, "전체 40종류 중에 30종")
+    await g.collect(bot, event, "전체 40종류 중에 30종")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -150,7 +150,7 @@ async def test_challenge(bot):
 
     event = bot.create_message("C1", "U1")
 
-    await g.challenge(g, bot, event, -1, "0.05")
+    await g.challenge(bot, event, -1, "0.05")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -160,7 +160,7 @@ async def test_challenge(bot):
         == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
     )
 
-    await g.challenge(g, bot, event, 9999999, "0.05")
+    await g.challenge(bot, event, 9999999, "0.05")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -170,28 +170,28 @@ async def test_challenge(bot):
         == "성공횟수는 1회 이상, 10,000회 이하로 입력해주세요!"
     )
 
-    await g.challenge(g, bot, event, 1, "아무말 대잔치")
+    await g.challenge(bot, event, 1, "아무말 대잔치")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "정상적인 확률을 입력해주세요!"
 
-    await g.challenge(g, bot, event, 1, "0.000000001")
+    await g.challenge(bot, event, 1, "0.000000001")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "확률값은 0.001% 이상, 99% 이하로 입력해주세요!"
 
-    await g.challenge(g, bot, event, 1, "999999")
+    await g.challenge(bot, event, 1, "999999")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "확률값은 0.001% 이상, 99% 이하로 입력해주세요!"
 
-    await g.challenge(g, bot, event, 1000, "0.00001")
+    await g.challenge(bot, event, 1000, "0.00001")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -200,7 +200,7 @@ async def test_challenge(bot):
         said.data["text"] == "입력하신 확률값에 비해 성공 횟수가 너무 많아요!"
     )
 
-    await g.challenge(g, bot, event, 1, "0.05")
+    await g.challenge(bot, event, 1, "0.05")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -216,7 +216,7 @@ async def test_challenge(bot):
         "- 90번 시도하시면 99.01% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
 
-    await g.challenge(g, bot, event, 1, "3%")
+    await g.challenge(bot, event, 1, "3%")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -232,7 +232,7 @@ async def test_challenge(bot):
         "- 152번 시도하시면 99.02% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
 
-    await g.challenge(g, bot, event, 1, "95%")
+    await g.challenge(bot, event, 1, "95%")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -245,7 +245,7 @@ async def test_challenge(bot):
         "- 2번 시도하시면 99.74% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
 
-    await g.challenge(g, bot, event, 1, "98.00000000%")
+    await g.challenge(bot, event, 1, "98.00000000%")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -258,7 +258,7 @@ async def test_challenge(bot):
         "- 2번 시도하시면 99.96% 확률로 목표 횟수만큼 성공할 수 있어요!"
     )
 
-    await g.challenge(g, bot, event, 10, "0.1%")
+    await g.challenge(bot, event, 10, "0.1%")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"

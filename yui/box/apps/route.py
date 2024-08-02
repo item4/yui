@@ -38,6 +38,12 @@ class RouteApp(BaseApp):
     name: str
     route_list: ClassVar[list[Route]] = []
 
+    def __getattribute__(self, item: str):
+        obj = super().__getattribute__(item)
+        if isinstance(obj, Handler) and obj.bound is None:
+            obj.bound = self
+        return obj
+
     def get_short_help(self, prefix: str) -> str:
         raise NotImplementedError
 

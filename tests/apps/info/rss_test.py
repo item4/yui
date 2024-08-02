@@ -46,7 +46,7 @@ async def test_add_wrong_url(bot, fx_sess):
 
     event = bot.create_message("C1", "U1")
 
-    await r.add(r, bot, event, fx_sess, "wrong url")
+    await r.add(bot, event, fx_sess, "wrong url")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -77,7 +77,7 @@ async def test_add_cannot_connect(bot, fx_sess, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    await r.add(r, bot, event, fx_sess, "https://test.dev/rss.xml")
+    await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -97,7 +97,7 @@ async def test_add_empty_body(bot, fx_sess, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    await r.add(r, bot, event, fx_sess, "https://test.dev/rss.xml")
+    await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -117,7 +117,7 @@ async def test_add_wrong_body(bot, fx_sess, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    await r.add(r, bot, event, fx_sess, "https://test.dev/rss.xml")
+    await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
