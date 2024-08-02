@@ -103,6 +103,14 @@ def encode_url(u: str) -> str:
     )
 
 
+def format_episode_num(num: str) -> str:
+    if num == "0":
+        return "단편"
+    if num == "9999":
+        return "완결"
+    return f"{num}화"
+
+
 def make_caption_list(origin: list[Caption]) -> list[Attachment]:
     if not origin:
         return [
@@ -197,13 +205,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
             known_urls.add(item.url)
 
     for caption in selected_captions:
-        num = caption.episode_num
-        if caption.episode_num == "0":  # anissia의 0은 단편을 의미
-            num = "단편"
-        elif caption.episode_num == "9999":  # OHLI의 9999는 완결을 의미
-            num = "완결"
-        else:
-            num = f"{num}화"
+        num = format_episode_num(caption.episode_num)
 
         date = caption.released_at
         text = f"{num} {date} {caption.url}" if date else f"{num} {caption.url}"

@@ -1,6 +1,8 @@
 from yui.apps.search.caption import convert_released_dt
 from yui.apps.search.caption import encode_url
 from yui.apps.search.caption import fix_url
+from yui.apps.search.caption import format_episode_num
+from yui.apps.search.caption import make_caption_list
 from yui.apps.search.caption import print_time
 from yui.apps.search.caption import remove_protocol
 
@@ -39,3 +41,17 @@ def test_encode_url():
         encode_url("https://example.com/한글/주소/경로")
         == "https://example.com/%ED%95%9C%EA%B8%80/%EC%A3%BC%EC%86%8C/%EA%B2%BD%EB%A1%9C"
     )
+
+
+def test_format_episode_num():
+    assert format_episode_num("0") == "단편"
+    assert format_episode_num("1") == "1화"
+    assert format_episode_num("2.5") == "2.5화"
+    assert format_episode_num("9999") == "완결"
+
+
+def test_make_caption_list_empty():
+    result = make_caption_list([])
+    assert len(result) == 1
+    assert result[0].fallback == "자막 제작자가 없습니다."
+    assert result[0].text == "자막 제작자가 없습니다."
