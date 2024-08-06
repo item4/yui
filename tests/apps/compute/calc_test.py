@@ -30,6 +30,7 @@ class GetItemSpy:
         self.queue.append(item)
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_calc_decimal_command(bot):
     event = bot.create_message("C1", "U1")
@@ -42,6 +43,7 @@ async def test_calc_decimal_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_calc_decimal_on_change_command(bot):
     event = bot.create_message(
@@ -58,6 +60,7 @@ async def test_calc_decimal_on_change_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_calc_num_command(bot):
     event = bot.create_message("C1", "U1")
@@ -70,6 +73,7 @@ async def test_calc_num_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_calc_num_on_change_command(bot):
     event = bot.create_message(
@@ -86,6 +90,7 @@ async def test_calc_num_on_change_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_empty_expr(bot):
     event = bot.create_message("C1", "U1")
@@ -99,6 +104,7 @@ async def test_command_empty_expr(bot):
     assert said.data["text"] == help_text
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_bad_syntax(bot):
     event = bot.create_message("C1", "U1")
@@ -114,6 +120,7 @@ async def test_command_bad_syntax(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_zero_division(bot):
     event = bot.create_message("C1", "U1")
@@ -130,6 +137,7 @@ async def test_command_zero_division(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_timeout(bot):
     event = bot.create_message("C1", "U1")
@@ -146,6 +154,7 @@ async def test_command_timeout(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_unexpected_error(bot):
     event = bot.create_message("C1", "U1")
@@ -161,6 +170,7 @@ async def test_command_unexpected_error(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_short_expr(bot):
     event = bot.create_message("C1", "U1")
@@ -174,6 +184,7 @@ async def test_command_short_expr(bot):
     assert said.data["text"] == "`1+2` == `3`"
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_short_expr_empty_result(bot):
     event = bot.create_message("C1", "U1")
@@ -187,6 +198,7 @@ async def test_command_short_expr_empty_result(bot):
     assert said.data["text"] == "`''` == _Empty_"
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_multiline_expr(bot):
     event = bot.create_message("C1", "U1")
@@ -202,6 +214,7 @@ async def test_command_multiline_expr(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_multiline_expr_empty_result(bot):
     event = bot.create_message("C1", "U1")
@@ -215,6 +228,7 @@ async def test_command_multiline_expr_empty_result(bot):
     assert said.data["text"] == f"*Input*\n```\n{expr}\n```\n*Output*\n_Empty_"
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_locals(bot):
     event = bot.create_message("C1", "U1")
@@ -231,6 +245,7 @@ async def test_command_locals(bot):
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 async def test_command_none(bot):
     event = bot.create_message("C1", "U1")
@@ -1094,6 +1109,7 @@ async def bot():
     )
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio()
 @pytest.mark.parametrize(
     (
