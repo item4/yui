@@ -223,3 +223,40 @@ async def test_list_no_item(bot, fx_sess):
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == "C1"
     assert said.data["text"] == "<#C1> 채널에서 구독중인 RSS가 없어요!"
+
+
+@pytest.mark.asyncio()
+async def test_list_fine(bot, fx_sess):
+    bot.add_channel("C1", "general")
+    bot.add_user("U1", "item4")
+    r = RSS()
+
+    event = bot.create_message("C1", "U1")
+
+    feed1 = RSSFeedURL()
+    feed1.channel = "C1"
+    feed1.url = "https://test.dev/rss.xml"
+    feed1.updated_at = datetime(2020, 3, 22, 18, 9)
+    feed2 = RSSFeedURL()
+    feed2.channel = "C1"
+    feed2.url = "https://test.dev/rss2.xml"
+    feed2.updated_at = datetime(2020, 3, 22, 10, 45)
+    async with fx_sess.begin():
+        fx_sess.add(feed1)
+        fx_sess.add(feed2)
+        fx_sess.commit()
+
+    await r.list(bot, event, fx_sess)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == "C1"
+    assert (
+        said.data["text"]
+        == f"""\
+<#C1> 채널에서 구독중인 RSS 목록은 다음과 같아요!
+```
+{feed1.id} - {feed1.url}
+{feed2.id} - {feed2.url}
+```"""
+    )
