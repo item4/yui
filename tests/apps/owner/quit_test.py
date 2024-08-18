@@ -5,7 +5,7 @@ from yui.apps.owner.quit import quit
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_quit_command(bot_config):
     bot_config.USERS["owner"] = "U1"
     bot = FakeBot(bot_config)

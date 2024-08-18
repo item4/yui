@@ -41,7 +41,7 @@ def test_parse_dice_syntax():
     assert result[0].result == "6 (5+3-2)"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_dice_handler(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "user")

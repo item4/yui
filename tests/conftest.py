@@ -31,7 +31,7 @@ def pytest_addoption(parser):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def fx_tmpdir(tmpdir):
     return pathlib.Path(tmpdir)
 
@@ -119,12 +119,12 @@ def gen_config(request):
     return config
 
 
-@pytest.fixture()
+@pytest.fixture
 def bot():
     return FakeBot()
 
 
-@pytest.fixture()
+@pytest.fixture
 def bot_config(request):
     return gen_config(request)
 
@@ -137,7 +137,7 @@ async def cache():
     await c.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 def response_mock():
     with aioresponses.aioresponses() as m:
         yield m

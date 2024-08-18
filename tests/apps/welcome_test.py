@@ -8,7 +8,7 @@ from yui.types.slack.response import APIResponse
 from ..util import FakeBot
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_welcome_item4_handler(bot_config):
     bot_config.PREFIX = "."
     bot_config.CHANNELS = {
@@ -30,7 +30,7 @@ async def test_welcome_item4_handler(bot_config):
     assert "`.도움`" in said.data["text"]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_welcome_9xd_handler(bot_config):
     bot_config.PREFIX = "."
     bot_config.CHANNELS = {

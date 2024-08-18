@@ -22,7 +22,7 @@ async def _api_server_check():
         pytest.skip("API server is not available")
 
 
-@pytest.fixture()
+@pytest.fixture
 def bot(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot = FakeBot(bot_config)
@@ -104,7 +104,7 @@ def test_work_end_task_match_at_19(sunday_19, delta, result):
     assert work_end.match(sunday_19 + delta) is result
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 9), tick=False)
 async def test_work_start_monday(bot):
     await work_start(bot)
@@ -116,7 +116,7 @@ async def test_work_start_monday(bot):
     assert said.data["attachments"]
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 10, 9), tick=False)
 async def test_work_start_normal(bot):
     await work_start(bot)
@@ -131,7 +131,7 @@ async def test_work_start_normal(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 9), tick=False)
 async def test_work_start_holiday(bot):
     await work_start(bot)
@@ -146,7 +146,7 @@ async def test_work_start_holiday(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 18), tick=False)
 async def test_work_end_18_normal(bot):
     await work_end(bot)
@@ -161,7 +161,7 @@ async def test_work_end_18_normal(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 18), tick=False)
 async def test_work_end_18_holiday(bot):
     await work_end(bot)
@@ -176,7 +176,7 @@ async def test_work_end_18_holiday(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 19), tick=False)
 async def test_work_end_19_normal(bot):
     await work_end(bot)
@@ -191,7 +191,7 @@ async def test_work_end_19_normal(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 19), tick=False)
 async def test_work_end_19_holiday(bot):
     await work_end(bot)

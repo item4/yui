@@ -135,7 +135,7 @@ class Bot(GetLoggerMixin):
         self.groups: list[PrivateChannel] = []
         self.users: list[User] = []
         self.restart = False
-        self.is_ready = False
+        self.is_ready = asyncio.Event()
         self.method_last_call: defaultdict[str, datetime] = defaultdict(now)
         self.method_queue: defaultdict[str, list] = defaultdict(list)
 
@@ -165,7 +165,7 @@ class Bot(GetLoggerMixin):
             async def task():
                 log = logging.getLogger(repr(c.handler))
 
-                if not bot.is_ready:
+                if not bot.is_ready.is_set():
                     log.debug("cron condition hit but not ready")
                     return
                 log.debug("cron condition hit")
@@ -281,7 +281,8 @@ class Bot(GetLoggerMixin):
         name = "".join(random.choice(string.printable) for _ in range(16))
         q = self.method_queue[method]
         q.append(name)
-        while q and q[0] != name:
+        # FIXME: https://docs.astral.sh/ruff/rules/async-busy-wait/
+        while q and q[0] != name:  # noqa: ASYNC110
             await asyncio.sleep(0.05)
 
         method_dt = self.method_last_call[method]
@@ -458,8 +459,7 @@ class Bot(GetLoggerMixin):
 
         while True:
             await self.queue.put(create_event("yui_system_start", {}))
-            while not self.is_ready:
-                await asyncio.sleep(0.1)
+            await self.is_ready.wait()
 
             try:
                 resp = await self.api.apps.connections.open(

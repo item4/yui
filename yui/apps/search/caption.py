@@ -253,7 +253,9 @@ async def caption(bot, event: Message, finished: bool, title: str):
         await search_on_air(bot, event, title)
 
 
-async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
+async def get_ohli_now_json(
+    timeout: float,  # noqa: ASYNC109
+) -> list[list[dict[str, Any]]]:
     async with async_timeout.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
@@ -262,7 +264,10 @@ async def get_ohli_now_json(timeout: float) -> list[list[dict[str, Any]]]:
         return await resp.json(loads=json.loads)
 
 
-async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
+async def get_ohli_caption_list(
+    i,
+    timeout: float,  # noqa: ASYNC109
+) -> list[Caption]:
     results: list[Caption] = []
     async with async_timeout.timeout(
         timeout,
@@ -294,7 +299,7 @@ async def get_ohli_caption_list(i, timeout: float) -> list[Caption]:
 
 async def get_anissia_weekly_json(
     week: int,
-    timeout: float,
+    timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaAnimeInfo]:
     async with async_timeout.timeout(
         timeout,
@@ -306,7 +311,7 @@ async def get_anissia_weekly_json(
 
 async def get_annissia_caption_list_json(
     anime_no: int,
-    timeout: float,
+    timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaCaptionInfo]:
     async with async_timeout.timeout(
         timeout,
@@ -366,7 +371,12 @@ def select_one_anime_from_anissia(ohli_ani, anissia_week):
     return max(anissia_week, key=lambda x: x["ratio"])
 
 
-async def search_on_air(bot, event: Message, title: str, timeout: float = 2.5):
+async def search_on_air(
+    bot,
+    event: Message,
+    title: str,
+    timeout: float = 2.5,  # noqa: ASYNC109
+):
     try:
         ohli_all = await get_ohli_now_json(timeout)
     except (ContentTypeError, TimeoutError):
@@ -463,7 +473,7 @@ async def search_finished(
     bot,
     event: Message,
     title: str,
-    timeout: float = 2.5,
+    timeout: float = 2.5,  # noqa: ASYNC109
 ):
     try:
         async with async_timeout.timeout(

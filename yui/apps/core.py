@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 @box.on(YuiSystemStart)
 async def on_start(bot):
-    bot.is_ready = True
+    bot.is_ready.set()
     return True
 
 

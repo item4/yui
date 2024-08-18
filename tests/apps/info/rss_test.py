@@ -26,7 +26,7 @@ def test_get_full_help():
     assert r.get_full_help(".")
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_fallback(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -42,7 +42,7 @@ async def test_fallback(bot):
     assert said.data["text"] == f"Usage: `{bot.config.PREFIX}help rss`"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_wrong_url(bot, fx_sess):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -58,7 +58,7 @@ async def test_add_wrong_url(bot, fx_sess):
     assert said.data["text"] == "`wrong url`은 올바른 URL이 아니에요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_cannot_connect(bot, fx_sess, response_mock):
     response_mock.get(
         URL("https://test.dev/rss.xml"),
@@ -89,7 +89,7 @@ async def test_add_cannot_connect(bot, fx_sess, response_mock):
     assert said.data["text"] == "`https://test.dev/rss.xml`에 접속할 수 없어요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_empty_body(bot, fx_sess, response_mock):
     response_mock.get(
         URL("https://test.dev/rss.xml"),
@@ -109,7 +109,7 @@ async def test_add_empty_body(bot, fx_sess, response_mock):
     assert said.data["text"] == "`https://test.dev/rss.xml`은 빈 웹페이지에요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_wrong_body(bot, fx_sess, response_mock):
     response_mock.get(
         URL("https://test.dev/rss.xml"),
@@ -132,7 +132,7 @@ async def test_add_wrong_body(bot, fx_sess, response_mock):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_add_success(bot, fx_sess, response_mock):
     response_mock.get(
         URL("https://test.dev/rss.xml"),
@@ -209,7 +209,7 @@ async def test_add_success(bot, fx_sess, response_mock):
     assert rss.updated_at == datetime(2020, 3, 22, 18, 9)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_list_no_item(bot, fx_sess):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -225,7 +225,7 @@ async def test_list_no_item(bot, fx_sess):
     assert said.data["text"] == "<#C1> 채널에서 구독중인 RSS가 없어요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_list_fine(bot, fx_sess):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

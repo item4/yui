@@ -3,7 +3,7 @@ import os
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture
 def google_api_key():
     key = os.getenv("GOOGLE_API_KEY")
     if not key:

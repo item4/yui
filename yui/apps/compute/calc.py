@@ -37,7 +37,7 @@ async def body(
     expr: str,
     help: str,
     decimal_mode: bool = True,
-    timeout: float = 1,
+    timeout: float = 1,  # noqa: ASYNC109
 ):
     expr = expr.strip()
     expr_is_multiline = "\n" in expr

@@ -22,7 +22,7 @@ class APIServerError(RuntimeError):
     pass
 
 
-async def get_cat_image_url(timeout: float) -> str:
+async def get_cat_image_url(timeout: float) -> str:  # noqa: ASYNC109
     api_url = "https://thecatapi.com/api/images/get"
     async with aiohttp.ClientSession() as session:
         while True:
@@ -49,7 +49,7 @@ async def get_cat_image_url(timeout: float) -> str:
                 continue
 
 
-async def get_dog_image_url(timeout: float) -> str:
+async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
     api_url = "https://dog.ceo/api/breeds/image/random"
     async with aiohttp.ClientSession() as session:
         while True:
@@ -72,7 +72,7 @@ async def get_dog_image_url(timeout: float) -> str:
                 continue
 
 
-async def get_fox_image_url(timeout: float) -> str:
+async def get_fox_image_url(timeout: float) -> str:  # noqa: ASYNC109
     url = "http://fox-info.net/fox-gallery"
     async with async_timeout.timeout(
         delay=timeout,
@@ -88,7 +88,7 @@ async def get_fox_image_url(timeout: float) -> str:
 
 @box.command("cat", ["냥", "야옹", "냐옹"])
 @option("--timeout", default=1.5)
-async def cat(bot, event: Message, timeout: float):
+async def cat(bot, event: Message, timeout: float):  # noqa: ASYNC109
     """
     냥냥이 짤을 수급합니다.
     쿨타임은 일반 채널 30분, DM 3분입니다.
@@ -134,7 +134,7 @@ async def cat(bot, event: Message, timeout: float):
 
 @box.command("dog", ["멍"])
 @option("--timeout", default=1.5)
-async def dog(bot, event: Message, timeout: float):
+async def dog(bot, event: Message, timeout: float):  # noqa: ASYNC109
     """
     멍멍이 짤을 수급합니다.
 
@@ -181,7 +181,7 @@ async def dog(bot, event: Message, timeout: float):
 
 
 @box.command("fox", ["여우"])
-async def fox(bot, event: Message, timeout: float = 1.5):
+async def fox(bot, event: Message, timeout: float = 1.5):  # noqa: ASYNC109
     """
     여우 짤을 수급합니다.
 

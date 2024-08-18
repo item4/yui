@@ -22,7 +22,7 @@ def test_get_full_help():
     assert g.get_full_help(".")
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_fallback(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -38,7 +38,7 @@ async def test_fallback(bot):
     assert said.data["text"] == f"Usage: `{bot.config.PREFIX}help 가챠`"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_collect(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")
@@ -142,7 +142,7 @@ async def test_collect(bot):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_challenge(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

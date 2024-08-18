@@ -14,7 +14,7 @@ book_result_pattern_re = re.compile(
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 def naver_client_id():
     token = os.getenv("NAVER_CLIENT_ID")
     if not token:
@@ -22,7 +22,7 @@ def naver_client_id():
     return token
 
 
-@pytest.fixture()
+@pytest.fixture
 def naver_client_secret():
     key = os.getenv("NAVER_CLIENT_SECRET")
     if not key:
@@ -30,7 +30,7 @@ def naver_client_secret():
     return key
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_book(
     bot_config,
     naver_client_id,

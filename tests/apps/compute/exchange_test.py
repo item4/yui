@@ -21,7 +21,7 @@ async def skip_if_no_exchange_api():
         pytest.skip("Exchange API is not available")
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_exchange_command(bot, skip_if_no_exchange_api):
     bot.add_channel("C1", "test")
     bot.add_user("U1", "tester")
@@ -70,7 +70,7 @@ async def test_exchange_command(bot, skip_if_no_exchange_api):
     assert said.data["text"] == "주문을 이해하는데에 실패했어요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_exchange_error(bot, response_mock):
     response_mock.get(
         URL("https://api.manana.kr/exchange/rate.json").with_query(
@@ -94,7 +94,7 @@ async def test_exchange_error(bot, response_mock):
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_exchange_timeout(bot, response_mock):
     response_mock.get(
         URL("https://api.manana.kr/exchange/rate.json").with_query(

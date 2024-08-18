@@ -7,7 +7,7 @@ from tests.util import FakeBot
 from yui.apps.weather.commands import weather
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_weather_command(bot_config, cache, address):
     bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
     bot.add_channel("C1", "general")
@@ -34,7 +34,7 @@ async def test_weather_command(bot_config, cache, address):
     assert weather_said.data["text"] != "해당 이름의 관측소는 존재하지 않아요!"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_weather_command_too_short(
     bot_config,
     cache,
@@ -62,7 +62,7 @@ async def test_weather_command_too_short(
     )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_weather_command_wrong_address(
     bot_config,
     cache,

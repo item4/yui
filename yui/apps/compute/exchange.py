@@ -44,7 +44,11 @@ class WrongUnit(ExchangeError):
     """Wrong unit."""
 
 
-async def get_exchange_rate(base: str, to: str, timeout: float = 1.5) -> dict:
+async def get_exchange_rate(
+    base: str,
+    to: str,
+    timeout: float = 1.5,  # noqa: ASYNC109
+) -> dict:
     """Get exchange rate."""
 
     if base == to:
@@ -64,7 +68,12 @@ async def get_exchange_rate(base: str, to: str, timeout: float = 1.5) -> dict:
 
 @box.command("환율", ["exchange"])
 @argument("query", nargs=-1, concat=True)
-async def exchange(bot, event: Message, query: str, timeout: float = 1.5):
+async def exchange(
+    bot,
+    event: Message,
+    query: str,
+    timeout: float = 1.5,  # noqa: ASYNC109
+):
     """
     환전시 얼마가 되는지 계산.
 

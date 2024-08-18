@@ -29,7 +29,7 @@ CAT_API_URL = URL("https://thecatapi.com/api/images/get").with_query(
 )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_cat_image_url(response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -105,7 +105,7 @@ async def test_get_cat_image_url(response_mock):
     assert url == "http://cat.com/200.jpg"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_dog_image_url(response_mock):
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
@@ -152,7 +152,7 @@ async def test_get_dog_image_url(response_mock):
     assert url == "http://dog.com/200.jpg"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_fox_image_url(response_mock):
     response_mock.get(
         "http://fox-info.net/fox-gallery",
@@ -177,7 +177,7 @@ async def test_get_fox_image_url(response_mock):
     assert url == "http://fox.com/img1.png"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_cat_command(bot, response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -295,7 +295,7 @@ async def test_cat_command(bot, response_mock):
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_dog_command(bot, response_mock):
     response_mock.get(
         "https://dog.ceo/api/breeds/image/random",
@@ -397,7 +397,7 @@ async def test_dog_command(bot, response_mock):
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_fox_command(bot, response_mock):
     response_mock.get(
         "http://fox-info.net/fox-gallery",

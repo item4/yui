@@ -5,7 +5,7 @@ import pytest
 from yui.apps.date.age import age
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_age_command(bot):
     bot.add_channel("C1", "general")
     bot.add_user("U1", "item4")

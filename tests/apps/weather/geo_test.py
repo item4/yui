@@ -14,7 +14,7 @@ from yui.apps.weather.geo import get_geometric_info_by_address
         ("카와고에", "일본 사이타마현 가와고에시", 35.9251335, 139.4858042),
     ],
 )
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_geometric_info_by_address(
     google_api_key,
     keyword,
@@ -31,7 +31,7 @@ async def test_get_geometric_info_by_address(
     assert (lat, lng) == pytest.approx((expected_lat, expected_lng), abs=1e-1)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_weather_wrong_geometric_info(
     response_mock,
     unavailable_address,
@@ -54,7 +54,7 @@ async def test_get_weather_wrong_geometric_info(
         )
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 async def test_get_weather_google_427(
     response_mock,
     unavailable_address,
