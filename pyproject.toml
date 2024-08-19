@@ -74,6 +74,8 @@ select = [
     "FLY",
     # Perflint
     "PERF",
+    # refurb
+    "FURB",
     # Ruff-specific rules
     "RUF",
 ]
