@@ -140,7 +140,7 @@ Babel = "^2.16.0"
 SQLAlchemy = {version = "^2.0.32", extras = ["asyncio"]}
 SQLAlchemy-Utils = "^0.41.2"
 aiocron = "^1.8"
-aiohttp = "^3.10.4"
+aiohttp = "^3.10.5"
 alembic = "^1.13.2"
 async-timeout = "^4.0.3"
 attrdict = "^2.0.1"
@@ -157,7 +157,7 @@ psycopg = {version = "^3.2.1", extras = ["binary"]}
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.9.6"
 redis = {version = "^5.0.8", extras = ["hiredis"]}
-scipy = "^1.14.0"
+scipy = "^1.14.1"
 sympy = "^1.13.2"
 tossi = "^0.3.1"
 tzlocal = "^5.2"
