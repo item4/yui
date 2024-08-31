@@ -422,13 +422,13 @@ toml = ["tomli"]
 
 [[package]]
 name = "croniter"
-version = "2.0.7"
+version = "3.0.3"
 description = "croniter provides iteration for datetime object with cron like format"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.6"
 files = [
-    {file = "croniter-2.0.7-py2.py3-none-any.whl", hash = "sha256:f15e80828d23920c4bb7f4d9340b932c9dcabecafc7775703c8b36d1253ed526"},
-    {file = "croniter-2.0.7.tar.gz", hash = "sha256:1041b912b4b1e03751a0993531becf77851ae6e8b334c9c76ffeffb8f055f53f"},
+    {file = "croniter-3.0.3-py2.py3-none-any.whl", hash = "sha256:b3bd11f270dc54ccd1f2397b813436015a86d30ffc5a7a9438eec1ed916f2101"},
+    {file = "croniter-3.0.3.tar.gz", hash = "sha256:34117ec1741f10a7bd0ec3ad7d8f0eb8fa457a2feb9be32e6a2250e158957668"},
 ]
 
 [package.dependencies]
@@ -2120,13 +2120,13 @@ six = "*"
 
 [[package]]
 name = "types-croniter"
-version = "2.0.5.20240722"
+version = "3.0.3.20240731"
 description = "Typing stubs for croniter"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-croniter-2.0.5.20240722.tar.gz", hash = "sha256:e95c7092619143a9f94a051242d685f469439042b8404ac34371d2255ef500ec"},
-    {file = "types_croniter-2.0.5.20240722-py3-none-any.whl", hash = "sha256:f6863fb49aafb540a2c54d70ac1f674af00296c16996ac9a8914e4d68efee32b"},
+    {file = "types-croniter-3.0.3.20240731.tar.gz", hash = "sha256:7a170660642da662c704a463b011e31c049f5a218d27d30199a80ac5e8d15002"},
+    {file = "types_croniter-3.0.3.20240731-py3-none-any.whl", hash = "sha256:da039d543e07b1db4ad93680cb837afd0f5c64974970287da8c6432d19441b71"},
 ]
 
 [[package]]
@@ -2341,4 +2341,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "8f6af43a3eaf930b1348ea8b32733aac25d9192da1e4cb16db5a1da8d90088c2"
+content-hash = "cf2af60def7be5c6c26af5c43d1b02b6f0485baf8ab50de0c7cd6a22471f0358"
