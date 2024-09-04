@@ -2,6 +2,7 @@ import asyncio
 import random
 
 import aiohttp
+from discord_webhook import AsyncDiscordWebhook
 
 from ....bot import Bot
 from ....utils import json
@@ -62,6 +63,11 @@ async def get_d2r_terror_zone_info():
         return json.loads(blob)
 
 
+async def send_d2r_terror_zone_info_to_discord(webhook_url: str, message: str):
+    webhook = AsyncDiscordWebhook(url=webhook_url, content=message)
+    await webhook.execute()
+
+
 async def say_d2r_terror_zone_info(bot: Bot, channel):
     data = await get_d2r_terror_zone_info()
 
@@ -98,6 +104,7 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
             break
 
     results = []
+    discord_results = []
     limit_dt = data["data"][1]["time"]
     for x in data["data"]:
         if x["time"] < limit_dt:
@@ -109,6 +116,11 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
             f"[<!date^{x['time']}^{{date_num}} {{time}}|{fallback_time}>]"
             f" {zone}",
         )
+        discord_results.append(f"<t:{x['time']}:f> {zone}")
 
     text = "\n".join(results)
+    discord_text = "\n".join(discord_results)
+
     await bot.say(channel, text)
+    for webhook_url in bot.config.DISCORD_WEBHOOKS["d2tz"]:
+        await send_d2r_terror_zone_info_to_discord(webhook_url, discord_text)
