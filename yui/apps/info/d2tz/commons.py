@@ -84,7 +84,7 @@ async def say_d2r_terror_zone_info(bot: Bot, channel):
             f" {zone}",
         )
 
-    text = "\n".join(results)
+    text = "\n".join(reversed(results))
     await bot.say(channel, text)
 
 
@@ -118,8 +118,8 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
         )
         discord_results.append(f"<t:{x['time']}:f> {zone}")
 
-    text = "\n".join(results)
-    discord_text = "\n".join(discord_results)
+    text = "\n".join(reversed(results))
+    discord_text = "\n".join(reversed(discord_results))
 
     await bot.say(channel, text)
     for webhook_url in bot.config.DISCORD_WEBHOOKS["d2tz"]:
