@@ -430,7 +430,7 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
     this_time = now().replace(minute=0, second=0, microsecond=0).timestamp()
 
     loop_count = 0
-    while data["next_terror_time_utc"] < this_time:
+    while data["next_terror_time_utc"] <= this_time:
         data = await get_d2r_terror_zone_info(
             bot.config.D2EMU_USERNAME,
             bot.config.D2EMU_TOKEN,
