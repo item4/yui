@@ -20,9 +20,6 @@ PARENTHESES = re.compile(r"\(.+?\)")
 
 logger = logging.getLogger(__name__)
 
-headers: dict[str, str] = {
-    "User-Agent": USER_AGENT,
-}
 TEMPLATE = "{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}"
 REGION_TABLE: dict[str, tuple[str, str]] = {
     "수도권": ("1000", "6.53"),
@@ -37,7 +34,12 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f"subway-{service_region}-{api_version}"
     logger.info(f"fetch {name} start")
 
-    async with aiohttp.ClientSession(headers=headers) as session, session.get(
+    async with aiohttp.ClientSession(
+        headers={
+            "User-Agent": USER_AGENT,
+            "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+        },
+    ) as session, session.get(
         "https://map.naver.com/p/api/subway/meta",
         params={
             "readPath": service_region,
@@ -131,7 +133,10 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             return
 
         async with aiohttp.ClientSession(
-            headers=headers,
+            headers={
+                "User-Agent": USER_AGENT,
+                "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+            },
         ) as session, session.get(
             "https://map.naver.com/p/api/pubtrans/subway-directions",
             params={
