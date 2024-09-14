@@ -439,7 +439,7 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
             random.randint(55 + loop_count * 2, 111 + loop_count * 2) / 100,
         )
         loop_count += 1
-        if loop_count > 500:
+        if loop_count > 50:
             return
 
     now_dt = now()
