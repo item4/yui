@@ -58,6 +58,7 @@ def test_tz_id_to_names():
 
     items = [str(x) for x in range(59, 63 + 1)]
     assert len(set(tz_id_to_names(items))) == len(items)
+    assert tz_id_to_names(["64"]) == ["구더기 굴 3층"]
     assert tz_id_to_names(["62", "63", "64"]) == ["구더기 굴"]
     assert tz_id_to_names(["65"]) == ["고대 토굴"]
     assert tz_id_to_names(["66", "67", "68", "69", "70", "71", "72"]) == [
@@ -68,6 +69,8 @@ def test_tz_id_to_names():
     assert len(set(tz_id_to_names(items))) == len(items)
     assert tz_id_to_names(["86", "87", "90"]) == ["습한 구덩이"]
     assert tz_id_to_names(["88", "89", "91"]) == ["약탈자 소굴"]
+    assert tz_id_to_names(["90"]) == ["습한 구덩이 3층"]
+    assert tz_id_to_names(["91"]) == ["약탈자 소굴 3층"]
     assert tz_id_to_names(["92"]) == ["쿠라스트 하수도 1층"]
     assert tz_id_to_names(["93"]) == ["쿠라스트 하수도 2층"]
     assert tz_id_to_names(["92", "93"]) == ["쿠라스트 하수도"]
