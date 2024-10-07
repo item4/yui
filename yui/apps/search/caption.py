@@ -209,9 +209,15 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
 
     for caption in selected_captions:
         num = format_episode_num(caption.episode_num)
-
         date = caption.released_at
-        text = f"{num} {date} {caption.url}" if date else f"{num} {caption.url}"
+        if num == "단편" and not caption.url:
+            text = f"준비중 {date}" if date else "준비중"
+        else:
+            text = (
+                f"{num} {date} {caption.url}"
+                if date
+                else f"{num} {caption.url}"
+            )
         result.append(Attachment(author_name=caption.maker, text=text))
     return result
 
