@@ -71,10 +71,13 @@ def remove_protocol(url: str) -> str:
 
 
 def fix_url(url: str) -> str:
+    url = remove_protocol(url)
+    if not url:
+        return url
     if ".egloos.com" in url:
         # egloos는 https를 지원하지 않는다.
-        return f"http://{remove_protocol(url)}"
-    return f"https://{remove_protocol(url)}"
+        return f"http://{url}"
+    return f"https://{url}"
 
 
 def convert_released_dt(value: str) -> str:

@@ -21,6 +21,10 @@ def test_fix_url():
     assert fix_url("https://test.egloos.com") == "http://test.egloos.com"
     assert fix_url("test.egloos.com") == "http://test.egloos.com"
 
+    assert fix_url("") == ""
+    assert fix_url("http://") == ""
+    assert fix_url("https://") == ""
+
 
 def test_convert_released_dt():
     assert convert_released_dt("2021-01-02T03:04:05") == "2021년 01월 02일 03시"
