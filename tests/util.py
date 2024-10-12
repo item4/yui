@@ -10,6 +10,7 @@ from attrs import define
 
 from yui.api import SlackAPI
 from yui.bot import Bot
+from yui.box import Box
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.event import Message
@@ -46,6 +47,7 @@ class FakeBot(Bot):
         self,
         config: Config | None = None,
         *,
+        using_box: Box | None = None,
         loop=None,
         cache=None,
         process_pool_executor=None,
@@ -59,6 +61,9 @@ class FakeBot(Bot):
                 CHANNELS={},
                 USERS={},
             )
+
+        if using_box is None:
+            using_box = Box()
 
         with contextlib.suppress(RuntimeError):
             self.loop = loop or asyncio.get_running_loop()
@@ -74,6 +79,7 @@ class FakeBot(Bot):
         ]
         self.responses: dict[str, Callable] = {}
         self.config = config
+        self.box = using_box
         self.process_pool_executor = process_pool_executor
         self.thread_pool_executor = thread_pool_executor
 
