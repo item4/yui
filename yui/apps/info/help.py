@@ -24,22 +24,15 @@ async def help(bot, event: Message, raw: str):
         apps = [h for h in bot.box.apps if h.has_short_help and raw in h.names]
 
         if apps:
-            if len(apps) == 1:
-                a = apps[0]
+            for app in apps:
                 try:
-                    help = a.get_full_help(p)
+                    help_text = app.get_full_help(p)
                 except NotImplementedError:
-                    help = a.get_short_help(p)
+                    help_text = app.get_short_help(p)
 
                 await bot.say(
                     event.channel,
-                    help,
-                    thread_ts=event.ts,
-                )
-            else:
-                await bot.say(
-                    event.channel,
-                    "\n".join(a.get_short_help(p) for a in apps),
+                    help_text,
                     thread_ts=event.ts,
                 )
         else:
