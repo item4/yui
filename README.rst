@@ -19,7 +19,7 @@ YUI는 다용도 Slack App 입니다.
 - Python 3.12.7 혹은 그 이상 버전
 - PostgresSQL 16
 - Redis 5.0 이상
-- Poetry_ 1.8.3 이상
+- Poetry_ 1.8.4 이상
 
 
 .. _Poetry: https://python-poetry.org/
