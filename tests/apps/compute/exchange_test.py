@@ -13,7 +13,7 @@ YEN_PATTERN = re.compile(
 )
 
 
-@pytest_asyncio.fixture(scope="module")
+@pytest_asyncio.fixture
 async def skip_if_no_exchange_api():
     try:
         await get_exchange_rate("KRW", "JPY", timeout=1.0)
