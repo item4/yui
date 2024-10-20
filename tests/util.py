@@ -80,6 +80,7 @@ class FakeBot(Bot):
         self.responses: dict[str, Callable] = {}
         self.config = config
         self.box = using_box
+        self.is_ready = asyncio.Event()
         self.process_pool_executor = process_pool_executor
         self.thread_pool_executor = thread_pool_executor
 
