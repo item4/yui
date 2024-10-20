@@ -257,7 +257,7 @@ class Bot(GetLoggerMixin):
                 executor=self.process_pool_executor,
                 func=functools.partial(f, *args, **kwargs),
             )
-        except BrokenExecutor:
+        except BrokenExecutor:  # pragma: no cover
             self.process_pool_executor = ProcessPoolExecutor()
             raise
 
@@ -273,7 +273,7 @@ class Bot(GetLoggerMixin):
                 executor=self.thread_pool_executor,
                 func=functools.partial(f, *args, **kwargs),
             )
-        except BrokenExecutor:
+        except BrokenExecutor:  # pragma: no cover
             self.thread_pool_executor = ThreadPoolExecutor()
             raise
 
