@@ -58,6 +58,34 @@ P = ParamSpec("P")
 R = TypeVar("R")
 UTC9 = tzoffset("UTC9", timedelta(hours=9))
 
+FATAL_ERROR_CODES = frozenset(
+    {
+        "invalid_auth",
+        "missing_args",
+        "insecure_request",
+        "forbidden_team",
+        "not_authed",
+        "access_denied",
+        "account_inactive",
+        "token_revoked",
+        "token_expired",
+        "no_permission",
+        "not_allowed_token_type",
+        "invalid_charset",
+    },
+)
+RECONNECT_ERROR_CODES = frozenset(
+    {
+        "migration_in_progress",
+        "ratelimited",
+        "accesslimited",
+        "request_timeout",
+        "service_unavailable",
+        "fatal_error",
+        "internal_error",
+    },
+)
+
 
 class BotReconnect(Exception):
     """Exception for reconnect bot"""
@@ -454,7 +482,7 @@ class Bot(GetLoggerMixin):
                 break
 
     async def connect(self):
-        """Connect Slack RTM."""
+        """Connect Slack Socket Mode."""
         logger = self.get_logger("connect")
 
         while True:
@@ -466,35 +494,14 @@ class Bot(GetLoggerMixin):
                     token=self.config.APP_TOKEN,
                 )
             except Exception:
-                logger.exception()
+                logger.exception("Failed to connect Slack")
                 continue
             if not resp.body["ok"]:
-                if resp.body["error"] in {
-                    "invalid_auth",
-                    "missing_args",
-                    "insecure_request",
-                    "forbidden_team",
-                    "not_authed",
-                    "access_denied",
-                    "account_inactive",
-                    "token_revoked",
-                    "token_expired",
-                    "no_permission",
-                    "not_allowed_token_type",
-                    "invalid_charset",
-                }:
+                if resp.body["error"] in FATAL_ERROR_CODES:
                     logger.error(resp.body["error"])
                     break
 
-                if resp.body["error"] in {
-                    "migration_in_progress",
-                    "ratelimited",
-                    "accesslimited",
-                    "request_timeout",
-                    "service_unavailable",
-                    "fatal_error",
-                    "internal_error",
-                }:
+                if resp.body["error"] in RECONNECT_ERROR_CODES:
                     await asyncio.sleep(60)
                 continue
 
