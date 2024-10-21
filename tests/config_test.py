@@ -111,6 +111,17 @@ def test_config_check(bot_config):
             set(),
         )
 
+    bot_config.APP_TOKEN = 123.456
+    err = "Wrong config value type: APP_TOKEN"
+    with pytest.raises(ConfigurationError, match=err):
+        assert bot_config.check(
+            {"APP_TOKEN": int},
+            set(),
+            set(),
+            set(),
+            set(),
+        )
+
     bot_config.APP_TOKEN = "XXXX"  # noqa: S105
     assert bot_config.check(
         {"APP_TOKEN": str},
