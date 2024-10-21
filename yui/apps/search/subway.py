@@ -57,9 +57,7 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     logger.info(f"fetch {name} end")
 
 
-@box.on(YuiSystemStart)
-async def on_start(bot):
-    logger.info("on_start subway")
+async def fetch_all_station_db(bot):
     tasks = []
     for service_region, api_version in REGION_TABLE.values():
         tasks.append(
@@ -68,20 +66,19 @@ async def on_start(bot):
             ),
         )
     await asyncio.wait(tasks)
+
+
+@box.on(YuiSystemStart)
+async def on_start(bot):
+    logger.info("on_start subway")
+    await fetch_all_station_db(bot)
     return True
 
 
 @box.cron("0 3 * * *")
 async def refresh_db(bot):
     logger.info("refresh subway")
-    tasks = []
-    for service_region, api_version in REGION_TABLE.values():
-        tasks.append(
-            asyncio.create_task(
-                fetch_station_db(bot, service_region, api_version),
-            ),
-        )
-    await asyncio.wait(tasks)
+    await fetch_all_station_db(bot)
 
 
 async def body(bot, event: Message, region: str, start: str, end: str):
