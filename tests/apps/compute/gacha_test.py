@@ -24,8 +24,6 @@ def test_get_full_help():
 
 @pytest.mark.asyncio
 async def test_fallback(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     g = Gacha()
 
     event = bot.create_message("C1", "U1")
@@ -40,8 +38,6 @@ async def test_fallback(bot):
 
 @pytest.mark.asyncio
 async def test_collect(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     g = Gacha()
 
     event = bot.create_message("C1", "U1")
@@ -144,8 +140,6 @@ async def test_collect(bot):
 
 @pytest.mark.asyncio
 async def test_challenge(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     g = Gacha()
 
     event = bot.create_message("C1", "U1")

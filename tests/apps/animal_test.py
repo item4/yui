@@ -214,10 +214,6 @@ async def test_cat_command(bot, response_mock):
     response_mock.get("http://cat.com/200.jpg")
     response_mock.get("http://cat.com/200.jpg")
 
-    bot.add_channel("C1", "general")
-    user = bot.add_user("U1", "kirito")
-    bot.add_dm("D1", user)
-
     event = bot.create_message("C1", "U1")
 
     assert cat.last_call.get("C1") is None
@@ -315,10 +311,6 @@ async def test_dog_command(bot, response_mock):
     )
     response_mock.get("http://dog.com/200.jpg")
     response_mock.get("http://dog.com/200.jpg")
-
-    bot.add_channel("C1", "general")
-    user = bot.add_user("U1", "kirito")
-    bot.add_dm("D1", user)
 
     event = bot.create_message("C1", "U1")
 
@@ -431,10 +423,6 @@ async def test_fox_command(bot, response_mock):
         ),
         headers={"Content-Type": "text/html"},
     )
-
-    bot.add_channel("C1", "general")
-    user = bot.add_user("U1", "kirito")
-    bot.add_dm("D1", user)
 
     event = bot.create_message("C1", "U1")
 

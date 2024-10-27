@@ -16,13 +16,6 @@ class UserRecord:
 
 
 def test_cast(bot):
-    bot.add_user("U1", "kirito")
-    bot.add_channel("C1", "general")
-    bot.add_channel("C2", "random")
-    bot.add_channel("C3", "food")
-    bot.add_dm("D1", "U1")
-    bot.add_private_channel("G1", "secret")
-
     ID = NewType("ID", str)
     N = TypeVar("N", int, float)
     T = TypeVar("T")

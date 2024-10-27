@@ -57,7 +57,6 @@ def test_auto_weekend_start_match(sunday, delta, result):
 async def test_auto_weekend_start(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
 
     await auto_weekend_start(bot)
 
@@ -73,7 +72,6 @@ async def test_auto_weekend_loading_start(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
 
     await auto_weekend_loading(bot)
 
@@ -89,7 +87,6 @@ async def test_auto_weekend_loading_half(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
 
     await auto_weekend_loading(bot)
 
@@ -105,7 +102,6 @@ async def test_weekend_loading_start(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     event = bot.create_message("C1", "U1")
 
     await weekend_loading(bot, event)
@@ -122,7 +118,6 @@ async def test_weekend_loading_half(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     event = bot.create_message("C1", "U1")
 
     await weekend_loading(bot, event)
@@ -139,7 +134,6 @@ async def test_weekend_loading_end(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     event = bot.create_message("C1", "U1")
 
     await weekend_loading(bot, event)
@@ -156,7 +150,6 @@ async def test_weekend_loading_over(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot_config.WEEKEND_LOADING_TIME = [0, 12]
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     event = bot.create_message("C1", "U1")
 
     await weekend_loading(bot, event)

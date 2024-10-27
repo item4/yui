@@ -5,8 +5,6 @@ from yui.apps.fun.hassan import hassan
 
 @pytest.mark.asyncio
 async def test_hassan_handler(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "hunj")
     event = bot.create_message("C1", "U1", text="똑바로 서라 유이")
 
     assert not await hassan(bot, event)

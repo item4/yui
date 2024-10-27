@@ -10,10 +10,8 @@ from ...util import FakeBot
 async def test_say_command(bot_config):
     bot_config.USERS["owner"] = "U1"
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    test = bot.add_channel("C2", "test")
-    bot.add_user("U1", "kirito")
-    poh = bot.add_user("U2", "PoH")
+    test = bot.create_channel("C2", "test")
+    poh = bot.create_user("U2", "PoH")
 
     @bot.response("conversations.open")
     def callback(data):

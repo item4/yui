@@ -9,9 +9,6 @@ from ...util import FakeBot
 async def test_quit_command(bot_config):
     bot_config.USERS["owner"] = "U1"
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "kirito")
-    bot.add_user("U2", "PoH")
 
     event = bot.create_message("C1", "U1")
 

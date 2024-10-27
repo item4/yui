@@ -10,8 +10,6 @@ from yui.apps.weather.commands import weather
 @pytest.mark.asyncio
 async def test_weather_command(bot_config, cache, address):
     bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
 
     event = bot.create_message("C1", "U1", "1234.5678")
 
@@ -40,8 +38,6 @@ async def test_weather_command_too_short(
     cache,
 ):
     bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
 
     event = bot.create_message("C1", "U1", "1234.5678")
 
@@ -69,8 +65,6 @@ async def test_weather_command_wrong_address(
     unavailable_address,
 ):
     bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
 
     event = bot.create_message("C1", "U1", "1234.5678")
 

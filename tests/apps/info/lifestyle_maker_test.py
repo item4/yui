@@ -42,7 +42,6 @@ async def test_alert(bot_config):
         "memo": "C1",
     }
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "lifestyle")
 
     await alert_lifestyle(bot)
 

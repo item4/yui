@@ -6,7 +6,7 @@ from yui.api.encoder import bool2str
 @pytest.mark.asyncio
 async def test_slack_api_users_info(bot):
     user_id = "U1234"
-    user = bot.add_user(user_id, "item4")
+    user = bot.create_user(user_id, "item4")
 
     await bot.api.users.info(user_id)
 

@@ -23,8 +23,6 @@ async def skip_if_no_exchange_api():
 
 @pytest.mark.asyncio
 async def test_exchange_command(bot, skip_if_no_exchange_api):
-    bot.add_channel("C1", "test")
-    bot.add_user("U1", "tester")
     event = bot.create_message("C1", "U1")
 
     await exchange(bot, event, "100엔")
@@ -79,8 +77,6 @@ async def test_exchange_error(bot, response_mock):
         ),
         payload=[False],
     )
-    bot.add_channel("C1", "test")
-    bot.add_user("U1", "tester")
     event = bot.create_message("C1", "U1")
 
     await exchange(bot, event, "100엔")
@@ -103,8 +99,6 @@ async def test_exchange_timeout(bot, response_mock):
         ),
         exception=TimeoutError(),
     )
-    bot.add_channel("C1", "test")
-    bot.add_user("U1", "tester")
     event = bot.create_message("C1", "U1")
 
     await exchange(bot, event, "100엔")

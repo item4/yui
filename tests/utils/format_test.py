@@ -30,8 +30,8 @@ def test_format_helpers():
 
 
 def test_link(bot):
-    user = bot.add_user("U1234", "tester")
-    channel = bot.add_channel("C1234", "test")
+    user = bot.create_user("U1234", "tester")
+    channel = bot.create_channel("C1234", "test")
     assert link(channel) == "<#C1234>"
     assert link(user) == "<@U1234>"
     assert link("C1234") == "<#C1234>"

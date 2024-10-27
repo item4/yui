@@ -15,8 +15,6 @@ async def test_welcome_item4_handler(bot_config):
         "welcome": "C1",
     }
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "kirito")
     event = create_event("team_join", {"user": "U1"})
 
     await welcome_item4(bot, event)
@@ -37,8 +35,6 @@ async def test_welcome_9xd_handler(bot_config):
         "welcome": "C1",
     }
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "kirito")
     event = create_event("team_join", {"user": "U1"})
 
     @bot.response("chat.postMessage")

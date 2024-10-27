@@ -39,8 +39,6 @@ async def test_book(
     bot_config.NAVER_CLIENT_ID = naver_client_id
     bot_config.NAVER_CLIENT_SECRET = naver_client_secret
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
 
     event = bot.create_message("C1", "U1", "1234.5678")
 

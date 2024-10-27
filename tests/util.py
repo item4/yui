@@ -14,13 +14,9 @@ from yui.box import Box
 from yui.config import Config
 from yui.config import DEFAULT
 from yui.event import Message
-from yui.types.base import DirectMessageChannelID
-from yui.types.base import PrivateChannelID
 from yui.types.base import PublicChannelID
 from yui.types.base import Ts
 from yui.types.base import UserID
-from yui.types.channel import DirectMessageChannel
-from yui.types.channel import PrivateChannel
 from yui.types.channel import PublicChannel
 from yui.types.user import User
 
@@ -70,13 +66,7 @@ class FakeBot(Bot):
 
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
-        self.channels: list[PublicChannel] = []
-        self.ims: list[DirectMessageChannel] = []
-        self.groups: list[PrivateChannel] = []
         self.cache: Cache = cache
-        self.users: list[User] = [
-            User(id=UserID("U0"), name="system"),
-        ]
         self.responses: dict[str, Callable] = {}
         self.config = config
         self.box = using_box
@@ -113,51 +103,22 @@ class FakeBot(Bot):
 
         return decorator
 
-    def add_channel(
+    def create_channel(
         self,
         id: str,
         name: str,
         creator: str = "U0",
         last_read: str = "0",
-    ):
-        channel = PublicChannel(
+    ) -> PublicChannel:
+        return PublicChannel(
             id=PublicChannelID(id),
             name=name,
             creator=UserID(creator),
             last_read=Ts(last_read),
         )
-        self.channels.append(channel)
-        return channel
 
-    def add_private_channel(
-        self,
-        id: str,
-        name: str,
-        creator: str = "U0",
-        last_read: str = "0",
-    ):
-        channel = PrivateChannel(
-            id=PrivateChannelID(id),
-            name=name,
-            creator=UserID(creator),
-            last_read=Ts(last_read),
-        )
-        self.groups.append(channel)
-        return channel
-
-    def add_dm(self, id: str, user: str, last_read: str = "0"):
-        dm = DirectMessageChannel(
-            id=DirectMessageChannelID(id),
-            user=UserID(user),
-            last_read=Ts(last_read),
-        )
-        self.ims.append(dm)
-        return dm
-
-    def add_user(self, id: str, name: str):
-        user = User(id=UserID(id), name=name)
-        self.users.append(user)
-        return user
+    def create_user(self, id: str, name: str) -> User:
+        return User(id=UserID(id), name=name)
 
     def create_message(
         self,

@@ -28,8 +28,6 @@ def test_get_full_help():
 
 @pytest.mark.asyncio
 async def test_fallback(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -44,8 +42,6 @@ async def test_fallback(bot):
 
 @pytest.mark.asyncio
 async def test_add_wrong_url(bot, fx_sess):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -75,8 +71,6 @@ async def test_add_cannot_connect(bot, fx_sess, response_mock):
             OSError(),
         ),
     )
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -95,8 +89,6 @@ async def test_add_empty_body(bot, fx_sess, response_mock):
         URL("https://test.dev/rss.xml"),
         body=b"",
     )
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -115,8 +107,6 @@ async def test_add_wrong_body(bot, fx_sess, response_mock):
         URL("https://test.dev/rss.xml"),
         body=b"wrong body",
     )
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -179,8 +169,6 @@ async def test_add_success(bot, fx_sess, response_mock):
 </rss>
 """,
     )
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -211,8 +199,6 @@ async def test_add_success(bot, fx_sess, response_mock):
 
 @pytest.mark.asyncio
 async def test_list_no_item(bot, fx_sess):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")
@@ -227,8 +213,6 @@ async def test_list_no_item(bot, fx_sess):
 
 @pytest.mark.asyncio
 async def test_list_fine(bot, fx_sess):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     r = RSS()
 
     event = bot.create_message("C1", "U1")

@@ -6,9 +6,6 @@ from yui.apps.fun.code import write_code_review
 
 @pytest.mark.asyncio
 async def test_write_code_review(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
-
     event = bot.create_message("C1", "U1", text="코드 리뷰")
     await write_code_review(bot, event, seed=100)
 
@@ -28,9 +25,6 @@ async def test_write_code_review(bot):
 
 @pytest.mark.asyncio
 async def test_code_review(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
-
     event = bot.create_message("C1", "U1", text="영화 리뷰")
 
     assert await code_review(bot, event)

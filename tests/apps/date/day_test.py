@@ -36,7 +36,6 @@ def test_holiday_message_match(sunday, delta, result):
 async def test_holiday_task_at_holiday(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     await holiday_message(bot)
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -49,7 +48,6 @@ async def test_holiday_task_at_holiday(bot_config):
 async def test_holiday_task_at_workday(bot_config):
     bot_config.CHANNELS["general"] = "C1"
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
     await holiday_message(bot)
     assert not bot.call_queue
 
@@ -58,8 +56,6 @@ async def test_holiday_task_at_workday(bot_config):
 @travel(datetime(2019, 2, 4), tick=False)
 async def test_holiday_command(bot_config):
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
 
     # empty body

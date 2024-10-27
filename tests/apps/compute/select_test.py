@@ -5,8 +5,6 @@ from yui.apps.compute.select import select
 
 @pytest.mark.asyncio
 async def test_select_command(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
     seed = 1
 

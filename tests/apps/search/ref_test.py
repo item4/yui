@@ -20,8 +20,6 @@ async def bot(cache) -> FakeBot:
 
 @pytest.mark.asyncio
 async def test_css_command(bot: FakeBot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
 
     async with bot.begin():
@@ -57,8 +55,6 @@ async def test_css_command(bot: FakeBot):
 
 @pytest.mark.asyncio
 async def test_html_command(bot: FakeBot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
 
     async with bot.begin():
@@ -94,8 +90,6 @@ async def test_html_command(bot: FakeBot):
 
 @pytest.mark.asyncio
 async def test_python_command(bot: FakeBot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1")
 
     async with bot.begin():

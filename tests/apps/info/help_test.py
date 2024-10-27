@@ -30,8 +30,6 @@ async def test_help_command(bot_config):
 
     bot_config.PREFIX = "."
     bot = FakeBot(bot_config, using_box=box)
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
     event = bot.create_message("C1", "U1", "1234.56")
 
     await help(bot, event, "")

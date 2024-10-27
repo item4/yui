@@ -37,9 +37,6 @@ async def test_no_packtpub_dotd(bot, response_mock):
         headers={"Content-Type": "text/html"},
     )
 
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
-
     event = bot.create_message("C1", "U1")
 
     await packtpub_dotd(bot, event)
@@ -60,9 +57,6 @@ async def test_packtpub_dotd(bot, response_mock):
         body=MOCK_BODY.format(title=title, image_url=image_url),
         headers={"Content-Type": "text/html"},
     )
-
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "item4")
 
     event = bot.create_message("C1", "U1")
 
@@ -120,7 +114,6 @@ async def test_auto_packtpub_dotd(bot_config, response_mock):
         "general": "C1",
     }
     bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
 
     await auto_packtpub_dotd(bot)
 

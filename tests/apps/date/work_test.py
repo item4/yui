@@ -25,9 +25,7 @@ async def _api_server_check():
 @pytest.fixture
 def bot(bot_config):
     bot_config.CHANNELS["general"] = "C1"
-    bot = FakeBot(bot_config)
-    bot.add_channel("C1", "general")
-    return bot
+    return FakeBot(bot_config)
 
 
 @pytest.fixture(scope="session")

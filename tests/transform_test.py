@@ -68,7 +68,7 @@ def test_extract_url():
 def test_get_channel_id(bot):
     """Test get_channel helper."""
 
-    test = bot.add_channel("C1", "test")
+    test = bot.create_channel("C1", "test")
 
     assert get_channel_id("<C1>") == test.id
     assert get_channel_id("<#C1>") == test.id
@@ -79,7 +79,7 @@ def test_get_channel_id(bot):
 def test_get_user_id(bot):
     """Test get_user helper."""
 
-    item4 = bot.add_user("U1", "item4")
+    item4 = bot.create_user("U1", "item4")
 
     assert get_user_id("<U1>") == item4.id
     assert get_user_id("<@U1>") == item4.id

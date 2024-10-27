@@ -43,8 +43,6 @@ def test_parse_dice_syntax():
 
 @pytest.mark.asyncio
 async def test_dice_handler(bot):
-    bot.add_channel("C1", "general")
-    bot.add_user("U1", "user")
     event = bot.create_message("C1", "U1")
 
     assert not await dice(bot, event, "", seed=100)
