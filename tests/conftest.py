@@ -146,3 +146,13 @@ def response_mock():
 @pytest.fixture(scope="session")
 def sunday():
     return datetime(2022, 11, 6)
+
+
+@pytest.fixture(scope="session")
+def channel_id():
+    return "C0FFEE"
+
+
+@pytest.fixture(scope="session")
+def user_id():
+    return "U12345"

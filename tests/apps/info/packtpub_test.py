@@ -43,7 +43,7 @@ async def test_no_packtpub_dotd(bot, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "오늘은 PACKT Book의 무료책이 없는 것 같아요"
 
 
@@ -64,7 +64,7 @@ async def test_packtpub_dotd(bot, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "오늘자 PACKT Book의 무료책이에요!"
     attachments = said.data["attachments"]
     assert len(attachments) == 1
@@ -101,7 +101,7 @@ def test_auto_packtpub_dotd_match(sunday):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 7), tick=False)
-async def test_auto_packtpub_dotd(bot_config, response_mock):
+async def test_auto_packtpub_dotd(bot_config, response_mock, channel_id):
     title = "test book"
     image_url = "test url"
     response_mock.get(
@@ -111,7 +111,7 @@ async def test_auto_packtpub_dotd(bot_config, response_mock):
     )
 
     bot_config.CHANNELS = {
-        "general": "C1",
+        "general": channel_id,
     }
     bot = FakeBot(bot_config)
 
@@ -119,7 +119,7 @@ async def test_auto_packtpub_dotd(bot_config, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["text"] == "오늘자 PACKT Book의 무료책이에요!"
     attachments = said.data["attachments"]
     assert len(attachments) == 1

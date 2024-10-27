@@ -17,7 +17,7 @@ async def test_quit_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "안녕히 주무세요!"
 
     event = bot.create_message("C1", "U2")
@@ -26,5 +26,5 @@ async def test_quit_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "<@U2> 이 명령어는 아빠만 사용할 수 있어요!"

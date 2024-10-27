@@ -19,7 +19,7 @@ async def test_weather_command(bot_config, cache, address):
     weather_said = bot.call_queue.pop(0)
 
     assert weather_said.method == "chat.postMessage"
-    assert weather_said.data["channel"] == "C1"
+    assert weather_said.data["channel"] == event.channel
 
     if weather_said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!":
         pytest.skip("Can not run test via AWS Weather API")
@@ -47,7 +47,7 @@ async def test_weather_command_too_short(
     weather_said = bot.call_queue.pop(0)
 
     assert weather_said.method == "chat.postMessage"
-    assert weather_said.data["channel"] == "C1"
+    assert weather_said.data["channel"] == event.channel
 
     if weather_said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!":
         pytest.skip("Can not run test via AWS Weather API")
@@ -74,7 +74,7 @@ async def test_weather_command_wrong_address(
     weather_said = bot.call_queue.pop(0)
 
     assert weather_said.method == "chat.postMessage"
-    assert weather_said.data["channel"] == "C1"
+    assert weather_said.data["channel"] == event.channel
 
     if weather_said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!":
         pytest.skip("Can not run test via AWS Weather API")

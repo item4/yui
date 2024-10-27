@@ -39,7 +39,7 @@ async def test_calc_decimal_command(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith("사용법: ")
 
 
@@ -56,7 +56,7 @@ async def test_calc_decimal_on_change_command(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith("사용법: ")
 
 
@@ -69,7 +69,7 @@ async def test_calc_num_command(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith("사용법: ")
 
 
@@ -86,7 +86,7 @@ async def test_calc_num_on_change_command(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith("사용법: ")
 
 
@@ -100,7 +100,7 @@ async def test_command_empty_expr(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == help_text
 
 
@@ -114,7 +114,7 @@ async def test_command_bad_syntax(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith(
         "입력해주신 수식에 문법 오류가 있어요! ",
     )
@@ -130,7 +130,7 @@ async def test_command_zero_division(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!"
@@ -147,7 +147,7 @@ async def test_command_timeout(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!"
@@ -164,7 +164,7 @@ async def test_command_unexpected_error(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"].startswith(
         "예기치 않은 에러가 발생했어요! NameError",
     )
@@ -180,7 +180,7 @@ async def test_command_short_expr(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "`1+2` == `3`"
 
 
@@ -194,7 +194,7 @@ async def test_command_short_expr_empty_result(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "`''` == _Empty_"
 
 
@@ -208,7 +208,7 @@ async def test_command_multiline_expr(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"] == "*Input*\n```\n1+\\\n2\n```\n*Output*\n```\n3\n```"
     )
@@ -224,7 +224,7 @@ async def test_command_multiline_expr_empty_result(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"*Input*\n```\n{expr}\n```\n*Output*\n_Empty_"
 
 
@@ -238,7 +238,7 @@ async def test_command_locals(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"*Input*\n```\n{expr}\n```\n*Local State*\n```\nsao = '키리토'\n```"
@@ -255,7 +255,7 @@ async def test_command_none(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!"

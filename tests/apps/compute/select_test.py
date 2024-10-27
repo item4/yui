@@ -11,11 +11,11 @@ async def test_select_command(bot):
     await select(bot, event, ["cat", "dog"], seed)
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "선택결과: cat"
 
     await select(bot, event, ["키리가야 카즈토", "유지오"], seed)
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "선택결과: 키리가야 카즈토"

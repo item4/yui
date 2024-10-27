@@ -9,10 +9,10 @@ from ..util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_welcome_item4_handler(bot_config):
+async def test_welcome_item4_handler(bot_config, channel_id):
     bot_config.PREFIX = "."
     bot_config.CHANNELS = {
-        "welcome": "C1",
+        "welcome": channel_id,
     }
     bot = FakeBot(bot_config)
     event = create_event("team_join", {"user": "U1"})
@@ -21,7 +21,7 @@ async def test_welcome_item4_handler(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["text"].startswith(
         "<@U1>님 item4 개인 Slack에 오신걸 환영합니다! :tada:",
     )
@@ -29,10 +29,10 @@ async def test_welcome_item4_handler(bot_config):
 
 
 @pytest.mark.asyncio
-async def test_welcome_9xd_handler(bot_config):
+async def test_welcome_9xd_handler(bot_config, channel_id):
     bot_config.PREFIX = "."
     bot_config.CHANNELS = {
-        "welcome": "C1",
+        "welcome": channel_id,
     }
     bot = FakeBot(bot_config)
     event = create_event("team_join", {"user": "U1"})
@@ -49,7 +49,7 @@ async def test_welcome_9xd_handler(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["text"].startswith(
         "<@U1>님 9XD Slack에 오신걸 환영합니다! :tada:",
     )
@@ -57,7 +57,7 @@ async def test_welcome_9xd_handler(bot_config):
 
     thread = bot.call_queue.pop(0)
     assert thread.method == "chat.postMessage"
-    assert thread.data["channel"] == "C1"
+    assert thread.data["channel"] == channel_id
     assert thread.data["text"].startswith(
         "9XD Slack에는 다음과 같은 채널들이 있으니 참가해보셔도 좋을 것 같아요!",
     )

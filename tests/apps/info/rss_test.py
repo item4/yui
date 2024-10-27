@@ -36,7 +36,7 @@ async def test_fallback(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"Usage: `{bot.config.PREFIX}help rss`"
 
 
@@ -50,7 +50,7 @@ async def test_add_wrong_url(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "`wrong url`은 올바른 URL이 아니에요!"
 
 
@@ -79,7 +79,7 @@ async def test_add_cannot_connect(bot, fx_sess, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "`https://test.dev/rss.xml`에 접속할 수 없어요!"
 
 
@@ -97,7 +97,7 @@ async def test_add_empty_body(bot, fx_sess, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "`https://test.dev/rss.xml`은 빈 웹페이지에요!"
 
 
@@ -115,7 +115,7 @@ async def test_add_wrong_body(bot, fx_sess, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "`https://test.dev/rss.xml`은 올바른 RSS 문서가 아니에요!"
@@ -177,7 +177,7 @@ async def test_add_success(bot, fx_sess, response_mock):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "<#C1> 채널에서 `https://test.dev/rss.xml`을 구독하기 시작했어요!"
@@ -193,7 +193,7 @@ async def test_add_success(bot, fx_sess, response_mock):
     rss = await fx_sess.scalar(
         select(RSSFeedURL).where(RSSFeedURL.url == "https://test.dev/rss.xml"),
     )
-    assert rss.channel == "C1"
+    assert rss.channel == event.channel
     assert rss.updated_at == datetime(2020, 3, 22, 18, 9)
 
 
@@ -207,7 +207,7 @@ async def test_list_no_item(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "<#C1> 채널에서 구독중인 RSS가 없어요!"
 
 
@@ -218,11 +218,11 @@ async def test_list_fine(bot, fx_sess):
     event = bot.create_message("C1", "U1")
 
     feed1 = RSSFeedURL()
-    feed1.channel = "C1"
+    feed1.channel = event.channel
     feed1.url = "https://test.dev/rss.xml"
     feed1.updated_at = datetime(2020, 3, 22, 18, 9)
     feed2 = RSSFeedURL()
-    feed2.channel = "C1"
+    feed2.channel = event.channel
     feed2.url = "https://test.dev/rss2.xml"
     feed2.updated_at = datetime(2020, 3, 22, 10, 45)
     async with fx_sess.begin():
@@ -234,7 +234,7 @@ async def test_list_fine(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"""\

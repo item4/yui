@@ -7,9 +7,9 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_update_command(bot_config):
+async def test_update_command(bot_config, channel_id):
     bot_config.USERS["owner"] = "U1"
-    bot_config.CHANNELS["notice"] = "C1"
+    bot_config.CHANNELS["notice"] = channel_id
     bot = FakeBot(bot_config)
 
     event = bot.create_message("C1", "U1")
@@ -54,7 +54,7 @@ TITLE=타이틀만 있음
     )
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["text"] == "유이 업데이트 명령 테스트"
     assert said.data["attachments"] == [
         {
@@ -104,5 +104,5 @@ TITLE=타이틀만 있음
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "<@U2> 이 명령어는 아빠만 사용할 수 있어요!"

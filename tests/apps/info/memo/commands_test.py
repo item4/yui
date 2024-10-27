@@ -22,7 +22,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"] == f"`{keyword1}`란 이름을 가진 기억 레코드가 없어요!"
     )
@@ -38,7 +38,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"`{keyword2}`이란 이름을 가진 기억 레코드가 없어요!"
@@ -55,7 +55,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"`{keyword1}`로 기억 레코드를 생성했어요!"
 
     assert (
@@ -69,7 +69,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"`{keyword2}`으로 기억 레코드를 생성했어요!"
 
     assert (
@@ -83,7 +83,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"`{keyword1}`로 기억 레코드를 생성했어요!"
 
     assert (
@@ -97,21 +97,21 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"`{keyword1}`: {text1} | {text2}"
 
     await memo_show(bot, event, fx_sess, keyword2)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == f"`{keyword2}`: {text3}"
 
     await memo_delete(bot, event, fx_sess, keyword1)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"`{keyword1}`에 관한 기억 레코드를 모두 삭제했어요!"
@@ -134,7 +134,7 @@ async def test_memo_flow(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"`{keyword2}`에 관한 기억 레코드를 모두 삭제했어요!"
@@ -162,7 +162,7 @@ async def test_length_limit(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "기억하려는 키워드가 너무 길어요! 20자 이하의 키워드만 가능해요!"
@@ -172,7 +172,7 @@ async def test_length_limit(bot, fx_sess):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "기억하려는 내용이 너무 길어요! 500자 이하의 내용만 가능해요!"

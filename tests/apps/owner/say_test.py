@@ -41,24 +41,24 @@ async def test_say_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C2"
+    assert said.data["channel"] == test.id
     assert said.data["text"] == text
 
     await say(bot, event, None, poh.id, text)
 
     conversations_open = bot.call_queue.pop(0)
     assert conversations_open.method == "conversations.open"
-    assert conversations_open.data["users"] == "U2"
+    assert conversations_open.data["users"] == poh.id
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D2"
+    assert said.data["channel"] == poh.id.replace("U", "D")
     assert said.data["text"] == text
 
     await say(bot, event, test.id, poh.id, text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "`--channel` 옵션과 `--user` 옵션은 동시에 사용할 수 없어요!"
@@ -70,5 +70,5 @@ async def test_say_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "<@U2> 이 명령어는 아빠만 사용할 수 있어요!"

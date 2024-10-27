@@ -17,7 +17,7 @@ async def test_dic_multiple(
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     matched = MULTIPLE_PATTERN.match(said.data["text"])
     assert matched
     assert int(matched[1]) == len(said.data["attachments"])
@@ -33,7 +33,7 @@ async def test_dic_redirect(
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "https://dic.daum.net/word/view.do?wordid=ekw000008211&q=apple"

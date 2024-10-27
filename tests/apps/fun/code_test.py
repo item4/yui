@@ -11,7 +11,7 @@ async def test_write_code_review(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
 
     attachments = said.data["attachments"]
 
@@ -37,7 +37,7 @@ async def test_code_review(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert len(said.data["attachments"]) == 1
 
     event = bot.create_message("C1", "U1", text="코드 리뷰")

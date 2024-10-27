@@ -216,13 +216,13 @@ async def test_cat_command(bot, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    assert cat.last_call.get("C1") is None
+    assert cat.last_call.get(event.channel) is None
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!"
@@ -230,37 +230,37 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call.get("C1") is None
+    assert cat.last_call.get(event.channel) is None
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://cat.com/200.jpg"
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call["C1"]
+    assert cat.last_call[event.channel]
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert cat_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
     event = bot.create_message("D1", "U1")
 
-    assert cat.last_call.get("D1") is None
+    assert cat.last_call.get(event.channel) is None
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "냥냥이 API 서버의 상태가 좋지 않다냥! 나중에 다시 시도해보라냥!"
@@ -268,24 +268,24 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call.get("D1") is None
+    assert cat.last_call.get(event.channel) is None
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://cat.com/200.jpg"
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call["D1"]
+    assert cat.last_call[event.channel]
 
     await cat(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert cat_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
@@ -314,13 +314,13 @@ async def test_dog_command(bot, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    assert dog.last_call.get("C1") is None
+    assert dog.last_call.get(event.channel) is None
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
@@ -328,37 +328,37 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call.get("C1") is None
+    assert dog.last_call.get(event.channel) is None
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://dog.com/200.jpg"
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call["C1"]
+    assert dog.last_call[event.channel]
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert dog_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
     event = bot.create_message("D1", "U1")
 
-    assert dog.last_call.get("D1") is None
+    assert dog.last_call.get(event.channel) is None
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "멍멍이 API 서버의 상태가 좋지 않다멍! 나중에 다시 시도해보라멍!"
@@ -366,24 +366,24 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call.get("D1") is None
+    assert dog.last_call.get(event.channel) is None
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://dog.com/200.jpg"
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call["D1"]
+    assert dog.last_call[event.channel]
 
     await dog(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert dog_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
@@ -426,13 +426,13 @@ async def test_fox_command(bot, response_mock):
 
     event = bot.create_message("C1", "U1")
 
-    assert fox.last_call.get("C1") is None
+    assert fox.last_call.get(event.channel) is None
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
@@ -440,37 +440,37 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call.get("C1") is None
+    assert fox.last_call.get(event.channel) is None
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://fox.com/img1.png"
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call["C1"]
+    assert fox.last_call[event.channel]
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert fox_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
     event = bot.create_message("D1", "U1")
 
-    assert fox.last_call.get("D1") is None
+    assert fox.last_call.get(event.channel) is None
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == "여우짤 서버의 상태가 좋지 않네요! 나중에 다시 시도해보세요!"
@@ -478,24 +478,24 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call.get("D1") is None
+    assert fox.last_call.get(event.channel) is None
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "http://fox.com/img1.png"
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call["D1"]
+    assert fox.last_call[event.channel]
 
     await fox(bot, event, 0.001)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "D1"
+    assert said.data["channel"] == event.channel
     assert fox_cooltime_re.match(said.data["text"])
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"

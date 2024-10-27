@@ -37,9 +37,9 @@ def test_alert_match(sunday):
 
 
 @pytest.mark.asyncio
-async def test_alert(bot_config):
+async def test_alert(bot_config, channel_id):
     bot_config.CHANNELS = {
-        "memo": "C1",
+        "memo": channel_id,
     }
     bot = FakeBot(bot_config)
 
@@ -47,5 +47,5 @@ async def test_alert(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["text"] == "메모할 시간이에요!"

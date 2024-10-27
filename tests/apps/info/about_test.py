@@ -12,6 +12,6 @@ async def test_about_command(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == MESSAGE.format(prefix=bot.config.PREFIX)
     assert said.data["thread_ts"] == "1234.56"

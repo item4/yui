@@ -36,7 +36,7 @@ async def test_help_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == (
         f"`{bot_config.PREFIX}dog`: Dog\n`{bot_config.PREFIX}cat`: Cat\n`{bot_config.PREFIX}bat`: Bat"
     )
@@ -46,7 +46,7 @@ async def test_help_command(bot_config):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
         == f"""*{bot_config.PREFIX}cat*
@@ -60,6 +60,6 @@ It's a cat"""
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "그런 명령어는 없어요!"
     assert said.data["thread_ts"] == "1234.56"

@@ -46,7 +46,7 @@ async def test_book(
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     match = book_result_pattern_re.match(said.data["text"])
     assert match
     assert match.group(1) == "소드 아트 온라인"
@@ -61,5 +61,5 @@ async def test_book(
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == event.channel
     assert said.data["text"] == "검색 결과가 없어요!"

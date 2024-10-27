@@ -11,8 +11,8 @@ async def test_hassan_handler(bot):
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
-    assert said.data["text"] == "저한테 왜 그러세요 <@U1>님?"
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == f"저한테 왜 그러세요 <@{event.user}>님?"
 
     event = bot.create_message("C1", "U1", text="아무말 대잔치")
 

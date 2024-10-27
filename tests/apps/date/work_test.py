@@ -23,8 +23,8 @@ async def _api_server_check():
 
 
 @pytest.fixture
-def bot(bot_config):
-    bot_config.CHANNELS["general"] = "C1"
+def bot(bot_config, channel_id):
+    bot_config.CHANNELS["general"] = channel_id
     return FakeBot(bot_config)
 
 
@@ -104,24 +104,24 @@ def test_work_end_task_match_at_19(sunday_19, delta, result):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 9), tick=False)
-async def test_work_start_monday(bot):
+async def test_work_start_monday(bot, channel_id):
     await work_start(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "현실부정중인 직장인"
     assert said.data["attachments"]
 
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 10, 9), tick=False)
-async def test_work_start_normal(bot):
+async def test_work_start_normal(bot, channel_id):
     await work_start(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "노동자 핫산"
     assert (
         said.data["text"]
@@ -131,12 +131,12 @@ async def test_work_start_normal(bot):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 9), tick=False)
-async def test_work_start_holiday(bot):
+async def test_work_start_holiday(bot, channel_id):
     await work_start(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "너굴맨"
     assert (
         said.data["text"]
@@ -146,12 +146,12 @@ async def test_work_start_holiday(bot):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 18), tick=False)
-async def test_work_end_18_normal(bot):
+async def test_work_end_18_normal(bot, channel_id):
     await work_end(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "칼퇴의 요정"
     assert (
         said.data["text"]
@@ -161,12 +161,12 @@ async def test_work_end_18_normal(bot):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 18), tick=False)
-async def test_work_end_18_holiday(bot):
+async def test_work_end_18_holiday(bot, channel_id):
     await work_end(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "집사가 집에 있어서 기분 좋은 고양이"
     assert (
         said.data["text"]
@@ -176,12 +176,12 @@ async def test_work_end_18_holiday(bot):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 19), tick=False)
-async def test_work_end_19_normal(bot):
+async def test_work_end_19_normal(bot, channel_id):
     await work_end(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "칼퇴의 요정"
     assert (
         said.data["text"]
@@ -191,12 +191,12 @@ async def test_work_end_19_normal(bot):
 
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 9, 19), tick=False)
-async def test_work_end_19_holiday(bot):
+async def test_work_end_19_holiday(bot, channel_id):
     await work_end(bot)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
-    assert said.data["channel"] == "C1"
+    assert said.data["channel"] == channel_id
     assert said.data["username"] == "집사가 집에 있어서 기분 좋은 고양이"
     assert (
         said.data["text"]
