@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import random
 from contextlib import asynccontextmanager
 from typing import Any
 from typing import TYPE_CHECKING
@@ -122,15 +123,20 @@ class FakeBot(Bot):
 
     def create_message(
         self,
-        channel: str,
-        user: str,
+        *,
+        channel_id: str | None = None,
+        user_id: str | None = None,
         ts: str = "",
         event_ts: str = "",
         **kwargs,
     ) -> Message:
+        if channel_id is None:
+            channel_id = "C" + str(random.randint(0, 99999)).zfill(5)
+        if user_id is None:
+            user_id = "U" + str(random.randint(0, 99999)).zfill(5)
         return Message(
-            channel=PublicChannelID(channel),
-            user=UserID(user),
+            channel=PublicChannelID(channel_id),
+            user=UserID(user_id),
             ts=Ts(ts),
             event_ts=Ts(event_ts),
             **kwargs,

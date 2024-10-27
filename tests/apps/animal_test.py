@@ -214,7 +214,7 @@ async def test_cat_command(bot, response_mock):
     response_mock.get("http://cat.com/200.jpg")
     response_mock.get("http://cat.com/200.jpg")
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     assert cat.last_call.get(event.channel) is None
 
@@ -252,7 +252,7 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    event = bot.create_message("D1", "U1")
+    event = bot.create_message(channel_id="D1")
 
     assert cat.last_call.get(event.channel) is None
 
@@ -312,7 +312,7 @@ async def test_dog_command(bot, response_mock):
     response_mock.get("http://dog.com/200.jpg")
     response_mock.get("http://dog.com/200.jpg")
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     assert dog.last_call.get(event.channel) is None
 
@@ -350,7 +350,7 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    event = bot.create_message("D1", "U1")
+    event = bot.create_message(channel_id="D1")
 
     assert dog.last_call.get(event.channel) is None
 
@@ -424,7 +424,7 @@ async def test_fox_command(bot, response_mock):
         headers={"Content-Type": "text/html"},
     )
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     assert fox.last_call.get(event.channel) is None
 
@@ -462,7 +462,7 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    event = bot.create_message("D1", "U1")
+    event = bot.create_message(channel_id="D1")
 
     assert fox.last_call.get(event.channel) is None
 

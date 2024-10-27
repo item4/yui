@@ -6,7 +6,7 @@ from yui.apps.info.about import about
 
 @pytest.mark.asyncio
 async def test_about_command(bot):
-    event = bot.create_message("C1", "U1", "1234.56")
+    event = bot.create_message(ts="1234.56")
 
     await about(bot, event)
 
@@ -14,4 +14,4 @@ async def test_about_command(bot):
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
     assert said.data["text"] == MESSAGE.format(prefix=bot.config.PREFIX)
-    assert said.data["thread_ts"] == "1234.56"
+    assert said.data["thread_ts"] == event.ts

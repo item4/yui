@@ -6,7 +6,7 @@ from yui.apps.fun.code import write_code_review
 
 @pytest.mark.asyncio
 async def test_write_code_review(bot):
-    event = bot.create_message("C1", "U1", text="코드 리뷰")
+    event = bot.create_message(text="코드 리뷰")
     await write_code_review(bot, event, seed=100)
 
     said = bot.call_queue.pop(0)
@@ -24,14 +24,14 @@ async def test_write_code_review(bot):
 
 
 @pytest.mark.asyncio
-async def test_code_review(bot):
-    event = bot.create_message("C1", "U1", text="영화 리뷰")
+async def test_code_review(bot, channel_id):
+    event = bot.create_message(channel_id=channel_id, text="영화 리뷰")
 
     assert await code_review(bot, event)
 
     assert not bot.call_queue
 
-    event = bot.create_message("C1", "U1", text="코드 리뷰")
+    event = bot.create_message(channel_id=channel_id, text="코드 리뷰")
 
     assert not await code_review(bot, event)
 
@@ -40,6 +40,6 @@ async def test_code_review(bot):
     assert said.data["channel"] == event.channel
     assert len(said.data["attachments"]) == 1
 
-    event = bot.create_message("C1", "U1", text="코드 리뷰")
+    event = bot.create_message(channel_id=channel_id, text="코드 리뷰")
 
     assert await code_review(bot, event)

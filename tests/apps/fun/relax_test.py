@@ -9,7 +9,7 @@ from ...util import FakeBot
 async def test_relax_command(bot_config):
     bot_config.USERS["villain"] = "U2"
     bot = FakeBot(bot_config)
-    event = bot.create_message("C1", "U1", text="")
+    event = bot.create_message(text="")
 
     await relax(bot, event)
 
@@ -22,7 +22,7 @@ async def test_relax_command(bot_config):
     )
     assert said.data["username"] == "너굴맨"
 
-    event = bot.create_message("C1", "U1", text="스테이크")
+    event = bot.create_message(text="스테이크")
 
     await relax(bot, event)
 

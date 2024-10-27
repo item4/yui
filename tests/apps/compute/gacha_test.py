@@ -26,7 +26,7 @@ def test_get_full_help():
 async def test_fallback(bot):
     g = Gacha()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await g.fallback(bot, event)
 
@@ -40,7 +40,7 @@ async def test_fallback(bot):
 async def test_collect(bot):
     g = Gacha()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await g.collect(bot, event, "아무말 대잔치")
 
@@ -142,7 +142,7 @@ async def test_collect(bot):
 async def test_challenge(bot):
     g = Gacha()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await g.challenge(bot, event, -1, "0.05")
 

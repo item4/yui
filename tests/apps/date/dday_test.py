@@ -7,7 +7,7 @@ from yui.apps.date.dday import dday
 
 @pytest.mark.asyncio
 async def test_dday_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     jan = datetime.date(2000, 1, 1)
     feb = datetime.date(2000, 2, 1)
 

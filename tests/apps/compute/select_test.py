@@ -5,7 +5,7 @@ from yui.apps.compute.select import select
 
 @pytest.mark.asyncio
 async def test_select_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     seed = 1
 
     await select(bot, event, ["cat", "dog"], seed)

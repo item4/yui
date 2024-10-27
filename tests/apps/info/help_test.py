@@ -30,7 +30,7 @@ async def test_help_command(bot_config):
 
     bot_config.PREFIX = "."
     bot = FakeBot(bot_config, using_box=box)
-    event = bot.create_message("C1", "U1", "1234.56")
+    event = bot.create_message(ts="1234.56")
 
     await help(bot, event, "")
 
@@ -40,7 +40,7 @@ async def test_help_command(bot_config):
     assert said.data["text"] == (
         f"`{bot_config.PREFIX}dog`: Dog\n`{bot_config.PREFIX}cat`: Cat\n`{bot_config.PREFIX}bat`: Bat"
     )
-    assert said.data["thread_ts"] == "1234.56"
+    assert said.data["thread_ts"] == event.ts
 
     await help(bot, event, "cat")
 

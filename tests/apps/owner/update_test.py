@@ -7,12 +7,11 @@ from ...util import FakeBot
 
 
 @pytest.mark.asyncio
-async def test_update_command(bot_config, channel_id):
-    bot_config.USERS["owner"] = "U1"
+async def test_update_command(bot_config, channel_id, owner_id):
     bot_config.CHANNELS["notice"] = channel_id
     bot = FakeBot(bot_config)
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message(user_id=owner_id)
 
     await update(
         bot,
@@ -98,11 +97,14 @@ TITLE=타이틀만 있음
         },
     ]
 
-    event = bot.create_message("C1", "U2")
+    event = bot.create_message()
 
     await update(bot, event, "")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert said.data["text"] == "<@U2> 이 명령어는 아빠만 사용할 수 있어요!"
+    assert (
+        said.data["text"]
+        == f"<@{event.user}> 이 명령어는 아빠만 사용할 수 있어요!"
+    )

@@ -30,7 +30,7 @@ def test_get_full_help():
 async def test_fallback(bot):
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.fallback(bot, event)
 
@@ -44,7 +44,7 @@ async def test_fallback(bot):
 async def test_add_wrong_url(bot, fx_sess):
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.add(bot, event, fx_sess, "wrong url")
 
@@ -73,7 +73,7 @@ async def test_add_cannot_connect(bot, fx_sess, response_mock):
     )
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
@@ -91,7 +91,7 @@ async def test_add_empty_body(bot, fx_sess, response_mock):
     )
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
@@ -109,7 +109,7 @@ async def test_add_wrong_body(bot, fx_sess, response_mock):
     )
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
@@ -171,7 +171,7 @@ async def test_add_success(bot, fx_sess, response_mock):
     )
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.add(bot, event, fx_sess, "https://test.dev/rss.xml")
 
@@ -180,7 +180,7 @@ async def test_add_success(bot, fx_sess, response_mock):
     assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
-        == "<#C1> 채널에서 `https://test.dev/rss.xml`을 구독하기 시작했어요!"
+        == f"<#{event.channel}> 채널에서 `https://test.dev/rss.xml`을 구독하기 시작했어요!"
     )
     assert (
         await fx_sess.scalar(
@@ -201,21 +201,24 @@ async def test_add_success(bot, fx_sess, response_mock):
 async def test_list_no_item(bot, fx_sess):
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await r.list(bot, event, fx_sess)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert said.data["text"] == "<#C1> 채널에서 구독중인 RSS가 없어요!"
+    assert (
+        said.data["text"]
+        == f"<#{event.channel}> 채널에서 구독중인 RSS가 없어요!"
+    )
 
 
 @pytest.mark.asyncio
 async def test_list_fine(bot, fx_sess):
     r = RSS()
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     feed1 = RSSFeedURL()
     feed1.channel = event.channel
@@ -238,7 +241,7 @@ async def test_list_fine(bot, fx_sess):
     assert (
         said.data["text"]
         == f"""\
-<#C1> 채널에서 구독중인 RSS 목록은 다음과 같아요!
+<#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!
 ```
 {feed1.id} - {feed1.url}
 {feed2.id} - {feed2.url}

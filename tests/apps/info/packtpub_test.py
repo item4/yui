@@ -37,7 +37,7 @@ async def test_no_packtpub_dotd(bot, response_mock):
         headers={"Content-Type": "text/html"},
     )
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await packtpub_dotd(bot, event)
 
@@ -58,7 +58,7 @@ async def test_packtpub_dotd(bot, response_mock):
         headers={"Content-Type": "text/html"},
     )
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await packtpub_dotd(bot, event)
 

@@ -96,7 +96,7 @@ async def test_auto_weekend_loading_half(bot, channel_id):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_weekend_loading_start(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await weekend_loading(bot, event)
 
@@ -109,7 +109,7 @@ async def test_weekend_loading_start(bot):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_weekend_loading_half(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await weekend_loading(bot, event)
 
@@ -122,7 +122,7 @@ async def test_weekend_loading_half(bot):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 13), tick=False)
 async def test_weekend_loading_end(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await weekend_loading(bot, event)
 
@@ -135,7 +135,7 @@ async def test_weekend_loading_end(bot):
 @pytest.mark.asyncio
 @travel(datetime(2018, 10, 14), tick=False)
 async def test_weekend_loading_over(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await weekend_loading(bot, event)
 

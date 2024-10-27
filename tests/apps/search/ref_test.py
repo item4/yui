@@ -20,7 +20,7 @@ async def bot(cache) -> FakeBot:
 
 @pytest.mark.asyncio
 async def test_css_command(bot: FakeBot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     async with bot.begin():
         await css(bot, event, "font-family")
@@ -55,7 +55,7 @@ async def test_css_command(bot: FakeBot):
 
 @pytest.mark.asyncio
 async def test_html_command(bot: FakeBot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     async with bot.begin():
         await html(bot, event, "section")
@@ -90,7 +90,7 @@ async def test_html_command(bot: FakeBot):
 
 @pytest.mark.asyncio
 async def test_python_command(bot: FakeBot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     async with bot.begin():
         await python(bot, event, "builtin function")

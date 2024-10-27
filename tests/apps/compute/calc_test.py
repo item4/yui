@@ -17,6 +17,7 @@ from yui.apps.compute.calc import calc_decimal_on_change
 from yui.apps.compute.calc import calc_num
 from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
+from yui.types.base import Ts
 from yui.types.objects import MessageMessage
 
 from ...util import FakeBot
@@ -33,7 +34,7 @@ class GetItemSpy:
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_decimal_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     raw = ""
     await calc_decimal(bot, event, raw)
 
@@ -45,11 +46,9 @@ async def test_calc_decimal_command(bot):
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
-async def test_calc_decimal_on_change_command(bot):
+async def test_calc_decimal_on_change_command(bot, user_id):
     event = bot.create_message(
-        "C1",
-        "U1",
-        message=MessageMessage(user="U1", ts="1234.5678"),
+        message=MessageMessage(user=user_id, ts=Ts("1234.5678")),
     )
     raw = ""
     await calc_decimal_on_change(bot, event, raw)
@@ -63,7 +62,7 @@ async def test_calc_decimal_on_change_command(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_num_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     raw = ""
     await calc_num(bot, event, raw)
 
@@ -75,11 +74,9 @@ async def test_calc_num_command(bot):
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
-async def test_calc_num_on_change_command(bot):
+async def test_calc_num_on_change_command(bot, user_id):
     event = bot.create_message(
-        "C1",
-        "U1",
-        message=MessageMessage(user="U1", ts="1234.5678"),
+        message=MessageMessage(user=user_id, ts=Ts("1234.5678")),
     )
     raw = ""
     await calc_num_on_change(bot, event, raw)
@@ -93,7 +90,7 @@ async def test_calc_num_on_change_command(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_empty_expr(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "  "
     help_text = "expected"
     await body(bot, event, expr, help_text)
@@ -107,7 +104,7 @@ async def test_command_empty_expr(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_bad_syntax(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "1++"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -123,7 +120,7 @@ async def test_command_bad_syntax(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_zero_division(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "1/0"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -140,7 +137,7 @@ async def test_command_zero_division(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_timeout(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "2**1000"
     help_text = "help"
     await body(bot, event, expr, help_text, timeout=0.0001)
@@ -157,7 +154,7 @@ async def test_command_timeout(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_unexpected_error(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "undefined_variable"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -173,7 +170,7 @@ async def test_command_unexpected_error(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_short_expr(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "1+2"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -187,7 +184,7 @@ async def test_command_short_expr(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_short_expr_empty_result(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "''"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -201,7 +198,7 @@ async def test_command_short_expr_empty_result(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_multiline_expr(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "1+\\\n2"
     help_text = "help"
     await body(bot, event, expr, help_text)
@@ -217,7 +214,7 @@ async def test_command_multiline_expr(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_multiline_expr_empty_result(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "'''\n'''[1:]"
     help_text = "help"
     await body(bot, event, expr, help_text, decimal_mode=False)
@@ -231,7 +228,7 @@ async def test_command_multiline_expr_empty_result(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_locals(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "sao = '키리토'"
     help_text = "help"
     await body(bot, event, expr, help_text, decimal_mode=False)
@@ -248,7 +245,7 @@ async def test_command_locals(bot):
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_none(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     expr = "None"
     help_text = "help"
     await body(bot, event, expr, help_text, decimal_mode=False)

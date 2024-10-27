@@ -56,7 +56,7 @@ async def test_holiday_task_at_workday(bot_config, channel_id):
 @travel(datetime(2019, 2, 4), tick=False)
 async def test_holiday_command(bot_config):
     bot = FakeBot(bot_config)
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     # empty body
     await holiday(bot, event, "")

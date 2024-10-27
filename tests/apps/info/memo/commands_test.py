@@ -16,7 +16,7 @@ async def test_memo_flow(bot, fx_sess):
     text2 = "귀엽다"
     text3 = "먹어야한다"
 
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await memo_show(bot, event, fx_sess, keyword1)
 
@@ -156,7 +156,7 @@ async def test_memo_flow(bot, fx_sess):
 
 @pytest.mark.asyncio
 async def test_length_limit(bot, fx_sess):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
 
     await memo_add(bot, event, fx_sess, "long" * 100, "test")
 

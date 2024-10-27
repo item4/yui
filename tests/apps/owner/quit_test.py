@@ -2,15 +2,10 @@ import pytest
 
 from yui.apps.owner.quit import quit
 
-from ...util import FakeBot
-
 
 @pytest.mark.asyncio
-async def test_quit_command(bot_config):
-    bot_config.USERS["owner"] = "U1"
-    bot = FakeBot(bot_config)
-
-    event = bot.create_message("C1", "U1")
+async def test_quit_command(bot, owner_id):
+    event = bot.create_message(user_id=owner_id)
 
     with pytest.raises(SystemExit):
         await quit(bot, event)
@@ -20,11 +15,14 @@ async def test_quit_command(bot_config):
     assert said.data["channel"] == event.channel
     assert said.data["text"] == "안녕히 주무세요!"
 
-    event = bot.create_message("C1", "U2")
+    event = bot.create_message()
 
     await quit(bot, event)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert said.data["text"] == "<@U2> 이 명령어는 아빠만 사용할 수 있어요!"
+    assert (
+        said.data["text"]
+        == f"<@{event.user}> 이 명령어는 아빠만 사용할 수 있어요!"
+    )

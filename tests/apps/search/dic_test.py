@@ -11,7 +11,7 @@ MULTIPLE_PATTERN = re.compile(r"검색결과 (\d+)개의 링크를 찾았어요!
 async def test_dic_multiple(
     bot,
 ):
-    event = bot.create_message("C1", "U1", "1234.5678")
+    event = bot.create_message(ts="1234.5678")
 
     await dic(bot, event, "영어", "bad")
 
@@ -27,7 +27,7 @@ async def test_dic_multiple(
 async def test_dic_redirect(
     bot,
 ):
-    event = bot.create_message("C1", "U1", "1234.5678")
+    event = bot.create_message(ts="1234.5678")
 
     await dic(bot, event, "영어", "apple")
 

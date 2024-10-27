@@ -40,18 +40,18 @@ async def test_book(
     bot_config.NAVER_CLIENT_SECRET = naver_client_secret
     bot = FakeBot(bot_config)
 
-    event = bot.create_message("C1", "U1", "1234.5678")
+    event = bot.create_message(ts="1234.5678")
 
     await book(bot, event, "소드 아트 온라인")
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    match = book_result_pattern_re.match(said.data["text"])
-    assert match
-    assert match.group(1) == "소드 아트 온라인"
-    assert len(said.data["attachments"]) == int(match.group(2))
-    assert said.data["thread_ts"] == "1234.5678"
+    matched = book_result_pattern_re.match(said.data["text"])
+    assert matched
+    assert matched.group(1) == "소드 아트 온라인"
+    assert len(said.data["attachments"]) == int(matched.group(2))
+    assert said.data["thread_ts"] == event.ts
 
     await book(
         bot,

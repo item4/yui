@@ -119,14 +119,21 @@ def gen_config(request):
     return config
 
 
-@pytest.fixture
-def bot():
-    return FakeBot()
+@pytest.fixture(scope="session")
+def owner_id():
+    return "U0000"
 
 
 @pytest.fixture
-def bot_config(request):
-    return gen_config(request)
+def bot_config(request, owner_id):
+    config = gen_config(request)
+    config.USERS["owner"] = owner_id
+    return config
+
+
+@pytest.fixture
+def bot(bot_config):
+    return FakeBot(bot_config)
 
 
 @pytest_asyncio.fixture()

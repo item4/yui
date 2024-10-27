@@ -7,7 +7,7 @@ from yui.apps.date.age import age
 
 @pytest.mark.asyncio
 async def test_age_command(bot):
-    event = bot.create_message("C1", "U1")
+    event = bot.create_message()
     kirito_birthday = datetime.date(2008, 10, 7)
     leeseha_birthday = datetime.date(2003, 6, 3)
     yunyun_birthday = datetime.date(2000, 2, 29)
