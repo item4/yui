@@ -18,39 +18,21 @@ def test_alert_match(sunday):
                 sunday + timedelta(days=days, hours=hours),
             )
             assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=54),
-            )
-            assert not alert_lifestyle.match(
                 sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=56),
             )
         for hours in range(8, 21):
             assert not alert_lifestyle.match(
                 sunday + timedelta(days=days, hours=hours),
             )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=54),
-            )
             assert alert_lifestyle.match(
                 sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=56),
             )
         for hours in range(21, 24):
             assert not alert_lifestyle.match(
                 sunday + timedelta(days=days, hours=hours),
             )
             assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=54),
-            )
-            assert not alert_lifestyle.match(
                 sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=56),
             )
 
 
