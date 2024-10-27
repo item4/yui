@@ -49,9 +49,6 @@ if TYPE_CHECKING:
     from .config import Config
     from .types.base import ChannelID
     from .types.base import UserID
-    from .types.channel import DirectMessageChannel
-    from .types.channel import PrivateChannel
-    from .types.channel import PublicChannel
 
 
 P = ParamSpec("P")
@@ -158,10 +155,6 @@ class Bot(GetLoggerMixin):
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
         self.api = SlackAPI(self)
-        self.channels: list[PublicChannel] = []
-        self.ims: list[DirectMessageChannel] = []
-        self.groups: list[PrivateChannel] = []
-        self.users: list[User] = []
         self.restart = False
         self.is_ready = asyncio.Event()
         self.method_last_call: defaultdict[str, datetime] = defaultdict(now)
