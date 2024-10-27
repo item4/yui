@@ -125,7 +125,7 @@ class Bot(GetLoggerMixin):
 
         logging.config.dictConfig(config.LOGGING)
 
-        logger = self.get_logger()
+        logger = self.get_logger("__init__")
 
         logger.info("start")
 
