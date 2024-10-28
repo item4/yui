@@ -137,15 +137,13 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.13"
-Babel = "^2.16.0"
-SQLAlchemy = {version = "^2.0.36", extras = ["asyncio"]}
-SQLAlchemy-Utils = "^0.41.2"
 aiocron = "^1.8"
 aiohttp = "^3.10.10"
 alembic = "^1.13.3"
 async-timeout = "^4.0.3"
 attrdict = "^2.0.1"
 attrs = "^24.2.0"
+babel = "^2.16.0"
 click = "^8.1.7"
 croniter = "^3.0.4"
 cssselect = "^1.2.0"
@@ -160,6 +158,8 @@ python-dateutil = "^2.9.0"
 rapidfuzz = "^3.10.1"
 redis = {version = "^5.2.0", extras = ["hiredis"]}
 scipy = "^1.14.1"
+sqlalchemy = {version = "^2.0.36", extras = ["asyncio"]}
+sqlalchemy-utils = "^0.41.2"
 sympy = "^1.13.3"
 tossi = "^0.3.1"
 tzlocal = "^5.2"
