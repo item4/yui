@@ -19,6 +19,7 @@ def test_cast(bot):
     ID = NewType("ID", str)
     N = TypeVar("N", int, float)
     T = TypeVar("T")
+    W = TypeVar("W", int, str)
 
     assert cast(bool, 1) is True
     assert cast(bool, 0) is False
@@ -31,9 +32,11 @@ def test_cast(bot):
     assert cast(int | None, 3) == 3
     assert cast(int | None, None) is None
     assert cast(int | float, "3.2") == 3.2
+    assert cast(int | str, "e") == "e"
     assert cast(list[ID], [1, 2, 3]) == [ID("1"), ID("2"), ID("3")]
     assert cast(list[N], [1, 2, 3]) == [1, 2, 3]
     assert cast(list[T], [1, 2, 3]) == [1, 2, 3]
+    assert cast(list[W], ["e"]) == ["e"]
     assert cast(dict[str, Any], {1: 1, 2: 2.2}) == {"1": 1, "2": 2.2}
     assert cast(dict[str, str], {1: 1, 2: 2.2}) == {"1": "1", "2": "2.2"}
     assert cast(list, ("kirito", "eugeo", 0)) == ["kirito", "eugeo", 0]
@@ -64,3 +67,6 @@ def test_cast(bot):
 
     with pytest.raises(ValueError):
         cast(int | float, "asdf")
+
+    with pytest.raises(ValueError):
+        cast(N, "asdf")

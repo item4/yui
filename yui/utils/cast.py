@@ -56,11 +56,8 @@ class TypeVarCaster(BaseCaster):
         if t.__constraints__:
             types = caster_box.sort(t.__constraints__, value)
             for ty in types:
-                try:
-                    return caster_box.cast(ty, value)
-                except CastError:
-                    continue
-            raise CastError
+                return caster_box.cast(ty, value)
+            raise ValueError
         return value
 
 
@@ -87,10 +84,7 @@ class UnionCaster(BaseCaster):
     def cast(self, caster_box, t, value):
         types = caster_box.sort(get_args(t), value)
         for ty in types:
-            try:
-                return caster_box.cast(ty, value)
-            except CastError:
-                continue
+            return caster_box.cast(ty, value)
         raise ValueError
 
 
