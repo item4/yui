@@ -1,3 +1,5 @@
+import pytest
+
 from yui.event import Hello
 from yui.event import TeamMigrationStarted
 from yui.event import UnknownEvent
@@ -16,3 +18,6 @@ def test_create_event():
     event: UnknownEvent = create_event("not exists it", {})
     assert isinstance(event, UnknownEvent)
     assert event.type == "not exists it"
+
+    with pytest.raises(TypeError, match="Error at creating Message: "):
+        create_event("message", {})
