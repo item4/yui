@@ -52,11 +52,3 @@ class User:
     locale: str = field()
     presence: str = field()
     is_unknown: bool = field(init=False, repr=True, default=False)
-
-
-def create_unknown_user(**kwargs):
-    if "name" not in kwargs:
-        kwargs["name"] = ""
-    user = User(**kwargs)
-    user.is_unknown = True
-    return user
