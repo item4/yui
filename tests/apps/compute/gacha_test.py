@@ -9,6 +9,7 @@ from yui.apps.compute.gacha import to_percent
 def test_class():
     g = Gacha()
     assert g.name == "가챠"
+    assert g.names == ["가챠"]
     assert g.route_list
 
 

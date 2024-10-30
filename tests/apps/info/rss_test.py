@@ -13,6 +13,7 @@ from yui.utils.datetime import datetime
 def test_class():
     r = RSS()
     assert r.name == "rss"
+    assert r.names == ["rss"]
     assert r.route_list
 
 
