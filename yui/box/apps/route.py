@@ -51,7 +51,7 @@ class RouteApp(BaseApp):
         raise NotImplementedError
 
     @property
-    def names(self):
+    def names(self) -> list[str]:
         return [self.name]
 
     async def fallback(self, bot: Bot, event: Message):
