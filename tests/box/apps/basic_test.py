@@ -7,13 +7,17 @@ from yui.command.decorators import argument
 from yui.command.decorators import option
 from yui.event import Message
 from yui.event import MessageMessage
+from yui.types.base import Ts
 
 if TYPE_CHECKING:
     from yui.box.apps.basic import App
 
 
-def test_basic_app():
+def test_basic_app(channel_id, user_id):
     box = Box()
+    ts = Ts("123.456")
+    event_ts = Ts("456.789")
+    message_ts = Ts("789.012")
 
     @box.command("test", aliases=["tttt"])
     @option("--foo", "-f")
@@ -54,21 +58,27 @@ LONG"""
         == "*=test*\n(Aliases: `=tttt`)\nTEST TITLE\n\nLONG\nCAT\nIS\nLONG"
     )
     event = Message(
-        channel="C1",
-        ts="1",
-        event_ts="2",
-        user="U1",
+        channel=channel_id,
+        ts=ts,
+        event_ts=event_ts,
+    )
+    assert app.get_event_text(event) == ""
+    event = Message(
+        channel=channel_id,
+        ts=ts,
+        event_ts=event_ts,
+        user=user_id,
         text="=test --foo 1 --bar 2 3 4 5",
     )
     assert app.get_event_text(event) == "=test --foo 1 --bar 2 3 4 5"
     event = Message(
-        channel="C1",
-        ts="1",
-        event_ts="2",
-        user="U1",
+        channel=channel_id,
+        ts=ts,
+        event_ts=event_ts,
+        user=user_id,
         message=MessageMessage(
-            user="U1",
-            ts="3",
+            user=user_id,
+            ts=message_ts,
             text="=test --foo 1 --bar 2 3 4 5",
         ),
     )
