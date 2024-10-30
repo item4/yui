@@ -48,14 +48,14 @@ class RouteApp(BaseApp):
         raise NotImplementedError
 
     def get_full_help(self, prefix: str) -> str:
-        return self.get_short_help(prefix)
+        raise NotImplementedError
 
     @property
     def names(self):
         return [self.name]
 
     async def fallback(self, bot: Bot, event: Message):
-        pass
+        raise NotImplementedError
 
     async def run(self, bot: Bot, event: Event):
         if not isinstance(event, Message):

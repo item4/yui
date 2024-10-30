@@ -22,23 +22,15 @@ class BaseApp:
         raise NotImplementedError
 
     def get_full_help(self, prefix: str) -> str:
-        return self.get_short_help(prefix)
+        raise NotImplementedError
 
     @property
     def has_short_help(self) -> bool:
-        try:
-            self.get_short_help("")
-        except NotImplementedError:
-            return False
-        return True
+        raise NotImplementedError
 
     @property
     def has_full_help(self) -> bool:
-        try:
-            self.get_full_help("")
-        except NotImplementedError:
-            return False
-        return True
+        raise NotImplementedError
 
     async def run(self, bot: Bot, event: Event):
         raise NotImplementedError
