@@ -163,7 +163,7 @@ sqlalchemy-utils = "^0.41.2"
 sympy = "^1.13.3"
 tossi = "^0.3.1"
 tzlocal = "^5.2"
-yarl = "^1.17.0"
+yarl = "^1.17.1"
 
 [tool.poetry.group.dev.dependencies]
 aioresponses = "^0.7.6"
