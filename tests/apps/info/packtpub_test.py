@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import pytest
+from more_itertools import flatten
 from time_machine import travel
 
 from yui.apps.info.packtpub.commands import packtpub_dotd
@@ -82,21 +83,23 @@ def test_auto_packtpub_dotd_spec():
     assert auto_packtpub_dotd.has_valid_spec
 
 
-def test_auto_packtpub_dotd_match(sunday):
-    for days in range(7):
-        assert not auto_packtpub_dotd.match(sunday + timedelta(days=days))
-        assert not auto_packtpub_dotd.match(
-            sunday + timedelta(days=days, hours=9),
-        )
-        assert auto_packtpub_dotd.match(
-            sunday + timedelta(days=days, hours=9, minutes=5),
-        )
-        assert not auto_packtpub_dotd.match(
-            sunday + timedelta(days=days, hours=9, minutes=15),
-        )
-        assert not auto_packtpub_dotd.match(
-            sunday + timedelta(days=days, hours=10),
-        )
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    flatten(
+        [
+            [
+                (timedelta(days=x), False),
+                (timedelta(days=x, hours=8), False),
+                (timedelta(days=x, hours=9), False),
+                (timedelta(days=x, hours=9, minutes=5), True),
+                (timedelta(days=x, hours=10), False),
+            ]
+            for x in range(7)
+        ],
+    ),
+)
+def test_auto_packtpub_dotd_match(sunday, delta, result):
+    assert auto_packtpub_dotd.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio

@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 import pytest_asyncio
+from more_itertools import flatten
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import fetch_all_station_db
@@ -50,21 +51,21 @@ def test_refresh_db_spec():
     assert refresh_db.has_valid_spec
 
 
-def test_refresh_db_match(sunday):
-    for days in range(7):
-        assert not refresh_db.match(sunday + timedelta(days=days))
-        assert not refresh_db.match(
-            sunday + timedelta(days=days, hours=2),
-        )
-        assert refresh_db.match(
-            sunday + timedelta(days=days, hours=3),
-        )
-        assert not refresh_db.match(
-            sunday + timedelta(days=days, hours=3, minutes=30),
-        )
-        assert not refresh_db.match(
-            sunday + timedelta(days=days, hours=4),
-        )
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    flatten(
+        [
+            (timedelta(days=x, hours=0), False),
+            (timedelta(days=x, hours=2), False),
+            (timedelta(days=x, hours=3), True),
+            (timedelta(days=x, hours=3, minutes=30), False),
+            (timedelta(days=x, hours=4), False),
+        ]
+        for x in range(7)
+    ),
+)
+def test_refresh_db_match(sunday, delta, result):
+    assert refresh_db.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio

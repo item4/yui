@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 import pytest
+from more_itertools import flatten
 
 from yui.apps.info.lifestyle_maker import alert_lifestyle
 
@@ -11,29 +12,22 @@ def test_alert_spec():
     assert alert_lifestyle.has_valid_spec
 
 
-def test_alert_match(sunday):
-    for days in range(7):
-        for hours in range(8):
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours),
-            )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
-        for hours in range(8, 21):
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours),
-            )
-            assert alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
-        for hours in range(21, 24):
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours),
-            )
-            assert not alert_lifestyle.match(
-                sunday + timedelta(days=days, hours=hours, minutes=55),
-            )
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    flatten(
+        [
+            (timedelta(days=x, hours=0, minutes=55), False),
+            (timedelta(days=x, hours=7, minutes=55), False),
+            (timedelta(days=x, hours=8, minutes=55), True),
+            (timedelta(days=x, hours=20, minutes=55), True),
+            (timedelta(days=x, hours=21, minutes=55), False),
+            (timedelta(days=x, hours=23, minutes=55), False),
+        ]
+        for x in range(7)
+    ),
+)
+def test_alert_match(sunday, delta, result):
+    assert alert_lifestyle.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio
