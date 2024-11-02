@@ -62,7 +62,7 @@ class App(BaseApp):
 
     @property
     def has_full_help(self) -> bool:
-        return bool(self.short_help)
+        return bool(self.help)
 
     def get_short_help(self, prefix: str) -> str:
         return f"`{prefix}{self.name}`: {self.short_help}"

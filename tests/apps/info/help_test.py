@@ -24,9 +24,7 @@ async def test_help_command(bot_config):
 
     @box.command("bat")
     async def bat(bot, event):
-        """Bat
-
-        It's a bat"""
+        """Bat"""
 
     bot_config.PREFIX = "."
     bot = FakeBot(bot_config, using_box=box)
@@ -54,6 +52,14 @@ Cat
 
 It's a cat"""
     )
+    assert said.data["thread_ts"] == "1234.56"
+
+    await help(bot, event, "bat")
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == f"`{bot_config.PREFIX}bat`: Bat"
     assert said.data["thread_ts"] == "1234.56"
 
     await help(bot, event, "none")

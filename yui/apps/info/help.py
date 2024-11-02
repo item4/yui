@@ -25,10 +25,11 @@ async def help(bot, event: Message, raw: str):
 
         if apps:
             for app in apps:
-                try:
-                    help_text = app.get_full_help(p)
-                except NotImplementedError:
-                    help_text = app.get_short_help(p)
+                help_text = (
+                    app.get_full_help(p)
+                    if app.has_full_help
+                    else app.get_short_help(p)
+                )
 
                 await bot.say(
                     event.channel,
