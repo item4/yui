@@ -232,7 +232,7 @@ async def test_list_fine(bot, fx_sess):
     async with fx_sess.begin():
         fx_sess.add(feed1)
         fx_sess.add(feed2)
-        fx_sess.commit()
+        await fx_sess.commit()
 
     await r.list(bot, event, fx_sess)
 
