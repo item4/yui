@@ -219,6 +219,21 @@ files = [
 ]
 
 [[package]]
+name = "asyncclick"
+version = "8.1.7.2"
+description = "Composable command line interface toolkit, async version"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "asyncclick-8.1.7.2-py3-none-any.whl", hash = "sha256:1ab940b04b22cb89b5b400725132b069d01b0c3472a9702c7a2c9d5d007ded02"},
+    {file = "asyncclick-8.1.7.2.tar.gz", hash = "sha256:219ea0f29ccdc1bb4ff43bcab7ce0769ac6d48a04f997b43ec6bee99a222daa0"},
+]
+
+[package.dependencies]
+anyio = "*"
+colorama = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
 name = "attrdict"
 version = "2.0.1"
 description = "A dict with attribute-style access"
@@ -2749,4 +2764,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.13,<3.14"
-content-hash = "56f9b1fe4e557f2a8a98101fbac348b3a52a3b8e1a94fd8a6137aa80ce5d851d"
+content-hash = "7a5b4ec9a93c28ddfb4a27faa866bd55832ed79f55d6cd55321041ba6275c8a7"

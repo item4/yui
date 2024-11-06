@@ -1,8 +1,7 @@
-import asyncio
 import functools
 from pathlib import Path
 
-import click
+import asyncclick as click
 from alembic import command
 from alembic.config import Config
 
@@ -42,6 +41,17 @@ def load_config(func):
     return decorator(internal)
 
 
+async def run_alembic_op(config, op):
+    bot = Bot(config)
+    directory = Path("yui", "migrations")
+    c = Config(directory / "alembic.ini")
+    c.set_main_option("script_location", str(directory))
+    c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
+    c.attributes["Base"] = bot.orm_base
+    async with bot.database_engine.begin() as conn:
+        await conn.run_sync(op, c)
+
+
 @click.group()
 def yui():
     """YUI, Slack Bot for item4.slack.com"""
@@ -49,12 +59,12 @@ def yui():
 
 @yui.command()
 @load_config
-def run(config):
+async def run(config):
     """Run YUI."""
     try:
         while True:
             bot = Bot(config)
-            asyncio.run(bot.run())
+            await bot.run()
     except ConfigurationError as e:
         error(str(e))
 
@@ -69,7 +79,7 @@ def run(config):
 @click.option("--version-path")
 @click.option("--rev-id")
 @load_config
-def revision(
+async def revision(
     config,
     message: str | None,
     autogenerate: bool,
@@ -96,17 +106,7 @@ def revision(
             rev_id=rev_id,
         )
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
@@ -118,7 +118,7 @@ def revision(
 @click.option("--version-path")
 @click.option("--rev-id")
 @load_config
-def migrate(
+async def migrate(
     config,
     message: str | None,
     sql: bool,
@@ -144,40 +144,20 @@ def migrate(
             rev_id=rev_id,
         )
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.argument("revision", default="current")
 @load_config
-def edit(config, revision: str):
+async def edit(config, revision: str):
     """Edit current revision."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.edit(c, revision)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
@@ -186,7 +166,7 @@ def edit(config, revision: str):
 @click.option("--message", "-m")
 @click.argument("revisions", nargs=-1)
 @load_config
-def merge(
+async def merge(
     config,
     revisions: str,
     message: str | None,
@@ -205,17 +185,7 @@ def merge(
             rev_id=rev_id,
         )
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
@@ -223,24 +193,14 @@ def merge(
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
 @load_config
-def upgrade(config, revision: str, sql: bool, tag: str | None):
+async def upgrade(config, revision: str, sql: bool, tag: str | None):
     """Upgrade to a later version."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.upgrade(c, revision, sql=sql, tag=tag)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
@@ -248,78 +208,48 @@ def upgrade(config, revision: str, sql: bool, tag: str | None):
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="-1")
 @load_config
-def downgrade(config, revision: str, sql: bool, tag: str):
+async def downgrade(config, revision: str, sql: bool, tag: str):
     """Revert to a previous version."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.downgrade(c, revision, sql=sql, tag=tag)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.argument("revision", default="head")
 @load_config
-def show(config, revision: str):
+async def show(config, revision: str):
     """Show the revision denoted by the given symbol."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.show(c, revision)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @click.option("--rev-range", "-r")
 @load_config
-def history(config, verbose: bool, rev_range: str | None):
+async def history(config, verbose: bool, rev_range: str | None):
     """List changeset scripts in chronological order."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.history(c, rev_range, verbose=verbose)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.option("--resolve-dependencies", is_flag=True, default=False)
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-def heads(config, verbose: bool, resolve_dependencies: bool):
+async def heads(config, verbose: bool, resolve_dependencies: bool):
     """Show current available heads in the script directory."""
 
     def op(connection, c):
@@ -330,63 +260,33 @@ def heads(config, verbose: bool, resolve_dependencies: bool):
             resolve_dependencies=resolve_dependencies,
         )
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-def branches(config, verbose: bool):
+async def branches(config, verbose: bool):
     """Show current branch points."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.branches(c, verbose=verbose)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-def current(config, verbose: bool):
+async def current(config, verbose: bool):
     """Display the current revision for each database."""
 
     def op(connection, c):
         c.attributes["connection"] = connection
         command.current(c, verbose=verbose)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 @yui.command()
@@ -394,7 +294,7 @@ def current(config, verbose: bool):
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
 @load_config
-def stamp(config, revision: str, sql: bool, tag: str | None):
+async def stamp(config, revision: str, sql: bool, tag: str | None):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 
@@ -402,17 +302,7 @@ def stamp(config, revision: str, sql: bool, tag: str | None):
         c.attributes["connection"] = connection
         command.stamp(c, revision, sql=sql, tag=tag)
 
-    async def main():
-        bot = Bot(config)
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
-        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-        c.attributes["Base"] = bot.orm_base
-        async with bot.database_engine.begin() as conn:
-            await conn.run_sync(op, c)
-
-    asyncio.run(main())
+    await run_alembic_op(config, op)
 
 
 main = yui
