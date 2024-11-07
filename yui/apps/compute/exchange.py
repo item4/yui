@@ -1,9 +1,9 @@
+import asyncio
 import re
 from decimal import Decimal
 
 import aiohttp
 import aiohttp.client_exceptions
-import async_timeout
 
 from ...box import box
 from ...command import argument
@@ -54,7 +54,7 @@ async def get_exchange_rate(
     if base == to:
         raise SameBaseAndTo
 
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
         "https://api.manana.kr/exchange/rate.json",

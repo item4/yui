@@ -1,3 +1,4 @@
+import asyncio
 import math
 import urllib.parse
 from collections import defaultdict
@@ -8,7 +9,6 @@ from typing import TypeVar
 from typing import TypedDict
 
 import aiohttp
-import async_timeout
 from aiohttp.client_exceptions import ContentTypeError
 from attrs import define
 from attrs import field
@@ -265,7 +265,7 @@ async def caption(bot, event: Message, finished: bool, title: str):
 async def get_ohli_now_json(
     timeout: float,  # noqa: ASYNC109
 ) -> list[list[dict[str, Any]]]:
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
         "https://api.OHLI.moe/timetable/list/now",
@@ -278,7 +278,7 @@ async def get_ohli_caption_list(
     timeout: float,  # noqa: ASYNC109
 ) -> list[Caption]:
     results: list[Caption] = []
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
         "https://api.OHLI.moe/timetable/cap",
@@ -310,7 +310,7 @@ async def get_anissia_weekly_json(
     week: int,
     timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaAnimeInfo]:
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
         f"https://api.anissia.net/anime/schedule/{week}",
@@ -322,7 +322,7 @@ async def get_annissia_caption_list_json(
     anime_no: int,
     timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaCaptionInfo]:
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         timeout,
     ), aiohttp.ClientSession() as session, session.get(
         f"https://api.anissia.net/anime/caption/animeNo/{anime_no}",
@@ -485,7 +485,7 @@ async def search_finished(
     timeout: float = 2.5,  # noqa: ASYNC109
 ):
     try:
-        async with async_timeout.timeout(
+        async with asyncio.timeout(
             timeout,
         ), aiohttp.ClientSession() as session, session.get(
             "https://ohli.moe/timetable/search",

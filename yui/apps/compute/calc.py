@@ -1,5 +1,6 @@
 import _ast
 import ast
+import asyncio
 import datetime
 import decimal
 import functools
@@ -15,7 +16,6 @@ from typing import Any
 from typing import Self
 from typing import TypeAlias
 
-import async_timeout
 from more_itertools import numeric_range
 
 from ...bot import Bot
@@ -47,7 +47,7 @@ async def body(
         return
 
     try:
-        async with async_timeout.timeout(timeout):
+        async with asyncio.timeout(timeout):
             result, local = await bot.run_in_other_process(
                 calculate,
                 expr,

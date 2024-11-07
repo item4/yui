@@ -4,7 +4,6 @@ import functools
 
 import aiohttp
 import aiohttp.client_exceptions
-import async_timeout
 from defusedxml import ElementTree
 
 from ..box import box
@@ -40,7 +39,7 @@ async def get_cat_image_url(timeout: float) -> str:  # noqa: ASYNC109
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(delay=timeout), session.get(
+                async with asyncio.timeout(delay=timeout), session.get(
                     url,
                 ) as resp, resp:
                     if resp.status == 200:
@@ -63,7 +62,7 @@ async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with async_timeout.timeout(delay=timeout), session.get(
+                async with asyncio.timeout(delay=timeout), session.get(
                     url,
                 ) as resp, resp:
                     if resp.status == 200:
@@ -74,7 +73,7 @@ async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
 
 async def get_fox_image_url(timeout: float) -> str:  # noqa: ASYNC109
     url = "http://fox-info.net/fox-gallery"
-    async with async_timeout.timeout(
+    async with asyncio.timeout(
         delay=timeout,
     ), aiohttp.ClientSession() as session, session.get(url) as resp:
         data = await resp.text()
