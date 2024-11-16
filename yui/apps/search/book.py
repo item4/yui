@@ -70,7 +70,7 @@ async def book(bot, event: Message, keyword: str):
                 " 그 중 상위 {}개를 보여드릴게요!"
             ).format(
                 keyword,
-                tossicat.transform(keyword, "(으)로"),
+                tossicat.transform(keyword, "(으)로")[1],
                 data["total"],
                 count,
             ),

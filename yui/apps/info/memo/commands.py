@@ -58,7 +58,7 @@ async def memo_add(
         event.channel,
         "{}{} 기억 레코드를 생성했어요!".format(
             format.code(keyword),
-            tossicat.transform(keyword, "(으)로"),
+            tossicat.transform(keyword, "(으)로")[1],
         ),
     )
 
@@ -91,7 +91,7 @@ async def memo_show(bot, event: Message, sess: AsyncSession, keyword: str):
             event.channel,
             "{}{} 이름을 가진 기억 레코드가 없어요!".format(
                 format.code(keyword),
-                tossicat.transform(keyword, "(이)란"),
+                tossicat.transform(keyword, "(이)란")[1],
             ),
         )
 
