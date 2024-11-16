@@ -40,7 +40,7 @@ async def test_holiday_task_at_holiday(bot_config, channel_id):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == channel_id
-    assert said.data["text"] == "오늘은 설날연휴예요! 즐거운 휴일 되세요!"
+    assert said.data["text"] == "오늘은 설날연휴! 행복한 휴일 되세요!"
 
 
 @pytest.mark.asyncio

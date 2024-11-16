@@ -3,7 +3,6 @@ import re
 
 import aiohttp
 import aiohttp.client_exceptions
-import tossicat
 
 from ...box import box
 from ...event import Message
@@ -28,9 +27,7 @@ async def holiday_message(bot):
     if holidays:
         await bot.say(
             bot.config.CHANNELS["general"],
-            "오늘은 {}! 즐거운 휴일 되세요!".format(
-                tossicat.postfix(holidays[0], "(이)에요"),
-            ),
+            f"오늘은 {holidays[0]}! 행복한 휴일 되세요!",
         )
 
 
