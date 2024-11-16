@@ -3,7 +3,7 @@ import re
 
 import aiohttp
 import aiohttp.client_exceptions
-import tossi
+import tossicat
 
 from ...box import box
 from ...event import Message
@@ -29,7 +29,7 @@ async def holiday_message(bot):
         await bot.say(
             bot.config.CHANNELS["general"],
             "오늘은 {}! 즐거운 휴일 되세요!".format(
-                tossi.postfix(holidays[0], "(이)에요"),
+                tossicat.postfix(holidays[0], "(이)에요"),
             ),
         )
 

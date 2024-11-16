@@ -1,5 +1,5 @@
 import aiohttp
-import tossi
+import tossicat
 
 from ...box import box
 from ...command import argument
@@ -70,7 +70,7 @@ async def book(bot, event: Message, keyword: str):
                 " 그 중 상위 {}개를 보여드릴게요!"
             ).format(
                 keyword,
-                tossi.pick(keyword, "(으)로"),
+                tossicat.transform(keyword, "(으)로"),
                 data["total"],
                 count,
             ),

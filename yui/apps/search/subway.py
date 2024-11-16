@@ -3,7 +3,7 @@ import logging
 import re
 
 import aiohttp
-import tossi
+import tossicat
 
 from ...box import box
 from ...command import argument
@@ -164,7 +164,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
                 start_station_line,
                 start_station_name,
                 goal_station_line,
-                tossi.postfix(goal_station_name, "(으)로"),
+                tossicat.postfix(goal_station_name, "(으)로"),
             )
             for step in steps:
                 if step["type"] != "SUBWAY":
