@@ -204,16 +204,7 @@ def select_captions(origin: list[Caption]) -> list[Caption]:
     return results
 
 
-def make_caption_list(origin: list[Caption]) -> list[Attachment]:
-    captions = select_captions(origin)
-    if not captions:
-        return [
-            Attachment(
-                fallback="자막 제작자가 없습니다.",
-                text="자막 제작자가 없습니다.",
-            ),
-        ]
-
+def make_caption_attachments(captions: list[Caption]) -> list[Attachment]:
     result: list[Attachment] = []
     for caption in captions:
         num = format_episode_num(caption.episode_num)
@@ -228,6 +219,19 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
             )
         result.append(Attachment(author_name=caption.maker, text=text))
     return result
+
+
+def make_caption_list(origin: list[Caption]) -> list[Attachment]:
+    captions = select_captions(origin)
+    if not captions:
+        return [
+            Attachment(
+                fallback="자막 제작자가 없습니다.",
+                text="자막 제작자가 없습니다.",
+            ),
+        ]
+
+    return make_caption_attachments(captions)
 
 
 @box.command("자막", ["cap", "sub", "애니자막"])
