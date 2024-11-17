@@ -2484,34 +2484,34 @@ python-dateutil = "*"
 
 [[package]]
 name = "tossicat-python"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tossicat_python-0.1.2-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:d60a4bb5c8f3869a1aa2a89742a500551924084eae3c865bf7af67566ebb4371"},
-    {file = "tossicat_python-0.1.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d34b4d3fd0bea0e00dcb01edacaa86d87da7ee108a143f92ce88dc99156c7251"},
-    {file = "tossicat_python-0.1.2-cp310-none-win_amd64.whl", hash = "sha256:6a8d2f4cac6f48bbd1b7d5c8f0c4472a05ea81c5380657ac27e71632ec3d39ad"},
-    {file = "tossicat_python-0.1.2-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:d59553c290fe41d48e09a65622aee628dc0e3b6cb2b51767d1cfc75e67d87824"},
-    {file = "tossicat_python-0.1.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a9ee5fa77dfa6c0ee875758a0c39ba2eca048bc5cd59a80c784d9b1df6d72da5"},
-    {file = "tossicat_python-0.1.2-cp311-none-win_amd64.whl", hash = "sha256:1b9864a721c7a52d5d4c17b996202e06cbcaeb7b3ae0c623dfc25947af8d2df9"},
-    {file = "tossicat_python-0.1.2-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:7eb6c19c5be8f83f506947ee1dcb1574493d68ee7b1b866ed7d39dd960ba79d3"},
-    {file = "tossicat_python-0.1.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fda0b18ec0a82694d7a196faf840b335be6279b7fb447faaf66ff6241dd726c1"},
-    {file = "tossicat_python-0.1.2-cp312-none-win_amd64.whl", hash = "sha256:88eb65e66f63aac40e5defc34b493e22659dcf42dd3919ec9b07fd72dec2c7a0"},
-    {file = "tossicat_python-0.1.2-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:88477921bd2ac6f91e9aa9f01d8d3d39b25ba7ab4db4bcf713979cf9ba15ded2"},
-    {file = "tossicat_python-0.1.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bf9b8c04ff94e01383d9099c8273be058f19883e82ab5afb3a870a6ed158941a"},
-    {file = "tossicat_python-0.1.2-cp37-cp37m-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:a89f2d5d2252cb3d7d0c1315bab9dd5c7620b96b8a55ae3c55b5a323a5f67265"},
-    {file = "tossicat_python-0.1.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a16bc942d0cf4e73b5eb8b5128ed5a461d08285eb424e67f48e99ae85892bedb"},
-    {file = "tossicat_python-0.1.2-cp37-none-win_amd64.whl", hash = "sha256:34de8315f8d0ac1d0a3ac39b8dcf6f37f09d7c36d8fdf434daf4b56eaa4e1339"},
-    {file = "tossicat_python-0.1.2-cp38-cp38-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:be56ef6129d3d3a637512a97d2dd1cd5e26c9fa374b4ad9b65b531c9f6867a11"},
-    {file = "tossicat_python-0.1.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c2c7dde7676e75c14e323035ab7c7a022b752c4abc2eb9ced04a13bdb3067e13"},
-    {file = "tossicat_python-0.1.2-cp38-none-win_amd64.whl", hash = "sha256:bc315f07345ce2621e6af508037b474afdf72fb1a43747725542c11021970a6d"},
-    {file = "tossicat_python-0.1.2-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:12c07da92ea1df68fe6d4de190ba1a7be2f29f33d0d1fcb29829c1e20afc7ed4"},
-    {file = "tossicat_python-0.1.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:03ca44057f5a0876e78985c4cb21609a2948f586431bf684d986e83f014635ed"},
-    {file = "tossicat_python-0.1.2-cp39-none-win_amd64.whl", hash = "sha256:9d7677a2be06674c1f35d3795e3dcbc0f3d49f73770d10d239e7e75d3b0d68c0"},
-    {file = "tossicat_python-0.1.2-pp310-pypy310_pp73-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:5bc6e9d8f6b6c180d966e25ec70d32bfb1631260ed17ffb1dcad1b9ac7b31247"},
-    {file = "tossicat_python-0.1.2-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4105bf72184532f3e1db853d025fcf23b0bd4c90b5a2396d8ee016fdd6526154"},
-    {file = "tossicat_python-0.1.2.tar.gz", hash = "sha256:b7e225a074a8cfa3eb064c66b4556cb47f04d640defbe13f2e699d0a72967d35"},
+    {file = "tossicat_python-0.1.3-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:7785eda5cc4b1c996c0ba80a383bb1323cbb16d41562f3d6fb56440005bbf2bb"},
+    {file = "tossicat_python-0.1.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:080115ad6a73d9dc786f8f58264505360c9b8345764764e670aff2a624ea7fa7"},
+    {file = "tossicat_python-0.1.3-cp310-none-win_amd64.whl", hash = "sha256:d7b8c22e49fa20f90544a5cdbcbe321b34214615adfa05535cf87a69bd78edb4"},
+    {file = "tossicat_python-0.1.3-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:142bb6550afe01f70d7c3cbfea1d7e7adbd5e343a7dcf920e66d3f877916ef72"},
+    {file = "tossicat_python-0.1.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7bbe4595fb88c101a25f16c0297de3850da9be8bfb5b9d5d5dbb9e34f5ad8a32"},
+    {file = "tossicat_python-0.1.3-cp311-none-win_amd64.whl", hash = "sha256:00dfdab7260373c8aae62ad363ac26647fcfe1012b9811732cc089565e8c6078"},
+    {file = "tossicat_python-0.1.3-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:a5ca1c53aad822d028925008dd54a029d279c20a2a83d547a31ecde3a25299ab"},
+    {file = "tossicat_python-0.1.3-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:77b190a2e3f71d219251fc898f92a107ebd9a99ba25977541d1d0c27939702ac"},
+    {file = "tossicat_python-0.1.3-cp312-none-win_amd64.whl", hash = "sha256:dde0fcc4ed57418b517675580ba69594d22542a510655fda60faa88fa3db6990"},
+    {file = "tossicat_python-0.1.3-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:0c11f557747c4f23551c3d1cc6a71751c37f12e964f9e5959f73821e3ae01c85"},
+    {file = "tossicat_python-0.1.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:82ee1a794d9a3b14fee1cf1271368628f8b4603ad46dfb52248d46d7b59c78d6"},
+    {file = "tossicat_python-0.1.3-cp37-cp37m-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:38cd596e5a00123fcb4da384bd070e20396cebff98acc678b268af0482cae641"},
+    {file = "tossicat_python-0.1.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3528de4266b7d65032da9bb19ba904096c58054a92af94908b891659e3d4f1c7"},
+    {file = "tossicat_python-0.1.3-cp37-none-win_amd64.whl", hash = "sha256:759d9580db72ab77f626908aa7cdc9e82dc53462546725317dc61fa272a03e98"},
+    {file = "tossicat_python-0.1.3-cp38-cp38-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:5df20a8b1272dd4e12b57ad7def4cb82545801f4b5e83dda72688addf3a409d3"},
+    {file = "tossicat_python-0.1.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:63ded74192c80614bf3e41cd7105829cff6d758cb5eed803ee55485e0b2beb7c"},
+    {file = "tossicat_python-0.1.3-cp38-none-win_amd64.whl", hash = "sha256:02ba25f872c54063b6b91fcd4fd5c992d62dc1f7cdfc439971d52688159cb4d2"},
+    {file = "tossicat_python-0.1.3-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:38edf9df42aabcc1a44fb0e0a872b4b5036328562ef172bb27096621f9788389"},
+    {file = "tossicat_python-0.1.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b2a0b4bd9e67445900bba2e19cd9b6f7357981f264a609478e780bff4eee5310"},
+    {file = "tossicat_python-0.1.3-cp39-none-win_amd64.whl", hash = "sha256:004345f4b4bb39d35ca7fb56cea2d0c8cd5b20511b360d646bd583667f0d4149"},
+    {file = "tossicat_python-0.1.3-pp310-pypy310_pp73-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:550e32b192c5de73302225814c3077fd81ecc16fd6cf1ae441672251af170c1a"},
+    {file = "tossicat_python-0.1.3-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9b83556db33fcfa53074bd16b0e0e61dcf2663d30b086d844da4045db96e01c0"},
+    {file = "tossicat_python-0.1.3.tar.gz", hash = "sha256:cf48b142cf11522d149524e26b434d59d25f341ec5c56b91543725fab427a2ee"},
 ]
 
 [[package]]
@@ -2747,4 +2747,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.13,<3.14"
-content-hash = "df37c39fc42374b3c855ee2da9d1eff7eefeb4ef44e3386b1ffe27b736aa0285"
+content-hash = "486f70432a4c312b4e9c1a9b3167274330887dc91a0a22b176ac1a8d93ac6110"
