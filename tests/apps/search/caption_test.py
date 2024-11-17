@@ -1,7 +1,9 @@
+from yui.apps.search.caption import Caption
 from yui.apps.search.caption import convert_released_dt
 from yui.apps.search.caption import encode_url
 from yui.apps.search.caption import fix_url
 from yui.apps.search.caption import format_episode_num
+from yui.apps.search.caption import make_caption_attachments
 from yui.apps.search.caption import make_caption_list
 from yui.apps.search.caption import print_time
 from yui.apps.search.caption import remove_protocol
@@ -59,3 +61,57 @@ def test_make_caption_list_empty():
     assert len(result) == 1
     assert result[0].fallback == "자막 제작자가 없습니다."
     assert result[0].text == "자막 제작자가 없습니다."
+
+
+def test_make_caption_attachments():
+    captions = [
+        Caption(
+            maker="A",
+            episode_num="0",
+            url="https://a.dev/a/1",
+            released_at="2024년 11월 11일 11시",
+        ),
+        Caption(
+            maker="B",
+            episode_num="1",
+            url="https://b.dev/a/2",
+            released_at="2024년 11월 12일 13시",
+        ),
+        Caption(
+            maker="C",
+            episode_num="0",
+            url="https://c.dev/a/3",
+            released_at="",
+        ),
+        Caption(
+            maker="D",
+            episode_num="1",
+            url="https://d.dev/a/4",
+            released_at="",
+        ),
+        Caption(
+            maker="E",
+            episode_num="0",
+            url="",
+            released_at="2024년 11월 14일 15시",
+        ),
+        Caption(
+            maker="F",
+            episode_num="0",
+            url="",
+            released_at="",
+        ),
+    ]
+    result = make_caption_attachments(captions)
+    assert result[0].author_name == "A"
+    assert result[0].text == "단편 2024년 11월 11일 11시 https://a.dev/a/1"
+    assert result[1].author_name == "B"
+    assert result[1].text == "1화 2024년 11월 12일 13시 https://b.dev/a/2"
+    assert result[2].author_name == "C"
+    assert result[2].text == "단편 https://c.dev/a/3"
+    assert result[3].author_name == "D"
+    assert result[3].text == "1화 https://d.dev/a/4"
+    assert result[4].author_name == "E"
+    assert result[4].text == "준비중 2024년 11월 14일 15시"
+    assert result[5].author_name == "F"
+    assert result[5].text == "준비중"
