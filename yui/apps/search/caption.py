@@ -114,22 +114,16 @@ def format_episode_num(num: str) -> str:
     return f"{num}화"
 
 
-def make_caption_list(origin: list[Caption]) -> list[Attachment]:
+def select_captions(origin: list[Caption]) -> list[Caption]:
     if not origin:
-        return [
-            Attachment(
-                fallback="자막 제작자가 없습니다.",
-                text="자막 제작자가 없습니다.",
-            ),
-        ]
+        return []
 
     captions = sorted(origin, key=lambda x: x.episode_num, reverse=True)
 
-    result: list[Attachment] = []
     makers: defaultdict[str, list[int]] = defaultdict(list)
     for i, caption in enumerate(captions):
         makers[caption.maker].append(i)
-    selected_captions: list[Caption] = []
+    results: list[Caption] = []
     for maker, indices in makers.items():
         items = [captions[i] for i in indices]
         known_episode_nums: set[str] = set()
@@ -160,7 +154,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                         for x in same_urls
                         if x.episode_num == episode_num
                     )
-                selected_captions.append(
+                results.append(
                     Caption(
                         maker=maker,
                         episode_num=episode_num,
@@ -191,7 +185,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                     key=lambda x: x.released_at,
                     reverse=True,
                 )[0]
-                selected_captions.append(
+                results.append(
                     Caption(
                         maker=maker,
                         episode_num=episode_num,
@@ -203,11 +197,25 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
                 known_urls.add(latest_release.url)
                 continue
 
-            selected_captions.append(item)
+            results.append(item)
             known_episode_nums.add(item.episode_num)
             known_urls.add(item.url)
 
-    for caption in selected_captions:
+    return results
+
+
+def make_caption_list(origin: list[Caption]) -> list[Attachment]:
+    captions = select_captions(origin)
+    if not captions:
+        return [
+            Attachment(
+                fallback="자막 제작자가 없습니다.",
+                text="자막 제작자가 없습니다.",
+            ),
+        ]
+
+    result: list[Attachment] = []
+    for caption in captions:
         num = format_episode_num(caption.episode_num)
         date = caption.released_at
         if num == "단편" and not caption.url:
