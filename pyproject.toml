@@ -138,7 +138,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.13,<3.14"
 aiocron = "^1.8"
-aiohttp = "^3.11.2"
+aiohttp = "^3.11.3"
 alembic = "^1.14.0"
 asyncclick = "^8.1.7.2"
 attrdict = "^2.0.1"
