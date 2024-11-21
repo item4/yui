@@ -1,10 +1,10 @@
-import datetime
 import logging
-import time
+from datetime import timedelta
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ....box import box
+from ....utils.datetime import now
 from .commons import cleanup_by_event_logs
 from .commons import collect_history_from_channel
 
@@ -20,9 +20,8 @@ async def cleanup_channels(bot, sess: AsyncSession):
     if not channels:
         return
 
-    naive_now = datetime.datetime.now()
-    time_limit = naive_now - datetime.timedelta(hours=12)
-    ts = str(time.mktime(time_limit.timetuple()))
+    time_limit = now() - timedelta(hours=12)
+    ts = str(int(time_limit.timestamp()))
 
     logger.info(f"Delete messages before {ts}")
     for channel in channels:
