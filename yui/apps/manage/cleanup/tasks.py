@@ -15,10 +15,9 @@ box.assert_channels_required("auto_cleanup_targets")
 @box.cron("0,10,20,30,40,50 * * * *")
 async def cleanup_channels(bot, sess: AsyncSession):
     logger = logging.getLogger("yui.apps.manage.cleanup.tasks.cleanup_channels")
-    try:
-        channels = bot.config.CHANNELS["auto_cleanup_targets"]
-    except KeyError:
-        logger.info("No auto cleanup targets. skip.")
+    channels = bot.config.CHANNELS.get("auto_cleanup_targets", [])
+
+    if not channels:
         return
 
     naive_now = datetime.datetime.now()
@@ -41,11 +40,7 @@ async def cleanup_channels(bot, sess: AsyncSession):
 @box.cron("0 * * * *")
 async def get_old_history(bot, sess: AsyncSession):
     logger = logging.getLogger("yui.apps.manage.cleanup.tasks.get_old_history")
-    try:
-        channels = bot.config.CHANNELS["auto_cleanup_targets"]
-    except KeyError:
-        logger.info("No auto cleanup targets. skip.")
-        return
+    channels = bot.config.CHANNELS.get("auto_cleanup_targets", [])
 
     for channel in channels:
         logger.info(f"Start collect message in channel: {channel}")
