@@ -1,7 +1,6 @@
 import datetime
 import logging
 import time
-from typing import TypeAlias
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,8 +10,6 @@ from .commons import collect_history_from_channel
 
 box.assert_config_required("USER_TOKEN", str)
 box.assert_channels_required("auto_cleanup_targets")
-
-LOGS: TypeAlias = set[tuple[str, str]]
 
 
 @box.cron("0,10,20,30,40,50 * * * *")
