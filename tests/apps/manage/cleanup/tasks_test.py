@@ -15,8 +15,8 @@ def test_get_old_history_spec():
     ("delta", "result"),
     flatten(
         [
-            (timedelta(days=x), True),
-            (timedelta(days=x, minutes=5), False),
+            (timedelta(days=x), False),
+            (timedelta(days=x, minutes=5), True),
         ]
         for x in range(7)
     ),
