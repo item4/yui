@@ -13,13 +13,13 @@ from .utils import is_container
 box = Box()
 
 __all__ = [
+    "CONTAINER",
+    "KWARGS_DICT",
+    "SPACE_RE",
     "App",
     "BaseApp",
     "Box",
-    "CONTAINER",
     "CronTask",
-    "KWARGS_DICT",
-    "SPACE_RE",
     "box",
     "is_container",
     "parse_option_and_arguments",

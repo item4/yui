@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from ...box import box
 from ...command import argument
-from ...event import Message  # noqa: TCH001
+from ...event import Message  # noqa: TC001
 from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
 from .sun import get_emoji_by_sun
