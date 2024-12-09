@@ -138,7 +138,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.13,<3.14"
 aiocron = "^1.8"
-aiohttp = "^3.11.9"
+aiohttp = "^3.11.10"
 alembic = "^1.14.0"
 asyncclick = "^8.1.7.2"
 attrdict = "^2.0.1"
@@ -155,7 +155,7 @@ orjson = "^3.10.12"
 psycopg = {version = "^3.2.3", extras = ["binary"]}
 python-dateutil = "^2.9.0"
 rapidfuzz = "^3.10.1"
-redis = {version = "^5.2.0", extras = ["hiredis"]}
+redis = {version = "^5.2.1", extras = ["hiredis"]}
 scipy = "^1.14.1"
 sqlalchemy = {version = "^2.0.36", extras = ["asyncio"]}
 sqlalchemy-utils = "^0.41.2"
@@ -172,7 +172,7 @@ pre-commit = "^4.0.1"
 pytest = "^8.3.4"
 pytest-asyncio = "^0.24.0"
 pytest-cov = "^6.0.0"
-ruff = "^0.8.1"
+ruff = "^0.8.2"
 time-machine = "^2.16.0"
 types-croniter = "^4.0.0"
 types-orjson = "^3.6.2"
