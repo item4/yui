@@ -436,10 +436,10 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
             bot.config.D2EMU_TOKEN,
         )
         await asyncio.sleep(
-            random.randint(55 + loop_count * 2, 111 + loop_count * 2) / 100,
+            random.randint(100, 500 + loop_count * 11) / 100,
         )
         loop_count += 1
-        if loop_count > 50:
+        if loop_count > 20:
             return
 
     now_dt = now()
