@@ -1,5 +1,4 @@
 import asyncio
-import random
 
 import aiohttp
 from discord_webhook import AsyncDiscordWebhook
@@ -431,12 +430,10 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
 
     loop_count = 0
     while data["next_terror_time_utc"] <= this_time:
+        await asyncio.sleep(30 + loop_count * 15)
         data = await get_d2r_terror_zone_info(
             bot.config.D2EMU_USERNAME,
             bot.config.D2EMU_TOKEN,
-        )
-        await asyncio.sleep(
-            random.randint(100, 500 + loop_count * 11) / 100,
         )
         loop_count += 1
         if loop_count > 20:
