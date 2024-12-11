@@ -430,7 +430,7 @@ async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
 
     loop_count = 0
     while data["next_terror_time_utc"] <= this_time:
-        await asyncio.sleep(30 + loop_count * 15)
+        await asyncio.sleep(60 + loop_count * 30)
         data = await get_d2r_terror_zone_info(
             bot.config.D2EMU_USERNAME,
             bot.config.D2EMU_TOKEN,
