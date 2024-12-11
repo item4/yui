@@ -14,8 +14,8 @@ def test_auto_d2tz_spec():
     ("delta", "result"),
     flatten(
         [
-            (timedelta(days=x), True),
-            (timedelta(days=x, minutes=5), False),
+            (timedelta(days=x), False),
+            (timedelta(days=x, minutes=1), True),
         ]
         for x in range(7)
     ),
