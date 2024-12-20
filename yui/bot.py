@@ -478,16 +478,17 @@ class Bot(GetLoggerMixin):
         """Connect Slack Socket Mode."""
         logger = self.get_logger("connect")
 
-        while True:
-            await self.queue.put(create_event("yui_system_start", {}))
-            await self.is_ready.wait()
+        await self.queue.put(create_event("yui_system_start", {}))
+        await self.is_ready.wait()
 
+        while True:
             try:
                 resp = await self.api.apps.connections.open(
                     token=self.config.APP_TOKEN,
                 )
             except Exception:
                 logger.exception("Failed to connect Slack")
+                await asyncio.sleep(60)
                 continue
             if not resp.body["ok"]:
                 if resp.body["error"] in FATAL_ERROR_CODES:
