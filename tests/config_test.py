@@ -82,9 +82,9 @@ owner = 'U111'
     assert config.DEBUG
     assert config.PREFIX == "."
     assert config.APPS == ["a", "b"]
-    assert {
+    assert config.CHANNELS == {
         "general": "C1",
-    } == config.CHANNELS
+    }
 
 
 def test_config_check(bot_config):

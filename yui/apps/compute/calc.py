@@ -1259,7 +1259,7 @@ class Evaluator:
     def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
-    def visit_typealias(self, node: _ast.TypeAlias):  # name, type_params, value
+    def visit_typealias(self, node):  # name, type_params, value
         raise BadSyntax("You can not define type alias")
 
     def visit_unaryop(self, node: _ast.UnaryOp):  # op, operand
