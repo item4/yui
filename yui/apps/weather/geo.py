@@ -32,7 +32,6 @@ async def get_geometric_info_by_address(
 
     # 주소가 대한민국의 주소일 경우, 앞의 "대한민국 "을 자른다.
     # 캐시를 위해 함수의 반환 결과부터 미리 처리를 해놓는다.
-    if full_address.startswith("대한민국 "):
-        full_address = full_address[5:]
+    full_address = full_address.removeprefix("대한민국 ")
 
     return full_address, lat, lng
