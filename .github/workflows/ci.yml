@@ -60,7 +60,6 @@ jobs:
       - name: Setup Poetry
         run: |
           pipx install --python $(which python) poetry
-          pipx inject poetry poetry-plugin-export
           poetry config virtualenvs.create true
           poetry config virtualenvs.in-project true
 
@@ -68,7 +67,7 @@ jobs:
         run: |
           python -m venv .venv
           .venv/bin/pip install --upgrade pip setuptools wheel
-          poetry install
+          poetry install --all-extras
           echo "$(pwd)/.venv/bin" >> $GITHUB_PATH
 
       # Type Check
@@ -88,7 +87,7 @@ jobs:
       # After jobs
       - name: Export requirements.txt for docker build
         run: |
-          poetry export --without dev -o requirements.txt --without-hashes
+          poetry export -f requirements.txt --output requirements.txt --without-hashes
       - name: Archive requirements.txt file
         uses: actions/upload-artifact@v4
         with:
