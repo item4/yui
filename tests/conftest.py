@@ -5,9 +5,9 @@ import pathlib
 import aioresponses
 import pytest
 import pytest_asyncio
-from redis.asyncio import Redis
 from sqlalchemy.exc import ProgrammingError
 from sqlalchemy.sql.expression import text
+from valkey.asyncio import Valkey
 
 from yui.cache import Cache
 from yui.config import Config
@@ -138,8 +138,8 @@ def bot(bot_config):
 
 @pytest_asyncio.fixture()
 async def cache():
-    redis_client = Redis.from_url("redis://localhost")
-    c = Cache(redis_client, "YUI_TEST_")
+    valkey_client = Valkey.from_url("valkey://localhost")
+    c = Cache(valkey_client, "YUI_TEST_")
     yield c
     await c.close()
 

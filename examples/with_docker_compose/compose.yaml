@@ -7,10 +7,10 @@ services:
       - YUI_CONFIG_FILE_PATH=data/yui.config.toml
     depends_on:
       - db
-      - memcached
+      - valkey
     links:
       - db
-      - memcached
+      - valkey
     command: ./data/run.sh
     networks:
       yuinet:
@@ -29,8 +29,8 @@ services:
     networks:
       yuinet:
         ipv4_address: 10.5.0.2
-  redis:
-    image: redis/redis-stack:latest
+  valkey:
+    image: valkey/valkey:latest
     networks:
       yuinet:
         ipv4_address: 10.5.0.4

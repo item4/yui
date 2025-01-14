@@ -23,7 +23,7 @@ import aiocron
 import aiohttp
 from aiohttp.client_exceptions import ClientError
 from dateutil.tz import tzoffset
-from redis.asyncio.client import Redis
+from valkey.asyncio.client import Valkey
 
 from .api import SlackAPI
 from .box import Box
@@ -108,7 +108,7 @@ class Bot(GetLoggerMixin):
     """Yui."""
 
     api: SlackAPI
-    redis_client: Redis
+    valkey_client: Valkey
     cache: Cache
 
     def __init__(
@@ -229,12 +229,12 @@ class Bot(GetLoggerMixin):
             logger.info("register crontab")
             await self.register_tasks()
 
-        redis_retries = 0
+        valkey_retries = 0
 
         while True:
-            self.redis_client = Redis.from_url(self.config.CACHE["URL"])
+            self.valkey_client = Valkey.from_url(self.config.CACHE["URL"])
             self.cache = Cache(
-                self.redis_client,
+                self.valkey_client,
                 self.config.CACHE.get("PREFIX", "YUI_"),
             )
             try:
@@ -244,16 +244,16 @@ class Bot(GetLoggerMixin):
                 TimeoutError,
                 asyncio.CancelledError,
             ) as e:
-                logger.exception("fail to connect to redis")
-                redis_retries += 1
-                if redis_retries < 3:
+                logger.exception("fail to connect to valkey")
+                valkey_retries += 1
+                if valkey_retries < 3:
                     await self.cache.close()
-                    await asyncio.sleep(redis_retries * 5)
+                    await asyncio.sleep(valkey_retries * 5)
                     continue
-                logger.fatal("can not connect to redis. stop to run")
+                logger.fatal("can not connect to valkey. stop to run")
                 raise SystemExit from e
 
-            redis_retries = 0
+            valkey_retries = 0
 
             tasks = [
                 asyncio.create_task(self.connect()),

@@ -59,7 +59,7 @@ DEFAULT = {
             },
         },
     },
-    "CACHE": {"URL": "redis://localhost:6379/0", "PREFIX": "YUI_"},
+    "CACHE": {"URL": "valkey://localhost:6379/0", "PREFIX": "YUI_"},
 }
 
 

@@ -18,10 +18,11 @@ YUI는 다용도 Slack App 입니다.
 - Slack App 설치 및 App Token/Bot Token
 - Python 3.13.0 혹은 그 이상 버전
 - PostgresSQL 16
-- Redis 5.0 이상
+- Valkey_ 8.0 이상
 - Poetry_ 2.0.1 이상
 
 
+.. _Valkey: https://canonical.com/data/valkey
 .. _Poetry: https://python-poetry.org/
 
 
@@ -131,7 +132,7 @@ CACHE
   .. code-block:: toml
 
      [CACHE]
-     URL = 'redis://localhost:6379/0'
+     URL = 'valkey://localhost:6379/0'
      PREFIX = 'YUI_'
 
 

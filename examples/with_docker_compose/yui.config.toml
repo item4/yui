@@ -31,7 +31,7 @@ welcome = 'C1111'
 owner = 'U11111111'
 
 [CACHE]
-URL = 'redis://redis:6379/0'
+URL = 'valkey://valkey:6379/0'
 PREFIX = 'YUI_'
 
 [LOGGING]
