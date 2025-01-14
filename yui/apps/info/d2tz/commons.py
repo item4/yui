@@ -382,14 +382,17 @@ def tz_id_to_names(ids: list[str]) -> list[str]:
 
 
 async def get_d2r_terror_zone_info(username: str, token: str):
-    async with aiohttp.ClientSession(
-        headers={
-            "x-emu-username": username,
-            "x-emu-token": token,
-        },
-    ) as session, session.get(
-        "https://d2emu.com/api/v1/tz",
-    ) as resp:
+    async with (
+        aiohttp.ClientSession(
+            headers={
+                "x-emu-username": username,
+                "x-emu-token": token,
+            },
+        ) as session,
+        session.get(
+            "https://d2emu.com/api/v1/tz",
+        ) as resp,
+    ):
         blob = await resp.text()
         return json.loads(blob)
 

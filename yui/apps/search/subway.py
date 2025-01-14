@@ -34,22 +34,25 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f"subway-{service_region}-{api_version}"
     logger.info(f"fetch {name} start")
 
-    async with aiohttp.ClientSession(
-        headers={
-            "User-Agent": USER_AGENT,
-            "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
-        },
-    ) as session, session.get(
-        "https://map.naver.com/p/api/subway/meta",
-        params={
-            "readPath": service_region,
-            "version": api_version,
-            "language": "ko",
-            "style": "normal",
-            "requestFile": "metaData.json",
-            "caller": "NaverMapPcBetaWeb",
-        },
-    ) as resp:
+    async with (
+        aiohttp.ClientSession(
+            headers={
+                "User-Agent": USER_AGENT,
+                "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+            },
+        ) as session,
+        session.get(
+            "https://map.naver.com/p/api/subway/meta",
+            params={
+                "readPath": service_region,
+                "version": api_version,
+                "language": "ko",
+                "style": "normal",
+                "requestFile": "metaData.json",
+                "caller": "NaverMapPcBetaWeb",
+            },
+        ) as resp,
+    ):
         data = await resp.json(loads=json.loads)
 
     await bot.cache.set(f"SUBWAY_{service_region}_{api_version}", data)
@@ -129,21 +132,24 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             )
             return
 
-        async with aiohttp.ClientSession(
-            headers={
-                "User-Agent": USER_AGENT,
-                "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
-            },
-        ) as session, session.get(
-            "https://map.naver.com/p/api/pubtrans/subway-directions",
-            params={
-                "start": find_start["id"],
-                "goal": find_end["id"],
-                "lang": "ko",
-                "includeDetailOperation": "true",
-                "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
-            },
-        ) as resp:
+        async with (
+            aiohttp.ClientSession(
+                headers={
+                    "User-Agent": USER_AGENT,
+                    "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+                },
+            ) as session,
+            session.get(
+                "https://map.naver.com/p/api/pubtrans/subway-directions",
+                params={
+                    "start": find_start["id"],
+                    "goal": find_end["id"],
+                    "lang": "ko",
+                    "includeDetailOperation": "true",
+                    "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
+                },
+            ) as resp,
+        ):
             result = await resp.json(loads=json.loads)
 
         text = ""

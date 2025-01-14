@@ -501,9 +501,12 @@ class Bot(GetLoggerMixin):
 
             try:
                 logger.info("Connected to Slack")
-                async with aiohttp.ClientSession() as session, session.ws_connect(
-                    resp.body["url"],
-                ) as ws:
+                async with (
+                    aiohttp.ClientSession() as session,
+                    session.ws_connect(
+                        resp.body["url"],
+                    ) as ws,
+                ):
                     tasks = [
                         asyncio.create_task(self.ping(ws)),
                         asyncio.create_task(self.receive(ws)),

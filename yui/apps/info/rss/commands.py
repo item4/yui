@@ -62,9 +62,12 @@ class RSS(route.RouteApp):
     @argument("url", nargs=-1, concat=True, transform_func=extract_url)
     async def add(self, bot, event: Message, sess: AsyncSession, url: str):
         try:
-            async with aiohttp.ClientSession() as session, session.get(
-                url,
-            ) as resp:
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
+                    url,
+                ) as resp,
+            ):
                 data: bytes = await resp.read()
         except aiohttp.client_exceptions.InvalidURL:
             await bot.say(

@@ -39,9 +39,13 @@ async def get_cat_image_url(timeout: float) -> str:  # noqa: ASYNC109
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with asyncio.timeout(delay=timeout), session.get(
-                    url,
-                ) as resp, resp:
+                async with (
+                    asyncio.timeout(delay=timeout),
+                    session.get(
+                        url,
+                    ) as resp,
+                    resp,
+                ):
                     if resp.status == 200:
                         return url
             except (aiohttp.ClientConnectorError, TimeoutError):
@@ -62,9 +66,13 @@ async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
                 await asyncio.sleep(0.1)
                 continue
             try:
-                async with asyncio.timeout(delay=timeout), session.get(
-                    url,
-                ) as resp, resp:
+                async with (
+                    asyncio.timeout(delay=timeout),
+                    session.get(
+                        url,
+                    ) as resp,
+                    resp,
+                ):
                     if resp.status == 200:
                         return url
             except (aiohttp.ClientConnectorError, TimeoutError):
@@ -73,9 +81,13 @@ async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
 
 async def get_fox_image_url(timeout: float) -> str:  # noqa: ASYNC109
     url = "http://fox-info.net/fox-gallery"
-    async with asyncio.timeout(
-        delay=timeout,
-    ), aiohttp.ClientSession() as session, session.get(url) as resp:
+    async with (
+        asyncio.timeout(
+            delay=timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(url) as resp,
+    ):
         data = await resp.text()
     h = get_root(data)
     image_els = h.cssselect("#gallery-1 img.attachment-thumbnail")

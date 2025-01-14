@@ -54,12 +54,16 @@ async def get_exchange_rate(
     if base == to:
         raise SameBaseAndTo
 
-    async with asyncio.timeout(
-        timeout,
-    ), aiohttp.ClientSession() as session, session.get(
-        "https://api.manana.kr/exchange/rate.json",
-        params={"base": to, "code": base},
-    ) as resp:
+    async with (
+        asyncio.timeout(
+            timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(
+            "https://api.manana.kr/exchange/rate.json",
+            params={"base": to, "code": base},
+        ) as resp,
+    ):
         data = await resp.json(loads=json.loads)
         if isinstance(data, list):
             return data[0]

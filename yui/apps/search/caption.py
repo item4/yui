@@ -277,11 +277,15 @@ async def caption(bot, event: Message, finished: bool, title: str):
 async def get_ohli_now_json(
     timeout: float,  # noqa: ASYNC109
 ) -> list[list[dict[str, Any]]]:
-    async with asyncio.timeout(
-        timeout,
-    ), aiohttp.ClientSession() as session, session.get(
-        "https://api.OHLI.moe/timetable/list/now",
-    ) as resp:
+    async with (
+        asyncio.timeout(
+            timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(
+            "https://api.OHLI.moe/timetable/list/now",
+        ) as resp,
+    ):
         return await resp.json(loads=json.loads)
 
 
@@ -290,12 +294,16 @@ async def get_ohli_caption_list(
     timeout: float,  # noqa: ASYNC109
 ) -> list[Caption]:
     results: list[Caption] = []
-    async with asyncio.timeout(
-        timeout,
-    ), aiohttp.ClientSession() as session, session.get(
-        "https://api.OHLI.moe/timetable/cap",
-        params={"i": i},
-    ) as resp:
+    async with (
+        asyncio.timeout(
+            timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(
+            "https://api.OHLI.moe/timetable/cap",
+            params={"i": i},
+        ) as resp,
+    ):
         data = await resp.json(loads=json.loads)
 
     for row in data:
@@ -322,11 +330,15 @@ async def get_anissia_weekly_json(
     week: int,
     timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaAnimeInfo]:
-    async with asyncio.timeout(
-        timeout,
-    ), aiohttp.ClientSession() as session, session.get(
-        f"https://api.anissia.net/anime/schedule/{week}",
-    ) as resp:
+    async with (
+        asyncio.timeout(
+            timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(
+            f"https://api.anissia.net/anime/schedule/{week}",
+        ) as resp,
+    ):
         return await resp.json(loads=json.loads)
 
 
@@ -334,11 +346,15 @@ async def get_annissia_caption_list_json(
     anime_no: int,
     timeout: float,  # noqa: ASYNC109
 ) -> AnissiaResponse[AnissiaCaptionInfo]:
-    async with asyncio.timeout(
-        timeout,
-    ), aiohttp.ClientSession() as session, session.get(
-        f"https://api.anissia.net/anime/caption/animeNo/{anime_no}",
-    ) as resp:
+    async with (
+        asyncio.timeout(
+            timeout,
+        ),
+        aiohttp.ClientSession() as session,
+        session.get(
+            f"https://api.anissia.net/anime/caption/animeNo/{anime_no}",
+        ) as resp,
+    ):
         return await resp.json(loads=json.loads)
 
 
@@ -497,12 +513,16 @@ async def search_finished(
     timeout: float = 2.5,  # noqa: ASYNC109
 ):
     try:
-        async with asyncio.timeout(
-            timeout,
-        ), aiohttp.ClientSession() as session, session.get(
-            "https://ohli.moe/timetable/search",
-            params={"query": title},
-        ) as resp:
+        async with (
+            asyncio.timeout(
+                timeout,
+            ),
+            aiohttp.ClientSession() as session,
+            session.get(
+                "https://ohli.moe/timetable/search",
+                params={"query": title},
+            ) as resp,
+        ):
             data = await resp.json(loads=json.loads)
     except (ContentTypeError, TimeoutError):
         await bot.say(

@@ -14,12 +14,15 @@ async def get_geometric_info_by_address(
         "key": api_key,
     }
 
-    async with aiohttp.ClientSession(
-        headers={"Accept-Language": "ko-KR"},
-    ) as session, session.get(
-        "https://maps.googleapis.com/maps/api/geocode/json",
-        params=params,
-    ) as resp:
+    async with (
+        aiohttp.ClientSession(
+            headers={"Accept-Language": "ko-KR"},
+        ) as session,
+        session.get(
+            "https://maps.googleapis.com/maps/api/geocode/json",
+            params=params,
+        ) as resp,
+    ):
         if resp.status != 200:
             raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
 

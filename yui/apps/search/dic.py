@@ -104,10 +104,13 @@ async def dic(bot: Bot, event: Message, category: str, keyword: str):
     """
 
     html = ""
-    async with aiohttp.ClientSession() as session, session.get(
-        "https://dic.daum.net/search.do",
-        params={"q": keyword, "dic": DICS[category]},
-    ) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(
+            "https://dic.daum.net/search.do",
+            params={"q": keyword, "dic": DICS[category]},
+        ) as resp,
+    ):
         html = await resp.text()
 
     redirect, attachments = await bot.run_in_other_process(parse, html)
