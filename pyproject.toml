@@ -11,7 +11,7 @@ authors = [
 dependencies = [
     "aiocron ~= 1.8",
     "aiohttp ~= 3.11.11",
-    "alembic ~= 1.14.0",
+    "alembic ~= 1.14.1",
     "asyncclick ~= 8.1.8",
     "attrdict ~= 2.0.1",
     "attrs ~= 24.3.0",
@@ -42,10 +42,10 @@ repository = "https://github.com/item4/yui"
 
 [project.optional-dependencies]
 dev = [
-    "aioresponses ~= 0.7.7",
+    "aioresponses ~= 0.7.8",
     "black ~= 24.10.0",
     "mypy ~= 1.14.1",
-    "pre-commit ~= 4.0.1",
+    "pre-commit ~= 4.1.0",
     "pytest ~= 8.3.4",
     "pytest-asyncio ~= 0.25.2",
     "pytest-cov ~= 6.0.0",
