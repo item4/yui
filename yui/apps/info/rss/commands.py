@@ -4,7 +4,7 @@ import re
 import aiohttp
 import aiohttp.client_exceptions
 import dateutil.parser
-import feedparser
+import fastfeedparser
 from dateutil.tz import UTC
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select
@@ -83,9 +83,9 @@ class RSS(route.RouteApp):
             await bot.say(event.channel, f"`{url}`은 빈 웹페이지에요!")
             return
 
-        f = feedparser.parse(data)
-
-        if f.bozo != 0:
+        try:
+            f = fastfeedparser.parse(data)
+        except ValueError:
             await bot.say(
                 event.channel,
                 f"`{url}`은 올바른 RSS 문서가 아니에요!",
@@ -176,9 +176,9 @@ async def crawl(bot, sess: AsyncSession):
             )
             continue
 
-        f = feedparser.parse(data)
-
-        if f.bozo != 0:
+        try:
+            f = fastfeedparser.parse(data)
+        except ValueError:
             await bot.say(
                 feed.channel,
                 f"*Error*: `{feed.url}`는 올바른 RSS 문서가 아니에요!",
