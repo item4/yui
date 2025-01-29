@@ -43,7 +43,7 @@ repository = "https://github.com/item4/yui"
 [project.optional-dependencies]
 dev = [
     "aioresponses >= 0.7.8",
-    "black >= 24.10.0",
+    "black >= 25.1.0",
     "mypy >= 1.14.1",
     "pre-commit >= 4.1.0",
     "pytest >= 8.3.4",

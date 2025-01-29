@@ -38,7 +38,9 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
         aiohttp.ClientSession(
             headers={
                 "User-Agent": USER_AGENT,
-                "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+                "Referer": (
+                    f"https://map.naver.com/p/subway/{service_region}/-/-/-"
+                ),
             },
         ) as session,
         session.get(
@@ -136,7 +138,9 @@ async def body(bot, event: Message, region: str, start: str, end: str):
             aiohttp.ClientSession(
                 headers={
                     "User-Agent": USER_AGENT,
-                    "Referer": f"https://map.naver.com/p/subway/{service_region}/-/-/-",
+                    "Referer": (
+                        f"https://map.naver.com/p/subway/{service_region}/-/-/-"
+                    ),
                 },
             ) as session,
             session.get(
