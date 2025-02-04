@@ -1,3 +1,4 @@
+import asyncio
 from decimal import Decimal
 from typing import TypeAlias
 
@@ -14,6 +15,7 @@ class Cache:
     def __init__(self, valkey_client: Valkey, prefix: str = "") -> None:
         self.valkey_client = valkey_client
         self.prefix = prefix.encode()
+        self.is_ready = asyncio.Event()
 
     def _key(self, key: str | bytes) -> bytes:
         if isinstance(key, str):

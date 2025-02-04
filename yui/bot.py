@@ -193,7 +193,7 @@ class Bot(GetLoggerMixin):
         async def task():
             log = logging.getLogger(repr(cron.handler))
 
-            if not self.is_ready.is_set():
+            if not self.is_ready.is_set() or not self.cache.is_ready.is_set():
                 log.debug("cron condition hit but not ready")
                 return
             log.debug("cron condition hit")
@@ -258,6 +258,7 @@ class Bot(GetLoggerMixin):
                 raise SystemExit from e
 
             valkey_retries = 0
+            self.cache.is_ready.set()
 
             tasks = [
                 asyncio.create_task(self.connect()),
