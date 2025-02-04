@@ -7,7 +7,7 @@ def test_box_class():
     box = Box()
 
     assert not box.apps
-    assert not box.tasks
+    assert not box.cron_tasks
 
     @box.command("test1")
     async def test1(bot, event):
@@ -25,7 +25,7 @@ def test_box_class():
     assert h1.handler == test1
     assert h1.short_help == "TEST SHORT HELP"
     assert h1.help == "LONG CAT IS LONG"
-    assert not box.tasks
+    assert not box.cron_tasks
 
     @box.command("test2", ["t2"], use_shlex=False)
     async def test2():
@@ -38,7 +38,7 @@ def test_box_class():
     assert h2.handler == test2
     assert h2.short_help == "Short only"
     assert h2.help is None
-    assert not box.tasks
+    assert not box.cron_tasks
 
     @box.on(Hello)
     async def test3():
@@ -49,14 +49,14 @@ def test_box_class():
     assert not h3.is_command
     assert not h3.use_shlex
     assert h3.handler == test3
-    assert not box.tasks
+    assert not box.cron_tasks
 
     @box.cron("*/3 * * * *")
     async def test4():
         pass
 
-    assert box.tasks[0].spec == "*/3 * * * *"
-    assert box.tasks[0].handler == test4
+    assert box.cron_tasks[0].spec == "*/3 * * * *"
+    assert box.cron_tasks[0].handler == test4
 
     @box.on("message")
     async def test4():

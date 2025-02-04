@@ -22,7 +22,7 @@ class Box:
         self.user_required: set[str] = set()
         self.users_required: set[str] = set()
         self.apps: list[BaseApp] = []
-        self.tasks: list[CronTask] = []
+        self.cron_tasks: list[CronTask] = []
 
     def register(self, app: BaseApp):
         """Register App manually."""
@@ -116,5 +116,5 @@ class Box:
         """Decorator for cron task."""
 
         c = CronTask(self, spec, args, kwargs)
-        self.tasks.append(c)
+        self.cron_tasks.append(c)
         return c

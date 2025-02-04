@@ -168,57 +168,61 @@ class Bot(GetLoggerMixin):
             self.box.users_required,
         )
 
-    async def register_tasks(self):
+    async def register_cron_tasks(self):
         """Register cronjob to bot from box."""
+        for cron in self.box.cron_tasks:
+            self._register_cron_task(cron)
 
-        logger = self.get_logger("register_tasks")
-        loop = asyncio.get_running_loop()
+    def _register_cron_task(self, cron: CronTask):
+        logger = self.get_logger("_register_cron_task")
 
-        def register(bot, c: CronTask):
-            logger.info(f"register {c}")
-            is_runnable = [1]
-            func_params = c.handler.params
-            kw: dict[str, Any] = {}
-            if "bot" in func_params:
-                kw["bot"] = bot
+        logger.info(f"register {cron}")
+        is_runnable = [1]
+        func_params = cron.handler.params
+        kw: dict[str, Any] = {}
+        if "bot" in func_params:
+            kw["bot"] = self
 
-            @aiocron.crontab(c.spec, *c.args, **c.kwargs, tz=UTC9, loop=loop)
-            async def task():
-                log = logging.getLogger(repr(c.handler))
+        @aiocron.crontab(
+            cron.spec,
+            *cron.args,
+            **cron.kwargs,
+            tz=UTC9,
+            loop=asyncio.get_running_loop(),
+        )
+        async def task():
+            log = logging.getLogger(repr(cron.handler))
 
-                if not bot.is_ready.is_set():
-                    log.debug("cron condition hit but not ready")
-                    return
-                log.debug("cron condition hit")
-                if not is_runnable:
-                    log.debug("cron skip by lock")
-                    return
+            if not self.is_ready.is_set():
+                log.debug("cron condition hit but not ready")
+                return
+            log.debug("cron condition hit")
+            if not is_runnable:
+                log.debug("cron skip by lock")
+                return
 
-                is_runnable.pop()
-                if "loop" in func_params:
-                    kw["loop"] = asyncio.get_running_loop()
+            is_runnable.pop()
+            if "loop" in func_params:
+                kw["loop"] = asyncio.get_running_loop()
 
-                sess = bot.session_maker()
-                if "sess" in func_params:
-                    kw["sess"] = sess
+            sess = self.session_maker()
+            if "sess" in func_params:
+                kw["sess"] = sess
 
-                log.debug("cron run")
-                try:
-                    await c.handler(**kw)
-                except APICallError as e:
-                    await report(self, exception=e)
-                except:  # noqa: E722
-                    await report(self)
-                finally:
-                    await sess.close()
-                    is_runnable.append(1)
-                log.debug("cron end")
+            log.debug("cron run")
+            try:
+                await cron.handler(**kw)
+            except APICallError as e:
+                await report(self, exception=e)
+            except:  # noqa: E722
+                await report(self)
+            finally:
+                await sess.close()
+                is_runnable.append(1)
+            log.debug("cron end")
 
-            c.start = task.start
-            c.stop = task.stop
-
-        for c in self.box.tasks:
-            register(self, c)
+        cron.start = task.start
+        cron.stop = task.stop
 
     async def run(self):
         """Run"""
@@ -227,7 +231,7 @@ class Bot(GetLoggerMixin):
 
         if self.config.REGISTER_CRONTAB:
             logger.info("register crontab")
-            await self.register_tasks()
+            await self.register_cron_tasks()
 
         valkey_retries = 0
 
