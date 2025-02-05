@@ -202,8 +202,6 @@ class Bot(GetLoggerMixin):
                 return
 
             is_runnable.pop()
-            if "loop" in func_params:
-                kw["loop"] = asyncio.get_running_loop()
 
             sess = self.session_maker()
             if "sess" in func_params:
