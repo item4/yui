@@ -145,11 +145,9 @@ class Bot(GetLoggerMixin):
 
         self.config = config
 
-        try:
+        with contextlib.suppress(RuntimeError):
             loop = asyncio.get_running_loop()
             loop.set_debug(self.config.DEBUG)
-        except RuntimeError:
-            pass
 
         self.orm_base = orm_base or Base
         self.box = using_box or box
