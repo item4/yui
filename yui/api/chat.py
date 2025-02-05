@@ -26,7 +26,7 @@ class Chat(Endpoint):
             "ts": str(ts),
         }
 
-        return await self._call("delete", params, token=token)
+        return await self._call("delete", params, token=token, json_mode=True)
 
     async def postEphemeral(
         self,

@@ -43,7 +43,7 @@ class Conversations(Endpoint):
         if cursor is not None:
             params["cursor"] = cursor
 
-        return await self._call("history", params)
+        return await self._call("history", params, json_mode=True)
 
     async def replies(
         self,
@@ -155,4 +155,4 @@ class Conversations(Endpoint):
         if users:
             params["users"] = ",".join(map(str, users))
 
-        return await self._call("open", params)
+        return await self._call("open", params, json_mode=True)
