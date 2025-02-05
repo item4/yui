@@ -5,6 +5,7 @@ from datetime import timedelta
 import pytest
 
 from yui.api import SlackAPI
+from yui.bot import APICallError
 from yui.bot import Bot
 from yui.box import Box
 from yui.types.slack.response import APIResponse
@@ -59,6 +60,11 @@ async def test_call(bot_config, response_mock):
         "https://slack.com/api/test3",
         payload={"res": "hello world!"},
     )
+    response_mock.post(
+        "https://slack.com/api/test4",
+        body="error",
+        content_type="text/plain",
+    )
 
     box = Box()
     bot = Bot(bot_config, using_box=box)
@@ -93,6 +99,12 @@ async def test_call(bot_config, response_mock):
     assert resp.body == {"res": "hello world!"}
     assert resp.status == 200
     assert resp.headers["Content-Type"] == "application/json"
+
+    with pytest.raises(APICallError) as e:
+        await bot.call("test4", token=token)
+    assert e.value.method == "test4"
+    assert isinstance(e.value.headers, dict)
+    assert e.value.data is None
 
 
 @pytest.mark.asyncio
