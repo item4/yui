@@ -93,3 +93,22 @@ async def test_call(bot_config, response_mock):
     assert resp.body == {"res": "hello world!"}
     assert resp.status == 200
     assert resp.headers["Content-Type"] == "application/json"
+
+
+@pytest.mark.asyncio
+async def test_call_json(bot_config, response_mock, channel_id):
+    response_mock.post(
+        "https://slack.com/api/chat.postMessage",
+        payload={"ok": True},
+    )
+
+    box = Box()
+    bot = Bot(bot_config, using_box=box)
+    bot.api.throttle_interval = defaultdict(lambda: timedelta(0))
+
+    resp = await bot.api.chat.postMessage(channel_id, "hello world!")
+    assert isinstance(resp, APIResponse)
+    assert resp.is_ok()
+    assert resp.body == {"ok": True}
+    assert resp.status == 200
+    assert resp.headers["Content-Type"] == "application/json"
