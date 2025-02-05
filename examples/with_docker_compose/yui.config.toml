@@ -1,66 +1,66 @@
-APP_TOKEN = 'FILL_ME'
-BOT_TOKEN = 'FILL_ME'
+APP_TOKEN = "FILL_ME"
+BOT_TOKEN = "FILL_ME"
 
-PREFIX = '.'
+PREFIX = "."
 
 APPS = [
     # Core apps
-    'yui.apps.core',
+    "yui.apps.core",
 
     # Add your apps
-    'yui.apps.hi',
+    "yui.apps.hi",
 ]
 # MYSECRET is your postgres password (see compose.yaml)
-DATABASE_URL = 'postgresql://postgres+psycopg:MYSECRET@db/dbname'
+DATABASE_URL = "postgresql://postgres+psycopg:MYSECRET@db/dbname"
 DATABASE_ECHO = false
 
-NAVER_CLIENT_ID = 'NAVER_CLIENT_ID'
-NAVER_CLIENT_SECRET = 'NAVER_CLIENT_SECRET'
+NAVER_CLIENT_ID = "NAVER_CLIENT_ID"
+NAVER_CLIENT_SECRET = "NAVER_CLIENT_SECRET"
 
-GOOGLE_API_KEY = 'GOOGLE_API_KEY'
+GOOGLE_API_KEY = "GOOGLE_API_KEY"
 
-WEBSOCKETDEBUGGERURL = 'http://10.5.0.3:9222/json/version'
+WEBSOCKETDEBUGGERURL = "http://10.5.0.3:9222/json/version"
 
 [CHANNELS]
-general = 'C1111'
-game = 'C2222'
-game_and_test = ['C2222', 'C3333']
-welcome = 'C1111'
+general = "C1111"
+game = "C2222"
+game_and_test = ["C2222", "C3333"]
+welcome = "C1111"
 
 [USERS]
-owner = 'U11111111'
+owner = "U11111111"
 
 [CACHE]
-URL = 'valkey://valkey:6379/0'
-PREFIX = 'YUI_'
+URL = "valkey://valkey:6379/0"
+PREFIX = "YUI_"
 
 [LOGGING]
 version = 1
 disable_existing_loggers = false
 
 [LOGGING.formatters.brief]
-format = '%(message)s'
+format = "%(message)s"
 
 [LOGGING.formatters.default]
-format = '%(asctime)s %(levelname)s %(name)s %(message)s'
-datefmt = '%Y-%m-%d %H:%M:%S'
+format = "%(asctime)s %(levelname)s %(name)s %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
 
 [LOGGING.handlers.console]
-class = 'logging.StreamHandler'
-formatter = 'default'
-level = 'DEBUG'
+class = "logging.StreamHandler"
+formatter = "default"
+level = "DEBUG"
 filters = []
-stream = 'ext://sys.stdout'
+stream = "ext://sys.stdout"
 
 [LOGGING.handlers.file]
-class = 'logging.handlers.RotatingFileHandler'
-formatter = 'default'
-level = 'WARNING'
-filename = 'log/warning.log'
+class = "logging.handlers.RotatingFileHandler"
+formatter = "default"
+level = "WARNING"
+filename = "log/warning.log"
 maxBytes = 102400
 backupCount = 3
 
 [LOGGING.loggers.yui]
-handlers = ['console', 'file']
+handlers = ["console", "file"]
 propagate = true
-level = 'DEBUG'
+level = "DEBUG"

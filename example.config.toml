@@ -1,44 +1,44 @@
-APP_TOKEN = 'FILL_ME'
-BOT_TOKEN = 'FILL_ME'
+APP_TOKEN = "FILL_ME"
+BOT_TOKEN = "FILL_ME"
 
 DEBUG = true
-PREFIX = '='
+PREFIX = "="
 
 APPS = [
     # Core apps
-    'yui.apps.core',
+    "yui.apps.core",
 
     # Add your apps
-    'yui.apps.hi',
+    "yui.apps.hi",
 ]
 
-DATABASE_URL = 'postgresql+psycopg://postgres:DEV_ONLY@localhost/yui_item4'
+DATABASE_URL = "postgresql+psycopg://postgres:DEV_ONLY@localhost/yui_item4"
 DATABASE_ECHO = false
 
-NAVER_CLIENT_ID = 'FILL_ME'
-NAVER_CLIENT_SECRET = 'FILL_ME'
+NAVER_CLIENT_ID = "FILL_ME"
+NAVER_CLIENT_SECRET = "FILL_ME"
 
-GOOGLE_API_KEY = 'FILL_ME'
+GOOGLE_API_KEY = "FILL_ME"
 
-WEBSOCKETDEBUGGERURL = 'http://localhost:9222/json/version'
+WEBSOCKETDEBUGGERURL = "http://localhost:9222/json/version"
 
 WEEKEND_LOADING_TIME = []
 
 [CHANNELS]
-general = 'FILL_ME'
-notice = 'FILL_ME'
-welcome = 'FILL_ME'
-auto_cleanup_targets = ['FILL_ME']
+general = "FILL_ME"
+notice = "FILL_ME"
+welcome = "FILL_ME"
+auto_cleanup_targets = ["FILL_ME"]
 
 
 [USERS]
-owner = 'FILL_ME'
-force_cleanup = ['FILL_ME']
+owner = "FILL_ME"
+force_cleanup = ["FILL_ME"]
 
 
 [CACHE]
-URL = 'valkey://localhost:6379/0'
-PREFIX = 'YUI_'
+URL = "valkey://localhost:6379/0"
+PREFIX = "YUI_"
 
 
 [LOGGING]
@@ -46,20 +46,20 @@ version = 1
 disable_existing_loggers = false
 
 [LOGGING.formatters.brief]
-format = '%(message)s'
+format = "%(message)s"
 
 [LOGGING.formatters.default]
-format = '%(asctime)s %(levelname)s %(name)s %(message)s'
-datefmt = '%Y-%m-%d %H:%M:%S'
+format = "%(asctime)s %(levelname)s %(name)s %(message)s"
+datefmt = "%Y-%m-%d %H:%M:%S"
 
 [LOGGING.handlers.console]
-class = 'logging.StreamHandler'
-formatter = 'default'
-level = 'DEBUG'
+class = "logging.StreamHandler"
+formatter = "default"
+level = "DEBUG"
 filters = []
-stream = 'ext://sys.stdout'
+stream = "ext://sys.stdout"
 
 [LOGGING.loggers.yui]
-handlers = ['console']
+handlers = ["console"]
 propagate = true
-level = 'DEBUG'
+level = "DEBUG"

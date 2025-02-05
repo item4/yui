@@ -73,7 +73,7 @@ APPS
   .. code-block:: toml
 
      APPS = [
-         'yui.apps.core'
+         "yui.apps.core"
      ]
 
 CHANNELS
@@ -85,8 +85,8 @@ CHANNELS
   .. code-block:: toml
 
      [CHANNELS]
-     general = 'C111111'
-     do_not_use_gif = ['C222222', 'C333333']
+     general = "C111111"
+     do_not_use_gif = ["C222222", "C333333"]
 
 
 USERS
@@ -98,8 +98,8 @@ USERS
   .. code-block:: toml
 
      [USERS]
-     owner = 'U1111'
-     force_cleanup = ['U1111', 'U2222']
+     owner = "U1111"
+     force_cleanup = ["U1111", "U2222"]
 
 DATABASE_URL
   ``str``. SQLAlchemy를 사용하여 DB에 접속하는데에 사용됩니다.
@@ -132,8 +132,8 @@ CACHE
   .. code-block:: toml
 
      [CACHE]
-     URL = 'valkey://localhost:6379/0'
-     PREFIX = 'YUI_'
+     URL = "valkey://localhost:6379/0"
+     PREFIX = "YUI_"
 
 
 LOGGING
