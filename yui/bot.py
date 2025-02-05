@@ -491,7 +491,7 @@ class Bot(GetLoggerMixin):
                 logger.exception("Failed to connect Slack")
                 await asyncio.sleep(60)
                 continue
-            if not resp.body["ok"]:
+            if not resp.is_ok():
                 if resp.body["error"] in FATAL_ERROR_CODES:
                     logger.error(resp.body["error"])
                     break
@@ -527,6 +527,10 @@ class Bot(GetLoggerMixin):
 
     async def get_user(self, user_id: UserID) -> User:
         resp = await self.api.users.info(user=user_id)
-        if isinstance(resp.body, dict):
+        if (
+            resp.is_ok()
+            and isinstance(resp.body, dict)
+            and isinstance(resp.body.get("user"), dict)
+        ):
             return User(**resp.body["user"])
         raise ValueError("Unexpected response")
