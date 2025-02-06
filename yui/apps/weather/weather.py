@@ -97,9 +97,9 @@ class WeatherRecord:
 
     async def get_emoji_by_weather(self) -> str:
         if self.is_rain == "Rain":
-            if self.temperature is not None and self.temperature > 0:
-                return ":umbrella_with_rain_drops:"
-            return ":snowflake:"
+            if self.temperature is not None and self.temperature < 0:
+                return ":snowflake:"
+            return ":umbrella_with_rain_drops:"
         return await get_emoji_by_sun(
             self.observed_at,
         )
