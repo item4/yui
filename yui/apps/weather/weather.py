@@ -3,6 +3,7 @@ from typing import Literal
 
 import aiohttp
 from aiohttp.client_exceptions import ClientConnectorCertificateError
+from aiohttp.client_exceptions import ContentTypeError
 from attrs import define
 
 from ...utils import json
@@ -108,7 +109,7 @@ async def get_weather_by_keyword(keyword: str) -> WeatherRecord:
             data = await resp.json(loads=json.loads)
     except ClientConnectorCertificateError as e:
         raise WeatherResponseError("인증서 만료") from e
-    except ValueError as e:
+    except (ContentTypeError, ValueError) as e:
         raise WeatherResponseError("JSON 파싱 실패") from e
 
     matched = None

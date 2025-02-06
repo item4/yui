@@ -80,3 +80,32 @@ async def test_weather_command_wrong_address(
         pytest.skip("Can not run test via AWS Weather API")
 
     assert weather_said.data["text"] == "해당 이름의 관측소는 존재하지 않아요!"
+
+
+@pytest.mark.asyncio
+async def test_weather_command_server_error(
+    response_mock,
+    bot_config,
+    cache,
+    address,
+):
+    response_mock.get(
+        "https://item4.net/api/weather/",
+        body="[}",
+    )
+    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
+
+    event = bot.create_message(ts="1234.5678")
+
+    async with bot.begin():
+        await weather(bot, event, address)
+
+    weather_said = bot.call_queue.pop(0)
+
+    assert weather_said.method == "chat.postMessage"
+    assert weather_said.data["channel"] == event.channel
+
+    assert (
+        weather_said.data["text"]
+        == "날씨 조회중 에러가 발생했어요! (JSON 파싱 실패)"
+    )
