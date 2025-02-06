@@ -10,7 +10,7 @@ authors = [
 ]
 dependencies = [
     "aiocron >= 1.8",
-    "aiohttp >= 3.11.11",
+    "aiohttp >= 3.11.12",
     "alembic >= 1.14.1",
     "asyncclick >= 8.1.8",
     "attrdict >= 2.0.1",
