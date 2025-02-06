@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from ...box import box
 from ...command import argument
 from ...event import Message  # noqa: TC001
@@ -9,9 +7,6 @@ from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
 from .sun import get_emoji_by_sun
 from .weather import get_weather_by_keyword
-
-if TYPE_CHECKING:
-    from .weather import WeatherRecord  # noqa: F401
 
 
 @box.command("날씨", ["aws", "weather"])
