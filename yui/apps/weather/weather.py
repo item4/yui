@@ -10,6 +10,7 @@ from ...utils import json
 from ...utils.datetime import fromisoformat
 from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
+from .sun import get_emoji_by_sun
 from .temperature import clothes_by_temperature
 from .utils import shorten
 
@@ -93,6 +94,15 @@ class WeatherRecord:
             weather_text += f"\n\n추천 의상: {recommend}"
 
         return weather_text
+
+    async def get_emoji_by_weather(self) -> str:
+        if self.is_rain == "Rain":
+            if self.temperature is not None and self.temperature > 0:
+                return ":umbrella_with_rain_drops:"
+            return ":snowflake:"
+        return await get_emoji_by_sun(
+            self.observed_at,
+        )
 
 
 async def get_weather_by_keyword(keyword: str) -> WeatherRecord:

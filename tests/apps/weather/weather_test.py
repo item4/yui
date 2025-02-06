@@ -58,7 +58,8 @@ async def test_get_weather_with_expired_cert(response_mock, address):
         await get_weather_by_keyword(address)
 
 
-def test_weather_record_as_str():
+@pytest.mark.asyncio
+async def test_weather_record():
     weather = WeatherRecord(
         name="부천",
         location="경기도 부천시 원미구 중동",
@@ -76,6 +77,7 @@ def test_weather_record_as_str():
         "[경기도 부천시 원미구 중동 / 12시 34분 기준] 강수 예(15분: 0.5㎜ / 일일: 3.46㎜) / 기온: 25.6℃"
         " / 바람: NE 1.5㎧ / 습도: 50% / 해면기압: 1013㍱\n\n추천 의상: 반팔티, 얇은 셔츠, 반바지, 면바지"
     )
+    assert await weather.get_emoji_by_weather() == ":umbrella_with_rain_drops:"
 
     weather = WeatherRecord(
         name="부천",
@@ -94,6 +96,7 @@ def test_weather_record_as_str():
         "[경기도 부천시 원미구 중동 / 12시 34분 기준] 강설 예(15분: 0.5㎜ / 일일: 3.46㎜) / 기온: -25.6℃ /"
         " 바람: NE 1.5㎧ / 습도: 50% / 해면기압: 1013㍱\n\n추천 의상: 패딩, 두꺼운 코트, 목도리, 기모제품"
     )
+    assert await weather.get_emoji_by_weather() == ":snowflake:"
 
     weather = WeatherRecord(
         name="부천",
@@ -113,6 +116,7 @@ def test_weather_record_as_str():
         " / 바람: NE 1.5㎧ / 습도: 50% / 해면기압: 1013㍱\n\n"
         "추천 의상: 얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹"
     )
+    assert await weather.get_emoji_by_weather() == ":sunny:"
 
     weather = WeatherRecord(
         name="부천",
@@ -132,6 +136,7 @@ def test_weather_record_as_str():
         " / 바람: NE 1.5㎧ / 습도: 50% / 해면기압: 1013㍱\n\n"
         "추천 의상: 얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹"
     )
+    assert await weather.get_emoji_by_weather() == ":sunny:"
 
     weather = WeatherRecord(
         name="부천",
@@ -151,3 +156,4 @@ def test_weather_record_as_str():
         " / 바람: NE 1.5㎧ / 습도: 50% / 해면기압: 1013㍱"
         "\n\n추천 의상: 얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹"
     )
+    assert await weather.get_emoji_by_weather() == ":sunny:"

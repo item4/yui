@@ -5,7 +5,6 @@ from ...command import argument
 from ...event import Message  # noqa: TC001
 from .exceptions import WeatherRequestError
 from .exceptions import WeatherResponseError
-from .sun import get_emoji_by_sun
 from .weather import get_weather_by_keyword
 
 
@@ -45,16 +44,7 @@ async def weather(
         return
 
     weather_text = result.as_str()
-
-    if result.is_rain == "Rain":
-        if result.temperature is not None and result.temperature > 0:
-            weather_emoji = ":umbrella_with_rain_drops:"
-        else:
-            weather_emoji = ":snowflake:"
-    else:
-        weather_emoji = await get_emoji_by_sun(
-            result.observed_at,
-        )
+    weather_emoji = await result.get_emoji_by_weather()
 
     await bot.api.chat.postMessage(
         channel=event.channel,
