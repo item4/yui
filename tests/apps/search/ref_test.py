@@ -1,14 +1,19 @@
 import asyncio
+from datetime import timedelta
 
 import pytest
 import pytest_asyncio
+from more_itertools import flatten
 
 from yui.apps.search.ref import css
+from yui.apps.search.ref import fetch_all_ref
 from yui.apps.search.ref import fetch_css_ref
 from yui.apps.search.ref import fetch_html_ref
 from yui.apps.search.ref import fetch_python_ref
 from yui.apps.search.ref import html
+from yui.apps.search.ref import on_start
 from yui.apps.search.ref import python
+from yui.apps.search.ref import refresh
 
 from ...util import FakeBot
 
@@ -16,6 +21,80 @@ from ...util import FakeBot
 @pytest_asyncio.fixture()
 async def bot(cache) -> FakeBot:
     return FakeBot(loop=asyncio.get_running_loop(), cache=cache)
+
+
+@pytest.mark.asyncio
+async def test_fetch_all_ref(bot: FakeBot):
+    async with bot.begin():
+        html_data = await bot.cache.get("REF_HTML")
+        assert html_data is None
+
+        css_data = await bot.cache.get("REF_CSS")
+        assert css_data is None
+
+        python_data = await bot.cache.get("REF_PYTHON")
+        assert python_data is None
+
+        await fetch_all_ref(bot)
+
+        html_data = await bot.cache.get("REF_HTML")
+        assert isinstance(html_data, list)
+        assert html_data
+
+        css_data = await bot.cache.get("REF_CSS")
+        assert isinstance(css_data, list)
+        assert css_data
+
+        python_data = await bot.cache.get("REF_PYTHON")
+        assert isinstance(python_data, list)
+        assert python_data
+
+
+@pytest.mark.asyncio
+async def test_on_start(bot: FakeBot, monkeypatch):
+    async def fake_fetch(bot_):
+        assert bot is bot_
+
+    monkeypatch.setattr(
+        "yui.apps.search.ref.fetch_all_ref",
+        fake_fetch,
+    )
+    async with bot.begin():
+        assert await on_start(bot)
+
+
+@pytest.mark.asyncio
+async def test_refresh(bot: FakeBot, monkeypatch):
+    async def fake_fetch(bot_):
+        assert bot is bot_
+
+    monkeypatch.setattr(
+        "yui.apps.search.ref.fetch_all_ref",
+        fake_fetch,
+    )
+    async with bot.begin():
+        await refresh(bot)
+
+
+def test_refresh_spec():
+    assert refresh.has_valid_spec
+
+
+@pytest.mark.parametrize(
+    ("delta", "result"),
+    flatten(
+        [
+            (timedelta(days=x, hours=0), False),
+            (timedelta(days=x, hours=2), False),
+            (timedelta(days=x, hours=3), True),
+            (timedelta(days=x, hours=3, minutes=30), False),
+            (timedelta(days=x, hours=4), False),
+        ]
+        for x in range(7)
+    ),
+)
+def test_refresh_match(sunday, delta, result):
+    assert refresh.match(sunday + delta) is result
 
 
 @pytest.mark.asyncio

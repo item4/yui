@@ -127,27 +127,26 @@ async def fetch_python_ref(bot: Bot):
     logger.info("fetch python ref end")
 
 
-@box.on(YuiSystemStart)
-async def on_start(bot):
-    logger.info("on_start ref")
+async def fetch_all_ref(bot):
     tasks = [
         asyncio.create_task(fetch_css_ref(bot)),
         asyncio.create_task(fetch_html_ref(bot)),
         asyncio.create_task(fetch_python_ref(bot)),
     ]
     await asyncio.wait(tasks)
+
+
+@box.on(YuiSystemStart)
+async def on_start(bot):
+    logger.info("on_start ref")
+    await fetch_all_ref(bot)
     return True
 
 
 @box.cron("0 3 * * *")
 async def refresh(bot):
     logger.info("refresh ref")
-    tasks = [
-        asyncio.create_task(fetch_css_ref(bot)),
-        asyncio.create_task(fetch_html_ref(bot)),
-        asyncio.create_task(fetch_python_ref(bot)),
-    ]
-    await asyncio.wait(tasks)
+    await fetch_all_ref(bot)
 
 
 @box.command("html", ["htm"])
