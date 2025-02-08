@@ -5,8 +5,6 @@ import pathlib
 import aioresponses
 import pytest
 import pytest_asyncio
-from sqlalchemy.exc import ProgrammingError
-from sqlalchemy.sql.expression import text
 from valkey.asyncio import Valkey
 
 from yui.cache import Cache
@@ -60,36 +58,6 @@ async def fx_engine(request):
 
 @pytest_asyncio.fixture()
 async def fx_sess(fx_engine):
-    metadata = Base.metadata
-    error = False
-    async with fx_engine.begin() as conn:
-        try:
-            await conn.execute(text("SET CONSTRAINTS ALL IMMEDIATE;"))
-        except ProgrammingError:
-            error = True
-
-        for table in reversed(metadata.sorted_tables):
-            try:
-                await conn.execute(
-                    text(
-                        f"TRUNCATE TABLE {table.name} RESTART IDENTITY"
-                        " CASCADE;",
-                    ),
-                )
-            except ProgrammingError:
-                error = True
-
-        try:
-            await conn.execute(text("SET CONSTRAINTS ALL IMMEDIATE;"))
-        except ProgrammingError:
-            error = True
-
-    if error:
-        metadata = Base.metadata
-        async with fx_engine.begin() as conn:
-            await conn.run_sync(metadata.drop_all)
-            await conn.run_sync(metadata.create_all)
-
     session = sessionmaker(bind=fx_engine)
     async with session() as sess:
         yield sess
