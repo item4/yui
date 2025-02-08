@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 
 from tests.util import FakeBot
@@ -9,7 +7,7 @@ from yui.apps.weather.commands import weather
 
 @pytest.mark.asyncio
 async def test_weather_command(bot_config, cache, address):
-    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
+    bot = FakeBot(bot_config, cache=cache)
 
     event = bot.create_message(ts="1234.5678")
 
@@ -37,7 +35,7 @@ async def test_weather_command_too_short(
     bot_config,
     cache,
 ):
-    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
+    bot = FakeBot(bot_config, cache=cache)
 
     event = bot.create_message(ts="1234.5678")
 
@@ -64,7 +62,7 @@ async def test_weather_command_wrong_address(
     cache,
     unavailable_address,
 ):
-    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
+    bot = FakeBot(bot_config, cache=cache)
 
     event = bot.create_message(ts="1234.5678")
 
@@ -93,7 +91,7 @@ async def test_weather_command_server_error(
         "https://item4.net/api/weather/",
         body="[}",
     )
-    bot = FakeBot(bot_config, loop=asyncio.get_running_loop(), cache=cache)
+    bot = FakeBot(bot_config, cache=cache)
 
     event = bot.create_message(ts="1234.5678")
 

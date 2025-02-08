@@ -1,4 +1,3 @@
-import asyncio
 import math
 from concurrent.futures.process import ProcessPoolExecutor
 from datetime import date
@@ -1101,7 +1100,6 @@ def test_yield_from():
 @pytest_asyncio.fixture()
 async def bot():
     return FakeBot(
-        loop=asyncio.get_running_loop(),
         process_pool_executor=ProcessPoolExecutor(),
     )
 

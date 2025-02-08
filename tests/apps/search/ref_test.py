@@ -1,4 +1,3 @@
-import asyncio
 from datetime import timedelta
 
 import pytest
@@ -20,7 +19,7 @@ from ...util import FakeBot
 
 @pytest_asyncio.fixture()
 async def bot(cache) -> FakeBot:
-    return FakeBot(loop=asyncio.get_running_loop(), cache=cache)
+    return FakeBot(cache=cache)
 
 
 @pytest.mark.asyncio

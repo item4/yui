@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import random
 from contextlib import asynccontextmanager
 from typing import Any
@@ -45,7 +44,6 @@ class FakeBot(Bot):
         config: Config | None = None,
         *,
         using_box: Box | None = None,
-        loop=None,
         cache=None,
         process_pool_executor=None,
         thread_pool_executor=None,
@@ -61,9 +59,6 @@ class FakeBot(Bot):
 
         if using_box is None:
             using_box = Box()
-
-        with contextlib.suppress(RuntimeError):
-            self.loop = loop or asyncio.get_running_loop()
 
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
