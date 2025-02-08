@@ -34,15 +34,13 @@ def fx_tmpdir(tmpdir):
     return pathlib.Path(tmpdir)
 
 
+@pytest.fixture(scope="session")
+def database_url(request):
+    return request.config.getoption("--database-url")
+
+
 @pytest_asyncio.fixture()
-async def fx_engine(request):
-    try:
-        database_url = request.config.getoption("--database-url")
-    except ValueError:
-        database_url = None
-    config = gen_config(request)
-    if database_url:
-        config.DATABASE_URL = database_url
+async def fx_engine(database_url):
     engine = create_database_engine(database_url, False)
     try:
         metadata = Base.metadata
@@ -63,11 +61,7 @@ async def fx_sess(fx_engine):
         yield sess
 
 
-def gen_config(request):
-    try:
-        database_url = request.config.getoption("--database-url")
-    except ValueError:
-        database_url = "sqlite:///"
+def gen_config(database_url):
     cfg = copy.deepcopy(DEFAULT)
     cfg.update(
         {
@@ -93,8 +87,8 @@ def owner_id():
 
 
 @pytest.fixture
-def bot_config(request, owner_id):
-    config = gen_config(request)
+def bot_config(database_url, owner_id):
+    config = gen_config(database_url)
     config.USERS["owner"] = owner_id
     return config
 
