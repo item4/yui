@@ -6,6 +6,7 @@ from more_itertools import flatten
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import fetch_all_station_db
+from yui.apps.search.subway import find_station_id
 from yui.apps.search.subway import on_start
 from yui.apps.search.subway import refresh_db
 
@@ -15,6 +16,28 @@ from ...util import FakeBot
 @pytest_asyncio.fixture()
 async def bot(cache) -> FakeBot:
     return FakeBot(cache=cache)
+
+
+@pytest.fixture(scope="session")
+def station_data():
+    return [
+        {
+            "id": "1",
+            "name": "서울",
+        },
+        {
+            "id": "2",
+            "name": "인천",
+        },
+        {
+            "id": "3",
+            "name": "구로",
+        },
+        {
+            "id": "4",
+            "name": "신도림",
+        },
+    ]
 
 
 @pytest.mark.asyncio
@@ -79,3 +102,14 @@ async def test_refresh_db(bot, monkeypatch):
 
     async with bot.begin():
         await refresh_db(bot)
+
+
+def test_find_station_id(station_data):
+    assert find_station_id(station_data, "서울", "인천") == ("1", "2")
+    assert find_station_id(station_data, "스울", "온촌") == ("1", "2")
+    assert find_station_id(station_data, "신도림", "독도") == ("4", None)
+    assert find_station_id(station_data, "독도", "구로") == (None, "3")
+    assert find_station_id(station_data, "독도", "독도") == (None, None)
+
+    with pytest.raises(ValueError, match="인천"):
+        find_station_id(station_data, "인천", "인천")

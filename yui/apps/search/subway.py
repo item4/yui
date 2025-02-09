@@ -86,6 +86,35 @@ async def refresh_db(bot):
     await fetch_all_station_db(bot)
 
 
+def find_station_id(
+    data: list[dict[str, str]],
+    start: str,
+    end: str,
+) -> tuple[str | None, str | None]:
+    find_start = None
+    find_start_ratio = -1
+    find_end = None
+    find_end_ratio = -1
+    for x in data:
+        name = PARENTHESES.sub("", x["name"])
+        start_ratio = ratio(name, start)
+        end_ratio = ratio(name, end)
+        if find_start_ratio < start_ratio:
+            find_start = x
+            find_start_ratio = start_ratio
+        if find_end_ratio < end_ratio:
+            find_end = x
+            find_end_ratio = end_ratio
+
+    start_id = (
+        find_start["id"] if find_start and find_start_ratio >= 40 else None
+    )
+    end_id = find_end["id"] if find_end and find_end_ratio >= 40 else None
+    if start_id == end_id and start_id is not None and find_start:
+        raise ValueError(find_start["name"])
+    return start_id, end_id
+
+
 async def body(bot, event: Message, region: str, start: str, end: str):
     service_region, api_version = REGION_TABLE[region]
 
@@ -97,117 +126,104 @@ async def body(bot, event: Message, region: str, start: str, end: str):
         )
         return
 
-    find_start = None
-    find_start_ratio = -1
-    find_end = None
-    find_end_ratio = -1
-    for x in data[0]["realInfo"]:
-        name = PARENTHESES.sub("", x["name"])
-        start_ratio = ratio(name, start)
-        end_ratio = ratio(name, end)
-        if find_start_ratio < start_ratio:
-            find_start = x
-            find_start_ratio = start_ratio
-        if find_end_ratio < end_ratio:
-            find_end = x
-            find_end_ratio = end_ratio
+    try:
+        start_id, end_id = find_station_id(data[0]["realInfo"], start, end)
+    except ValueError as e:
+        await bot.say(
+            event.channel,
+            "출발역과 도착역이 동일한 역인 것 같아요!"
+            f" (참고로 제가 인식한 역 이름은 '{e}'"
+            " 이에요!)",
+        )
+        return
 
-    if find_start_ratio < 40:
+    if not start_id:
         await bot.say(
             event.channel,
             "출발역으로 지정하신 역 이름을 찾지 못하겠어요!",
         )
         return
-    if find_end_ratio < 40:
+    if not end_id:
         await bot.say(
             event.channel,
             "도착역으로 지정하신 역 이름을 찾지 못하겠어요!",
         )
         return
-    if find_start and find_end:
-        if find_start["id"] == find_end["id"]:
-            await bot.say(
-                event.channel,
-                "출발역과 도착역이 동일한 역인 것 같아요!"
-                f" (참고로 제가 인식한 역 이름은 '{find_start['name']}'"
-                " 이에요!)",
+
+    async with (
+        aiohttp.ClientSession(
+            headers={
+                "User-Agent": USER_AGENT,
+                "Referer": (
+                    f"https://map.naver.com/p/subway/{service_region}/-/-/-"
+                ),
+            },
+        ) as session,
+        session.get(
+            "https://map.naver.com/p/api/pubtrans/subway-directions",
+            params={
+                "start": start_id,
+                "goal": end_id,
+                "lang": "ko",
+                "includeDetailOperation": "true",
+                "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
+            },
+        ) as resp,
+    ):
+        result = await resp.json(loads=json.loads)
+
+    text = ""
+
+    paths = result["paths"][0]
+
+    if paths:
+        duration = paths["duration"]
+        fare = paths["fare"]
+        distance = paths["distance"] / 1000
+        steps = paths["legs"][0]["steps"]
+        start_station_name = steps[0]["stations"][0]["displayName"]
+        start_station_line = steps[0]["routes"][0]["name"]
+        goal_station_name = steps[-1]["stations"][-1]["displayName"]
+        goal_station_line = steps[-1]["routes"][0]["name"]
+
+        text += "{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n".format(
+            start_station_line,
+            start_station_name,
+            goal_station_line,
+            tossicat.postfix(goal_station_name, "(으)로"),
+        )
+        for step in steps:
+            if step["type"] != "SUBWAY":
+                continue
+            routes = step["routes"]
+            stations = step["stations"]
+            platform = routes[0]["platform"]
+            start_name = stations[0]["displayName"]
+            line = routes[0]["longName"]
+            direction = routes[0]["headsign"]
+            station_count = sum(1 for r in stations if r["stop"]) - 1
+            end_name = stations[-1]["displayName"]
+            doors = platform["doors"]
+            doors_list = ", ".join(doors) if doors else ""
+            guide = ""
+            if doors_list:
+                guide = f" ({platform['type']['desc']}: {doors_list})"
+            text += TEMPLATE.format(
+                start_name,
+                line,
+                direction,
+                station_count,
+                end_name,
+                guide,
             )
-            return
+            text += "\n"
 
-        async with (
-            aiohttp.ClientSession(
-                headers={
-                    "User-Agent": USER_AGENT,
-                    "Referer": (
-                        f"https://map.naver.com/p/subway/{service_region}/-/-/-"
-                    ),
-                },
-            ) as session,
-            session.get(
-                "https://map.naver.com/p/api/pubtrans/subway-directions",
-                params={
-                    "start": find_start["id"],
-                    "goal": find_end["id"],
-                    "lang": "ko",
-                    "includeDetailOperation": "true",
-                    "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
-                },
-            ) as resp,
-        ):
-            result = await resp.json(loads=json.loads)
+        text += (
+            f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞"
+            f" / 요금(카드 기준): {fare:,}원"
+        )
 
-        text = ""
-
-        paths = result["paths"][0]
-
-        if paths:
-            duration = paths["duration"]
-            fare = paths["fare"]
-            distance = paths["distance"] / 1000
-            steps = paths["legs"][0]["steps"]
-            start_station_name = steps[0]["stations"][0]["displayName"]
-            start_station_line = steps[0]["routes"][0]["name"]
-            goal_station_name = steps[-1]["stations"][-1]["displayName"]
-            goal_station_line = steps[-1]["routes"][0]["name"]
-
-            text += "{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n".format(
-                start_station_line,
-                start_station_name,
-                goal_station_line,
-                tossicat.postfix(goal_station_name, "(으)로"),
-            )
-            for step in steps:
-                if step["type"] != "SUBWAY":
-                    continue
-                routes = step["routes"]
-                stations = step["stations"]
-                platform = routes[0]["platform"]
-                start_name = stations[0]["displayName"]
-                line = routes[0]["longName"]
-                direction = routes[0]["headsign"]
-                station_count = sum(1 for r in stations if r["stop"]) - 1
-                end_name = stations[-1]["displayName"]
-                doors = platform["doors"]
-                doors_list = ", ".join(doors) if doors else ""
-                guide = ""
-                if doors_list:
-                    guide = f" ({platform['type']['desc']}: {doors_list})"
-                text += TEMPLATE.format(
-                    start_name,
-                    line,
-                    direction,
-                    station_count,
-                    end_name,
-                    guide,
-                )
-                text += "\n"
-
-            text += (
-                f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞"
-                f" / 요금(카드 기준): {fare:,}원"
-            )
-
-            await bot.say(event.channel, text)
+        await bot.say(event.channel, text)
 
 
 @box.command("지하철", ["전철", "subway"])
