@@ -644,14 +644,14 @@ files = [
 
 [[package]]
 name = "fastfeedparser"
-version = "0.3.4"
+version = "0.3.5"
 description = "High performance RSS, Atom and RDF parser in Python"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "fastfeedparser-0.3.4-py3-none-any.whl", hash = "sha256:3b793e6bc7cbfca310caca505544583486ca9ed2089653ab02048a3af210c04d"},
-    {file = "fastfeedparser-0.3.4.tar.gz", hash = "sha256:267143e41872478957b62047bdd6c7fcc0756e70c0a3120a46e16137bc0ed884"},
+    {file = "fastfeedparser-0.3.5-py3-none-any.whl", hash = "sha256:5b3b8b6262e0efe60f24bc0346ed22640b00d6ba449fa068dd7bc0d5e347d1a2"},
+    {file = "fastfeedparser-0.3.5.tar.gz", hash = "sha256:a8ddc1fd7c9f3588a814bc9abc13968bb7ee6e3d330ba89ed22be15c8d3afdf7"},
 ]
 
 [package.dependencies]
@@ -2976,4 +2976,4 @@ dev = ["aioresponses", "black", "mypy", "pre-commit", "pytest", "pytest-asyncio"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "9f41bbda347be70af3c1b3f7cf0e30051c5fc4b9703668daababcfbbdc712c70"
+content-hash = "e971a9827488441cc964770e315bc884d2ce34acb8c90fd72f4930053f1583ea"
