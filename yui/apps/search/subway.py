@@ -63,7 +63,18 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     logger.info(f"fetch {name} end")
 
 
-async def fetch_subway_path(
+async def fetch_all_station_db(bot):
+    tasks = []
+    for service_region, api_version in REGION_TABLE.values():
+        tasks.append(
+            asyncio.create_task(
+                fetch_station_db(bot, service_region, api_version),
+            ),
+        )
+    await asyncio.wait(tasks)
+
+
+async def get_shortest_route(
     service_region: str,
     start_id: str,
     end_id: str,
@@ -95,17 +106,6 @@ async def fetch_subway_path(
         return result["paths"][0]
     except (KeyError, IndexError) as e:
         raise ValueError from e
-
-
-async def fetch_all_station_db(bot):
-    tasks = []
-    for service_region, api_version in REGION_TABLE.values():
-        tasks.append(
-            asyncio.create_task(
-                fetch_station_db(bot, service_region, api_version),
-            ),
-        )
-    await asyncio.wait(tasks)
 
 
 @box.on(YuiSystemStart)
@@ -187,7 +187,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
 
     text = ""
 
-    paths = await fetch_subway_path(service_region, start_id, end_id, now())
+    paths = await get_shortest_route(service_region, start_id, end_id, now())
 
     if paths:
         duration = paths["duration"]

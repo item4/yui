@@ -7,8 +7,8 @@ from yarl import URL
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import fetch_all_station_db
-from yui.apps.search.subway import fetch_subway_path
 from yui.apps.search.subway import find_station_id
+from yui.apps.search.subway import get_shortest_route
 from yui.apps.search.subway import on_start
 from yui.apps.search.subway import refresh_db
 from yui.utils.datetime import now
@@ -69,7 +69,7 @@ async def test_fetch_all_station_db(bot):
 
 
 @pytest.mark.asyncio
-async def test_fetch_subway_path_fail(response_mock, time):
+async def test_get_shortest_route_fail(response_mock, time):
     url = URL(
         "https://map.naver.com/p/api/pubtrans/subway-directions",
     ).with_query(
@@ -88,14 +88,14 @@ async def test_fetch_subway_path_fail(response_mock, time):
         payload={"paths": []},
     )
     with pytest.raises(ValueError):
-        await fetch_subway_path(
+        await get_shortest_route(
             REGION_TABLE["수도권"][0],
             "161",  # 1호선 인천역
             "133",  # 1호선 서울역
             time,
         )
     with pytest.raises(ValueError):
-        await fetch_subway_path(
+        await get_shortest_route(
             REGION_TABLE["수도권"][0],
             "161",  # 1호선 인천역
             "133",  # 1호선 서울역
@@ -104,9 +104,9 @@ async def test_fetch_subway_path_fail(response_mock, time):
 
 
 @pytest.mark.asyncio
-async def test_fetch_subway_path(time):
+async def test_get_shortest_route(time):
     try:
-        result = await fetch_subway_path(
+        result = await get_shortest_route(
             REGION_TABLE["수도권"][0],
             "161",  # 1호선 인천역
             "133",  # 1호선 서울역
