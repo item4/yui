@@ -2,6 +2,7 @@ import asyncio
 import logging
 import re
 from datetime import datetime
+from typing import TypedDict
 
 import aiohttp
 import tossicat
@@ -29,6 +30,44 @@ REGION_TABLE: dict[str, tuple[str, str]] = {
     "광주": ("5000", "4.9"),
     "대전": ("3000", "4.9"),
 }
+
+
+class PlatformType(TypedDict):
+    desc: str
+
+
+class Platform(TypedDict):
+    doors: list[str]
+    type: PlatformType
+
+
+class Station(TypedDict):
+    displayName: str
+    stop: bool
+
+
+class Route(TypedDict):
+    name: str
+    longName: str
+    headsign: str
+    platform: Platform
+
+
+class Step(TypedDict):
+    type: str
+    stations: list[Station]
+    routes: list[Route]
+
+
+class Leg(TypedDict):
+    steps: list[Step]
+
+
+class Result(TypedDict):
+    duration: int
+    fare: int
+    distance: int
+    legs: list[Leg]
 
 
 async def fetch_station_db(bot, service_region: str, api_version: str):
@@ -79,7 +118,7 @@ async def get_shortest_route(
     start_id: str,
     end_id: str,
     time: datetime,
-):
+) -> Result:
     async with (
         aiohttp.ClientSession(
             headers={
@@ -187,13 +226,13 @@ async def body(bot, event: Message, region: str, start: str, end: str):
 
     text = ""
 
-    paths = await get_shortest_route(service_region, start_id, end_id, now())
+    result = await get_shortest_route(service_region, start_id, end_id, now())
 
-    if paths:
-        duration = paths["duration"]
-        fare = paths["fare"]
-        distance = paths["distance"] / 1000
-        steps = paths["legs"][0]["steps"]
+    if result:
+        duration = result["duration"]
+        fare = result["fare"]
+        distance = result["distance"] / 1000
+        steps = result["legs"][0]["steps"]
         start_station_name = steps[0]["stations"][0]["displayName"]
         start_station_line = steps[0]["routes"][0]["name"]
         goal_station_name = steps[-1]["stations"][-1]["displayName"]
