@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+from datetime import datetime
 
 import aiohttp
 import tossicat
@@ -60,6 +61,40 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
     await bot.cache.set(f"SUBWAY_{service_region}_{api_version}", data)
 
     logger.info(f"fetch {name} end")
+
+
+async def fetch_subway_path(
+    service_region: str,
+    start_id: str,
+    end_id: str,
+    time: datetime,
+):
+    async with (
+        aiohttp.ClientSession(
+            headers={
+                "User-Agent": USER_AGENT,
+                "Referer": (
+                    f"https://map.naver.com/p/subway/{service_region}/-/-/-"
+                ),
+            },
+        ) as session,
+        session.get(
+            "https://map.naver.com/p/api/pubtrans/subway-directions",
+            params={
+                "start": start_id,
+                "goal": end_id,
+                "lang": "ko",
+                "includeDetailOperation": "true",
+                "departureTime": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            },
+        ) as resp,
+    ):
+        result = await resp.json(loads=json.loads)
+
+    try:
+        return result["paths"][0]
+    except (KeyError, IndexError) as e:
+        raise ValueError from e
 
 
 async def fetch_all_station_db(bot):
@@ -150,31 +185,9 @@ async def body(bot, event: Message, region: str, start: str, end: str):
         )
         return
 
-    async with (
-        aiohttp.ClientSession(
-            headers={
-                "User-Agent": USER_AGENT,
-                "Referer": (
-                    f"https://map.naver.com/p/subway/{service_region}/-/-/-"
-                ),
-            },
-        ) as session,
-        session.get(
-            "https://map.naver.com/p/api/pubtrans/subway-directions",
-            params={
-                "start": start_id,
-                "goal": end_id,
-                "lang": "ko",
-                "includeDetailOperation": "true",
-                "departureTime": now().strftime("%Y-%m-%dT%H:%M:%S"),
-            },
-        ) as resp,
-    ):
-        result = await resp.json(loads=json.loads)
-
     text = ""
 
-    paths = result["paths"][0]
+    paths = await fetch_subway_path(service_region, start_id, end_id, now())
 
     if paths:
         duration = paths["duration"]
