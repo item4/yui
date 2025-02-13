@@ -6,9 +6,11 @@ from more_itertools import flatten
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import fetch_all_station_db
+from yui.apps.search.subway import fetch_subway_path
 from yui.apps.search.subway import find_station_id
 from yui.apps.search.subway import on_start
 from yui.apps.search.subway import refresh_db
+from yui.utils.datetime import now
 
 from ...util import FakeBot
 
@@ -53,6 +55,33 @@ async def test_fetch_all_station_db(bot):
             data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
             assert isinstance(data, list)
             assert isinstance(data[0], dict)
+
+
+@pytest.mark.asyncio
+async def test_fetch_subway_path():
+    time = (now() + timedelta(hours=24)).replace(
+        hour=9,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+    try:
+        result = await fetch_subway_path(
+            REGION_TABLE["수도권"][0],
+            "161",  # 1호선 인천역
+            "133",  # 1호선 서울역
+            time,
+        )
+    except ValueError:
+        pytest.skip("API server is not available")
+        return
+
+    assert isinstance(result, dict)
+    assert result["duration"]
+    assert result["fare"]
+    assert result["distance"]
+    assert result["legs"]
+    assert result["legs"][0]["steps"]
 
 
 @pytest.mark.asyncio
