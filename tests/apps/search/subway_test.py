@@ -3,6 +3,7 @@ from datetime import timedelta
 import pytest
 import pytest_asyncio
 from more_itertools import flatten
+from yarl import URL
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import fetch_all_station_db
@@ -42,6 +43,16 @@ def station_data():
     ]
 
 
+@pytest.fixture(scope="session")
+def time():
+    return (now() + timedelta(hours=24)).replace(
+        hour=9,
+        minute=0,
+        second=0,
+        microsecond=0,
+    )
+
+
 @pytest.mark.asyncio
 async def test_fetch_all_station_db(bot):
     async with bot.begin():
@@ -58,13 +69,42 @@ async def test_fetch_all_station_db(bot):
 
 
 @pytest.mark.asyncio
-async def test_fetch_subway_path():
-    time = (now() + timedelta(hours=24)).replace(
-        hour=9,
-        minute=0,
-        second=0,
-        microsecond=0,
+async def test_fetch_subway_path_fail(response_mock, time):
+    url = URL(
+        "https://map.naver.com/p/api/pubtrans/subway-directions",
+    ).with_query(
+        start="161",
+        goal="133",
+        lang="ko",
+        includeDetailOperation="true",
+        departureTime=time.strftime("%Y-%m-%dT%H:%M:%S"),
     )
+    response_mock.get(
+        url,
+        payload={"error": "error"},
+    )
+    response_mock.get(
+        url,
+        payload={"paths": []},
+    )
+    with pytest.raises(ValueError):
+        await fetch_subway_path(
+            REGION_TABLE["수도권"][0],
+            "161",  # 1호선 인천역
+            "133",  # 1호선 서울역
+            time,
+        )
+    with pytest.raises(ValueError):
+        await fetch_subway_path(
+            REGION_TABLE["수도권"][0],
+            "161",  # 1호선 인천역
+            "133",  # 1호선 서울역
+            time,
+        )
+
+
+@pytest.mark.asyncio
+async def test_fetch_subway_path(time):
     try:
         result = await fetch_subway_path(
             REGION_TABLE["수도권"][0],
