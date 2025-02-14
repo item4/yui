@@ -2,22 +2,23 @@
 
 [[package]]
 name = "aiocron"
-version = "1.8"
+version = "2.1"
 description = "Crontabs for asyncio"
 optional = false
-python-versions = "*"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "aiocron-1.8-py3-none-any.whl", hash = "sha256:b6313214c311b62aa2220e872b94139b648631b3103d062ef29e5d3230ddce6d"},
-    {file = "aiocron-1.8.tar.gz", hash = "sha256:48546513faf2eb7901e65a64eba7b653c80106ed00ed9ca3419c3d10b6555a01"},
+    {file = "aiocron-2.1-py3-none-any.whl", hash = "sha256:b2612b67c552ebc4d24f524fe0316dec30b44f3c5a1d9a3697493d840aa7a5de"},
+    {file = "aiocron-2.1.tar.gz", hash = "sha256:1bb65a36aee137e8833592783956e0c7dc478bc3e9273fc2841d5d0c6045e4d2"},
 ]
 
 [package.dependencies]
-croniter = "*"
-tzlocal = "*"
+cronsim = ">=2.6"
+python-dateutil = ">=2.9.0"
+tzlocal = ">=5.2"
 
 [package.extras]
-test = ["coverage"]
+test = ["coverage (>=7.6.1)", "pytest (>=8.3.3)", "pytest-cov (>=5.0.0)", "tox (>=4.21.1)", "tox-uv (>=1.13.0)"]
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -568,6 +569,18 @@ files = [
 [package.dependencies]
 python-dateutil = "*"
 pytz = ">2021.1"
+
+[[package]]
+name = "cronsim"
+version = "2.6"
+description = "Cron expression parser and evaluator"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "cronsim-2.6-py3-none-any.whl", hash = "sha256:5e153ff8ed64da7ee8d5caac470dbeda8024ab052c3010b1be149772b4801835"},
+    {file = "cronsim-2.6.tar.gz", hash = "sha256:5aab98716ef90ab5ac6be294b2c3965dbf76dc869f048846a0af74ebb506c10d"},
+]
 
 [[package]]
 name = "cssselect"
@@ -2982,4 +2995,4 @@ dev = ["aioresponses", "black", "mypy", "pre-commit", "pytest", "pytest-asyncio"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "ff049a008b3423036aa60da37e7aaa2b632e7f99204a1c53127d492ff5b3d9a7"
+content-hash = "7e2ad73cae0d96d3cc25b8996255d5e5e817d22db47decb4e9f4f390bfaef311"
