@@ -2982,4 +2982,4 @@ dev = ["aioresponses", "black", "mypy", "pre-commit", "pytest", "pytest-asyncio"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7cf324b40c522e2c9e6e5df03a2f25fa37b5a18d8e5bbddcbd7b98ce8af32858"
+content-hash = "ff049a008b3423036aa60da37e7aaa2b632e7f99204a1c53127d492ff5b3d9a7"
