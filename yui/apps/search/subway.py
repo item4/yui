@@ -6,6 +6,7 @@ from typing import TypedDict
 
 import aiohttp
 import tossicat
+from more_itertools import ilen
 
 from ...box import box
 from ...command import argument
@@ -189,6 +190,56 @@ def find_station_id(
     return start_id, end_id
 
 
+def make_route_desc(data: Result) -> str:
+    duration = data["duration"]
+    fare = data["fare"]
+    distance = data["distance"] / 1000
+    steps = data["legs"][0]["steps"]
+    start_station_name = steps[0]["stations"][0]["displayName"]
+    start_station_line = steps[0]["routes"][0]["name"]
+    goal_station_name = steps[-1]["stations"][-1]["displayName"]
+    goal_station_line = steps[-1]["routes"][0]["name"]
+
+    result = "{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n".format(
+        start_station_line,
+        start_station_name,
+        goal_station_line,
+        tossicat.postfix(goal_station_name, "(으)로"),
+    )
+    for step in steps:
+        if step["type"] != "SUBWAY":
+            continue
+        routes = step["routes"]
+        stations = step["stations"]
+        platform = routes[0]["platform"]
+        start_name = stations[0]["displayName"]
+        line = routes[0]["longName"]
+        direction = routes[0]["headsign"]
+        station_count = ilen(filter(lambda x: x["stop"], stations)) - 1
+        end_name = stations[-1]["displayName"]
+        doors = platform["doors"]
+        doors_list = ", ".join(doors) if doors else ""
+        guide = ""
+        if doors_list:
+            guide = f" ({platform['type']['desc']}: {doors_list})"
+        result += TEMPLATE.format(
+            start_name,
+            line,
+            direction,
+            station_count,
+            end_name,
+            guide,
+        )
+        result += "\n"
+
+    result += (
+        f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞"
+        f" / 요금(카드 기준): {fare:,}원"
+    )
+
+    return result
+
+
 async def body(bot, event: Message, region: str, start: str, end: str):
     service_region, api_version = REGION_TABLE[region]
 
@@ -224,58 +275,10 @@ async def body(bot, event: Message, region: str, start: str, end: str):
         )
         return
 
-    text = ""
-
     result = await get_shortest_route(service_region, start_id, end_id, now())
+    text = make_route_desc(result)
 
-    if result:
-        duration = result["duration"]
-        fare = result["fare"]
-        distance = result["distance"] / 1000
-        steps = result["legs"][0]["steps"]
-        start_station_name = steps[0]["stations"][0]["displayName"]
-        start_station_line = steps[0]["routes"][0]["name"]
-        goal_station_name = steps[-1]["stations"][-1]["displayName"]
-        goal_station_line = steps[-1]["routes"][0]["name"]
-
-        text += "{} {}에서 {} {} 가는 노선을 안내드릴게요!\n\n".format(
-            start_station_line,
-            start_station_name,
-            goal_station_line,
-            tossicat.postfix(goal_station_name, "(으)로"),
-        )
-        for step in steps:
-            if step["type"] != "SUBWAY":
-                continue
-            routes = step["routes"]
-            stations = step["stations"]
-            platform = routes[0]["platform"]
-            start_name = stations[0]["displayName"]
-            line = routes[0]["longName"]
-            direction = routes[0]["headsign"]
-            station_count = sum(1 for r in stations if r["stop"]) - 1
-            end_name = stations[-1]["displayName"]
-            doors = platform["doors"]
-            doors_list = ", ".join(doors) if doors else ""
-            guide = ""
-            if doors_list:
-                guide = f" ({platform['type']['desc']}: {doors_list})"
-            text += TEMPLATE.format(
-                start_name,
-                line,
-                direction,
-                station_count,
-                end_name,
-                guide,
-            )
-            text += "\n"
-
-        text += (
-            f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞"
-            f" / 요금(카드 기준): {fare:,}원"
-        )
-
-        await bot.say(event.channel, text)
+    await bot.say(event.channel, text)
 
 
 @box.command("지하철", ["전철", "subway"])
