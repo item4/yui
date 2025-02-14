@@ -7,12 +7,19 @@ from yarl import URL
 
 from yui.apps.search.subway import REGION_TABLE
 from yui.apps.search.subway import Result
+from yui.apps.search.subway import body
+from yui.apps.search.subway import busan_subway
+from yui.apps.search.subway import daegu_subway
+from yui.apps.search.subway import daejeon_subway
 from yui.apps.search.subway import fetch_all_station_db
+from yui.apps.search.subway import fetch_station_db
 from yui.apps.search.subway import find_station_id
 from yui.apps.search.subway import get_shortest_route
+from yui.apps.search.subway import gwangju_subway
 from yui.apps.search.subway import make_route_desc
 from yui.apps.search.subway import on_start
 from yui.apps.search.subway import refresh_db
+from yui.apps.search.subway import subway
 from yui.utils.datetime import now
 
 from ...util import FakeBot
@@ -382,3 +389,117 @@ def test_make_route_desc(result_data):
 
 소요시간: 42분 / 거리: 25.81㎞ / 요금(카드 기준): 3,500원"""
     )
+
+
+@pytest.mark.asyncio
+async def test_command_body(bot: FakeBot, start_name, goal_name):
+    event = bot.create_message()
+
+    async with bot.begin():
+        await body(bot, event, "수도권", start_name, goal_name)
+        said = bot.call_queue.pop()
+        assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
+        assert said.data["channel"] == event.channel
+        assert (
+            said.data["text"]
+            == "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+        )
+
+        await fetch_station_db(
+            bot,
+            REGION_TABLE["수도권"][0],
+            REGION_TABLE["수도권"][1],
+        )
+
+        await body(bot, event, "수도권", "서울", "서을")
+        said = bot.call_queue.pop()
+        assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
+        assert said.data["channel"] == event.channel
+        assert (
+            said.data["text"]
+            == "출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '서울역' 이에요!)"
+        )
+
+        await body(bot, event, "수도권", "ASDF", goal_name)
+        said = bot.call_queue.pop()
+        assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
+        assert said.data["channel"] == event.channel
+        assert (
+            said.data["text"]
+            == "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
+        )
+
+        await body(bot, event, "수도권", start_name, "ASDF")
+        said = bot.call_queue.pop()
+        assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
+        assert said.data["channel"] == event.channel
+        assert (
+            said.data["text"]
+            == "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
+        )
+
+        await body(bot, event, "수도권", start_name, goal_name)
+        said = bot.call_queue.pop()
+        assert said.method == "chat.postMessage"
+        assert isinstance(said.data, dict)
+        assert said.data["channel"] == event.channel
+        assert start_name in said.data["text"]
+        assert goal_name in said.data["text"]
+
+
+@pytest.mark.asyncio
+async def test_branch_commands(bot, monkeypatch):
+    event = bot.create_message()
+    history = []
+
+    async def fake_body(bot_, event_, region, start, end):
+        history.append((bot_, event_, region, start, end))
+
+    monkeypatch.setattr(
+        "yui.apps.search.subway.body",
+        fake_body,
+    )
+
+    await subway(bot, event, "수도권", "서울", "인천")
+    result = history.pop(0)
+    assert result[0] is bot
+    assert result[1] is event
+    assert result[2] == "수도권"
+    assert result[3] == "서울"
+    assert result[4] == "인천"
+
+    await busan_subway(bot, event, "가야대", "수영")
+    result = history.pop(0)
+    assert result[0] is bot
+    assert result[1] is event
+    assert result[2] == "부산"
+    assert result[3] == "가야대"
+    assert result[4] == "수영"
+
+    await daegu_subway(bot, event, "학정", "지산")
+    result = history.pop(0)
+    assert result[0] is bot
+    assert result[1] is event
+    assert result[2] == "대구"
+    assert result[3] == "학정"
+    assert result[4] == "지산"
+
+    await gwangju_subway(bot, event, "상무", "소태")
+    result = history.pop(0)
+    assert result[0] is bot
+    assert result[1] is event
+    assert result[2] == "광주"
+    assert result[3] == "상무"
+    assert result[4] == "소태"
+
+    await daejeon_subway(bot, event, "반석", "월평")
+    result = history.pop(0)
+    assert result[0] is bot
+    assert result[1] is event
+    assert result[2] == "대전"
+    assert result[3] == "반석"
+    assert result[4] == "월평"
