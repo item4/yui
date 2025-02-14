@@ -6,10 +6,12 @@ from more_itertools import flatten
 from yui.apps.info.lifestyle_maker import alert_lifestyle
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 def test_alert_spec():
-    assert alert_lifestyle.has_valid_spec
+    assert_crontab_spec(alert_lifestyle)
 
 
 @pytest.mark.parametrize(
@@ -27,7 +29,7 @@ def test_alert_spec():
     ),
 )
 def test_alert_match(sunday, delta, result):
-    assert alert_lifestyle.match(sunday + delta) is result
+    assert_crontab_match(alert_lifestyle, sunday + delta, result)
 
 
 @pytest.mark.asyncio

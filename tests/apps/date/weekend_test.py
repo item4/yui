@@ -9,6 +9,8 @@ from yui.apps.date.weekend import weekend_loading
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 @pytest.fixture
@@ -19,7 +21,7 @@ def bot(bot_config, channel_id):
 
 
 def test_auto_weekend_loading_spec():
-    assert auto_weekend_loading.has_valid_spec()
+    assert_crontab_spec(auto_weekend_loading)
 
 
 @pytest.mark.parametrize(
@@ -36,11 +38,11 @@ def test_auto_weekend_loading_spec():
     ],
 )
 def test_auto_weekend_loading_match(sunday, delta, result):
-    assert auto_weekend_loading.match(sunday + delta) is result
+    assert_crontab_match(auto_weekend_loading, sunday + delta, result)
 
 
 def test_auto_weekend_start_spec():
-    assert auto_weekend_start.has_valid_spec()
+    assert_crontab_spec(auto_weekend_start)
 
 
 @pytest.mark.parametrize(
@@ -57,7 +59,7 @@ def test_auto_weekend_start_spec():
     ],
 )
 def test_auto_weekend_start_match(sunday, delta, result):
-    assert auto_weekend_start.match(sunday + delta) is result
+    assert_crontab_match(auto_weekend_start, sunday + delta, result)
 
 
 @pytest.mark.asyncio

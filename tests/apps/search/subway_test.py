@@ -16,6 +16,8 @@ from yui.apps.search.subway import refresh_db
 from yui.utils.datetime import now
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 @pytest_asyncio.fixture()
@@ -320,7 +322,7 @@ async def test_on_start(bot, monkeypatch):
 
 
 def test_refresh_db_spec():
-    assert refresh_db.has_valid_spec
+    assert_crontab_spec(refresh_db)
 
 
 @pytest.mark.parametrize(
@@ -337,7 +339,7 @@ def test_refresh_db_spec():
     ),
 )
 def test_refresh_db_match(sunday, delta, result):
-    assert refresh_db.match(sunday + delta) is result
+    assert_crontab_match(refresh_db, sunday + delta, result)
 
 
 @pytest.mark.asyncio

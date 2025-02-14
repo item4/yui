@@ -6,9 +6,12 @@ from more_itertools import flatten
 from yui.apps.manage.cleanup.tasks import cleanup_channels
 from yui.apps.manage.cleanup.tasks import get_old_history
 
+from ....util import assert_crontab_match
+from ....util import assert_crontab_spec
+
 
 def test_get_old_history_spec():
-    assert get_old_history.has_valid_spec()
+    assert_crontab_spec(get_old_history)
 
 
 @pytest.mark.parametrize(
@@ -22,11 +25,11 @@ def test_get_old_history_spec():
     ),
 )
 def test_get_old_history_match(sunday, delta, result):
-    assert get_old_history.match(sunday + delta) is result
+    assert_crontab_match(get_old_history, sunday + delta, result)
 
 
 def test_cleanup_channels_spec():
-    assert cleanup_channels.has_valid_spec()
+    assert_crontab_spec(cleanup_channels)
 
 
 @pytest.mark.parametrize(
@@ -45,4 +48,4 @@ def test_cleanup_channels_spec():
     ),
 )
 def test_cleanup_channels_match(sunday, delta, result):
-    assert cleanup_channels.match(sunday + delta) is result
+    assert_crontab_match(cleanup_channels, sunday + delta, result)

@@ -10,6 +10,8 @@ from yui.apps.info.packtpub.tasks import auto_packtpub_dotd
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 MOCK_BODY = """\
 <!doctype html>
@@ -80,7 +82,7 @@ async def test_packtpub_dotd(bot, response_mock):
 
 
 def test_auto_packtpub_dotd_spec():
-    assert auto_packtpub_dotd.has_valid_spec
+    assert_crontab_spec(auto_packtpub_dotd)
 
 
 @pytest.mark.parametrize(
@@ -99,7 +101,7 @@ def test_auto_packtpub_dotd_spec():
     ),
 )
 def test_auto_packtpub_dotd_match(sunday, delta, result):
-    assert auto_packtpub_dotd.match(sunday + delta) is result
+    assert_crontab_match(auto_packtpub_dotd, sunday + delta, result)
 
 
 @pytest.mark.asyncio

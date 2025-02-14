@@ -558,9 +558,10 @@ toml = ["tomli"]
 name = "croniter"
 version = "6.0.0"
 description = "croniter provides iteration for datetime object with cron like format"
-optional = false
+optional = true
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.6"
 groups = ["main"]
+markers = "extra == \"dev\""
 files = [
     {file = "croniter-6.0.0-py2.py3-none-any.whl", hash = "sha256:2f878c3856f17896979b2a4379ba1f09c83e374931ea15cc835c5dd2eee9b368"},
     {file = "croniter-6.0.0.tar.gz", hash = "sha256:37c504b313956114a983ece2c2b07790b1f1094fe9d81cc94739214748255577"},
@@ -2990,9 +2991,9 @@ multidict = ">=4.0"
 propcache = ">=0.2.0"
 
 [extras]
-dev = ["aioresponses", "black", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "ruff", "time-machine", "types-croniter", "types-orjson", "types-python-dateutil", "types-tzlocal"]
+dev = ["aioresponses", "black", "croniter", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "ruff", "time-machine", "types-croniter", "types-orjson", "types-python-dateutil", "types-tzlocal"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7e2ad73cae0d96d3cc25b8996255d5e5e817d22db47decb4e9f4f390bfaef311"
+content-hash = "862b0f415fa80138dfecbaa02c6a2f34a0aca51b7453be3ade66d98d661f1c25"

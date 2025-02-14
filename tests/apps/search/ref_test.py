@@ -15,6 +15,8 @@ from yui.apps.search.ref import python
 from yui.apps.search.ref import refresh
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 @pytest_asyncio.fixture()
@@ -76,7 +78,7 @@ async def test_refresh(bot: FakeBot, monkeypatch):
 
 
 def test_refresh_spec():
-    assert refresh.has_valid_spec
+    assert_crontab_spec(refresh)
 
 
 @pytest.mark.parametrize(
@@ -93,7 +95,7 @@ def test_refresh_spec():
     ),
 )
 def test_refresh_match(sunday, delta, result):
-    assert refresh.match(sunday + delta) is result
+    assert_crontab_match(refresh, sunday + delta, result)
 
 
 @pytest.mark.asyncio

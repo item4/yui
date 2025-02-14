@@ -7,6 +7,7 @@ from typing import Any
 from typing import TYPE_CHECKING
 
 from attrs import define
+from croniter import croniter
 
 from yui.api import SlackAPI
 from yui.bot import Bot
@@ -18,10 +19,12 @@ from yui.types.base import PublicChannelID
 from yui.types.base import Ts
 from yui.types.base import UserID
 from yui.types.channel import PublicChannel
+from yui.types.handler import Handler
 from yui.types.user import User
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import datetime
 
     from yui.cache import Cache
 
@@ -146,3 +149,15 @@ class FakeImportLib:
 
     def import_module(self, path: str):
         self.import_queue.append(path)
+
+
+def assert_crontab_spec(handler: Any):
+    assert isinstance(handler, Handler), "handler must be Handler"
+    assert handler.cron, "handler is not CronTask"
+    assert croniter.is_valid(handler.cron.spec), "spec is invalid"
+
+
+def assert_crontab_match(handler: Any, dt: datetime, expected: bool):
+    assert isinstance(handler, Handler), "handler must be Handler"
+    assert handler.cron, "handler is not CronTask"
+    assert croniter.match(handler.cron.spec, dt) is expected

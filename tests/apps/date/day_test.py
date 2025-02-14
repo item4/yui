@@ -8,10 +8,12 @@ from yui.apps.date.day import holiday_message
 from yui.utils.datetime import datetime
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 def test_holiday_message_spec():
-    assert holiday_message.has_valid_spec()
+    assert_crontab_spec(holiday_message)
 
 
 @pytest.mark.parametrize(
@@ -28,7 +30,7 @@ def test_holiday_message_spec():
     ],
 )
 def test_holiday_message_match(sunday, delta, result):
-    assert holiday_message.match(sunday + delta) is result
+    assert_crontab_match(holiday_message, sunday + delta, result)
 
 
 @pytest.mark.asyncio

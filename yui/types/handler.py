@@ -10,14 +10,11 @@ from typing import TypeAlias
 from typing import get_type_hints
 
 from attrs import define
-from croniter import croniter
 
 from ..utils.attrs import field
 from ..utils.attrs import field_transformer
 
 if TYPE_CHECKING:
-    from datetime import datetime
-
     from ..box.tasks import CronTask
 
 
@@ -115,12 +112,6 @@ class Handler:
 
     def __repr__(self) -> str:
         return f"{self.f.__module__}.{self.f.__name__}"
-
-    def has_valid_spec(self) -> bool:
-        return self.cron is not None and croniter.is_valid(self.cron.spec)
-
-    def match(self, dt: datetime) -> bool:
-        return self.cron is not None and croniter.match(self.cron.spec, dt)
 
 
 DECORATOR_ARGS_TYPE: TypeAlias = HANDLER_CALL_TYPE | Handler

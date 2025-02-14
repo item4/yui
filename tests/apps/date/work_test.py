@@ -12,6 +12,8 @@ from yui.utils.datetime import datetime
 from yui.utils.datetime import now
 
 from ...util import FakeBot
+from ...util import assert_crontab_match
+from ...util import assert_crontab_spec
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -44,7 +46,7 @@ def sunday_19(sunday):
 
 
 def test_work_start_task_spec():
-    assert work_start.has_valid_spec()
+    assert_crontab_spec(work_start)
 
 
 @pytest.mark.parametrize(
@@ -61,11 +63,11 @@ def test_work_start_task_spec():
     ],
 )
 def test_work_start_task_match(sunday_9, delta, result):
-    assert work_start.match(sunday_9 + delta) is result
+    assert_crontab_match(work_start, sunday_9 + delta, result)
 
 
 def test_work_end_task_spec():
-    assert work_start.has_valid_spec()
+    assert_crontab_spec(work_end)
 
 
 @pytest.mark.parametrize(
@@ -82,7 +84,7 @@ def test_work_end_task_spec():
     ],
 )
 def test_work_end_task_match_at_18(sunday_18, delta, result):
-    assert work_end.match(sunday_18 + delta) is result
+    assert_crontab_match(work_end, sunday_18 + delta, result)
 
 
 @pytest.mark.parametrize(
@@ -99,7 +101,7 @@ def test_work_end_task_match_at_18(sunday_18, delta, result):
     ],
 )
 def test_work_end_task_match_at_19(sunday_19, delta, result):
-    assert work_end.match(sunday_19 + delta) is result
+    assert_crontab_match(work_end, sunday_19 + delta, result)
 
 
 @pytest.mark.asyncio
