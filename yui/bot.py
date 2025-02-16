@@ -342,24 +342,26 @@ class Bot(GetLoggerMixin):
             payload = aiohttp.FormData(data or {})
             payload.add_field("token", token or self.config.BOT_TOKEN)
 
-        async with aiohttp.ClientSession(headers=headers) as session:
-            try:
-                async with session.post(
+        try:
+            async with (
+                aiohttp.ClientSession(headers=headers) as session,
+                session.post(
                     f"https://slack.com/api/{method}",
                     data=payload,
-                ) as response:
-                    result = await response.json(loads=json.loads)
-                    return APIResponse(
-                        body=result,
-                        status=response.status,
-                        headers=response.headers,
-                    )
-            except ClientError as e:
-                raise APICallError(
-                    method=method,
-                    headers=headers,
-                    data=data,
-                ) from e
+                ) as response,
+            ):
+                result = await response.json(loads=json.loads)
+                return APIResponse(
+                    body=result,
+                    status=response.status,
+                    headers=response.headers,
+                )
+        except (asyncio.CancelledError, ClientError) as e:
+            raise APICallError(
+                method=method,
+                headers=headers,
+                data=data,
+            ) from e
 
     async def say(
         self,
