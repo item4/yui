@@ -134,6 +134,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-deps
+      - name: Get Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          labels: |
+            org.opencontainers.image.title=YUI
+            org.opencontainers.image.description=Yui is a bot for Slack
+        env:
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
       - name: Build and push
         id: push
         uses: docker/build-push-action@v6
@@ -142,6 +152,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          annotations: ${{ steps.meta.outputs.annotations }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
       - name: Generate artifact attestation
