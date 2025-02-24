@@ -4,6 +4,10 @@ on:
   - push
   - pull_request
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   check-coding-convention:
     name: Check Coding Convention
@@ -109,6 +113,11 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: [check-coding-convention, test-program]
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
@@ -118,18 +127,26 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: item4
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Fetch stored requirements.txt
         uses: actions/download-artifact@v4
         with:
           name: python-deps
       - name: Build and push
+        id: push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: item4/yui:latest
-          cache-from: type=registry,ref=item4/yui:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
