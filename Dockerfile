@@ -1,6 +1,9 @@
 FROM python:3.13
 
 LABEL maintainer="item4 <item4@localhost>"
+LABEL org.opencontainers.image.source=https://github.com/item4/yui
+LABEL org.opencontainers.image.description="Yui is a bot for Slack"
+LABEL org.opencontainers.image.licenses=MIT
 
 ENV HOME="/home/kazuto"
 ENV TZ="Asia/Seoul"
