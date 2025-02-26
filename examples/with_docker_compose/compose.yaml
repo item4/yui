@@ -1,6 +1,6 @@
 services:
   bot_item4:
-    image: item4/yui:latest
+    image: ghcr.io/item4/yui:latest
     volumes:
       - ./item4:/yui/data
     environment:
