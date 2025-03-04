@@ -10,13 +10,14 @@ from yui.bot import Bot
 from yui.box import Box
 from yui.types.slack.response import APIResponse
 
-from .util import FakeImportLib
-
 
 def test_bot_init(monkeypatch, bot_config):
-    importlib = FakeImportLib()
+    import_queue = []
 
-    monkeypatch.setattr("importlib.import_module", importlib.import_module)
+    def dummy_import_module(self, path):
+        import_queue.append(path)
+
+    monkeypatch.setattr("yui.bot.Bot._import_app", dummy_import_module)
 
     bot_config.APPS = ["yui.app1", "yui.app2"]
     box = Box()
@@ -27,7 +28,7 @@ def test_bot_init(monkeypatch, bot_config):
     assert isinstance(bot.api, SlackAPI)
     assert bot.box is box
     assert isinstance(bot.queue, asyncio.Queue)
-    assert importlib.import_queue == [
+    assert import_queue == [
         "yui.app1",
         "yui.app2",
     ]

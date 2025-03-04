@@ -141,16 +141,6 @@ class FakeBot(Bot):
         )
 
 
-class FakeImportLib:
-    """Fake object for importlib.import_module."""
-
-    def __init__(self) -> None:
-        self.import_queue: list[str] = []
-
-    def import_module(self, path: str):
-        self.import_queue.append(path)
-
-
 def assert_crontab_spec(handler: Any):
     assert isinstance(handler, Handler), "handler must be Handler"
     assert handler.cron, "handler is not CronTask"

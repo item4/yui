@@ -139,7 +139,7 @@ class Bot(GetLoggerMixin):
         logger.info("import apps")
         for app_name in config.APPS:
             logger.debug("import apps: %s", app_name)
-            importlib.import_module(app_name)
+            self._import_app(app_name)
 
         self.config = config
 
@@ -163,6 +163,9 @@ class Bot(GetLoggerMixin):
             self.box.user_required,
             self.box.users_required,
         )
+
+    def _import_app(self, app_name: str):  # pragma: no cover
+        importlib.import_module(app_name)
 
     async def register_cron_tasks(self):
         """Register cronjob to bot from box."""
