@@ -136,8 +136,6 @@ class Bot(GetLoggerMixin):
         )
         self.session_maker = sessionmaker(self.database_engine)
 
-        logger.info("connect to memcache")
-
         logger.info("import apps")
         for app_name in config.APPS:
             logger.debug("import apps: %s", app_name)
