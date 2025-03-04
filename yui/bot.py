@@ -142,11 +142,6 @@ class Bot(GetLoggerMixin):
             self._import_app(app_name)
 
         self.config = config
-
-        with contextlib.suppress(RuntimeError):
-            loop = asyncio.get_running_loop()
-            loop.set_debug(self.config.DEBUG)
-
         self.orm_base = orm_base or Base
         self.box = using_box or box
         self.queue: asyncio.Queue = asyncio.Queue()
