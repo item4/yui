@@ -23,6 +23,7 @@ import aiocron
 import aiohttp
 from aiohttp.client_exceptions import ClientError
 from dateutil.tz import tzoffset
+from sqlalchemy.ext.asyncio import close_all_sessions
 from valkey.asyncio.client import Valkey
 
 from .api import SlackAPI
@@ -158,6 +159,15 @@ class Bot(GetLoggerMixin):
             self.box.user_required,
             self.box.users_required,
         )
+
+    async def __aenter__(self):
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        self.process_pool_executor.shutdown()
+        self.thread_pool_executor.shutdown()
+        await close_all_sessions()
+        await self.database_engine.dispose()
 
     def _import_app(self, app_name: str):  # pragma: no cover
         importlib.import_module(app_name)

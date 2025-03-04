@@ -42,14 +42,14 @@ def load_config(func):
 
 
 async def run_alembic_op(config, op):
-    bot = Bot(config)
-    directory = Path("yui", "migrations")
-    c = Config(directory / "alembic.ini")
-    c.set_main_option("script_location", str(directory))
-    c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
-    c.attributes["Base"] = bot.orm_base
-    async with bot.database_engine.begin() as conn:
-        await conn.run_sync(op, c)
+    async with Bot(config) as bot:
+        directory = Path("yui", "migrations")
+        c = Config(directory / "alembic.ini")
+        c.set_main_option("script_location", str(directory))
+        c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
+        c.attributes["Base"] = bot.orm_base
+        async with bot.database_engine.begin() as conn:
+            await conn.run_sync(op, c)
 
 
 @click.group()
@@ -63,8 +63,8 @@ async def run(config):
     """Run YUI."""
     try:
         while True:
-            bot = Bot(config)
-            await bot.run()
+            async with Bot(config) as bot:
+                await bot.run()
     except ConfigurationError as e:
         error(str(e))
 
