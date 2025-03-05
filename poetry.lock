@@ -632,19 +632,19 @@ files = [
 
 [[package]]
 name = "discord-webhook"
-version = "1.4.0"
+version = "1.4.1"
 description = "Easily send Discord webhooks with Python"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "discord_webhook-1.4.0-py3-none-any.whl", hash = "sha256:feaadce438cdd7888192d4e357b6e925a5527c16d4afa86bd37c295996040f9d"},
-    {file = "discord_webhook-1.4.0.tar.gz", hash = "sha256:675b68e184bd30c53b8d8f7caa88f3eb609c80a7b592434d99e2b10717af2734"},
+    {file = "discord_webhook-1.4.1-py3-none-any.whl", hash = "sha256:1ed6a07d16ca0e6e6b1a91536c2fc34d0ba8251e5be37fe8850189aaf1155ee8"},
+    {file = "discord_webhook-1.4.1.tar.gz", hash = "sha256:2913c3ccb216e7d82911f96296f78b6b28b68a6f33a6fa5a61fc2da697b34a4d"},
 ]
 
 [package.dependencies]
 httpx = {version = ">=0.28.1,<0.29.0", optional = true, markers = "extra == \"async\""}
-requests = "2.32.0"
+requests = ">=2.32.3,<3.0.0"
 
 [package.extras]
 async = ["httpx (>=0.28.1,<0.29.0)"]
@@ -2376,14 +2376,14 @@ files = [
 
 [[package]]
 name = "requests"
-version = "2.32.0"
+version = "2.32.3"
 description = "Python HTTP for Humans."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "requests-2.32.0-py3-none-any.whl", hash = "sha256:f2c3881dddb70d056c5bd7600a4fae312b2a300e39be6a118d30b90bd27262b5"},
-    {file = "requests-2.32.0.tar.gz", hash = "sha256:fa5490319474c82ef1d2c9bc459d3652e3ae4ef4c4ebdd18a21145a47ca4b6b8"},
+    {file = "requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"},
+    {file = "requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760"},
 ]
 
 [package.dependencies]
@@ -2826,14 +2826,14 @@ files = [
 
 [[package]]
 name = "tzlocal"
-version = "5.3"
+version = "5.3.1"
 description = "tzinfo object for the local timezone"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "tzlocal-5.3-py3-none-any.whl", hash = "sha256:3814135a1bb29763c6e4f08fd6e41dbb435c7a60bfbb03270211bcc537187d8c"},
-    {file = "tzlocal-5.3.tar.gz", hash = "sha256:2fafbfc07e9d8b49ade18f898d6bcd37ae88ce3ad6486842a2e4f03af68323d2"},
+    {file = "tzlocal-5.3.1-py3-none-any.whl", hash = "sha256:eb1a66c3ef5847adf7a834f1be0800581b683b5608e74f86ecbcef8ab91bb85d"},
+    {file = "tzlocal-5.3.1.tar.gz", hash = "sha256:cceffc7edecefea1f595541dbd6e990cb1ea3d19bf01b2809f362a03dd7921fd"},
 ]
 
 [package.dependencies]
@@ -3004,4 +3004,4 @@ dev = ["aioresponses", "black", "croniter", "mypy", "pre-commit", "pytest", "pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "2d9670c7707e371aecadb7b8d87ff619ddb86f62dd77bd03e4da0b59c9f63c8c"
+content-hash = "6479f3a32db259bdf0ffdc57c91ab5170d74717ee0bc72ca2973d22a3910c5a8"
