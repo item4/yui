@@ -9,7 +9,6 @@ import logging.config
 import random
 import string
 from collections import defaultdict
-from concurrent.futures import BrokenExecutor
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -127,9 +126,6 @@ class Bot(GetLoggerMixin):
 
         logger.info("start")
 
-        self.process_pool_executor = ProcessPoolExecutor()
-        self.thread_pool_executor = ThreadPoolExecutor()
-
         logger.info("connect to DB")
         self.database_engine = create_database_engine(
             config.DATABASE_URL,
@@ -167,8 +163,6 @@ class Bot(GetLoggerMixin):
         await asyncio.shield(asyncio.create_task(self.dispose()))
 
     async def dispose(self):
-        self.process_pool_executor.shutdown()
-        self.thread_pool_executor.shutdown()
         await close_all_sessions()
         await self.database_engine.dispose()
 
@@ -283,14 +277,11 @@ class Bot(GetLoggerMixin):
         **kwargs: P.kwargs,
     ) -> R:
         loop = asyncio.get_running_loop()
-        try:
+        with ProcessPoolExecutor() as executor:
             return await loop.run_in_executor(
-                executor=self.process_pool_executor,
+                executor=executor,
                 func=functools.partial(f, *args, **kwargs),
             )
-        except BrokenExecutor:  # pragma: no cover
-            self.process_pool_executor = ProcessPoolExecutor()
-            raise
 
     async def run_in_other_thread(
         self,
@@ -299,14 +290,11 @@ class Bot(GetLoggerMixin):
         **kwargs: P.kwargs,
     ) -> R:
         loop = asyncio.get_running_loop()
-        try:
+        with ThreadPoolExecutor() as executor:
             return await loop.run_in_executor(
-                executor=self.thread_pool_executor,
+                executor=executor,
                 func=functools.partial(f, *args, **kwargs),
             )
-        except BrokenExecutor:  # pragma: no cover
-            self.thread_pool_executor = ThreadPoolExecutor()
-            raise
 
     async def throttle(self, method: str):
         name = "".join(random.choice(string.printable) for _ in range(16))

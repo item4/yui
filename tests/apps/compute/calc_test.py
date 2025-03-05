@@ -1,10 +1,8 @@
 import math
-from concurrent.futures.process import ProcessPoolExecutor
 from datetime import date
 from datetime import datetime
 
 import pytest
-import pytest_asyncio
 
 from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
@@ -18,8 +16,6 @@ from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
 from yui.types.base import Ts
 from yui.types.objects import MessageMessage
-
-from ...util import FakeBot
 
 
 class GetItemSpy:
@@ -1095,13 +1091,6 @@ def test_yield_from():
     with pytest.raises(BadSyntax, match=err):
         e.run("x = yield from f()")
     assert "x" not in e.scope
-
-
-@pytest_asyncio.fixture()
-async def bot():
-    return FakeBot(
-        process_pool_executor=ProcessPoolExecutor(),
-    )
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")

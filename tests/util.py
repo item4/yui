@@ -48,8 +48,6 @@ class FakeBot(Bot):
         *,
         using_box: Box | None = None,
         cache=None,
-        process_pool_executor=None,
-        thread_pool_executor=None,
     ) -> None:
         if config is None:
             config = Config(
@@ -70,8 +68,6 @@ class FakeBot(Bot):
         self.config = config
         self.box = using_box
         self.is_ready = asyncio.Event()
-        self.process_pool_executor = process_pool_executor
-        self.thread_pool_executor = thread_pool_executor
 
     async def call(
         self,
