@@ -164,6 +164,9 @@ class Bot(GetLoggerMixin):
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await asyncio.shield(asyncio.create_task(self.dispose()))
+
+    async def dispose(self):
         self.process_pool_executor.shutdown()
         self.thread_pool_executor.shutdown()
         await close_all_sessions()
