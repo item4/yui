@@ -73,7 +73,7 @@ jobs:
 
       # Test
       - name: Run test cases
-        run: poetry run pytest -W always::DeprecationWarning -v --cov=yui --cov-report=xml --junitxml=junit.xml -o log_cli=true --log-cli-level=DEBUG tests
+        run: poetry run pytest -W always::DeprecationWarning -v --cov=yui --cov-report=xml --junitxml=junit.xml tests
         env:
           SQLALCHEMY_WARN_20: 1
           YUI_TEST_DATABASE_URL: postgresql+psycopg://kirito:eugeo@localhost/test
