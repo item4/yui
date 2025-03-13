@@ -126,7 +126,7 @@ Aliases
             )
             return
         counts = {
-            int(math.ceil(nbinom.ppf(float(q), successes, float(p))))
+            math.ceil(nbinom.ppf(float(q), successes, float(p)))
             for q in filter(lambda x: x >= p, [*CHANCES, p])
         }
         results = [

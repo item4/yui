@@ -312,7 +312,7 @@ async def get_ohli_caption_list(
             episode_num == 0.0
         ):  # OHLI에서는 0.0이 업로드 안 함을 의미, 단편은 1.0 사용
             continue
-        if int(math.ceil(episode_num)) == int(episode_num):
+        if math.ceil(episode_num) == int(episode_num):
             episode_num = int(episode_num)
         result = Caption(
             maker=row["n"],
