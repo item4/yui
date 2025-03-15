@@ -20,13 +20,12 @@ from yui.types.base import Ts
 from yui.types.base import UserID
 from yui.types.channel import PublicChannel
 from yui.types.handler import Handler
+from yui.types.slack.response import APIResponse
 from yui.types.user import User
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
-
-    from yui.cache import Cache
 
 
 @define
@@ -34,7 +33,7 @@ class Call:
     """API Call from bot"""
 
     method: str
-    data: dict[str, Any] | None
+    data: dict[str, Any]
     token: str | None = None
     json_mode: bool = False
 
@@ -63,7 +62,7 @@ class FakeBot(Bot):
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
 
-        self.responses: dict[str, Callable] = {}
+        self.responses: dict[str, Callable[..., APIResponse]] = {}
         self.config = config
         self.box = using_box
         self.is_ready = asyncio.Event()
@@ -76,12 +75,12 @@ class FakeBot(Bot):
         throttle_check: bool = False,
         token: str | None = None,
         json_mode: bool = False,
-    ):
-        self.call_queue.append(Call(method, data, token, json_mode))
+    ) -> APIResponse:
+        self.call_queue.append(Call(method, data or {}, token, json_mode))
         callback = self.responses.get(method)
         if callback:
             return callback(data)
-        return None
+        return APIResponse(body={"ok": True}, status=200, headers={})
 
     @asynccontextmanager
     async def use_cache(self, cache):
