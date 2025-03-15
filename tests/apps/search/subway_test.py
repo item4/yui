@@ -323,8 +323,7 @@ async def test_on_start(bot, monkeypatch):
         fake_fetch,
     )
 
-    async with bot.begin():
-        assert await on_start(bot)
+    assert await on_start(bot)
 
 
 def test_refresh_db_spec():
