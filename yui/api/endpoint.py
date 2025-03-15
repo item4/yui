@@ -1,4 +1,5 @@
 import enum
+from contextlib import suppress
 from typing import Any
 
 import attrs
@@ -20,10 +21,9 @@ def prepare_for_json(obj: Any) -> Any:
         }
     if isinstance(obj, str):
         return obj
-    try:
+    with suppress(attrs.exceptions.NotAnAttrsClassError):
         return prepare_for_json(attrs.asdict(obj))
-    except attrs.exceptions.NotAnAttrsClassError:
-        pass
+
     return obj
 
 

@@ -1,4 +1,5 @@
 import enum
+from contextlib import suppress
 
 import attrs
 
@@ -22,10 +23,9 @@ def encode(obj):
         return {encode(k): encode(v) for k, v in obj.items() if v is not None}
     if isinstance(obj, bool):
         return bool2str(obj)
-    try:
+    with suppress(attrs.exceptions.NotAnAttrsClassError):
         return encode(attrs.asdict(obj))
-    except attrs.exceptions.NotAnAttrsClassError:
-        pass
+
     return obj
 
 
