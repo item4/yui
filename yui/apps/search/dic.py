@@ -58,7 +58,7 @@ def parse(html: str) -> tuple[str | None, list[Attachment]]:
     h = get_root(html, useless_tags=list(USELESS_TAGS - {"head"}))
     meta = h.cssselect("meta[http-equiv=Refresh]")
     if meta:
-        return fix_url(meta[0].get("content")[7:]), []
+        return fix_url(meta[0].get("content", "")[7:]), []
     words = h.cssselect("div.search_type")
 
     attachments: list[Attachment] = []

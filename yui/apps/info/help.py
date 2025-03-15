@@ -12,7 +12,7 @@ async def help(bot, event: Message, raw: str):
 
     """
     p = bot.config.PREFIX
-    if raw == "":
+    if not raw:
         await bot.say(
             event.channel,
             "\n".join(

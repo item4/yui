@@ -1,13 +1,14 @@
+from collections.abc import Callable
 from typing import Any
 
 from ..event import Event
-from ..types.handler import DECORATOR_ARGS_TYPE
-from ..types.handler import DECORATOR_TYPE
+from ..types.handler import FuncType
 from ..types.handler import Handler
-from ..utils.handler import get_handler
 from .apps.base import BaseApp
 from .apps.basic import App
 from .tasks import CronTask
+
+type Decorator = Callable[[FuncType | Handler], Handler]
 
 
 class Box:
@@ -63,11 +64,11 @@ class Box:
         short_help: str | None = None,
         help: str | None = None,
         use_shlex: bool = True,
-    ) -> DECORATOR_TYPE:
+    ) -> Decorator:
         """Shortcut decorator for make command easily."""
 
-        def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-            handler = get_handler(target)
+        def decorator(target: FuncType | Handler) -> Handler:
+            handler = Handler.from_callable(target)
 
             self.apps.append(
                 App(
@@ -92,13 +93,13 @@ class Box:
         type_: str | type[Event],
         *,
         subtype: str | None = None,
-    ) -> DECORATOR_TYPE:
+    ) -> Decorator:
         """Decorator for make app."""
 
         event_type = type_ if isinstance(type_, str) else type_.type
 
-        def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-            handler = get_handler(target)
+        def decorator(target: FuncType | Handler) -> Handler:
+            handler = Handler.from_callable(target)
 
             self.apps.append(
                 App(

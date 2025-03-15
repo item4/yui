@@ -101,7 +101,7 @@ def test_auto_packtpub_dotd_spec():
     ),
 )
 def test_auto_packtpub_dotd_match(sunday, delta, result):
-    assert_crontab_match(auto_packtpub_dotd, sunday + delta, result)
+    assert_crontab_match(auto_packtpub_dotd, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio

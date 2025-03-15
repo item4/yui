@@ -30,7 +30,7 @@ def test_holiday_message_spec():
     ],
 )
 def test_holiday_message_match(sunday, delta, result):
-    assert_crontab_match(holiday_message, sunday + delta, result)
+    assert_crontab_match(holiday_message, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio

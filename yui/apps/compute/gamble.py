@@ -43,22 +43,27 @@ def parse_dice_syntax(expr: str, seed: int | None = None) -> list[DiceResult]:
             if len(y) > 0
         ]
         if len(chunks) > 5:
-            raise SyntaxError("Too many queries")
+            error = "Too many queries"
+            raise SyntaxError(error)
 
         for chunk in chunks:
             m = DICE_SYNTAX.fullmatch(chunk)
             if m:
                 count = int(m.group("count")) if m.group("count") else 1
                 if count < 1:
-                    raise SyntaxError("Number of dice must be larger than 0")
+                    error = "Number of dice must be larger than 0"
+                    raise SyntaxError(error)
                 if count > 10:
-                    raise SyntaxError("YOU JUST ACTIVATED COUNT TRAP CARD!")
+                    error = "YOU JUST ACTIVATED COUNT TRAP CARD!"
+                    raise SyntaxError(error)
 
                 faces = int(m.group("faces"))
                 if faces < 2:
-                    raise SyntaxError("Number of faces must be larger than 1")
+                    error = "Number of faces must be larger than 1"
+                    raise SyntaxError(error)
                 if faces > 256:
-                    raise SyntaxError("YOU JUST ACTIVATED FACES TRAP CARD!")
+                    error = "YOU JUST ACTIVATED FACES TRAP CARD!"
+                    raise SyntaxError(error)
 
                 modifier = (
                     int(m.group("modifier")) if m.group("modifier") else 0
@@ -89,7 +94,8 @@ def parse_dice_syntax(expr: str, seed: int | None = None) -> list[DiceResult]:
                     ),
                 )
             else:
-                raise SyntaxError(f"Can not parse this chunk (`{chunk}`)")
+                error = f"Can not parse this chunk (`{chunk}`)"
+                raise SyntaxError(error)
 
         return result
     finally:

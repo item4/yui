@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ..utils.handler import get_handler
+from ..types.handler import FuncType
+from ..types.handler import Handler
 
 if TYPE_CHECKING:
-    from ..types.handler import DECORATOR_ARGS_TYPE
-    from ..types.handler import Handler
     from ._box import Box
 
 
@@ -28,10 +27,10 @@ class CronTask:
         self.start = None
         self.stop = None
 
-    def __call__(self, target: DECORATOR_ARGS_TYPE) -> Handler:
+    def __call__(self, target: FuncType | Handler) -> Handler:
         """Use as decorator"""
 
-        handler = get_handler(target)
+        handler = Handler.from_callable(target)
 
         self.handler = handler
         handler.cron = self

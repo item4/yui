@@ -25,19 +25,20 @@ def test_str_to_date():
     with pytest.raises(ValueError):
         str_to_date()("2017-10-99")
 
-    assert str_to_date(datetime.date.today)("2017-10-07") == datetime.date(
+    def fallback():
+        return datetime.date(1999, 12, 31)
+
+    assert str_to_date(fallback)("2017-10-07") == datetime.date(
         2017,
         10,
         7,
     )
-    assert str_to_date(datetime.date.today)("2017년 10월 7일") == datetime.date(
+    assert str_to_date(fallback)("2017년 10월 7일") == datetime.date(
         2017,
         10,
         7,
     )
-    assert (
-        str_to_date(datetime.date.today)("2017-10-99") == datetime.date.today()
-    )
+    assert str_to_date(fallback)("2017-10-99") == fallback()
 
 
 def test_enum_getitem():
@@ -134,9 +135,9 @@ def test_choice(items):
 
 def test_value_range():
     # Decimal
-    one = Decimal("1")
+    one = Decimal(1)
     three = Decimal("3.0")
-    five = Decimal("5")
+    five = Decimal(5)
 
     assert value_range(one, five)(three) == Decimal(three)
     assert value_range(one, five, autofix=True)(three) == Decimal(three)

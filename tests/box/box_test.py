@@ -52,11 +52,11 @@ def test_box_class():
     assert not box.cron_tasks
 
     @box.cron("*/3 * * * *")
-    async def test4():
+    async def test_cron():
         pass
 
     assert box.cron_tasks[0].spec == "*/3 * * * *"
-    assert box.cron_tasks[0].handler == test4
+    assert box.cron_tasks[0].handler == test_cron
 
     @box.on("message")
     async def test4():

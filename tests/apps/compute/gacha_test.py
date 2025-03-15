@@ -274,4 +274,4 @@ async def test_challenge(bot):
 def test_to_percent():
     assert to_percent(Decimal("12.300040000")) == "1230.004"
     assert to_percent(Decimal("12.300000000")) == "1230"
-    assert to_percent(Decimal("12"), Decimal("1")) == "1200"
+    assert to_percent(Decimal(12), Decimal(1)) == "1200"

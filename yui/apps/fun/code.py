@@ -3,9 +3,9 @@ import re
 from datetime import timedelta
 
 from ...box import box
+from ...command.cooltime import Cooltime
 from ...event import Message
 from ...types.slack.attachment import Attachment
-from ...utils.datetime import now
 
 COOLTIME = timedelta(minutes=15)
 PATTERN = re.compile(
@@ -39,10 +39,13 @@ async def write_code_review(bot, event: Message, *, seed=None):
 @box.on(Message)
 async def code_review(bot, event: Message):
     if event.text and PATTERN.search(event.text.upper()):
-        now_dt = now()
-        last_call = code_review.last_call.get(event.channel)
-        if last_call is None or last_call + COOLTIME <= now_dt:
+        cooltime = Cooltime(
+            bot=bot,
+            key=f"YUI_APPS_FUN_CODE_REVIEW_{event.channel}",
+            cooltime=COOLTIME,
+        )
+        if await cooltime.rejected() is None:
             await write_code_review(bot, event)
-            code_review.last_call[event.channel] = now_dt
+            await cooltime.record()
             return False
     return True

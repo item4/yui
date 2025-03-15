@@ -167,17 +167,9 @@ async def html(bot, event: Message, keyword: str):
         )
         return
 
-    name = None
-    link = None
-    ratio = -100.0
-    for _name, _link in data:
-        _ratio = fuzz.ratio(keyword, _name)
-        if _ratio > ratio:
-            name = _name
-            link = _link
-            ratio = _ratio
+    name, link = max(data, key=lambda x: fuzz.ratio(keyword, x[0]))
 
-    if ratio > 40:
+    if fuzz.ratio(keyword, name) > 40:
         await bot.say(event.channel, f"HTML `{name}` - {link}")
     else:
         await bot.say(event.channel, "비슷한 HTML Element를 찾지 못하겠어요!")
@@ -201,17 +193,9 @@ async def css(bot, event: Message, keyword: str):
         )
         return
 
-    name = None
-    link = None
-    ratio = -100.0
-    for _name, _link in data:
-        _ratio = fuzz.ratio(keyword, _name)
-        if _ratio > ratio:
-            name = _name
-            link = _link
-            ratio = _ratio
+    name, link = max(data, key=lambda x: fuzz.ratio(keyword, x[0]))
 
-    if ratio > 40:
+    if fuzz.ratio(keyword, name) > 40:
         await bot.say(event.channel, f"CSS `{name}` - {link}")
     else:
         await bot.say(event.channel, "비슷한 CSS 관련 요소를 찾지 못하겠어요!")
@@ -235,19 +219,12 @@ async def python(bot, event: Message, keyword: str):
         )
         return
 
-    name = None
-    link = None
-    ratio = -100.0
-    for code, _name, _link in data:
-        _ratio = (
-            fuzz.ratio(keyword, code) if code else fuzz.ratio(keyword, _name)
-        )
-        if _ratio > ratio:
-            name = _name
-            link = _link
-            ratio = _ratio
+    code, name, link = max(
+        data,
+        key=lambda x: fuzz.ratio(keyword, x[0] or x[1]),
+    )
 
-    if ratio > 40:
+    if fuzz.ratio(keyword, code or name) > 40:
         await bot.say(event.channel, f"Python {name} - {link}")
     else:
         await bot.say(event.channel, "비슷한 Python library를 찾지 못하겠어요!")

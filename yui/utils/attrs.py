@@ -1,26 +1,17 @@
 import datetime
 from functools import partial
-from typing import TYPE_CHECKING
-from typing import TypeVar
 from typing import get_args
 
 import attrs
+from attr import AttrsInstance
 
 from .datetime import fromtimestamp
 
-if TYPE_CHECKING:
-    from attr import AttrsInstance
-else:
-    AttrsInstance = None
 
-
-_C = TypeVar("_C", bound=AttrsInstance)
-
-
-def make_instance(
-    cls: type[_C],
+def make_instance[C: AttrsInstance](
+    cls: type[C],
     **kwargs,
-) -> _C:
+) -> C:
     expected_attrs = {x.name for x in attrs.fields(cls)}
     actual_attrs = set(kwargs.keys())
     for key in actual_attrs - expected_attrs:

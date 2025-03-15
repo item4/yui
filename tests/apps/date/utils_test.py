@@ -1,19 +1,18 @@
-import datetime
-
 import pytest
 
 from yui.apps.date.utils import APIDoesNotSupport
 from yui.apps.date.utils import get_holiday_names
 from yui.apps.date.utils import weekend_loading_box
 from yui.apps.date.utils import weekend_loading_percent
+from yui.utils.datetime import datetime
 
 
 @pytest.mark.asyncio
 async def test_get_holiday_names():
-    jan_first = datetime.datetime(2018, 1, 1)
-    jan_second = datetime.datetime(2018, 1, 2)
-    armed_forces_day = datetime.datetime(2018, 10, 1)
-    unsupported = datetime.datetime(2000, 1, 1)
+    jan_first = datetime(2018, 1, 1)
+    jan_second = datetime(2018, 1, 2)
+    armed_forces_day = datetime(2018, 10, 1)
+    unsupported = datetime(2000, 1, 1)
 
     holidays = await get_holiday_names(jan_first)
     assert holidays == ["신정"]
@@ -29,13 +28,13 @@ async def test_get_holiday_names():
 
 
 def test_weekend_loading_percent():
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 1)) == 0.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 2)) == 20.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 3)) == 40.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 4)) == 60.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 5)) == 80.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 6)) == 100.0
-    assert weekend_loading_percent(datetime.datetime(2020, 6, 7)) == 100.0
+    assert weekend_loading_percent(datetime(2020, 6, 1)) == 0.0
+    assert weekend_loading_percent(datetime(2020, 6, 2)) == 20.0
+    assert weekend_loading_percent(datetime(2020, 6, 3)) == 40.0
+    assert weekend_loading_percent(datetime(2020, 6, 4)) == 60.0
+    assert weekend_loading_percent(datetime(2020, 6, 5)) == 80.0
+    assert weekend_loading_percent(datetime(2020, 6, 6)) == 100.0
+    assert weekend_loading_percent(datetime(2020, 6, 7)) == 100.0
 
 
 def test_weekend_loading_box():

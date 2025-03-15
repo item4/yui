@@ -21,7 +21,10 @@ def test_attachment_class():
     author_icon = "https://item4.github.io/static/images/item4.png"
     title = "title"
     text = "text"
-    fields = [Field("field1", "1", False), Field("field2", "2", True)]
+    fields = [
+        Field("field1", "1", short=False),
+        Field("field2", "2", short=True),
+    ]
     image_url = (
         "https://item4.github.io/static/images/favicon/apple-icon-60x60.png"
     )

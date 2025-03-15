@@ -1,11 +1,11 @@
 import asyncio
 import math
+import operator
 import urllib.parse
 from collections import defaultdict
+from datetime import UTC
 from datetime import datetime
 from typing import Any
-from typing import Generic
-from typing import TypeVar
 from typing import TypedDict
 
 import aiohttp
@@ -21,8 +21,6 @@ from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.fuzz import match
-
-T = TypeVar("T")
 
 MIN_RATIO = 60
 DOW = [
@@ -61,7 +59,7 @@ class AnissiaCaptionInfo(TypedDict):
     name: str
 
 
-class AnissiaResponse(TypedDict, Generic[T]):
+class AnissiaResponse[T](TypedDict):
     code: str
     data: list[T]
 
@@ -83,7 +81,13 @@ def fix_url(url: str) -> str:
 def convert_released_dt(value: str) -> str:
     value = value.replace("-", "").replace("T", "").replace(":", "")
     try:
-        return datetime.strptime(value, "%Y%m%d%H%M%S").strftime(DATE_FORMAT)
+        return (
+            datetime.strptime(value, "%Y%m%d%H%M%S")
+            .replace(tzinfo=UTC)
+            .strftime(
+                DATE_FORMAT,
+            )
+        )
     except ValueError:
         return str(value)
 
@@ -180,11 +184,10 @@ def select_captions(origin: list[Caption]) -> list[Caption]:
                     filter(lambda x: x.episode_num == episode_num, items),
                 )
             if len(same_episode_nums) > 1:
-                latest_release = sorted(
+                latest_release = max(
                     same_episode_nums,
                     key=lambda x: x.released_at,
-                    reverse=True,
-                )[0]
+                )
                 results.append(
                     Caption(
                         maker=maker,
@@ -248,7 +251,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
     concat=True,
     count_error="애니 제목을 입력해주세요",
 )
-async def caption(bot, event: Message, finished: bool, title: str):
+async def caption(*, bot, event: Message, finished: bool, title: str):
     """
     애니메이션 자막을 검색합니다
 
@@ -405,7 +408,7 @@ def select_one_anime_from_anissia(ohli_ani, anissia_week):
         if fuzz.ratio(ani["website"], ohli_ani["l"]) > 90:
             ani["ratio"] += 10
 
-    return max(anissia_week, key=lambda x: x["ratio"])
+    return max(anissia_week, key=operator.itemgetter("ratio"))
 
 
 async def search_on_air(

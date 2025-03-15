@@ -63,7 +63,7 @@ def test_work_start_task_spec():
     ],
 )
 def test_work_start_task_match(sunday_9, delta, result):
-    assert_crontab_match(work_start, sunday_9 + delta, result)
+    assert_crontab_match(work_start, sunday_9 + delta, expected=result)
 
 
 def test_work_end_task_spec():
@@ -84,7 +84,7 @@ def test_work_end_task_spec():
     ],
 )
 def test_work_end_task_match_at_18(sunday_18, delta, result):
-    assert_crontab_match(work_end, sunday_18 + delta, result)
+    assert_crontab_match(work_end, sunday_18 + delta, expected=result)
 
 
 @pytest.mark.parametrize(
@@ -101,7 +101,7 @@ def test_work_end_task_match_at_18(sunday_18, delta, result):
     ],
 )
 def test_work_end_task_match_at_19(sunday_19, delta, result):
-    assert_crontab_match(work_end, sunday_19 + delta, result)
+    assert_crontab_match(work_end, sunday_19 + delta, expected=result)
 
 
 @pytest.mark.asyncio

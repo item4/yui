@@ -1,12 +1,16 @@
 import inspect
 import math
 import re
+from collections.abc import Callable
 from decimal import Decimal
 from decimal import InvalidOperation
 from decimal import ROUND_FLOOR
+from typing import Final
 
 from scipy.stats import nbinom
+from sympy.abc import x
 from sympy.functions.combinatorial.numbers import harmonic
+from sympy.utilities.lambdify import lambdify
 
 from ...box import box
 from ...box import route
@@ -14,23 +18,29 @@ from ...command import argument
 from ...command import option
 from ...event import Message
 
-SUCCESSES_MIN = 1
-SUCCESSES_MAX = 10000
-CHANCE_MIN = Decimal("0.00001")
-CHANCE_MAX = Decimal("0.99")
-CHANCES = [
+SUCCESSES_MIN: Final = 1
+SUCCESSES_MAX: Final = 10000
+CHANCE_MIN: Final = Decimal("0.00001")
+CHANCE_MAX: Final = Decimal("0.99")
+CHANCES: Final = (
     Decimal("0.25"),
     Decimal("0.5"),
     Decimal("0.75"),
     Decimal("0.95"),
     Decimal("0.99"),
-]
-D001 = Decimal("0.01")
+)
+D001: Final = Decimal("0.01")
 COLLECT_QUERY1 = re.compile(r"^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$")
 COLLECT_QUERY2 = re.compile(
     r"^(?:(?:총|전체)\s*)?"
     r"(?P<total>\d+)\s*(?:종류?|개)?\s*중(?:에서?)?\s*"
     r"(?P<n>\d+)\s*(?:종류?|개)?$",
+)
+
+collect_func: Callable[[int], float] = lambdify(
+    x,
+    x * harmonic(x),
+    modules="sympy",
 )
 
 
@@ -134,7 +144,7 @@ Aliases
             for x in sorted(counts)
         ]
         text = "\n".join(
-            f"- {tries+successes:,}번 시도하시면"
+            f"- {tries + successes:,}번 시도하시면"
             f" {to_percent(ch, D001)}% 확률로"
             " 목표 횟수만큼 성공할 수 있어요!"
             for tries, ch in results
@@ -178,7 +188,7 @@ Aliases
             )
             return
 
-        result = n * harmonic(n)
+        result = collect_func(n)
         if total > n:
             result /= n / total
             text = "부분적으로"

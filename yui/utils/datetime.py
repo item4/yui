@@ -8,6 +8,10 @@ def now(tzname: str = "Asia/Seoul") -> dt.datetime:
     return dt.datetime.now(ZoneInfo(tzname))
 
 
+def today(tzname: str = "Asia/Seoul") -> dt.date:
+    return now(tzname).date()
+
+
 def datetime(
     year: int,
     month: int,

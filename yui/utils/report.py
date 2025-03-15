@@ -77,7 +77,7 @@ async def report(
 
     for message in messages:
         await bot.say(
-            resp.body["channel"]["id"],  # type: ignore
+            resp.body["channel"]["id"],
             message,
             length_limit=None,
         )

@@ -25,7 +25,7 @@ def test_get_old_history_spec():
     ),
 )
 def test_get_old_history_match(sunday, delta, result):
-    assert_crontab_match(get_old_history, sunday + delta, result)
+    assert_crontab_match(get_old_history, sunday + delta, expected=result)
 
 
 def test_cleanup_channels_spec():
@@ -48,4 +48,4 @@ def test_cleanup_channels_spec():
     ),
 )
 def test_cleanup_channels_match(sunday, delta, result):
-    assert_crontab_match(cleanup_channels, sunday + delta, result)
+    assert_crontab_match(cleanup_channels, sunday + delta, expected=result)

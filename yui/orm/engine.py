@@ -5,6 +5,7 @@ from sqlalchemy.pool import Pool
 
 def create_database_engine(
     url: str,
+    *,
     echo: bool,
     poolclass: type[Pool] | None = None,
 ) -> AsyncEngine:

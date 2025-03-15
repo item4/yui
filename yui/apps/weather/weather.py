@@ -114,13 +114,16 @@ async def get_weather_by_keyword(keyword: str) -> WeatherRecord:
             ) as resp,
         ):
             if resp.status != 200:
-                raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
+                error = f"Bad HTTP Response: {resp.status}"
+                raise WeatherResponseError(error)
 
             data = await resp.json(loads=json.loads)
     except ClientConnectorCertificateError as e:
-        raise WeatherResponseError("인증서 만료") from e
+        error = "인증서 만료"
+        raise WeatherResponseError(error) from e
     except (ContentTypeError, ValueError) as e:
-        raise WeatherResponseError("JSON 파싱 실패") from e
+        error = "JSON 파싱 실패"
+        raise WeatherResponseError(error) from e
 
     matched = None
     for record in data["records"]:
@@ -128,7 +131,8 @@ async def get_weather_by_keyword(keyword: str) -> WeatherRecord:
             matched = record
             break
     else:
-        raise WeatherRequestError("해당 이름의 관측소는 존재하지 않아요!")
+        error = "해당 이름의 관측소는 존재하지 않아요!"
+        raise WeatherRequestError(error)
 
     observed_at = fromisoformat(data["observed_at"].split("+", 1)[0])
     rain = matched["rain"]

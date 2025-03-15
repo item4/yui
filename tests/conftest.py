@@ -41,7 +41,7 @@ def database_url(request):
 
 @pytest_asyncio.fixture()
 async def fx_engine(database_url):
-    engine = create_database_engine(database_url, False)
+    engine = create_database_engine(database_url, echo=False)
     try:
         metadata = Base.metadata
         async with engine.begin() as conn:

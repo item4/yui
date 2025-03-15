@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING
 
 from ...event import Event
 from ...event import Message
-from ...types.handler import HANDLER_CALL_TYPE
+from ...types.handler import FuncType
 from ...types.handler import Handler
-from ...utils.handler import get_handler
 from ..parsers import parse_option_and_arguments
 from ..utils import split_chunks
 from .base import BaseApp
@@ -25,11 +24,11 @@ class Route:
     def __init__(
         self,
         name: str | None,
-        callback: HANDLER_CALL_TYPE | Handler,
+        callback: FuncType | Handler,
         subtype: str | None = None,
     ) -> None:
         self.name = name
-        self.handler = get_handler(callback)
+        self.handler = Handler.from_callable(callback)
         self.subtype = subtype
 
 
@@ -92,7 +91,7 @@ class RouteApp(BaseApp):
             raw = html.unescape(args)
             func_params = handler.params
             try:
-                chunks = split_chunks(raw, self.use_shlex)
+                chunks = split_chunks(raw, use_shlex=self.use_shlex)
             except ValueError:
                 await bot.say(
                     event.channel,
@@ -108,6 +107,10 @@ class RouteApp(BaseApp):
             except SyntaxError as e:
                 await bot.say(event.channel, f"*Error*\n{e}")
                 return False
+            if "raw" in func_params:
+                kw["raw"] = raw
+            if "remain_chunks" in func_params:
+                kw["remain_chunks"] = remain_chunks
             async with self.prepare_kwargs(
                 bot=bot,
                 event=event,

@@ -20,4 +20,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_constraint(None, "event_log", type_="unique")
+    op.drop_constraint("", "event_log", type_="unique")

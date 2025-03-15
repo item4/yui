@@ -1,17 +1,28 @@
 import types
+from itertools import starmap
 from typing import Any
+from typing import Final
 from typing import TypeVar
 from typing import get_args
 from typing import get_origin
 
 from ..utils.attrs import make_instance
 
-KNOWN_TYPES = {
-    bytes,
-    float,
-    int,
-    str,
-}
+KNOWN_TYPES: Final = frozenset(
+    {
+        bytes,
+        float,
+        int,
+        str,
+    },
+)
+CONTAINER: Final = frozenset({set, tuple, list})
+
+
+def is_container(t) -> bool:
+    """Check given value is container type?"""
+
+    return t in CONTAINER or get_origin(t) in CONTAINER
 
 
 class CastError(Exception):
@@ -95,8 +106,7 @@ class TupleCaster(BaseCaster):
     def cast(self, caster_box, t, value):
         if args := get_args(t):
             return tuple(
-                caster_box.cast(ty, x)
-                for ty, x in zip(args, value, strict=True)
+                starmap(caster_box.cast, zip(args, value, strict=True)),
             )
         return tuple(value)
 
@@ -178,7 +188,8 @@ class CasterBox:
         for caster_box in self.caster_box:
             if caster_box.check(t, value):
                 return caster_box.cast(self, t, value)
-        raise CastError("Can not find matching caster")
+        error = "Can not find matching caster"
+        raise CastError(error)
 
 
 cast = CasterBox(

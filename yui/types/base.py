@@ -1,5 +1,4 @@
 from typing import NewType
-from typing import TypeAlias
 
 #: :type:`type` User ID type. It must start with 'U' or 'W'.
 UserID = NewType("UserID", str)
@@ -15,10 +14,10 @@ DirectMessageChannelID = NewType("DirectMessageChannelID", str)
 #: It must start with 'G'.
 PrivateChannelID = NewType("PrivateChannelID", str)
 
-ChannelID = PublicChannelID | PrivateChannelID | DirectMessageChannelID
+type ChannelID = PublicChannelID | PrivateChannelID | DirectMessageChannelID
 
 #: :type:`type` Type for slack event unique ID.
 Ts = NewType("Ts", str)
 
 #: :type:`type` Type for store UnixTimestamp.
-UnixTimestamp: TypeAlias = int
+type UnixTimestamp = int

@@ -49,7 +49,15 @@ async def test_get_weather_with_expired_cert(response_mock, address):
         "https://item4.net/api/weather/",
         payload={},
         exception=ClientConnectorCertificateError(
-            ConnectionKey("item4.net", 433, True, True, None, None, None),
+            ConnectionKey(
+                "item4.net",
+                433,
+                is_ssl=True,
+                ssl=True,
+                proxy=None,
+                proxy_auth=None,
+                proxy_headers_hash=None,
+            ),
             Exception("test"),
         ),
     )
