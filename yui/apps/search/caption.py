@@ -184,11 +184,10 @@ def select_captions(origin: list[Caption]) -> list[Caption]:
                     filter(lambda x: x.episode_num == episode_num, items),
                 )
             if len(same_episode_nums) > 1:
-                latest_release = sorted(
+                latest_release = max(
                     same_episode_nums,
                     key=lambda x: x.released_at,
-                    reverse=True,
-                )[0]
+                )
                 results.append(
                     Caption(
                         maker=maker,
