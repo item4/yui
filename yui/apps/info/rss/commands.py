@@ -156,7 +156,8 @@ class RSS(route.RouteApp):
 async def crawl(bot, sess: AsyncSession):
     feeds = (await sess.scalars(select(RSSFeedURL))).all()
 
-    for feed in feeds:  # type: RSSFeedURL
+    feed: RSSFeedURL
+    for feed in feeds:
         data = b""
         async with aiohttp.ClientSession() as session:
             try:
