@@ -4,6 +4,7 @@ import re
 from decimal import Decimal
 from decimal import InvalidOperation
 from decimal import ROUND_FLOOR
+from typing import Final
 
 from scipy.stats import nbinom
 from sympy.functions.combinatorial.numbers import harmonic
@@ -14,18 +15,18 @@ from ...command import argument
 from ...command import option
 from ...event import Message
 
-SUCCESSES_MIN = 1
-SUCCESSES_MAX = 10000
-CHANCE_MIN = Decimal("0.00001")
-CHANCE_MAX = Decimal("0.99")
-CHANCES = [
+SUCCESSES_MIN: Final = 1
+SUCCESSES_MAX: Final = 10000
+CHANCE_MIN: Final = Decimal("0.00001")
+CHANCE_MAX: Final = Decimal("0.99")
+CHANCES: Final = (
     Decimal("0.25"),
     Decimal("0.5"),
     Decimal("0.75"),
     Decimal("0.95"),
     Decimal("0.99"),
-]
-D001 = Decimal("0.01")
+)
+D001: Final = Decimal("0.01")
 COLLECT_QUERY1 = re.compile(r"^(?P<n>\d+)(?:\s*/\s*(?P<total>\d+))?$")
 COLLECT_QUERY2 = re.compile(
     r"^(?:(?:총|전체)\s*)?"
