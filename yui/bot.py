@@ -177,7 +177,7 @@ class Bot(GetLoggerMixin):
     def _register_cron_task(self, cron: CronTask):
         logger = self.get_logger("_register_cron_task")
 
-        logger.info(f"register {cron}")
+        logger.info("register %s", cron)
         is_runnable = [1]
         func_params = cron.handler.params
         kw: dict[str, Any] = {}

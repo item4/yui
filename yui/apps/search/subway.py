@@ -74,7 +74,7 @@ class Result(TypedDict):
 
 async def fetch_station_db(bot, service_region: str, api_version: str):
     name = f"subway-{service_region}-{api_version}"
-    logger.info(f"fetch {name} start")
+    logger.info("fetch %s start", name)
 
     async with (
         aiohttp.ClientSession(
@@ -101,7 +101,7 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
 
     await bot.cache.set(f"SUBWAY_{service_region}_{api_version}", data)
 
-    logger.info(f"fetch {name} end")
+    logger.info("fetch %s end", name)
 
 
 async def fetch_all_station_db(bot):
