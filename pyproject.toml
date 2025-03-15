@@ -205,6 +205,8 @@ extend-immutable-calls = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+filterwarnings = ["ignore::DeprecationWarning:multiprocessing.popen_fork"]
+testpaths = ["tests"]
 
 [tool.mypy]
 python_version = "3.13"
