@@ -13,8 +13,8 @@ import statistics
 from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any
-from typing import Self
-from typing import TypeAlias
+from typing import Final
+from typing import TypeGuard
 
 from more_itertools import numeric_range
 
@@ -22,6 +22,9 @@ from ...bot import Bot
 from ...box import box
 from ...event import Message
 from ...utils import json
+
+TIMEOUT: Final = 1
+TO_DECIMAL: Final[tuple[type, ...]] = (int, float)
 
 type MAYBE_DECIMAL = int | float | decimal.Decimal
 
@@ -186,102 +189,103 @@ async def calc_num_on_change(bot, event: Message, raw: str):
 
 
 class Decimal(decimal.Decimal):
-    def __neg__(self, context=None):
-        return Decimal(super().__neg__())
-
-    def __pos__(self, context=None):
-        return Decimal(super().__pos__())
-
-    def __abs__(self, round=True, context=None):
+    def __abs__(self):
         return Decimal(super().__abs__())
 
-    def __add__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __add__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
         return Decimal(super().__add__(other))
 
-    def __radd__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__add__(self))
-
-    def __sub__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__sub__(other))
-
-    def __rsub__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__sub__(self))
-
-    def __mul__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__mul__(other))
-
-    def __rmul__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__mul__(self))
-
-    def __truediv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__truediv__(other))
-
-    def __rtruediv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__truediv__(self))
-
-    def __floordiv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__floordiv__(other))
-
-    def __rfloordiv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__floordiv__(self))
-
-    def __mod__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__mod__(other))
-
-    def __rmod__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__mod__(self))
-
-    def __divmod__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __divmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
         quotient, remainder = super().__divmod__(other)
         return Decimal(quotient), Decimal(remainder)
 
-    def __rdivmod__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __floordiv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
-        quotient, remainder = super(Decimal, other).__divmod__(self)
-        return Decimal(quotient), Decimal(remainder)
+        return Decimal(super().__floordiv__(other))
+
+    def __mod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__mod__(other))
+
+    def __mul__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__mul__(other))
+
+    def __neg__(self):
+        return Decimal(super().__neg__())
+
+    def __pos__(self):
+        return Decimal(super().__pos__())
 
     def __pow__(
         self,
-        power: Self | MAYBE_DECIMAL,
-        modulo: Self | MAYBE_DECIMAL | None = None,
+        other,
+        mod=None,
+        /,
     ):
-        if isinstance(power, int | float):
-            power = Decimal(power)
-        if isinstance(modulo, int | float):
-            modulo = Decimal(modulo)
-        return Decimal(super().__pow__(power, modulo))
-
-    def __rpow__(self, other, context=None):
-        if isinstance(other, int | float):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
-        return Decimal(super(Decimal, other).__pow__(self))
+        if isinstance(mod, TO_DECIMAL):
+            mod = Decimal(mod)
+        return Decimal(super().__pow__(other, mod))
+
+    def __radd__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__add__(self))
+
+    def __rdivmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        quotient, remainder = other.__divmod__(self)
+        return Decimal(quotient), Decimal(remainder)
+
+    def __rfloordiv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__floordiv__(self))
+
+    def __rmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__mod__(self))
+
+    def __rmul__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__mul__(self))
+
+    def __rsub__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__sub__(self))
+
+    def __rtruediv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__truediv__(self))
+
+    def __sub__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__sub__(other))
+
+    def __truediv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__truediv__(other))
+
+    def __rpow__(self, other, context=None, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__pow__(self))
 
 
 TYPE_STORE = type(ast.Store())
