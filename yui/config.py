@@ -163,7 +163,7 @@ class Config(SimpleNamespace):
 
 def error(message: str, *args):
     msg = message.format(*args)
-    print(msg, file=sys.stderr)
+    print(msg, file=sys.stderr)  # noqa: T201 - use for cli
     raise SystemExit(1)
 
 
