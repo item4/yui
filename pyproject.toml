@@ -190,6 +190,9 @@ section-order = ["future", "standard-library", "third-party", "tests", "first-pa
 [tool.ruff.lint.isort.sections]
 tests = ["tests"]
 
+[tool.ruff.lint.flake8-boolean-trap]
+extend-allowed-calls = ["yui.api.encoder.bool2str"]
+
 [tool.ruff.lint.flake8-bugbear]
 extend-immutable-calls = [
     "yui.utils.attrs.channel_id_field",
