@@ -37,8 +37,7 @@ def parse_option_and_arguments(
                 chunks.insert(0, new_chunk)
 
             if name == option.name:
-                if option.dest in required:
-                    required.remove(option.dest)
+                required.discard(option.dest)
 
                 if option.nargs == 0:
                     result[option.dest] = option.value
