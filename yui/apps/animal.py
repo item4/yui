@@ -1,20 +1,30 @@
 import asyncio
 import datetime
 import functools
+from typing import Final
 
 import aiohttp
 import aiohttp.client_exceptions
 from defusedxml import ElementTree
+from yarl import URL
 
 from ..box import box
-from ..command import option
+from ..command.cooltime import Cooltime
 from ..event import Message
 from ..utils import json
-from ..utils.datetime import now
 from ..utils.html import get_root
 
 DEFAULT_COOLTIME = datetime.timedelta(minutes=30)
 DM_COOLTIME = datetime.timedelta(minutes=3)
+
+CAT_API_URL: Final[URL] = URL(
+    "https://thecatapi.com/api/images/get",
+).with_query(
+    format="xml",
+    type="jpg,png",
+)
+DOG_API_URL: Final[str] = "https://dog.ceo/api/breeds/image/random"
+FOX_GALLERY_URL: Final[str] = "http://fox-info.net/fox-gallery"
 
 
 class APIServerError(RuntimeError):
@@ -98,8 +108,7 @@ async def get_fox_image_url(timeout: float) -> str:  # noqa: ASYNC109
 
 
 @box.command("cat", ["냥", "야옹", "냐옹"])
-@option("--timeout", default=1.5)
-async def cat(bot, event: Message, timeout: float):  # noqa: ASYNC109
+async def cat(bot: Bot, event: Message, timeout: float = 1.5):  # noqa: ASYNC109
     """
     냥냥이 짤을 수급합니다.
     쿨타임은 일반 채널 30분, DM 3분입니다.
@@ -114,21 +123,21 @@ async def cat(bot, event: Message, timeout: float):  # noqa: ASYNC109
         icon_url="https://i.imgur.com/hIBJUMI.jpg",
     )
 
-    now_dt = now()
-    if event.channel in cat.last_call:
-        last_call = cat.last_call[event.channel]
-        cooltime = (
+    cooltime = Cooltime(
+        bot=bot,
+        key=f"YUI_APPS_ANIMAL_CAT_{event.channel}",
+        cooltime=(
             DM_COOLTIME if event.channel.startswith("D") else DEFAULT_COOLTIME
+        ),
+    )
+    if retry_after := await cooltime.rejected():
+        await cat_say(
+            text=(
+                f"아직 쿨타임이다냥! {retry_after.strftime('%H시 %M분')} 이후로"
+                " 다시 시도해보라냥!"
+            ),
         )
-        if now_dt - last_call < cooltime:
-            fine = last_call + cooltime
-            await cat_say(
-                text=(
-                    f"아직 쿨타임이다냥! {fine.strftime('%H시 %M분')} 이후로"
-                    " 다시 시도해보라냥!"
-                ),
-            )
-            return
+        return
 
     try:
         url = await get_cat_image_url(timeout)
@@ -138,14 +147,13 @@ async def cat(bot, event: Message, timeout: float):  # noqa: ASYNC109
         )
         return
 
-    cat.last_call[event.channel] = now_dt
+    await cooltime.record()
 
     await cat_say(text=url)
 
 
 @box.command("dog", ["멍"])
-@option("--timeout", default=1.5)
-async def dog(bot, event: Message, timeout: float):  # noqa: ASYNC109
+async def dog(bot, event: Message, timeout: float = 1.5):  # noqa: ASYNC109
     """
     멍멍이 짤을 수급합니다.
 
@@ -162,21 +170,21 @@ async def dog(bot, event: Message, timeout: float):  # noqa: ASYNC109
         icon_url="https://i.imgur.com/Q9FKplO.png",
     )
 
-    now_dt = now()
-    if event.channel in dog.last_call:
-        last_call = dog.last_call[event.channel]
-        cooltime = (
+    cooltime = Cooltime(
+        bot=bot,
+        key=f"YUI_APPS_ANIMAL_DOG_{event.channel}",
+        cooltime=(
             DM_COOLTIME if event.channel.startswith("D") else DEFAULT_COOLTIME
+        ),
+    )
+    if retry_after := await cooltime.rejected():
+        await dog_say(
+            text=(
+                f"아직 쿨타임이다멍! {retry_after.strftime('%H시 %M분')} 이후로"
+                " 다시 시도해보라멍!"
+            ),
         )
-        if now_dt - last_call < cooltime:
-            fine = last_call + cooltime
-            await dog_say(
-                text=(
-                    f"아직 쿨타임이다멍! {fine.strftime('%H시 %M분')} 이후로"
-                    " 다시 시도해보라멍!"
-                ),
-            )
-            return
+        return
 
     try:
         url = await get_dog_image_url(timeout)
@@ -186,7 +194,7 @@ async def dog(bot, event: Message, timeout: float):  # noqa: ASYNC109
         )
         return
 
-    dog.last_call[event.channel] = now_dt
+    await cooltime.record()
 
     await dog_say(text=url)
 
@@ -209,21 +217,21 @@ async def fox(bot, event: Message, timeout: float = 1.5):  # noqa: ASYNC109
         icon_url="https://i.imgur.com/xFpyvpZ.png",
     )
 
-    now_dt = now()
-    if event.channel in fox.last_call:
-        last_call = fox.last_call[event.channel]
-        cooltime = (
+    cooltime = Cooltime(
+        bot=bot,
+        key=f"YUI_APPS_ANIMAL_FOX_{event.channel}",
+        cooltime=(
             DM_COOLTIME if event.channel.startswith("D") else DEFAULT_COOLTIME
+        ),
+    )
+    if retry_after := await cooltime.rejected():
+        await fox_say(
+            text=(
+                f"아직 쿨타임이에요! {retry_after.strftime('%H시 %M분')} 이후로"
+                " 다시 시도해보세요!"
+            ),
         )
-        if now_dt - last_call < cooltime:
-            fine = last_call + cooltime
-            await fox_say(
-                text=(
-                    f"아직 쿨타임이에요! {fine.strftime('%H시 %M분')} 이후로"
-                    " 다시 시도해보세요!"
-                ),
-            )
-            return
+        return
 
     try:
         url = await get_fox_image_url(timeout)
@@ -233,6 +241,6 @@ async def fox(bot, event: Message, timeout: float = 1.5):  # noqa: ASYNC109
         )
         return
 
-    fox.last_call[event.channel] = now_dt
+    await cooltime.record()
 
     await fox_say(text=url)

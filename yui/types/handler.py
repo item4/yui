@@ -66,7 +66,6 @@ class Handler:
     arguments: list[Argument] = field(init=False)
     options: list[Option] = field(init=False)
     cron: CronTask | None = field(init=False, default=None)
-    last_call: Any = field(init=False)
     doc: str | None = field(init=False)
     params: Mapping[str, inspect.Parameter] = field(init=False)
     annotations: dict[str, Any] = field(init=False)
@@ -79,7 +78,6 @@ class Handler:
         self.annotations = get_type_hints(self.f)
         self.arguments = []
         self.options = []
-        self.last_call = {}
 
     def prepare(self):
         for o in self.options:

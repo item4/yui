@@ -1,10 +1,12 @@
 import re
 
-import aiohttp
 import pytest
-from yarl import URL
+import pytest_asyncio
 
 from yui.apps.animal import APIServerError
+from yui.apps.animal import CAT_API_URL
+from yui.apps.animal import DOG_API_URL
+from yui.apps.animal import FOX_GALLERY_URL
 from yui.apps.animal import cat
 from yui.apps.animal import dog
 from yui.apps.animal import fox
@@ -23,10 +25,10 @@ fox_cooltime_re = re.compile(
 )
 
 
-CAT_API_URL = URL("https://thecatapi.com/api/images/get").with_query(
-    format="xml",
-    type="jpg,png",
-)
+@pytest_asyncio.fixture(name="bot")
+async def bot_with_cache(bot, cache):
+    async with bot.use_cache(cache):
+        yield bot
 
 
 @pytest.mark.asyncio
@@ -216,9 +218,10 @@ async def test_cat_command(bot, response_mock):
 
     event = bot.create_message()
 
-    assert cat.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert last_call is None
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -230,9 +233,10 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert last_call is None
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -241,9 +245,10 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -254,9 +259,10 @@ async def test_cat_command(bot, response_mock):
 
     event = bot.create_message(channel_id="D1")
 
-    assert cat.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert last_call is None
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -268,9 +274,10 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert last_call is None
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -279,9 +286,10 @@ async def test_cat_command(bot, response_mock):
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
-    assert cat.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_CAT_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await cat(bot, event, 0.001)
+    await cat(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -314,9 +322,10 @@ async def test_dog_command(bot, response_mock):
 
     event = bot.create_message()
 
-    assert dog.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert last_call is None
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -328,9 +337,10 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert last_call is None
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -339,9 +349,10 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -352,9 +363,10 @@ async def test_dog_command(bot, response_mock):
 
     event = bot.create_message(channel_id="D1")
 
-    assert dog.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert last_call is None
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -366,9 +378,10 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert last_call is None
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -377,9 +390,10 @@ async def test_dog_command(bot, response_mock):
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
-    assert dog.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_DOG_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await dog(bot, event, 0.001)
+    await dog(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -423,12 +437,12 @@ async def test_fox_command(bot, response_mock):
         ),
         headers={"Content-Type": "text/html"},
     )
-
     event = bot.create_message()
 
-    assert fox.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert last_call is None
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -440,9 +454,10 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert last_call is None
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -451,9 +466,10 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -464,9 +480,10 @@ async def test_fox_command(bot, response_mock):
 
     event = bot.create_message(channel_id="D1")
 
-    assert fox.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert last_call is None
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -478,9 +495,10 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call.get(event.channel) is None
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert last_call is None
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
@@ -489,9 +507,10 @@ async def test_fox_command(bot, response_mock):
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
-    assert fox.last_call[event.channel]
+    last_call = await bot.cache.get(f"YUI_APPS_ANIMAL_FOX_{event.channel}")
+    assert isinstance(last_call, float)
 
-    await fox(bot, event, 0.001)
+    await fox(bot, event)
 
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
