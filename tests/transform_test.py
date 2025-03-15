@@ -25,19 +25,20 @@ def test_str_to_date():
     with pytest.raises(ValueError):
         str_to_date()("2017-10-99")
 
-    assert str_to_date(datetime.date.today)("2017-10-07") == datetime.date(
+    def fallback():
+        return datetime.date(1999, 12, 31)
+
+    assert str_to_date(fallback)("2017-10-07") == datetime.date(
         2017,
         10,
         7,
     )
-    assert str_to_date(datetime.date.today)("2017년 10월 7일") == datetime.date(
+    assert str_to_date(fallback)("2017년 10월 7일") == datetime.date(
         2017,
         10,
         7,
     )
-    assert (
-        str_to_date(datetime.date.today)("2017-10-99") == datetime.date.today()
-    )
+    assert str_to_date(fallback)("2017-10-99") == fallback()
 
 
 def test_enum_getitem():
