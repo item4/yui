@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import inspect
+from typing import Final
 from typing import TYPE_CHECKING
 
 from ...event import Event
@@ -14,6 +15,8 @@ from .base import BaseApp
 if TYPE_CHECKING:
     from ...bot import Bot
     from ...types.handler import Handler
+
+REMAIN_CHUNK_CONCAT: Final = frozenset({str, inspect._empty})
 
 
 class App(BaseApp):
@@ -147,7 +150,7 @@ class App(BaseApp):
                 kw["raw"] = raw
             if "remain_chunks" in func_params:
                 annotation = func_params["remain_chunks"].annotation
-                if annotation in [str, inspect._empty]:
+                if annotation in REMAIN_CHUNK_CONCAT:
                     kw["remain_chunks"] = " ".join(remain_chunks)
                 else:
                     kw["remain_chunks"] = remain_chunks
