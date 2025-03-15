@@ -180,7 +180,8 @@ class CasterBox:
         for caster_box in self.caster_box:
             if caster_box.check(t, value):
                 return caster_box.cast(self, t, value)
-        raise CastError("Can not find matching caster")
+        error = "Can not find matching caster"
+        raise CastError(error)
 
 
 cast = CasterBox(

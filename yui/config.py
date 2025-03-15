@@ -95,38 +95,34 @@ class Config(SimpleNamespace):
             try:
                 config = getattr(self, key)
             except AttributeError as e:
-                raise ConfigurationError(
-                    f"Required config key was not defined: {key}",
-                ) from e
+                error = f"Required config key was not defined: {key}"
+                raise ConfigurationError(error) from e
             try:
                 casted = cast(value, config)
-                if config != casted:
-                    raise CastError
             except CastError as e:
-                raise ConfigurationError(
-                    f"Wrong config value type: {key}",
-                ) from e
+                error = f"Wrong config value type: {key}"
+                raise ConfigurationError(error) from e
+            if config != casted:
+                error = f"Config value type mismatch: {key}"
+                raise ConfigurationError(error)
 
         for key in single_channels:
             try:
                 value = self.CHANNELS[key]
             except KeyError as e:
-                raise ConfigurationError(
-                    f"Required channel key was not defined: {key}",
-                ) from e
+                error = f"Required channel key was not defined: {key}"
+                raise ConfigurationError(error) from e
             else:
                 if not isinstance(value, str):
-                    raise ConfigurationError(
-                        f"Channel config has wrong type: {key}",
-                    )
+                    error = f"Channel config has wrong type: {key}"
+                    raise ConfigurationError(error)
 
         for key in multiple_channels:
             try:
                 value = self.CHANNELS[key]
             except KeyError as e:
-                raise ConfigurationError(
-                    f"Required channel key was not defined: {key}",
-                ) from e
+                error = f"Required channel key was not defined: {key}"
+                raise ConfigurationError(error) from e
             else:
                 if value == "*":
                     continue
@@ -134,29 +130,25 @@ class Config(SimpleNamespace):
                     isinstance(x, str) for x in value
                 ):
                     continue
-                raise ConfigurationError(
-                    f"Channel config has wrong type: {key}",
-                )
+                error = f"Channel config has wrong type: {key}"
+                raise ConfigurationError(error)
         for key in single_users:
             try:
                 value = self.USERS[key]
             except KeyError as e:
-                raise ConfigurationError(
-                    f"Required user key was not defined: {key}",
-                ) from e
+                error = f"Required user key was not defined: {key}"
+                raise ConfigurationError(error) from e
             else:
                 if not isinstance(value, str):
-                    raise ConfigurationError(
-                        f"User config has wrong type: {key}",
-                    )
+                    error = f"User config has wrong type: {key}"
+                    raise ConfigurationError(error)
 
         for key in multiple_users:
             try:
                 value = self.USERS[key]
             except KeyError as e:
-                raise ConfigurationError(
-                    f"Required user key was not defined: {key}",
-                ) from e
+                error = f"Required user key was not defined: {key}"
+                raise ConfigurationError(error) from e
             else:
                 if value == "*":
                     continue
@@ -164,7 +156,8 @@ class Config(SimpleNamespace):
                     isinstance(x, str) for x in value
                 ):
                     continue
-                raise ConfigurationError(f"User config has wrong type: {key}")
+                error = f"User config has wrong type: {key}"
+                raise ConfigurationError(error)
         return True
 
 

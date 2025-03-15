@@ -86,7 +86,8 @@ def argument(
         handler = get_handler(target)
 
         if nargs < 0 and any(a.nargs < 0 for a in handler.arguments):
-            raise TypeError("can not have two nargs<0")
+            error = "can not have two nargs<0"
+            raise TypeError(error)
 
         handler.arguments.insert(
             0,

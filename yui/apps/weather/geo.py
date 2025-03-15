@@ -24,7 +24,8 @@ async def get_geometric_info_by_address(
         ) as resp,
     ):
         if resp.status != 200:
-            raise WeatherResponseError(f"Bad HTTP Response: {resp.status}")
+            error = f"Bad HTTP Response: {resp.status}"
+            raise WeatherResponseError(error)
 
         data = await resp.json(loads=json.loads)
 

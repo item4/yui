@@ -112,7 +112,7 @@ def test_config_check(bot_config):
         )
 
     bot_config.APP_TOKEN = 123.456
-    err = "Wrong config value type: APP_TOKEN"
+    err = "Config value type mismatch: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         assert bot_config.check(
             {"APP_TOKEN": int},
