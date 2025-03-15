@@ -2,6 +2,7 @@ import re
 
 import pytest
 import pytest_asyncio
+from aiohttp.client_exceptions import ClientConnectionError
 
 from yui.apps.animal import APIServerError
 from yui.apps.animal import CAT_API_URL
@@ -14,13 +15,13 @@ from yui.apps.animal import get_cat_image_url
 from yui.apps.animal import get_dog_image_url
 from yui.apps.animal import get_fox_image_url
 
-cat_cooltime_re = re.compile(
+CAT_REJECTED_PATTERN = re.compile(
     r"아직 쿨타임이다냥! \d+시 \d+분 이후로 다시 시도해보라냥!",
 )
-dog_cooltime_re = re.compile(
+DOG_REJECTED_PATTERN = re.compile(
     r"아직 쿨타임이다멍! \d+시 \d+분 이후로 다시 시도해보라멍!",
 )
-fox_cooltime_re = re.compile(
+FOX_REJECTED_PATTERN = re.compile(
     r"아직 쿨타임이에요! \d+시 \d+분 이후로 다시 시도해보세요!",
 )
 
@@ -32,21 +33,28 @@ async def bot_with_cache(bot, cache):
 
 
 @pytest.mark.asyncio
-async def test_get_cat_image_url(response_mock):
+async def test_get_cat_image_url_server_error(response_mock):
     response_mock.get(
         CAT_API_URL,
         status=500,
     )
+    with pytest.raises(APIServerError):
+        await get_cat_image_url(1.0)
+
+
+@pytest.mark.asyncio
+async def test_get_cat_image_url_timeout(response_mock):
+    URL_TIMEOUT = "http://cat.com/timeout.jpg"
     response_mock.get(
         CAT_API_URL,
-        exception=aiohttp.client_exceptions.ServerDisconnectedError(),
+        exception=ClientConnectionError(),
     )
     response_mock.get(
         CAT_API_URL,
         body=(
             '<?xml version="1.0"?>'
             "<response><data><images><image>"
-            "<url>http://cat.com/404.jpg</url>"
+            f"<url>{URL_TIMEOUT}</url>"
             "<id>cdu</id>"
             "<source_url>http://thecatapi.com/?id=cdu</source_url>"
             "</image></images></data></response>"
@@ -54,129 +62,235 @@ async def test_get_cat_image_url(response_mock):
         headers={"Content-Type": "text/xml"},
     )
     response_mock.get(
-        CAT_API_URL,
-        body=(
-            '<?xml version="1.0"?>'
-            "<response><data><images><image>"
-            "<url>http://cannotresolve.com/200.jpg</url>"
-            "<id>cdu</id>"
-            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
-            "</image></images></data></response>"
-        ),
-        headers={"Content-Type": "text/xml"},
-    )
-    response_mock.get(
-        CAT_API_URL,
-        body=(
-            '<?xml version="1.0"?>'
-            "<response><data><images><image>"
-            "<url>http://timeout.com/200.jpg</url>"
-            "<id>cdu</id>"
-            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
-            "</image></images></data></response>"
-        ),
-        headers={"Content-Type": "text/xml"},
-    )
-    response_mock.get(
-        CAT_API_URL,
-        body=(
-            '<?xml version="1.0"?>'
-            "<response><data><images><image>"
-            "<url>http://cat.com/200.jpg</url>"
-            "<id>cdu</id>"
-            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
-            "</image></images></data></response>"
-        ),
-        headers={"Content-Type": "text/xml"},
-    )
-    response_mock.get(
-        "http://cannotresolve.com/200.jpg",
-        exception=aiohttp.ClientConnectorError(None, OSError()),
-    )
-    response_mock.get(
-        "http://timeout.com/200.jpg",
+        URL_TIMEOUT,
         exception=TimeoutError(),
     )
-    response_mock.get("http://cat.com/404.jpg", status=404)
-    response_mock.get("http://cat.com/200.jpg")
+    with pytest.raises(TimeoutError):
+        await get_cat_image_url(10.0)
+
+
+@pytest.mark.asyncio
+async def test_get_cat_image_url_no_url(response_mock):
+    response_mock.get(
+        CAT_API_URL,
+        exception=ClientConnectionError(),
+    )
+    response_mock.get(
+        CAT_API_URL,
+        body=(
+            '<?xml version="1.0"?>'
+            "<response><data><images><image>"
+            "<id>cdu</id>"
+            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
+            "</image></images></data></response>"
+        ),
+        headers={"Content-Type": "text/xml"},
+    )
 
     with pytest.raises(APIServerError):
         await get_cat_image_url(0.001)
 
+
+@pytest.mark.asyncio
+async def test_get_cat_image_url_empty_url(response_mock):
+    response_mock.get(
+        CAT_API_URL,
+        exception=ClientConnectionError(),
+    )
+    response_mock.get(
+        CAT_API_URL,
+        body=(
+            '<?xml version="1.0"?>'
+            "<response><data><images><image>"
+            "<url></url>"
+            "<id>cdu</id>"
+            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
+            "</image></images></data></response>"
+        ),
+        headers={"Content-Type": "text/xml"},
+    )
+    with pytest.raises(APIServerError):
+        await get_cat_image_url(0.001)
+
+
+@pytest.mark.asyncio
+async def test_get_cat_image_url(response_mock):
+    URL_200 = "http://cat.com/200.jpg"
+    URL_404 = "http://cat.com/404.jpg"
+    URL_CLIENT_ERROR = "http://cat.com/err.jpg"
+    response_mock.get(
+        CAT_API_URL,
+        exception=ClientConnectionError(),
+    )
+    response_mock.get(
+        CAT_API_URL,
+        body=(
+            '<?xml version="1.0"?>'
+            "<response><data><images><image>"
+            f"<url>{URL_404}</url>"
+            "<id>cdu</id>"
+            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
+            "</image></images></data></response>"
+        ),
+        headers={"Content-Type": "text/xml"},
+    )
+    response_mock.get(URL_404, status=404)
+    response_mock.get(
+        CAT_API_URL,
+        body=(
+            '<?xml version="1.0"?>'
+            "<response><data><images><image>"
+            f"<url>{URL_CLIENT_ERROR}</url>"
+            "<id>cdu</id>"
+            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
+            "</image></images></data></response>"
+        ),
+        headers={"Content-Type": "text/xml"},
+    )
+    response_mock.get(
+        URL_CLIENT_ERROR,
+        exception=ClientConnectionError(),
+    )
+    response_mock.get(
+        CAT_API_URL,
+        body=(
+            '<?xml version="1.0"?>'
+            "<response><data><images><image>"
+            f"<url>{URL_200}</url>"
+            "<id>cdu</id>"
+            "<source_url>http://thecatapi.com/?id=cdu</source_url>"
+            "</image></images></data></response>"
+        ),
+        headers={"Content-Type": "text/xml"},
+    )
+    response_mock.get(URL_200)
+
     url = await get_cat_image_url(0.001)
-    assert url == "http://cat.com/200.jpg"
+    assert url == URL_200
+
+
+@pytest.mark.asyncio
+async def test_get_dog_image_url_server_error(response_mock):
+    response_mock.get(
+        DOG_API_URL,
+        status=500,
+    )
+    with pytest.raises(APIServerError):
+        await get_dog_image_url(1.0)
+
+
+@pytest.mark.asyncio
+async def test_get_dog_image_url_timeout(response_mock):
+    URL_TIMEOUT = "http://dog.com/timeout.jpg"
+    response_mock.get(
+        DOG_API_URL,
+        payload={"status": "success", "message": URL_TIMEOUT},
+    )
+    response_mock.get(
+        URL_TIMEOUT,
+        exception=TimeoutError(),
+    )
+    with pytest.raises(TimeoutError):
+        await get_dog_image_url(10.0)
+
+
+@pytest.mark.asyncio
+async def test_get_dog_image_url_no_url(response_mock):
+    response_mock.get(
+        DOG_API_URL,
+        payload={"status": "success"},
+    )
+    with pytest.raises(APIServerError):
+        await get_dog_image_url(1.0)
+
+
+@pytest.mark.asyncio
+async def test_get_dog_image_url_empty_url(response_mock):
+    response_mock.get(
+        DOG_API_URL,
+        payload={"status": "success", "message": ""},
+    )
+    with pytest.raises(APIServerError):
+        await get_dog_image_url(1.0)
 
 
 @pytest.mark.asyncio
 async def test_get_dog_image_url(response_mock):
+    URL_200 = "http://dog.com/200.jpg"
+    URL_404 = "http://dog.com/404.jpg"
+    URL_CLIENT_ERROR = "http://dog.com/err.jpg"
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
-        status=500,
+        DOG_API_URL,
+        exception=ClientConnectionError(),
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
-        exception=aiohttp.client_exceptions.ServerDisconnectedError(),
+        DOG_API_URL,
+        payload={"status": "success", "message": URL_404},
     )
+    response_mock.get(URL_404, status=404)
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
-        payload={"status": "success", "message": "http://dog.com/404.jpg"},
-    )
-    response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
+        DOG_API_URL,
         payload={
             "status": "success",
-            "message": "http://cannotresolve.com/200.jpg",
+            "message": URL_CLIENT_ERROR,
         },
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
-        payload={"status": "success", "message": "http://timeout.com/200.jpg"},
+        URL_CLIENT_ERROR,
+        exception=ClientConnectionError(),
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
-        payload={"status": "success", "message": "http://dog.com/200.jpg"},
+        DOG_API_URL,
+        payload={"status": "success", "message": URL_200},
     )
-    response_mock.get(
-        "http://cannotresolve.com/200.jpg",
-        exception=aiohttp.ClientConnectorError(None, OSError()),
-    )
-    response_mock.get(
-        "http://timeout.com/200.jpg",
-        exception=TimeoutError(),
-    )
-    response_mock.get("http://dog.com/404.jpg", status=404)
-    response_mock.get("http://dog.com/200.jpg")
 
+    response_mock.get(URL_200)
+
+    url = await get_dog_image_url(1.0)
+    assert url == URL_200
+
+
+@pytest.mark.asyncio
+async def test_get_fox_image_url_server_error(response_mock):
+    response_mock.get(
+        FOX_GALLERY_URL,
+        status=500,
+    )
     with pytest.raises(APIServerError):
-        await get_dog_image_url(0.001)
+        await get_fox_image_url(1.0)
 
-    url = await get_dog_image_url(0.001)
-    assert url == "http://dog.com/200.jpg"
+
+@pytest.mark.asyncio
+async def test_get_fox_image_url_no_image(response_mock):
+    response_mock.get(
+        FOX_GALLERY_URL,
+        body="<!doctype html><html></html>",
+        headers={"Content-Type": "text/html"},
+    )
+    with pytest.raises(APIServerError):
+        await get_fox_image_url(0.001)
 
 
 @pytest.mark.asyncio
 async def test_get_fox_image_url(response_mock):
+    IMAGE_URL = "http://fox.com/img1.png"
     response_mock.get(
-        "http://fox-info.net/fox-gallery",
-        body="<!doctype html><html></html>",
-        headers={"Content-Type": "text/html"},
-    )
-    response_mock.get(
-        "http://fox-info.net/fox-gallery",
+        FOX_GALLERY_URL,
         body=(
+            '<div id="gallery-0">'
+            '<img src="http://fox.com/not-gallery-0.png" class="attachment-thumbnail">'
+            "</div>"
             '<div id="gallery-1">'
-            '<img src="http://fox.com/img1.png" class="attachment-thumbnail">'
+            '<img src="http://fox.com/not-thumbnail.png">'
+            f'<img src="{IMAGE_URL}" class="attachment-thumbnail">'
             '<img src="http://fox.com/img2.png" class="attachment-thumbnail">'
             '<img src="http://fox.com/img3.png" class="attachment-thumbnail">'
             "</div>"
         ),
         headers={"Content-Type": "text/html"},
     )
-    with pytest.raises(APIServerError):
-        await get_fox_image_url(0.001)
-
     url = await get_fox_image_url(0.001)
-    assert url == "http://fox.com/img1.png"
+    assert url == IMAGE_URL
 
 
 @pytest.mark.asyncio
@@ -253,7 +367,7 @@ async def test_cat_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert cat_cooltime_re.match(said.data["text"])
+    assert CAT_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
@@ -294,7 +408,7 @@ async def test_cat_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert cat_cooltime_re.match(said.data["text"])
+    assert CAT_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "냥짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
@@ -302,19 +416,19 @@ async def test_cat_command(bot, response_mock):
 @pytest.mark.asyncio
 async def test_dog_command(bot, response_mock):
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
+        DOG_API_URL,
         status=500,
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
+        DOG_API_URL,
         payload={"status": "success", "message": "http://dog.com/200.jpg"},
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
+        DOG_API_URL,
         status=500,
     )
     response_mock.get(
-        "https://dog.ceo/api/breeds/image/random",
+        DOG_API_URL,
         payload={"status": "success", "message": "http://dog.com/200.jpg"},
     )
     response_mock.get("http://dog.com/200.jpg")
@@ -357,7 +471,7 @@ async def test_dog_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert dog_cooltime_re.match(said.data["text"])
+    assert DOG_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
@@ -398,7 +512,7 @@ async def test_dog_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert dog_cooltime_re.match(said.data["text"])
+    assert DOG_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "멍짤의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
@@ -406,12 +520,12 @@ async def test_dog_command(bot, response_mock):
 @pytest.mark.asyncio
 async def test_fox_command(bot, response_mock):
     response_mock.get(
-        "http://fox-info.net/fox-gallery",
+        FOX_GALLERY_URL,
         body="<!doctype html><html></html>",
         headers={"Content-Type": "text/html"},
     )
     response_mock.get(
-        "http://fox-info.net/fox-gallery",
+        FOX_GALLERY_URL,
         body=(
             '<div id="gallery-1">'
             '<img src="http://fox.com/img1.png" class="attachment-thumbnail">'
@@ -422,12 +536,12 @@ async def test_fox_command(bot, response_mock):
         headers={"Content-Type": "text/html"},
     )
     response_mock.get(
-        "http://fox-info.net/fox-gallery",
+        FOX_GALLERY_URL,
         body="<!doctype html><html></html>",
         headers={"Content-Type": "text/html"},
     )
     response_mock.get(
-        "http://fox-info.net/fox-gallery",
+        FOX_GALLERY_URL,
         body=(
             '<div id="gallery-1">'
             '<img src="http://fox.com/img1.png" class="attachment-thumbnail">'
@@ -474,7 +588,7 @@ async def test_fox_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert fox_cooltime_re.match(said.data["text"])
+    assert FOX_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"
 
@@ -515,6 +629,6 @@ async def test_fox_command(bot, response_mock):
     said = bot.call_queue.pop()
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert fox_cooltime_re.match(said.data["text"])
+    assert FOX_REJECTED_PATTERN.match(said.data["text"])
     assert said.data["username"] == "웹 브라우저의 요정"
     assert said.data["icon_url"] == "https://i.imgur.com/xFpyvpZ.png"

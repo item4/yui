@@ -1,13 +1,15 @@
 import asyncio
 import datetime
 import functools
+from contextlib import suppress
 from typing import Final
 
 import aiohttp
-import aiohttp.client_exceptions
+from aiohttp.client_exceptions import ClientConnectionError
 from defusedxml import ElementTree
 from yarl import URL
 
+from ..bot import Bot
 from ..box import box
 from ..command.cooltime import Cooltime
 from ..event import Message
@@ -32,72 +34,64 @@ class APIServerError(RuntimeError):
 
 
 async def get_cat_image_url(timeout: float) -> str:  # noqa: ASYNC109
-    api_url = "https://thecatapi.com/api/images/get"
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                async with session.get(
-                    api_url,
-                    params={"format": "xml", "type": "jpg,png"},
-                ) as resp:
+                async with session.get(CAT_API_URL) as resp:
                     if resp.status != 200:
                         raise APIServerError
                     xml_result = await resp.read()
-                    tree = ElementTree.fromstring(xml_result)
-                    url = tree.find("data/images/image/url").text
-            except aiohttp.client_exceptions.ServerDisconnectedError:
-                await asyncio.sleep(0.1)
+            except ClientConnectionError:
+                await asyncio.sleep(0.2)
                 continue
-            try:
+
+            tree = ElementTree.fromstring(xml_result)
+            el = tree.find("data/images/image/url")
+            if el is None or el.text is None:
+                raise APIServerError
+            url = el.text
+            with suppress(ClientConnectionError):
                 async with (
                     asyncio.timeout(delay=timeout),
-                    session.get(
-                        url,
-                    ) as resp,
+                    session.get(url) as resp,
                     resp,
                 ):
                     if resp.status == 200:
                         return url
-            except (aiohttp.ClientConnectorError, TimeoutError):
-                continue
 
 
 async def get_dog_image_url(timeout: float) -> str:  # noqa: ASYNC109
-    api_url = "https://dog.ceo/api/breeds/image/random"
     async with aiohttp.ClientSession() as session:
         while True:
             try:
-                async with session.get(api_url) as resp:
+                async with session.get(DOG_API_URL) as resp:
                     if resp.status != 200:
                         raise APIServerError
                     data = await resp.json(loads=json.loads)
-                    url = data["message"]
-            except aiohttp.client_exceptions.ServerDisconnectedError:
-                await asyncio.sleep(0.1)
+                    url = data.get("message")
+            except ClientConnectionError:
+                await asyncio.sleep(0.2)
                 continue
-            try:
+            if not url:
+                raise APIServerError
+            with suppress(ClientConnectionError):
                 async with (
                     asyncio.timeout(delay=timeout),
-                    session.get(
-                        url,
-                    ) as resp,
+                    session.get(url) as resp,
                     resp,
                 ):
                     if resp.status == 200:
                         return url
-            except (aiohttp.ClientConnectorError, TimeoutError):
-                continue
 
 
 async def get_fox_image_url(timeout: float) -> str:  # noqa: ASYNC109
-    url = "http://fox-info.net/fox-gallery"
     async with (
-        asyncio.timeout(
-            delay=timeout,
-        ),
+        asyncio.timeout(delay=timeout),
         aiohttp.ClientSession() as session,
-        session.get(url) as resp,
+        session.get(FOX_GALLERY_URL) as resp,
     ):
+        if resp.status != 200:
+            raise APIServerError
         data = await resp.text()
     h = get_root(data)
     image_els = h.cssselect("#gallery-1 img.attachment-thumbnail")
