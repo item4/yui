@@ -4,33 +4,31 @@ from collections.abc import Callable
 from collections.abc import Sequence
 from decimal import Decimal
 from typing import Any
-from typing import TypeVar
 
-T = TypeVar("T", int, float, Decimal)
-
-DATE_FORMAT_RE = re.compile(
-    r"(\d{4})\s*[-\.년]?\s*(\d{1,2})\s*[-\.월]?\s*(\d{1,2})\s*일?",
+DATE_INPUT_PATTERN = re.compile(
+    r"(\d{4})\s*[-.년]?\s*(\d{1,2})\s*[-.월]?\s*(\d{1,2})\s*일?",
 )
 
 
 def str_to_date(
     fallback: Callable[[], datetime.date] | None = None,
-) -> Callable[[str], Any]:
+) -> Callable[[str], datetime.date]:
     """Helper to make date object from given string."""
 
     def callback(value: str) -> datetime.date:
-        if match := DATE_FORMAT_RE.match(value):
+        if matched := DATE_INPUT_PATTERN.match(value):
             try:
                 return datetime.date(
-                    int(match.group(1)),
-                    int(match.group(2)),
-                    int(match.group(3)),
+                    int(matched[1]),
+                    int(matched[2]),
+                    int(matched[3]),
                 )
             except ValueError:
                 if fallback is None:
                     raise
                 return fallback()
-        raise ValueError("Incorrect date string")
+        error = "Incorrect date string"
+        raise ValueError(error)
 
     return callback
 
@@ -127,28 +125,29 @@ def choice(
             return getattr(val, case)()
         return val
 
-    def callback(val):
+    def callback(val: str) -> str:
         if case_insensitive:
             if val.lower() in (x.lower() for x in items):
                 return transform_case(val)
             if fallback is not None:
                 return transform_case(fallback)
-            raise ValueError("given value is not in allowed cases")
+            error = "given value is not in allowed cases"
+            raise ValueError(error)
         if val in items:
             return transform_case(val)
         if fallback is not None:
             return transform_case(fallback)
-        raise ValueError("given value is not in allowed cases")
+        error = "given value is not in allowed cases"
+        raise ValueError(error)
 
     return callback
 
 
-def value_range(
-    start: T,
-    end: T,
-    *,
-    autofix: bool = False,
-) -> Callable[[T], T]:
+def value_range[T: (
+    int,
+    float,
+    Decimal,
+)](start: T, end: T, *, autofix: bool = False) -> Callable[[T], T]:
     """
     Helper to constraint value to in range or raise error.
 
@@ -174,9 +173,11 @@ def value_range(
         if start > val:
             if autofix:
                 return start
-            raise ValueError("given value is too small.")
+            error = "given value is too small."
+            raise ValueError(error)
         if autofix:
             return end
-        raise ValueError("given value is too big.")
+        error = "given value is too big."
+        raise ValueError(error)
 
     return callback
