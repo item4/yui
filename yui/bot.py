@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
+from typing import Final
 from typing import ParamSpec
 from typing import TYPE_CHECKING
 from typing import TypeVar
@@ -55,7 +56,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 UTC9 = tzoffset("UTC9", timedelta(hours=9))
 
-FATAL_ERROR_CODES = frozenset(
+FATAL_ERROR_CODES: Final = frozenset(
     {
         "invalid_auth",
         "missing_args",
@@ -71,7 +72,7 @@ FATAL_ERROR_CODES = frozenset(
         "invalid_charset",
     },
 )
-RECONNECT_ERROR_CODES = frozenset(
+RECONNECT_ERROR_CODES: Final = frozenset(
     {
         "migration_in_progress",
         "ratelimited",
@@ -80,6 +81,14 @@ RECONNECT_ERROR_CODES = frozenset(
         "service_unavailable",
         "fatal_error",
         "internal_error",
+    },
+)
+
+WS_CLOSE_TYPES: Final = frozenset(
+    {
+        aiohttp.WSMsgType.CLOSE,
+        aiohttp.WSMsgType.CLOSED,
+        aiohttp.WSMsgType.CLOSING,
     },
 )
 
@@ -213,8 +222,9 @@ class Bot(GetLoggerMixin):
                 await cron.handler(**kw)
             except APICallError as e:
                 await report(self, exception=e)
-            except:  # noqa: E722
+            except Exception:
                 await report(self)
+                raise
             finally:
                 await sess.close()
                 is_runnable.append(1)
@@ -396,7 +406,7 @@ class Bot(GetLoggerMixin):
                 logger.exception("APICallError on app handle process")
                 await report(self, event=event, exception=e)
                 return False
-            except:  # noqa: E722
+            except Exception:
                 logger.exception("Unexpected exception on app handle process")
                 await report(self, event=event)
                 return False
@@ -452,15 +462,11 @@ class Bot(GetLoggerMixin):
                 type_ = event.pop("type", None)
                 try:
                     event = create_event(type_, event)
-                except:  # noqa: E722
+                except Exception:
                     logger.exception(msg.data)
                 else:
                     await self.queue.put(event)
-            elif msg.type in (
-                aiohttp.WSMsgType.CLOSE,
-                aiohttp.WSMsgType.CLOSED,
-                aiohttp.WSMsgType.CLOSING,
-            ):
+            elif msg.type in WS_CLOSE_TYPES:
                 logger.info("websocket closed")
                 break
             elif msg.type == aiohttp.WSMsgType.ERROR:
@@ -515,12 +521,11 @@ class Bot(GetLoggerMixin):
                         tasks,
                         return_when=asyncio.FIRST_COMPLETED,
                     )
-
-                raise BotReconnect
+                continue
             except BotReconnect:
                 logger.info("BotReconnect raised. I will reconnect soon.")
                 continue
-            except:  # noqa
+            except Exception:
                 logger.exception("Unexpected Exception raised")
                 continue
 
