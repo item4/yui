@@ -134,7 +134,7 @@ Aliases
             for x in sorted(counts)
         ]
         text = "\n".join(
-            f"- {tries+successes:,}번 시도하시면"
+            f"- {tries + successes:,}번 시도하시면"
             f" {to_percent(ch, D001)}% 확률로"
             " 목표 횟수만큼 성공할 수 있어요!"
             for tries, ch in results
