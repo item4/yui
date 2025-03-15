@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING
 
 from ...event import Event
 from ...event import Message
-from ...types.handler import HANDLER_CALL_TYPE
+from ...types.handler import FuncType
 from ...types.handler import Handler
-from ...utils.handler import get_handler
 from ..parsers import parse_option_and_arguments
 from ..utils import split_chunks
 from .base import BaseApp
@@ -25,11 +24,11 @@ class Route:
     def __init__(
         self,
         name: str | None,
-        callback: HANDLER_CALL_TYPE | Handler,
+        callback: FuncType | Handler,
         subtype: str | None = None,
     ) -> None:
         self.name = name
-        self.handler = get_handler(callback)
+        self.handler = Handler.from_callable(callback)
         self.subtype = subtype
 
 

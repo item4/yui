@@ -1,31 +1,30 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
-from typing import TYPE_CHECKING
+from typing import Final
 
 from ..types.handler import Argument
+from ..types.handler import FuncType
 from ..types.handler import Handler
 from ..types.handler import Option
-from ..utils.handler import get_handler
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from ..types.handler import DECORATOR_ARGS_TYPE
-    from ..types.handler import DECORATOR_TYPE
+type Decorator = Callable[[FuncType | Handler], Handler]
 
 
-ARGUMENT_TYPE_ERROR = "{name}: invalid type of argument value({e})"
-ARGUMENT_COUNT_ERROR = (
+ARGUMENT_TYPE_ERROR: Final = "{name}: invalid type of argument value({e})"
+ARGUMENT_COUNT_ERROR: Final = (
     "{name}: incorrect argument value count. expected {expected}, {given}"
     " given."
 )
-ARGUMENT_TRANSFORM_ERROR = "{name}: fail to transform argument value ({e})"
-OPTION_TYPE_ERROR = "{name}: invalid type of option value({e})"
-OPTION_COUNT_ERROR = (
+ARGUMENT_TRANSFORM_ERROR: Final = (
+    "{name}: fail to transform argument value ({e})"
+)
+OPTION_TYPE_ERROR: Final = "{name}: invalid type of option value({e})"
+OPTION_COUNT_ERROR: Final = (
     "{name}: incorrect option value count. expected {expected}, {given} given."
 )
-OPTION_TRANSFORM_ERROR = "{name}: fail to transform option value ({e})"
+OPTION_TRANSFORM_ERROR: Final = "{name}: fail to transform option value ({e})"
 
 
 def argument(
@@ -40,7 +39,7 @@ def argument(
     type_error: str = ARGUMENT_TYPE_ERROR,
     count_error: str = ARGUMENT_COUNT_ERROR,
     transform_error: str = ARGUMENT_TRANSFORM_ERROR,
-) -> DECORATOR_TYPE:
+) -> Decorator:
     """
     Add argument to command.
 
@@ -82,8 +81,8 @@ def argument(
 
     _dest = _dest.lower()
 
-    def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-        handler = get_handler(target)
+    def decorator(target: FuncType | Handler) -> Handler:
+        handler = Handler.from_callable(target)
 
         if nargs < 0 and any(a.nargs < 0 for a in handler.arguments):
             error = "can not have two nargs<0"
@@ -124,7 +123,7 @@ def option(
     type_error: str = OPTION_TYPE_ERROR,
     count_error: str = OPTION_COUNT_ERROR,
     transform_error: str = OPTION_TRANSFORM_ERROR,
-) -> DECORATOR_TYPE:
+) -> Decorator:
     """
     Add option parameter to command.
 
@@ -253,8 +252,8 @@ def option(
                 ),
             )
 
-    def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-        handler = get_handler(target)
+    def decorator(target: FuncType | Handler) -> Handler:
+        handler = Handler.from_callable(target)
         handler.options[:] = options + handler.options
         return handler
 
