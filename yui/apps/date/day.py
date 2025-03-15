@@ -7,7 +7,7 @@ import aiohttp.client_exceptions
 from ...box import box
 from ...event import Message
 from ...transform import str_to_date
-from ...utils.datetime import now
+from ...utils import datetime
 from .utils import APIDoesNotSupport
 from .utils import get_holiday_names
 
@@ -20,7 +20,7 @@ YEAR_MONTH_PATTERN = re.compile(r"^(\d{4})년\s*(\d{1,2})월$")
 @box.cron("0 0 * * 0,2,3,4,5,6")
 async def holiday_message(bot):
     holidays = None
-    today = now()
+    today = datetime.today()
     with contextlib.suppress(aiohttp.client_exceptions.ClientOSError):
         holidays = await get_holiday_names(today)
 
@@ -45,7 +45,7 @@ async def holiday(bot, event: Message, raw: str):
 
     if raw:
         try:
-            dt = str_to_date()(raw)
+            date = str_to_date()(raw)
         except ValueError:
             await bot.say(
                 event.channel,
@@ -53,10 +53,10 @@ async def holiday(bot, event: Message, raw: str):
             )
             return
     else:
-        dt = now()
+        date = datetime.today()
 
     try:
-        holidays = await get_holiday_names(dt)
+        holidays = await get_holiday_names(date)
     except APIDoesNotSupport:
         await bot.say(
             event.channel,
@@ -67,10 +67,13 @@ async def holiday(bot, event: Message, raw: str):
     if holidays:
         await bot.say(
             event.channel,
-            "{}: {}".format(dt.strftime("%Y년 %m월 %d일"), ", ".join(holidays)),
+            "{}: {}".format(
+                date.strftime("%Y년 %m월 %d일"),
+                ", ".join(holidays),
+            ),
         )
     else:
         await bot.say(
             event.channel,
-            "{}: 평일".format(dt.strftime("%Y년 %m월 %d일")),
+            "{}: 평일".format(date.strftime("%Y년 %m월 %d일")),
         )

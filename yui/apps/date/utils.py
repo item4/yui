@@ -12,12 +12,12 @@ class APIDoesNotSupport(Exception):
     pass
 
 
-async def get_holiday_names(dt: datetime.datetime) -> list[str]:
+async def get_holiday_names(date: datetime.date) -> list[str]:
     url = "https://item4.net/api/holiday"
     async with (
         aiohttp.ClientSession() as session,
         session.get(
-            "{}/{}".format(url, dt.strftime("%Y/%m/%d")),
+            "{}/{}".format(url, date.strftime("%Y/%m/%d")),
         ) as resp,
     ):
         if resp.status == 200:
