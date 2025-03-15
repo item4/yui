@@ -7,6 +7,14 @@ from typing import get_origin
 
 from ..utils.attrs import make_instance
 
+KNOWN_TYPES: Final = frozenset(
+    {
+        bytes,
+        float,
+        int,
+        str,
+    },
+)
 CONTAINER: Final = frozenset({set, tuple, list})
 
 
