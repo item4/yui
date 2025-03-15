@@ -3,6 +3,7 @@ import math
 import operator
 import urllib.parse
 from collections import defaultdict
+from datetime import UTC
 from datetime import datetime
 from typing import Any
 from typing import TypedDict
@@ -80,7 +81,13 @@ def fix_url(url: str) -> str:
 def convert_released_dt(value: str) -> str:
     value = value.replace("-", "").replace("T", "").replace(":", "")
     try:
-        return datetime.strptime(value, "%Y%m%d%H%M%S").strftime(DATE_FORMAT)
+        return (
+            datetime.strptime(value, "%Y%m%d%H%M%S")
+            .replace(tzinfo=UTC)
+            .strftime(
+                DATE_FORMAT,
+            )
+        )
     except ValueError:
         return str(value)
 
