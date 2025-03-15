@@ -96,10 +96,8 @@ class RSS(route.RouteApp):
         feed.channel = event.channel
         feed.url = url
         feed.updated_at = max(
-            [
-                dateutil.parser.parse(entry.published).astimezone(UTC)
-                for entry in f.entries
-            ],
+            dateutil.parser.parse(entry.published).astimezone(UTC)
+            for entry in f.entries
         )
 
         sess.add(feed)
