@@ -1,5 +1,6 @@
 import asyncio
 import math
+import operator
 import urllib.parse
 from collections import defaultdict
 from datetime import datetime
@@ -401,7 +402,7 @@ def select_one_anime_from_anissia(ohli_ani, anissia_week):
         if fuzz.ratio(ani["website"], ohli_ani["l"]) > 90:
             ani["ratio"] += 10
 
-    return max(anissia_week, key=lambda x: x["ratio"])
+    return max(anissia_week, key=operator.itemgetter("ratio"))
 
 
 async def search_on_air(

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import operator
 import re
 from datetime import datetime
 from typing import TypedDict
@@ -215,7 +216,7 @@ def make_route_desc(data: Result) -> str:
         start_name = stations[0]["displayName"]
         line = routes[0]["longName"]
         direction = routes[0]["headsign"]
-        station_count = ilen(filter(lambda x: x["stop"], stations)) - 1
+        station_count = ilen(filter(operator.itemgetter("stop"), stations)) - 1
         end_name = stations[-1]["displayName"]
         doors = platform["doors"]
         doors_list = ", ".join(doors) if doors else ""
