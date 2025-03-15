@@ -29,7 +29,7 @@ def test_alert_spec():
     ),
 )
 def test_alert_match(sunday, delta, result):
-    assert_crontab_match(alert_lifestyle, sunday + delta, result)
+    assert_crontab_match(alert_lifestyle, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio

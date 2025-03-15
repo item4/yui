@@ -83,7 +83,7 @@ async def test_command_empty_expr(bot):
     event = bot.create_message()
     expr = "  "
     help_text = "expected"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -96,7 +96,7 @@ async def test_command_bad_syntax(bot):
     event = bot.create_message()
     expr = "1++"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -111,7 +111,7 @@ async def test_command_zero_division(bot):
     event = bot.create_message()
     expr = "1/0"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -127,7 +127,7 @@ async def test_command_timeout(bot):
     event = bot.create_message()
     expr = "2**1000"
     help_text = "help"
-    await body(bot, event, expr, help_text, timeout=0.0001)
+    await body(bot=bot, event=event, expr=expr, help=help_text, timeout=0.0001)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -143,7 +143,7 @@ async def test_command_unexpected_error(bot):
     event = bot.create_message()
     expr = "undefined_variable"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -158,7 +158,7 @@ async def test_command_short_expr(bot):
     event = bot.create_message()
     expr = "1+2"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -171,7 +171,7 @@ async def test_command_short_expr_empty_result(bot):
     event = bot.create_message()
     expr = "''"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -184,7 +184,7 @@ async def test_command_multiline_expr(bot):
     event = bot.create_message()
     expr = "1+\\\n2"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -199,7 +199,13 @@ async def test_command_multiline_expr_empty_result(bot):
     event = bot.create_message()
     expr = "'''\n'''[1:]"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -212,7 +218,13 @@ async def test_command_locals(bot):
     event = bot.create_message()
     expr = "sao = '키리토'"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -228,7 +240,13 @@ async def test_command_none(bot):
     event = bot.create_message()
     expr = "None"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"

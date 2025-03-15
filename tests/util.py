@@ -143,7 +143,7 @@ def assert_crontab_spec(handler: Any):
     assert croniter.is_valid(handler.cron.spec), "spec is invalid"
 
 
-def assert_crontab_match(handler: Any, dt: datetime, expected: bool):
+def assert_crontab_match(handler: Any, dt: datetime, *, expected: bool):
     assert isinstance(handler, Handler), "handler must be Handler"
     assert handler.cron, "handler is not CronTask"
     assert croniter.match(handler.cron.spec, dt) is expected

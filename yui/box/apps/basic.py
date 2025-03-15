@@ -126,7 +126,7 @@ class App(BaseApp):
         if match:
             func_params = self.handler.params
             try:
-                chunks = split_chunks(raw, self.use_shlex)
+                chunks = split_chunks(raw, use_shlex=self.use_shlex)
             except ValueError:
                 await bot.say(
                     event.channel,

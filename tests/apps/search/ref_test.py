@@ -95,7 +95,7 @@ def test_refresh_spec():
     ),
 )
 def test_refresh_match(sunday, delta, result):
-    assert_crontab_match(refresh, sunday + delta, result)
+    assert_crontab_match(refresh, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio

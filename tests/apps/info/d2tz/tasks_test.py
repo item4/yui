@@ -24,4 +24,4 @@ def test_auto_d2tz_spec():
     ),
 )
 def test_auto_d2tz_match(sunday, delta, result):
-    assert_crontab_match(auto_d2tz, sunday + delta, result)
+    assert_crontab_match(auto_d2tz, sunday + delta, expected=result)

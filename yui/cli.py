@@ -59,7 +59,7 @@ def yui():
 
 @yui.command()
 @load_config
-async def run(config):
+async def run(*, config):
     """Run YUI."""
     try:
         while True:
@@ -80,6 +80,7 @@ async def run(config):
 @click.option("--rev-id")
 @load_config
 async def revision(
+    *,
     config,
     message: str | None,
     autogenerate: bool,
@@ -119,6 +120,7 @@ async def revision(
 @click.option("--rev-id")
 @load_config
 async def migrate(
+    *,
     config,
     message: str | None,
     sql: bool,
@@ -150,7 +152,7 @@ async def migrate(
 @yui.command()
 @click.argument("revision", default="current")
 @load_config
-async def edit(config, revision: str):
+async def edit(*, config, revision: str):
     """Edit current revision."""
 
     def op(connection, c):
@@ -167,11 +169,12 @@ async def edit(config, revision: str):
 @click.argument("revisions", nargs=-1)
 @load_config
 async def merge(
+    *,
     config,
     revisions: str,
     message: str | None,
-    branch_label=str | None,
-    rev_id=str | None,
+    branch_label: str | None,
+    rev_id: str | None,
 ):
     """Merge two revisions together.  Creates a new migration file."""
 
@@ -193,7 +196,7 @@ async def merge(
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
 @load_config
-async def upgrade(config, revision: str, sql: bool, tag: str | None):
+async def upgrade(*, config, revision: str, sql: bool, tag: str | None):
     """Upgrade to a later version."""
 
     def op(connection, c):
@@ -208,7 +211,7 @@ async def upgrade(config, revision: str, sql: bool, tag: str | None):
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="-1")
 @load_config
-async def downgrade(config, revision: str, sql: bool, tag: str):
+async def downgrade(*, config, revision: str, sql: bool, tag: str):
     """Revert to a previous version."""
 
     def op(connection, c):
@@ -221,7 +224,7 @@ async def downgrade(config, revision: str, sql: bool, tag: str):
 @yui.command()
 @click.argument("revision", default="head")
 @load_config
-async def show(config, revision: str):
+async def show(*, config, revision: str):
     """Show the revision denoted by the given symbol."""
 
     def op(connection, c):
@@ -235,7 +238,7 @@ async def show(config, revision: str):
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @click.option("--rev-range", "-r")
 @load_config
-async def history(config, verbose: bool, rev_range: str | None):
+async def history(*, config, verbose: bool, rev_range: str | None):
     """List changeset scripts in chronological order."""
 
     def op(connection, c):
@@ -249,7 +252,7 @@ async def history(config, verbose: bool, rev_range: str | None):
 @click.option("--resolve-dependencies", is_flag=True, default=False)
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-async def heads(config, verbose: bool, resolve_dependencies: bool):
+async def heads(*, config, verbose: bool, resolve_dependencies: bool):
     """Show current available heads in the script directory."""
 
     def op(connection, c):
@@ -266,7 +269,7 @@ async def heads(config, verbose: bool, resolve_dependencies: bool):
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-async def branches(config, verbose: bool):
+async def branches(*, config, verbose: bool):
     """Show current branch points."""
 
     def op(connection, c):
@@ -279,7 +282,7 @@ async def branches(config, verbose: bool):
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @load_config
-async def current(config, verbose: bool):
+async def current(*, config, verbose: bool):
     """Display the current revision for each database."""
 
     def op(connection, c):
@@ -294,7 +297,7 @@ async def current(config, verbose: bool):
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
 @load_config
-async def stamp(config, revision: str, sql: bool, tag: str | None):
+async def stamp(*, config, revision: str, sql: bool, tag: str | None):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
 

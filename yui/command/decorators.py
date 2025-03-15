@@ -30,6 +30,7 @@ OPTION_TRANSFORM_ERROR = "{name}: fail to transform option value ({e})"
 
 def argument(
     name: str,
+    *,
     dest: str | None = None,
     nargs: int = 1,
     transform_func: Callable | None = None,

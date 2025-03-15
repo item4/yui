@@ -248,7 +248,7 @@ def make_caption_list(origin: list[Caption]) -> list[Attachment]:
     concat=True,
     count_error="애니 제목을 입력해주세요",
 )
-async def caption(bot, event: Message, finished: bool, title: str):
+async def caption(*, bot, event: Message, finished: bool, title: str):
     """
     애니메이션 자막을 검색합니다
 

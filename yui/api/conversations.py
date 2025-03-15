@@ -16,6 +16,7 @@ class Conversations(Endpoint):
     async def history(
         self,
         channel: ChannelID,
+        *,
         cursor: str | None = None,
         inclusive: bool | None = None,
         latest: Ts | None = None,
@@ -49,6 +50,7 @@ class Conversations(Endpoint):
         self,
         channel: ChannelID,
         ts: Ts,
+        *,
         cursor: str | None = None,
         inclusive: bool | None = None,
         latest: Ts | None = None,
@@ -82,6 +84,7 @@ class Conversations(Endpoint):
     async def info(
         self,
         channel: ChannelID,
+        *,
         include_locale: bool | None = None,
         include_num_members: bool | None = None,
     ) -> APIResponse:
@@ -101,6 +104,7 @@ class Conversations(Endpoint):
 
     async def list(
         self,
+        *,
         cursor: str | None = None,
         exclude_archived: bool | None = None,
         limit: int | None = None,

@@ -42,7 +42,7 @@ async def test_slack_api_chat_post_ephemeral(bot):
         Attachment(
             fallback="fallback val",
             title="title val",
-            fields=[Field("field title1", "field value1", False)],
+            fields=[Field("field title1", "field value1", short=False)],
         ),
     ]
     blocks = [Section(text=PlainTextField(text="plain text"))]
@@ -158,7 +158,7 @@ async def test_slack_api_chat_post_message(bot):
         Attachment(
             fallback="fallback val",
             title="title val",
-            fields=[Field("field title1", "field value1", False)],
+            fields=[Field("field title1", "field value1", short=False)],
         ),
     ]
     blocks = [Section(text=PlainTextField(text="plain text"))]

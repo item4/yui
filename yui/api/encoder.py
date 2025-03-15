@@ -5,7 +5,7 @@ import attrs
 from ..utils import json
 
 
-def bool2str(value: bool) -> str:
+def bool2str(value: bool) -> str:  # noqa: FBT001
     """Return bool as str."""
 
     if value:

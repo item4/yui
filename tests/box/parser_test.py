@@ -48,6 +48,7 @@ def test_parse_option_and_arguments():
         nargs=2,
     )
     async def test_option(
+        *,
         required_option: int,
         dest_changed_option: int,
         is_flag: bool,

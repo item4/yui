@@ -32,6 +32,7 @@ class PLACEHOLDER:
 
 
 async def body(
+    *,
     bot: Bot,
     event: Message,
     expr: str,
@@ -133,11 +134,11 @@ async def calc_decimal(bot, event: Message, raw: str):
     """
 
     await body(
-        bot,
-        event,
-        raw,
-        f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-        True,
+        bot=bot,
+        event=event,
+        expr=raw,
+        help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
+        decimal_mode=True,
     )
 
 
@@ -145,11 +146,11 @@ async def calc_decimal(bot, event: Message, raw: str):
 async def calc_decimal_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
-            bot,
-            event,
-            raw,
-            f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-            True,
+            bot=bot,
+            event=event,
+            expr=raw,
+            help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
+            decimal_mode=True,
         )
 
 
@@ -165,11 +166,11 @@ async def calc_num(bot, event: Message, raw: str):
     """
 
     await body(
-        bot,
-        event,
-        raw,
-        f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-        False,
+        bot=bot,
+        event=event,
+        expr=raw,
+        help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
+        decimal_mode=False,
     )
 
 
@@ -177,11 +178,11 @@ async def calc_num(bot, event: Message, raw: str):
 async def calc_num_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
-            bot,
-            event,
-            raw,
-            f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-            False,
+            bot=bot,
+            event=event,
+            expr=raw,
+            help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
+            decimal_mode=False,
         )
 
 
@@ -388,7 +389,7 @@ class ScopeStack:
 class Evaluator:
     last_dump: str
 
-    def __init__(self, decimal_mode: bool = False) -> None:
+    def __init__(self, *, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
             datetime: {"date", "datetime", "time", "timedelta", "tzinfo"},
