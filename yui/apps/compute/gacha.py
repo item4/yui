@@ -1,13 +1,16 @@
 import inspect
 import math
 import re
+from collections.abc import Callable
 from decimal import Decimal
 from decimal import InvalidOperation
 from decimal import ROUND_FLOOR
 from typing import Final
 
 from scipy.stats import nbinom
+from sympy.abc import x
 from sympy.functions.combinatorial.numbers import harmonic
+from sympy.utilities.lambdify import lambdify
 
 from ...box import box
 from ...box import route
@@ -32,6 +35,12 @@ COLLECT_QUERY2 = re.compile(
     r"^(?:(?:총|전체)\s*)?"
     r"(?P<total>\d+)\s*(?:종류?|개)?\s*중(?:에서?)?\s*"
     r"(?P<n>\d+)\s*(?:종류?|개)?$",
+)
+
+collect_func: Callable[[int], float] = lambdify(
+    x,
+    x * harmonic(x),
+    modules="sympy",
 )
 
 
@@ -179,7 +188,7 @@ Aliases
             )
             return
 
-        result = n * harmonic(n)
+        result = collect_func(n)
         if total > n:
             result /= n / total
             text = "부분적으로"
