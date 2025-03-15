@@ -134,9 +134,9 @@ def test_choice(items):
 
 def test_value_range():
     # Decimal
-    one = Decimal("1")
+    one = Decimal(1)
     three = Decimal("3.0")
-    five = Decimal("5")
+    five = Decimal(5)
 
     assert value_range(one, five)(three) == Decimal(three)
     assert value_range(one, five, autofix=True)(three) == Decimal(three)
