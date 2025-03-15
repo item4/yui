@@ -13,6 +13,7 @@ from attrs import define
 
 from ..utils.attrs import field
 from ..utils.attrs import field_transformer
+from ..utils.cast import is_container
 
 if TYPE_CHECKING:
     from ..box.tasks import CronTask
@@ -81,8 +82,6 @@ class Handler:
         self.last_call = {}
 
     def prepare(self):
-        from ..box.utils import is_container
-
         for o in self.options:
             if o.type_ is None:
                 type_ = self.annotations.get(o.dest, None)

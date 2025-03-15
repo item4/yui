@@ -1,17 +1,19 @@
 import types
 from typing import Any
+from typing import Final
 from typing import TypeVar
 from typing import get_args
 from typing import get_origin
 
 from ..utils.attrs import make_instance
 
-KNOWN_TYPES = {
-    bytes,
-    float,
-    int,
-    str,
-}
+CONTAINER: Final = frozenset({set, tuple, list})
+
+
+def is_container(t) -> bool:
+    """Check given value is container type?"""
+
+    return t in CONTAINER or get_origin(t) in CONTAINER
 
 
 class CastError(Exception):
