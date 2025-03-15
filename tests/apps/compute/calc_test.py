@@ -1,6 +1,7 @@
+import functools
+import html
 import math
 from datetime import date
-from datetime import datetime
 
 import pytest
 
@@ -16,6 +17,7 @@ from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
 from yui.types.base import Ts
 from yui.types.objects import MessageMessage
+from yui.utils import datetime
 
 
 class GetItemSpy:
@@ -410,10 +412,10 @@ def test_attribute():
     with pytest.raises(BadSyntax, match=err):
         e.run("math.__module__")
 
-    e.scope["datetime"] = datetime
+    e.scope["functools"] = functools
     err = "You can not access `test_test` attribute"
     with pytest.raises(BadSyntax, match=err):
-        e.run("datetime.test_test")
+        e.run("functools.test_test")
 
     err = "You can not access attributes of "
     with pytest.raises(BadSyntax, match=err):
@@ -494,9 +496,8 @@ def test_call():
     e.run("y = math.sqrt(121)")
     assert e.scope["y"] == math.sqrt(121)
 
-    e.scope["datetime"] = datetime
-    e.run("z = datetime.now().date()")
-    assert e.scope["z"] == datetime.now().date()
+    e.run("z = html.escape('<hello>')")
+    assert e.scope["z"] == html.escape("<hello>")
 
 
 def test_classdef():
