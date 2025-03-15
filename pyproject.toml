@@ -69,8 +69,8 @@ preview = true
 line-length = 120
 target-version = "py313"
 
-
 [tool.ruff.lint]
+preview = true
 select = [
     # eradicate
     "ERA",
@@ -163,6 +163,7 @@ ignore = [
     # pyupgrade
     "UP038", # Use X | Y in {} call instead of (X, Y) - deprecated
 ]
+
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     # flake8-bandit
@@ -180,11 +181,18 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-force-single-line = true  # 한 줄 당 1개의 import 문
-order-by-type = false  # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
-case-sensitive = true  # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
+force-single-line = true # 한 줄 당 1개의 import 문
+order-by-type = false # 모두 대문자인 요소를 우선정렬하는 부분 비활성화
+case-sensitive = true # 대소문자 구분을 켜야 대문자 요소가 우선정렬됨
 known-first-party = ["yui"]
-section-order = ["future", "standard-library", "third-party", "tests", "first-party", "local-folder"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "tests",
+    "first-party",
+    "local-folder",
+]
 
 [tool.ruff.lint.isort.sections]
 tests = ["tests"]
@@ -201,11 +209,13 @@ extend-immutable-calls = [
     "yui.utils.attrs.field",
 ]
 
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 filterwarnings = ["ignore::DeprecationWarning:multiprocessing.popen_fork"]
 testpaths = ["tests"]
+
 
 [tool.mypy]
 python_version = "3.13"
@@ -213,11 +223,13 @@ ignore_missing_imports = true
 warn_unused_ignores = true    # Warns about unneeded # type: ignore comments.
 show_error_codes = true
 
+
 [tool.poetry]
 requires-poetry = ">=2.1"
 
 [tool.poetry.requires-plugins]
 poetry-plugin-export = ">=1.9"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
