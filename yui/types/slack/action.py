@@ -70,11 +70,11 @@ class Action:
     text: str
     type: str | ActionType = field(converter=ActionType)
     style: str | ActionStyle | None = field(
-        converter=call_or_none(ActionStyle),  # type: ignore
+        converter=call_or_none(ActionStyle),  # type: ignore[misc]
         default=None,
     )
     data_source: str | ActionDataSource | None = field(
-        converter=call_or_none(ActionDataSource),  # type: ignore
+        converter=call_or_none(ActionDataSource),  # type: ignore[misc]
         default=None,
     )
     id: str | None = None

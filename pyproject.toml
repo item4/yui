@@ -213,7 +213,7 @@ testpaths = ["tests"]
 [tool.mypy]
 python_version = "3.13"
 ignore_missing_imports = true
-warn_unused_ignores = true  # Warns about unneeded # type: ignore comments.
+warn_unused_ignores = true    # Warns about unneeded # type: ignore comments.
 show_error_codes = true
 
 [tool.poetry]
