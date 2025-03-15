@@ -5,9 +5,7 @@ description = "YUI is Multi-purpose Slack Bot."
 license = { text = "MIT" }
 readme = "README.rst"
 requires-python = ">=3.13,<4.0"
-authors = [
-    { name = "Kim, Jin Su", email = "item4@localhost.com" },
-]
+authors = [{ name = "Kim, Jin Su" }]
 dependencies = [
     "aiocron >= 2.1",
     "aiohttp >= 3.11.13",
