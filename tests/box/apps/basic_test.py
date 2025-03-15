@@ -62,7 +62,7 @@ LONG"""
         ts=ts,
         event_ts=event_ts,
     )
-    assert app.get_event_text(event) == ""
+    assert not app.get_event_text(event)
     event = Message(
         channel=channel_id,
         ts=ts,

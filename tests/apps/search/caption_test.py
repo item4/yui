@@ -23,9 +23,9 @@ def test_fix_url():
     assert fix_url("https://test.egloos.com") == "http://test.egloos.com"
     assert fix_url("test.egloos.com") == "http://test.egloos.com"
 
-    assert fix_url("") == ""
-    assert fix_url("http://") == ""
-    assert fix_url("https://") == ""
+    assert not fix_url("")
+    assert not fix_url("http://")
+    assert not fix_url("https://")
 
 
 def test_convert_released_dt():
