@@ -107,6 +107,10 @@ class RouteApp(BaseApp):
             except SyntaxError as e:
                 await bot.say(event.channel, f"*Error*\n{e}")
                 return False
+            if "raw" in func_params:
+                kw["raw"] = raw
+            if "remain_chunks" in func_params:
+                kw["remain_chunks"] = remain_chunks
             async with self.prepare_kwargs(
                 bot=bot,
                 event=event,
