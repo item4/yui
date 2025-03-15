@@ -9,6 +9,7 @@ import itertools
 import math
 import operator
 import random
+import resource
 import statistics
 from collections.abc import Callable
 from collections.abc import Iterable
@@ -1302,7 +1303,6 @@ def calculate(
     *,
     decimal_mode: bool = True,
 ):  # pragma: no cover  -- run on other process
-    import resource
 
     limit = 2 * 1024 * 1024
     resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
