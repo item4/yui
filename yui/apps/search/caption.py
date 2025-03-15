@@ -4,8 +4,6 @@ import urllib.parse
 from collections import defaultdict
 from datetime import datetime
 from typing import Any
-from typing import Generic
-from typing import TypeVar
 from typing import TypedDict
 
 import aiohttp
@@ -21,8 +19,6 @@ from ...event import Message
 from ...types.slack.attachment import Attachment
 from ...utils import json
 from ...utils.fuzz import match
-
-T = TypeVar("T")
 
 MIN_RATIO = 60
 DOW = [
@@ -61,7 +57,7 @@ class AnissiaCaptionInfo(TypedDict):
     name: str
 
 
-class AnissiaResponse(TypedDict, Generic[T]):
+class AnissiaResponse[T](TypedDict):
     code: str
     data: list[T]
 
