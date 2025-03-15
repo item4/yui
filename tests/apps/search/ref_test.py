@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -52,26 +53,24 @@ async def test_fetch_all_ref(bot):
 
 @pytest.mark.asyncio
 async def test_on_start(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.ref.fetch_all_ref",
-        fake_fetch,
+        mock,
     )
     assert await on_start(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 @pytest.mark.asyncio
 async def test_refresh(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.ref.fetch_all_ref",
-        fake_fetch,
+        mock,
     )
     await refresh(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 def test_refresh_spec():

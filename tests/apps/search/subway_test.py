@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -315,15 +316,14 @@ async def test_get_shortest_route(time, start_id, goal_id):
 
 @pytest.mark.asyncio
 async def test_on_start(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.fetch_all_station_db",
-        fake_fetch,
+        mock,
     )
 
     assert await on_start(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 def test_refresh_db_spec():
@@ -349,15 +349,14 @@ def test_refresh_db_match(sunday, delta, result):
 
 @pytest.mark.asyncio
 async def test_refresh_db(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.fetch_all_station_db",
-        fake_fetch,
+        mock,
     )
 
     await refresh_db(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 def test_find_station_id(station_data, start_id):
@@ -444,52 +443,24 @@ async def test_command_body(bot, start_name, goal_name):
 @pytest.mark.asyncio
 async def test_branch_commands(bot, monkeypatch):
     event = bot.create_message()
-    history = []
 
-    async def fake_body(bot_, event_, region, start, end):
-        history.append((bot_, event_, region, start, end))
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.body",
-        fake_body,
+        mock,
     )
 
     await subway(bot, event, "수도권", "서울", "인천")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "수도권"
-    assert result[3] == "서울"
-    assert result[4] == "인천"
+    mock.assert_awaited_with(bot, event, "수도권", "서울", "인천")
 
     await busan_subway(bot, event, "가야대", "수영")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "부산"
-    assert result[3] == "가야대"
-    assert result[4] == "수영"
+    mock.assert_awaited_with(bot, event, "부산", "가야대", "수영")
 
     await daegu_subway(bot, event, "학정", "지산")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "대구"
-    assert result[3] == "학정"
-    assert result[4] == "지산"
+    mock.assert_awaited_with(bot, event, "대구", "학정", "지산")
 
     await gwangju_subway(bot, event, "상무", "소태")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "광주"
-    assert result[3] == "상무"
-    assert result[4] == "소태"
+    mock.assert_awaited_with(bot, event, "광주", "상무", "소태")
 
     await daejeon_subway(bot, event, "반석", "월평")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "대전"
-    assert result[3] == "반석"
-    assert result[4] == "월평"
+    mock.assert_awaited_with(bot, event, "대전", "반석", "월평")
