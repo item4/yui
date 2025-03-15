@@ -22,14 +22,14 @@ from yui.apps.search.subway import refresh_db
 from yui.apps.search.subway import subway
 from yui.utils.datetime import now
 
-from ...util import FakeBot
 from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture()
-async def bot(cache) -> FakeBot:
-    return FakeBot(cache=cache)
+@pytest_asyncio.fixture(name="bot")
+async def bot_with_cache(bot, cache):
+    async with bot.use_cache(cache):
+        yield bot
 
 
 @pytest.fixture(scope="session")
@@ -245,17 +245,16 @@ def time():
 
 @pytest.mark.asyncio
 async def test_fetch_all_station_db(bot):
-    async with bot.begin():
-        for service_region, api_version in REGION_TABLE.values():
-            data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
-            assert data is None
+    for service_region, api_version in REGION_TABLE.values():
+        data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
+        assert data is None
 
-        await fetch_all_station_db(bot)
+    await fetch_all_station_db(bot)
 
-        for service_region, api_version in REGION_TABLE.values():
-            data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
-            assert isinstance(data, list)
-            assert isinstance(data[0], dict)
+    for service_region, api_version in REGION_TABLE.values():
+        data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
+        assert isinstance(data, list)
+        assert isinstance(data[0], dict)
 
 
 @pytest.mark.asyncio
@@ -359,8 +358,7 @@ async def test_refresh_db(bot, monkeypatch):
         fake_fetch,
     )
 
-    async with bot.begin():
-        await refresh_db(bot)
+    await refresh_db(bot)
 
 
 def test_find_station_id(station_data, start_id):
@@ -392,63 +390,56 @@ def test_make_route_desc(result_data):
 
 
 @pytest.mark.asyncio
-async def test_command_body(bot: FakeBot, start_name, goal_name):
+async def test_command_body(bot, start_name, goal_name):
     event = bot.create_message()
 
-    async with bot.begin():
-        await body(bot, event, "수도권", start_name, goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
-        )
+    await body(bot, event, "수도권", start_name, goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert (
+        said.data["text"]
+        == "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+    )
 
-        await fetch_station_db(
-            bot,
-            REGION_TABLE["수도권"][0],
-            REGION_TABLE["수도권"][1],
-        )
+    await fetch_station_db(
+        bot,
+        REGION_TABLE["수도권"][0],
+        REGION_TABLE["수도권"][1],
+    )
 
-        await body(bot, event, "수도권", "서울", "서을")
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '서울역' 이에요!)"
-        )
+    await body(bot, event, "수도권", "서울", "서을")
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert (
+        said.data["text"]
+        == "출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '서울역' 이에요!)"
+    )
 
-        await body(bot, event, "수도권", "ASDF", goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
-        )
+    await body(bot, event, "수도권", "ASDF", goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
 
-        await body(bot, event, "수도권", start_name, "ASDF")
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
-        )
+    await body(bot, event, "수도권", start_name, "ASDF")
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
 
-        await body(bot, event, "수도권", start_name, goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert start_name in said.data["text"]
-        assert goal_name in said.data["text"]
+    await body(bot, event, "수도권", start_name, goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert start_name in said.data["text"]
+    assert goal_name in said.data["text"]
 
 
 @pytest.mark.asyncio

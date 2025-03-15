@@ -47,7 +47,6 @@ class FakeBot(Bot):
         config: Config | None = None,
         *,
         using_box: Box | None = None,
-        cache=None,
     ) -> None:
         if config is None:
             config = Config(
@@ -63,7 +62,7 @@ class FakeBot(Bot):
 
         self.call_queue: list[Call] = []
         self.api = SlackAPI(self)
-        self.cache: Cache = cache
+
         self.responses: dict[str, Callable] = {}
         self.config = config
         self.box = using_box
@@ -85,7 +84,8 @@ class FakeBot(Bot):
         return None
 
     @asynccontextmanager
-    async def begin(self):
+    async def use_cache(self, cache):
+        self.cache = cache
         try:
             yield
         finally:
