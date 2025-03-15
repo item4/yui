@@ -647,17 +647,7 @@ def abc():
 
 
 def test_for():
-    total = 0
-    for x in [1, 2, 3, 4, 5, 6]:
-        total = total + x
-        if total > 10:
-            continue
-        total = total * 2
-    else:  # noqa: PLW0120
-        total = total + 10000
-    e = Evaluator()
-    e.run(
-        """
+    code = """\
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total = total + x
@@ -666,21 +656,14 @@ for x in [1, 2, 3, 4, 5, 6]:
     total = total * 2
 else:
     total = total + 10000
-""",
-    )
-    assert e.scope["total"] == total
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e = Evaluator()
+    e.run(code)
+    assert e.scope["total"] == real_locals["total"]
 
-    total2 = 0
-    for x in [1, 2, 3, 4, 5, 6]:
-        total2 = total2 + x
-        if total2 > 10:
-            break
-        total2 = total2 * 2
-    else:
-        total2 = total2 + 10000
-
-    e.run(
-        """
+    code = """\
 total2 = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 + x
@@ -689,9 +672,11 @@ for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 * 2
 else:
     total2 = total2 + 10000
-""",
-    )
-    assert e.scope["total2"] == total2
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["total2"] == real_locals["total2"]
 
 
 def test_formattedvalue():
@@ -1025,18 +1010,7 @@ def test_unaryop():
 
 
 def test_while():
-    total = 0
-    i = 1
-    while total > 100:
-        total += i
-        i += i
-        if i % 10 == 0:
-            i += 1
-    else:  # noqa: PLW0120
-        total = total + 10000
-    e = Evaluator()
-    e.run(
-        """
+    code = """\
 total = 0
 i = 1
 while total > 100:
@@ -1046,26 +1020,24 @@ while total > 100:
         i += 1
 else:
     total = total + 10000
-""",
-    )
-    assert e.scope["total"] == total
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e = Evaluator()
+    e.run(code)
+    assert e.scope["total"] == real_locals["total"]
 
-    r = 0
-    while True:
-        break
-    else:
-        r += 10
-
-    e.run(
-        """
+    code = """\
 r = 0
 while True:
     break
 else:
     r += 10
-""",
-    )
-    assert e.scope["r"] == 0
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["r"] == real_locals["r"]
 
 
 def test_with():
