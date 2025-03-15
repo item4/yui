@@ -32,7 +32,11 @@ class Cache:
         key = self._key(key)
         await self.valkey_client.set(key, data, ex=exptime)
 
-    async def get[T: DataType](self, key: CacheKey, default: T | None = None) -> T | None:
+    async def get[T: DataType](
+        self,
+        key: CacheKey,
+        default: T | None = None,
+    ) -> T | None:
         key = self._key(key)
         data = await self.valkey_client.get(key)
         if data is None:
@@ -52,7 +56,7 @@ class Cache:
         key: CacheKey,
         default: datetime | None = None,
     ) -> datetime | None:
-        value: float | None = await self.get(key)  # type: ignore[assignment]
+        value: float | None = await self.get(key)  # type: ignore[func-returns-value]
         if value is None:
             return default
         return fromtimestamp(value)
