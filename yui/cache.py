@@ -1,14 +1,14 @@
 import asyncio
+from datetime import datetime
 from decimal import Decimal
-from typing import TypeAlias
 
 from valkey.asyncio import Valkey
 
 from .utils import json
+from .utils.datetime import fromtimestamp
 
-DATA_TYPE: TypeAlias = (
-    str | bytes | bool | int | float | Decimal | dict | list | None
-)
+type DataType = str | bytes | bool | int | float | Decimal | dict | list
+type CacheKey = str | bytes
 
 
 class Cache:
@@ -17,29 +17,47 @@ class Cache:
         self.prefix = prefix.encode()
         self.is_ready = asyncio.Event()
 
-    def _key(self, key: str | bytes) -> bytes:
+    def _key(self, key: CacheKey) -> bytes:
         if isinstance(key, str):
             key = key.encode()
         return self.prefix + key
 
     async def set(
         self,
-        key: str | bytes,
-        value: DATA_TYPE,
+        key: CacheKey,
+        value: DataType,
         exptime: int | None = None,
     ):
         data = json.dumps(value).encode()
         key = self._key(key)
         await self.valkey_client.set(key, data, ex=exptime)
 
-    async def get(self, key: str | bytes, default=None) -> DATA_TYPE:
+    async def get[T: DataType](self, key: CacheKey, default: T | None = None) -> T | None:
         key = self._key(key)
         data = await self.valkey_client.get(key)
         if data is None:
             return default
         return json.loads(data.decode())
 
-    async def delete(self, key: str | bytes):
+    async def set_dt(
+        self,
+        key: CacheKey,
+        value: datetime,
+        exptime: int | None = None,
+    ):
+        await self.set(key, value.timestamp(), exptime)
+
+    async def get_dt(
+        self,
+        key: CacheKey,
+        default: datetime | None = None,
+    ) -> datetime | None:
+        value: float | None = await self.get(key)  # type: ignore[assignment]
+        if value is None:
+            return default
+        return fromtimestamp(value)
+
+    async def delete(self, key: CacheKey):
         key = self._key(key)
         await self.valkey_client.delete(key)
 

@@ -17,15 +17,15 @@ from .utils.attrs import make_instance
 from .utils.attrs import ts_field
 from .utils.attrs import user_id_field
 
-GoodByeType = Literal["goodbye"]
-HelloType = Literal["hello"]
-MessageType = Literal["message"]
-PongType = Literal["pong"]
-TeamJoinType = Literal["team_join"]
-TeamMigrationStartedType = Literal["team_migration_started"]
-YuiSystemStartType = Literal["yui_system_start"]
+type GoodByeType = Literal["goodbye"]
+type HelloType = Literal["hello"]
+type MessageType = Literal["message"]
+type PongType = Literal["pong"]
+type TeamJoinType = Literal["team_join"]
+type TeamMigrationStartedType = Literal["team_migration_started"]
+type YuiSystemStartType = Literal["yui_system_start"]
 
-EventType = Literal[
+type EventType = Literal[
     GoodByeType,
     HelloType,
     MessageType,
@@ -34,7 +34,7 @@ EventType = Literal[
     TeamMigrationStartedType,
     YuiSystemStartType,
 ]
-Source: TypeAlias = dict[str, Any]
+type Source = dict[str, Any]
 
 
 class Event:

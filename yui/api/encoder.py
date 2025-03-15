@@ -14,7 +14,7 @@ def bool2str(value: bool) -> str:  # noqa: FBT001
 
 
 def encode(obj):
-    if isinstance(obj, list | tuple | set):
+    if isinstance(obj, (list, tuple, set)):
         return [encode(x) for x in obj]
     if issubclass(obj.__class__, enum.Enum):
         return obj.value

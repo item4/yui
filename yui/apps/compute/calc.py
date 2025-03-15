@@ -23,8 +23,7 @@ from ...box import box
 from ...event import Message
 from ...utils import json
 
-TIMEOUT = 1
-MAYBE_DECIMAL: TypeAlias = int | float | decimal.Decimal
+type MAYBE_DECIMAL = int | float | decimal.Decimal
 
 
 class PLACEHOLDER:
