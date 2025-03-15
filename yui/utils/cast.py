@@ -1,4 +1,5 @@
 import types
+from itertools import starmap
 from typing import Any
 from typing import Final
 from typing import TypeVar
@@ -105,8 +106,7 @@ class TupleCaster(BaseCaster):
     def cast(self, caster_box, t, value):
         if args := get_args(t):
             return tuple(
-                caster_box.cast(ty, x)
-                for ty, x in zip(args, value, strict=True)
+                starmap(caster_box.cast, zip(args, value, strict=True)),
             )
         return tuple(value)
 
