@@ -537,4 +537,5 @@ class Bot(GetLoggerMixin):
             and isinstance(resp.body.get("user"), dict)
         ):
             return User(**resp.body["user"])
-        raise ValueError("Unexpected response")
+        error = "Unexpected response"
+        raise ValueError(error)
