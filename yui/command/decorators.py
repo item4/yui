@@ -77,9 +77,7 @@ def argument(
         else:
             container_cls = tuple
 
-    _dest = name if dest is None else dest
-
-    _dest = _dest.lower()
+    dest = (name if dest is None else dest).lower()
 
     def decorator(target: FuncType | Handler) -> Handler:
         handler = Handler.from_callable(target)
@@ -92,7 +90,7 @@ def argument(
             0,
             Argument(
                 name=name,
-                dest=_dest,
+                dest=dest,
                 nargs=nargs,
                 transform_func=transform_func,
                 type_=type_,
@@ -168,7 +166,7 @@ def option(
 
     key: str = " ".join(args)
 
-    _dest = (
+    dest = (
         args[0].lstrip("-").split("/")[0].replace("-", "_")
         if dest is None
         else dest
@@ -177,41 +175,41 @@ def option(
     for name in args:
         if "/" in name:
             true_case, false_case = name.split("/")
-            options.append(
-                Option(
-                    key=key,
-                    name=true_case,
-                    default=default,
-                    dest=_dest,
-                    nargs=0,
-                    multiple=multiple,
-                    container_cls=container_cls,
-                    required=required,
-                    transform_func=transform_func,
-                    type_=bool,
-                    value=True,
-                    type_error=type_error,
-                    count_error=count_error,
-                    transform_error=transform_error,
-                ),
-            )
-            options.append(
-                Option(
-                    key=key,
-                    name=false_case,
-                    default=default,
-                    dest=_dest,
-                    nargs=0,
-                    multiple=multiple,
-                    container_cls=container_cls,
-                    required=required,
-                    transform_func=transform_func,
-                    type_=bool,
-                    value=False,
-                    type_error=type_error,
-                    count_error=count_error,
-                    transform_error=transform_error,
-                ),
+            options.extend(
+                [
+                    Option(
+                        key=key,
+                        name=true_case,
+                        default=default,
+                        dest=dest,
+                        nargs=0,
+                        multiple=multiple,
+                        container_cls=container_cls,
+                        required=required,
+                        transform_func=transform_func,
+                        type_=bool,
+                        value=True,
+                        type_error=type_error,
+                        count_error=count_error,
+                        transform_error=transform_error,
+                    ),
+                    Option(
+                        key=key,
+                        name=false_case,
+                        default=default,
+                        dest=dest,
+                        nargs=0,
+                        multiple=multiple,
+                        container_cls=container_cls,
+                        required=required,
+                        transform_func=transform_func,
+                        type_=bool,
+                        value=False,
+                        type_error=type_error,
+                        count_error=count_error,
+                        transform_error=transform_error,
+                    ),
+                ],
             )
         elif is_flag:
             options.append(
@@ -219,7 +217,7 @@ def option(
                     key=key,
                     name=name,
                     default=default,
-                    dest=_dest,
+                    dest=dest,
                     nargs=0,
                     multiple=multiple,
                     container_cls=container_cls,
@@ -238,7 +236,7 @@ def option(
                     key=key,
                     name=name,
                     default=default,
-                    dest=_dest,
+                    dest=dest,
                     nargs=nargs,
                     multiple=multiple,
                     container_cls=container_cls,
