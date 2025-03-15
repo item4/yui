@@ -1,7 +1,7 @@
 from typing import Any
 from typing import ClassVar
 from typing import Literal
-from typing import TypeAlias
+from typing import NoReturn
 from typing import overload
 
 from attrs import define
@@ -37,8 +37,12 @@ type EventType = Literal[
 type Source = dict[str, Any]
 
 
-class Event:
+class EventBase:
     """Base class of Event."""
+
+
+class Event(EventBase):
+    """Base class of knwon event."""
 
     type: ClassVar[str]
     subtype: str | None
@@ -53,10 +57,11 @@ def event(cls):
 
 
 @define(kw_only=True, field_transformer=field_transformer)
-class UnknownEvent:
+class UnknownEvent(EventBase):
     """Unknown Event."""
 
     type: str
+    kwargs: dict[str, Any]
 
 
 @event
@@ -126,47 +131,61 @@ class YuiSystemStart(Event):
 
 
 @overload
-def create_event(type_: GoodByeType, source: Source) -> GoodBye: ...
+def create_event(type_: GoodByeType, source: Source) -> GoodBye: ...  # type: ignore[overload-overlap]
 
 
 @overload
-def create_event(type_: HelloType, source: Source) -> Hello: ...
+def create_event(type_: HelloType, source: Source) -> Hello: ...  # type: ignore[overload-overlap]
 
 
 @overload
-def create_event(type_: MessageType, source: Source) -> Message: ...
+def create_event(type_: MessageType, source: Source) -> Message: ...  # type: ignore[overload-overlap]
 
 
 @overload
-def create_event(type_: PongType, source: Source) -> Pong: ...
+def create_event(type_: PongType, source: Source) -> Pong: ...  # type: ignore[overload-overlap]
 
 
 @overload
-def create_event(type_: TeamJoinType, source: Source) -> TeamJoin: ...
+def create_event(type_: TeamJoinType, source: Source) -> TeamJoin: ...  # type: ignore[overload-overlap]
 
 
 @overload
-def create_event(
+def create_event(  # type: ignore[overload-overlap]
     type_: TeamMigrationStartedType,
     source: Source,
 ) -> TeamMigrationStarted: ...
 
 
 @overload
-def create_event(
+def create_event(  # type: ignore[overload-overlap]
     type_: YuiSystemStartType,
     source: Source,
 ) -> YuiSystemStart: ...
 
 
+@overload
+def create_event(
+    type_: str,
+    source: Source,
+) -> NoReturn: ...
+
+
 def create_event(type_, source):
     """Create Event"""
 
-    cls = _events.get(type_, UnknownEvent)
+    try:
+        cls = _events[type_]
+    except KeyError as e:
+        error = f"Unknwon event type: {type_}"
+        raise TypeError(error) from e
 
     try:
-        if cls is UnknownEvent:
-            source["type"] = type_
         return make_instance(cls, **source)
     except TypeError as e:
-        raise TypeError(f"Error at creating {cls.__name__}: {e}") from e
+        error = f"Error at creating {cls.__name__}: {e}"
+        raise TypeError(error) from e
+
+
+def create_unknown_event(type_: str, source: Source) -> UnknownEvent:
+    return UnknownEvent(type=type_, kwargs=source)
