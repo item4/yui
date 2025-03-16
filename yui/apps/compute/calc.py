@@ -1,4 +1,3 @@
-import _ast
 import ast
 import asyncio
 import datetime
@@ -9,12 +8,15 @@ import itertools
 import math
 import operator
 import random
+import resource
 import statistics
 from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any
-from typing import Self
-from typing import TypeAlias
+from typing import Final
+from typing import Protocol
+from typing import TypeGuard
+from typing import runtime_checkable
 
 from more_itertools import numeric_range
 
@@ -23,8 +25,10 @@ from ...box import box
 from ...event import Message
 from ...utils import json
 
-TIMEOUT = 1
-MAYBE_DECIMAL: TypeAlias = int | float | decimal.Decimal
+TIMEOUT: Final = 1
+TO_DECIMAL: Final[tuple[type, ...]] = (int, float)
+
+type MAYBE_DECIMAL = int | float | decimal.Decimal
 
 
 class PLACEHOLDER:
@@ -32,6 +36,7 @@ class PLACEHOLDER:
 
 
 async def body(
+    *,
     bot: Bot,
     event: Message,
     expr: str,
@@ -133,11 +138,11 @@ async def calc_decimal(bot, event: Message, raw: str):
     """
 
     await body(
-        bot,
-        event,
-        raw,
-        f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-        True,
+        bot=bot,
+        event=event,
+        expr=raw,
+        help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
+        decimal_mode=True,
     )
 
 
@@ -145,11 +150,11 @@ async def calc_decimal(bot, event: Message, raw: str):
 async def calc_decimal_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
-            bot,
-            event,
-            raw,
-            f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-            True,
+            bot=bot,
+            event=event,
+            expr=raw,
+            help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
+            decimal_mode=True,
         )
 
 
@@ -165,11 +170,11 @@ async def calc_num(bot, event: Message, raw: str):
     """
 
     await body(
-        bot,
-        event,
-        raw,
-        f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-        False,
+        bot=bot,
+        event=event,
+        expr=raw,
+        help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
+        decimal_mode=False,
     )
 
 
@@ -177,111 +182,112 @@ async def calc_num(bot, event: Message, raw: str):
 async def calc_num_on_change(bot, event: Message, raw: str):
     if event.message:
         await body(
-            bot,
-            event,
-            raw,
-            f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-            False,
+            bot=bot,
+            event=event,
+            expr=raw,
+            help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
+            decimal_mode=False,
         )
 
 
 class Decimal(decimal.Decimal):
-    def __neg__(self, context=None):
-        return Decimal(super().__neg__())
-
-    def __pos__(self, context=None):
-        return Decimal(super().__pos__())
-
-    def __abs__(self, round=True, context=None):
+    def __abs__(self):
         return Decimal(super().__abs__())
 
-    def __add__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __add__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
         return Decimal(super().__add__(other))
 
-    def __radd__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__add__(self))
-
-    def __sub__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__sub__(other))
-
-    def __rsub__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__sub__(self))
-
-    def __mul__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__mul__(other))
-
-    def __rmul__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__mul__(self))
-
-    def __truediv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__truediv__(other))
-
-    def __rtruediv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__truediv__(self))
-
-    def __floordiv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__floordiv__(other))
-
-    def __rfloordiv__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__floordiv__(self))
-
-    def __mod__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super().__mod__(other))
-
-    def __rmod__(self, other, context=None):
-        if isinstance(other, int | float):
-            other = Decimal(other)
-        return Decimal(super(Decimal, other).__mod__(self))
-
-    def __divmod__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __divmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
         quotient, remainder = super().__divmod__(other)
         return Decimal(quotient), Decimal(remainder)
 
-    def __rdivmod__(self, other, context=None):
-        if isinstance(other, int | float):
+    def __floordiv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
-        quotient, remainder = super(Decimal, other).__divmod__(self)
-        return Decimal(quotient), Decimal(remainder)
+        return Decimal(super().__floordiv__(other))
+
+    def __mod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__mod__(other))
+
+    def __mul__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__mul__(other))
+
+    def __neg__(self):
+        return Decimal(super().__neg__())
+
+    def __pos__(self):
+        return Decimal(super().__pos__())
 
     def __pow__(
         self,
-        power: Self | MAYBE_DECIMAL,
-        modulo: Self | MAYBE_DECIMAL | None = None,
+        other,
+        mod=None,
+        /,
     ):
-        if isinstance(power, int | float):
-            power = Decimal(power)
-        if isinstance(modulo, int | float):
-            modulo = Decimal(modulo)
-        return Decimal(super().__pow__(power, modulo))
-
-    def __rpow__(self, other, context=None):
-        if isinstance(other, int | float):
+        if isinstance(other, TO_DECIMAL):
             other = Decimal(other)
-        return Decimal(super(Decimal, other).__pow__(self))
+        if isinstance(mod, TO_DECIMAL):
+            mod = Decimal(mod)
+        return Decimal(super().__pow__(other, mod))
+
+    def __radd__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__add__(self))
+
+    def __rdivmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        quotient, remainder = other.__divmod__(self)
+        return Decimal(quotient), Decimal(remainder)
+
+    def __rfloordiv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__floordiv__(self))
+
+    def __rmod__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__mod__(self))
+
+    def __rmul__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__mul__(self))
+
+    def __rsub__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__sub__(self))
+
+    def __rtruediv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__truediv__(self))
+
+    def __sub__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__sub__(other))
+
+    def __truediv__(self, other, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(super().__truediv__(other))
+
+    def __rpow__(self, other, context=None, /):
+        if isinstance(other, TO_DECIMAL):
+            other = Decimal(other)
+        return Decimal(other.__pow__(self))
 
 
 TYPE_STORE = type(ast.Store())
@@ -294,43 +300,85 @@ class BadSyntax(Exception):
     pass
 
 
+class RuntimeTypeError(TypeError):
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
+@runtime_checkable
+class SupportsGetSubscript(Protocol):
+    def __getitem__(self, key, default=None): ...
+
+
+@runtime_checkable
+class SupportsSubscript(SupportsGetSubscript, Protocol):
+    def __setitem__(self, key, value): ...
+    def __delitem__(self, key): ...
+
+
+class NotIterableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not iterable"
+
+
+class NotSubscriptableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not subscriptable"
+
+
 BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
-    _ast.Add: operator.add,
-    _ast.BitAnd: operator.and_,
-    _ast.BitOr: operator.or_,
-    _ast.BitXor: operator.xor,
-    _ast.Div: operator.truediv,
-    _ast.FloorDiv: operator.floordiv,
-    _ast.LShift: operator.lshift,
-    _ast.MatMult: operator.matmul,
-    _ast.Mult: operator.mul,
-    _ast.Mod: operator.mod,
-    _ast.Pow: operator.pow,
-    _ast.RShift: operator.rshift,
-    _ast.Sub: operator.sub,
+    ast.Add: operator.add,
+    ast.BitAnd: operator.and_,
+    ast.BitOr: operator.or_,
+    ast.BitXor: operator.xor,
+    ast.Div: operator.truediv,
+    ast.FloorDiv: operator.floordiv,
+    ast.LShift: operator.lshift,
+    ast.MatMult: operator.matmul,
+    ast.Mult: operator.mul,
+    ast.Mod: operator.mod,
+    ast.Pow: operator.pow,
+    ast.RShift: operator.rshift,
+    ast.Sub: operator.sub,
 }
 BOOLOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
-    _ast.And: lambda a, b: a and b,
-    _ast.Or: lambda a, b: a or b,
+    ast.And: lambda a, b: a and b,
+    ast.Or: lambda a, b: a or b,
 }
 COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
-    _ast.Eq: operator.eq,
-    _ast.Gt: operator.gt,
-    _ast.GtE: operator.ge,
-    _ast.In: lambda a, b: a in b,
-    _ast.Is: operator.is_,
-    _ast.IsNot: operator.is_not,
-    _ast.Lt: operator.lt,
-    _ast.LtE: operator.le,
-    _ast.NotEq: operator.ne,
-    _ast.NotIn: lambda a, b: a not in b,
+    ast.Eq: operator.eq,
+    ast.Gt: operator.gt,
+    ast.GtE: operator.ge,
+    ast.In: lambda a, b: a in b,
+    ast.Is: operator.is_,
+    ast.IsNot: operator.is_not,
+    ast.Lt: operator.lt,
+    ast.LtE: operator.le,
+    ast.NotEq: operator.ne,
+    ast.NotIn: lambda a, b: a not in b,
 }
 UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
-    _ast.Invert: operator.invert,
-    _ast.Not: operator.not_,
-    _ast.UAdd: operator.pos,
-    _ast.USub: operator.neg,
+    ast.Invert: operator.invert,
+    ast.Not: operator.not_,
+    ast.UAdd: operator.pos,
+    ast.USub: operator.neg,
 }
+
+
+def is_iterable(x) -> TypeGuard[Iterable]:
+    return isinstance(x, Iterable)
+
+
+def is_get_subscriptable(x) -> TypeGuard[SupportsGetSubscript]:
+    return isinstance(x, SupportsGetSubscript)
+
+
+def is_subscriptable(x) -> TypeGuard[SupportsSubscript]:
+    return isinstance(x, SupportsSubscript)
 
 
 class ScopeStack:
@@ -388,7 +436,7 @@ class ScopeStack:
 class Evaluator:
     last_dump: str
 
-    def __init__(self, decimal_mode: bool = False) -> None:
+    def __init__(self, *, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
             datetime: {"date", "datetime", "time", "timedelta", "tzinfo"},
@@ -865,7 +913,6 @@ class Evaluator:
             "inf": math.inf,
             "nan": math.nan,
             # module level injection
-            "datetime": datetime,
             "functools": functools,
             "html": html,
             "itertools": itertools,
@@ -876,7 +923,7 @@ class Evaluator:
             "statistics": statistics,
         }
         self.scope = ScopeStack()
-        self.current_interrupt: _ast.Break | _ast.Continue | None = None
+        self.current_interrupt: ast.Break | ast.Continue | None = None
 
     def run(self, expr: str):
         h = ast.parse(expr, mode="exec")
@@ -894,139 +941,161 @@ class Evaluator:
         )(node)
 
     def assign(self, node, val):
-        cls = node.__class__
-
-        if cls == _ast.Name:
+        if isinstance(node, ast.Name):
             self.scope[node.id] = val
-        elif cls in (_ast.Tuple, _ast.List):
+        elif isinstance(node, (ast.Tuple, ast.List)):
             if not isinstance(val, Iterable):
-                raise TypeError(
-                    f"cannot unpack non-iterable {type(val).__name__} object",
+                error = (
+                    f"cannot unpack non-iterable {type(val).__name__} object"
                 )
+                raise TypeError(error)
             for telem, tval in itertools.zip_longest(
                 node.elts,
                 val,
                 fillvalue=PLACEHOLDER,
             ):
                 if telem == PLACEHOLDER:
-                    raise ValueError("not enough values to unpack")
+                    error = "not enough values to unpack"
+                    raise ValueError(error)
                 if tval == PLACEHOLDER:
-                    raise ValueError("too many values to unpack")
+                    error = "too many values to unpack"
+                    raise ValueError(error)
                 self.assign(telem, tval)
-        elif cls == _ast.Subscript:
+        elif isinstance(node, ast.Subscript):
             sym = self._run(node.value)
             xslice = self._run(node.slice)
-            if isinstance(node.slice, _ast.Slice):
-                sym[slice(xslice.start, xslice.stop)] = val
-            else:
-                sym[xslice] = val
+            if not is_subscriptable(sym):
+                raise NotSubscriptableError(sym)
+            sym[xslice] = val
         else:
-            raise BadSyntax("This assign method is not allowed")
+            error = "This assign method is not allowed"
+            raise BadSyntax(error)
 
     def delete(self, node):
-        cls = node.__class__
-
-        if cls == _ast.Name:
+        if isinstance(node, ast.Name):
             del self.scope[node.id]
-        elif cls == _ast.Tuple:
+        elif isinstance(node, ast.Tuple):
             for elt in node.elts:
                 self.delete(elt)
 
     def no_impl(self, node):
         raise NotImplementedError
 
-    def visit_annassign(self, node: _ast.AnnAssign):
-        raise BadSyntax("You can not use annotation syntax")
+    def visit_annassign(self, node: ast.AnnAssign):
+        error = "You can not use annotation syntax"
+        raise BadSyntax(error)
 
-    def visit_assert(self, node: _ast.Assert):
-        raise BadSyntax("You can not use assertion syntax")
+    def visit_assert(self, node: ast.Assert):
+        error = "You can not use assertion syntax"
+        raise BadSyntax(error)
 
-    def visit_assign(self, node: _ast.Assign):  # targets, value
+    def visit_assign(self, node: ast.Assign):  # targets, value
         value = self._run(node.value)
         for tnode in node.targets:
             self.assign(tnode, value)
 
-    def visit_asyncfor(self, node: _ast.AsyncFor):
-        raise BadSyntax("You can not use `async for` loop syntax")
+    def visit_asyncfor(self, node: ast.AsyncFor):
+        error = "You can not use `async for` loop syntax"
+        raise BadSyntax(error)
 
-    def visit_asyncfunctiondef(self, node: _ast.AsyncFunctionDef):
-        raise BadSyntax("Defining new coroutine via def syntax is not allowed")
+    def visit_asyncfunctiondef(self, node: ast.AsyncFunctionDef):
+        error = "Defining new coroutine via def syntax is not allowed"
+        raise BadSyntax(error)
 
-    def visit_asyncwith(self, node: _ast.AsyncWith):
-        raise BadSyntax("You can not use `async with` syntax")
+    def visit_asyncwith(self, node: ast.AsyncWith):
+        error = "You can not use `async with` syntax"
+        raise BadSyntax(error)
 
-    def visit_attribute(self, node: _ast.Attribute):  # value, attr, ctx
+    def visit_attribute(self, node: ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
         t = type(value)
         try:
             if value in self.allowed_modules:
                 if node.attr in self.allowed_modules[value]:
                     return getattr(value, node.attr)
-                raise BadSyntax(f"You can not access `{node.attr}` attribute")
+                error = f"You can not access `{node.attr}` attribute"
+                raise BadSyntax(error)
             if value in self.allowed_class_properties:
                 if node.attr in self.allowed_class_properties[value]:
                     return getattr(value, node.attr)
-                raise BadSyntax(f"You can not access `{node.attr}` attribute")
+                error = f"You can not access `{node.attr}` attribute"
+                raise BadSyntax(error)
         except TypeError:
             pass
         if t in self.allowed_instance_properties:
             if node.attr in self.allowed_instance_properties[t]:
                 return getattr(value, node.attr)
-            raise BadSyntax(f"You can not access `{node.attr}` attribute")
-        raise BadSyntax(f"You can not access attributes of {t}")
+            error = f"You can not access `{node.attr}` attribute"
+            raise BadSyntax(error)
+        error = f"You can not access attributes of {t}"
+        raise BadSyntax(error)
 
-    def visit_augassign(self, node: _ast.AugAssign):  # target, op, value
+    def visit_augassign(self, node: ast.AugAssign):  # target, op, value
         value = self._run(node.value)
         target = node.target
-        target_cls = target.__class__
         op_cls = node.op.__class__
+        error = "This assign method is not allowed"
 
-        if target_cls == _ast.Name:
-            target_id = target.id  # type: ignore
+        if isinstance(target, ast.Name):
+            target_id = target.id
             self.scope[target_id] = BINOP_TABLE[op_cls](
                 self.scope[target_id],
                 value,
             )
-        elif target_cls == _ast.Subscript:
-            sym = self._run(target.value)  # type: ignore
-            xslice = self._run(target.slice)  # type: ignore
-            if not isinstance(target.slice, _ast.Tuple | _ast.Slice):  # type: ignore
+        elif isinstance(target, ast.Subscript):
+            sym = self._run(target.value)
+            if not is_subscriptable(sym):
+                raise NotSubscriptableError(sym)
+            xslice = self._run(target.slice)
+            if not isinstance(target.slice, (ast.Tuple, ast.Slice)):
                 sym[xslice] = BINOP_TABLE[op_cls](
                     sym[xslice],
                     value,
                 )
             else:
-                raise BadSyntax("This assign method is not allowed")
+                raise BadSyntax(error)
         else:
-            raise BadSyntax("This assign method is not allowed")
+            raise BadSyntax(error)
 
-    def visit_await(self, node: _ast.Await):
-        raise BadSyntax("You can not await anything")
+    def visit_await(self, node: ast.Await):
+        error = "You can not await anything"
+        raise BadSyntax(error)
 
-    def visit_binop(self, node: _ast.BinOp):  # left, op, right
+    def visit_binop(self, node: ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
 
         if op:
             return op(self._run(node.left), self._run(node.right))
         raise NotImplementedError
 
-    def visit_boolop(self, node: _ast.BoolOp):  # left, op, right
+    def visit_boolop(self, node: ast.BoolOp):  # left, op, right
         op = BOOLOP_TABLE.get(node.op.__class__)
 
         if op:
-            return functools.reduce(op, map(self._run, node.values), True)
+            result = self._run(node.values[0])
+            for x in node.values[1:]:
+                result = op(result, self._run(x))
+            return result
         raise NotImplementedError
 
-    def visit_break(self, node: _ast.Break):
+    def visit_break(self, node: ast.Break):
         self.current_interrupt = node
 
-    def visit_call(self, node: _ast.Call):  # func, args, keywords
+    def visit_call(self, node: ast.Call):  # func, args, keywords
         func = self._run(node.func)
         args = [self._run(x) for x in node.args]
-        keywords = {x.arg: self._run(x.value) for x in node.keywords}
-        return func(*args, **keywords)
+        keywords = {}
+        for x in node.keywords:
+            if not isinstance(x.arg, str):
+                error = f"key name of kwargs must be str, {type(x.arg)!r} given"
+                raise TypeError(error)
+            keywords[x.arg] = self._run(x.value)
+        if callable(func):
+            return func(*args, **keywords)
+        error = "not callable"
+        raise TypeError(error)
 
-    def visit_compare(self, node: _ast.Compare):  # left, ops, comparators
+    def visit_compare(self, node: ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
         out = True
         for op, rnode in zip(node.ops, node.comparators, strict=True):
@@ -1039,47 +1108,53 @@ class Evaluator:
                 raise NotImplementedError
         return out
 
-    def visit_constant(self, node: _ast.Constant):  # value, kind
-        if self.decimal_mode and isinstance(node.value, int | float):
+    def visit_constant(self, node: ast.Constant):  # value, kind
+        if self.decimal_mode and isinstance(node.value, (int, float)):
             return Decimal(str(node.value))
         return node.value
 
-    def visit_continue(self, node: _ast.Continue):
+    def visit_continue(self, node: ast.Continue):
         self.current_interrupt = node
 
-    def visit_classdef(self, node: _ast.ClassDef):
-        raise BadSyntax("Defining new class via def syntax is not allowed")
+    def visit_classdef(self, node: ast.ClassDef):
+        error = "Defining new class via def syntax is not allowed"
+        raise BadSyntax(error)
 
-    def visit_delete(self, node: _ast.Delete):  # targets
+    def visit_delete(self, node: ast.Delete):  # targets
+        error = "This delete method is not allowed"
         for target in node.targets:
-            target_cls = target.__class__
-            if target_cls == _ast.Name:
-                del self.scope[target.id]  # type: ignore
-            elif target_cls == _ast.Subscript:
-                sym = self._run(target.value)  # type: ignore
-                xslice = self._run(target.slice)  # type: ignore
+            if isinstance(target, ast.Name):
+                del self.scope[target.id]
+            elif isinstance(target, ast.Subscript):
+                sym = self._run(target.value)
+                if not is_subscriptable(sym):
+                    raise NotSubscriptableError(sym)
+                xslice = self._run(target.slice)
                 if not isinstance(
-                    target.slice,  # type: ignore
-                    _ast.Tuple | _ast.Slice,
+                    target.slice,
+                    (ast.Tuple, ast.Slice),
                 ):
                     del sym[xslice]
                 else:
-                    raise BadSyntax("This delete method is not allowed")
+                    raise BadSyntax(error)
             else:
-                raise BadSyntax("This delete method is not allowed")
+                raise BadSyntax(error)
 
-    def visit_dict(self, node: _ast.Dict):  # keys, values
+    def visit_dict(self, node: ast.Dict):  # keys, values
         return {
             self._run(k): self._run(v)
             for k, v in zip(node.keys, node.values, strict=True)
         }
 
-    def visit_dictcomp(self, node: _ast.DictComp):  # key, value, generators
+    def visit_dictcomp(self, node: ast.DictComp):  # key, value, generators
         result: dict = {}
         current_gen = node.generators[0]
-        if current_gen.__class__ == _ast.comprehension:
+        if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                for val in self._run(current_gen.iter):
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
@@ -1087,7 +1162,7 @@ class Evaluator:
                     if add:
                         if len(node.generators) > 1:
                             r = self.visit_dictcomp(
-                                _ast.DictComp(
+                                ast.DictComp(
                                     key=node.key,
                                     value=node.value,
                                     generators=node.generators[1:],
@@ -1101,21 +1176,25 @@ class Evaluator:
                     self.delete(current_gen.target)
         return result
 
-    def visit_expr(self, node: _ast.Expr):  # value,
+    def visit_expr(self, node: ast.Expr):  # value,
         return self._run(node.value)
 
-    def visit_functiondef(self, node: _ast.FunctionDef):
-        raise BadSyntax("Defining new function via def syntax is not allowed")
+    def visit_functiondef(self, node: ast.FunctionDef):
+        error = "Defining new function via def syntax is not allowed"
+        raise BadSyntax(error)
 
-    def visit_for(self, node: _ast.For):  # target, iter, body, orelse
-        for val in self._run(node.iter):
+    def visit_for(self, node: ast.For):  # target, iter, body, orelse
+        it = self._run(node.iter)
+        if not is_iterable(it):
+            raise NotIterableError(it)
+        for val in it:
             self.assign(node.target, val)
             self.current_interrupt = None
             for tnode in node.body:
                 self._run(tnode)
                 if self.current_interrupt is not None:
                     break
-            if isinstance(self.current_interrupt, _ast.Break):
+            if isinstance(self.current_interrupt, ast.Break):
                 break
         else:
             for tnode in node.orelse:
@@ -1123,7 +1202,7 @@ class Evaluator:
 
         self.current_interrupt = None
 
-    def visit_formattedvalue(self, node: _ast.FormattedValue):
+    def visit_formattedvalue(self, node: ast.FormattedValue):
         # value, conversion, format_spec
         value = self._run(node.value)
         format_spec = self._run(node.format_spec)
@@ -1131,43 +1210,49 @@ class Evaluator:
             format_spec = ""
         return format(value, format_spec)
 
-    def visit_generatorexp(self, node: _ast.GeneratorExp):
-        raise BadSyntax("Defining new generator expression is not allowed")
+    def visit_generatorexp(self, node: ast.GeneratorExp):
+        error = "Defining new generator expression is not allowed"
+        raise BadSyntax(error)
 
-    def visit_global(self, node: _ast.Global):
-        raise BadSyntax("You can not use `global` syntax")
+    def visit_global(self, node: ast.Global):
+        error = "You can not use `global` syntax"
+        raise BadSyntax(error)
 
-    def visit_if(self, node: _ast.If):  # test, body, orelse
+    def visit_if(self, node: ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
         for stmt in stmts:
             self._run(stmt)
 
-    def visit_ifexp(self, node: _ast.IfExp):  # test, body, orelse
+    def visit_ifexp(self, node: ast.IfExp):  # test, body, orelse
         return self._run(node.body if self._run(node.test) else node.orelse)
 
-    def visit_import(self, node: _ast.Import):
-        raise BadSyntax("You can not import anything")
+    def visit_import(self, node: ast.Import):
+        error = "You can not import anything"
+        raise BadSyntax(error)
 
-    def visit_importfrom(self, node: _ast.ImportFrom):
-        raise BadSyntax("You can not import anything")
+    def visit_importfrom(self, node: ast.ImportFrom):
+        error = "You can not import anything"
+        raise BadSyntax(error)
 
-    def visit_joinedstr(self, node: _ast.JoinedStr):  # values,
-        return "".join(self._run(x) for x in node.values)
+    def visit_joinedstr(self, node: ast.JoinedStr):  # values,
+        return "".join(str(self._run(x)) for x in node.values)
 
-    def visit_lambda(self, node: _ast.Lambda):
-        raise BadSyntax(
-            "Defining new function via lambda syntax is not allowed",
-        )
+    def visit_lambda(self, node: ast.Lambda):
+        error = "Defining new function via lambda syntax is not allowed"
+        raise BadSyntax(error)
 
-    def visit_list(self, node: _ast.List):  # elts, ctx
+    def visit_list(self, node: ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]
 
-    def visit_listcomp(self, node: _ast.ListComp):  # elt, generators
+    def visit_listcomp(self, node: ast.ListComp):  # elt, generators
         result: list = []
         current_gen = node.generators[0]
-        if current_gen.__class__ == _ast.comprehension:
+        if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                for val in self._run(current_gen.iter):
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
@@ -1175,7 +1260,7 @@ class Evaluator:
                     if add:
                         if len(node.generators) > 1:
                             r = self.visit_listcomp(
-                                _ast.ListComp(
+                                ast.ListComp(
                                     elt=node.elt,
                                     generators=node.generators[1:],
                                 ),
@@ -1187,40 +1272,46 @@ class Evaluator:
                     self.delete(current_gen.target)
         return result
 
-    def visit_module(self, node: _ast.Module):  # body,
+    def visit_module(self, node: ast.Module):  # body,
         last = None
         for body_node in node.body:
             last = self._run(body_node)
         return last
 
-    def visit_name(self, node: _ast.Name):  # id, ctx
+    def visit_name(self, node: ast.Name):  # id, ctx
         if node.id in self.scope:
             return self.scope[node.id]
         if node.id in self.global_symbol_table:
             return self.global_symbol_table[node.id]
-        raise NameError
+        raise NameError(str(node.id))
 
-    def visit_nonlocal(self, node: _ast.Nonlocal):
-        raise BadSyntax("You can not use `nonlocal` syntax")
+    def visit_nonlocal(self, node: ast.Nonlocal):
+        error = "You can not use `nonlocal` syntax"
+        raise BadSyntax(error)
 
-    def visit_pass(self, node: _ast.Pass):
+    def visit_pass(self, node: ast.Pass):
         return
 
-    def visit_raise(self, node: _ast.Raise):
-        raise BadSyntax("You can not use `raise` syntax")
+    def visit_raise(self, node: ast.Raise):
+        error = "You can not use `raise` syntax"
+        raise BadSyntax(error)
 
-    def visit_return(self, node: _ast.Return):
-        raise BadSyntax("You can not use `return` syntax")
+    def visit_return(self, node: ast.Return):
+        error = "You can not use `return` syntax"
+        raise BadSyntax(error)
 
-    def visit_set(self, node: _ast.Set):  # elts,
+    def visit_set(self, node: ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
 
-    def visit_setcomp(self, node: _ast.SetComp):  # elt, generators
+    def visit_setcomp(self, node: ast.SetComp):  # elt, generators
         result = set()
         current_gen = node.generators[0]
-        if current_gen.__class__ == _ast.comprehension:
+        if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                for val in self._run(current_gen.iter):
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
@@ -1228,7 +1319,7 @@ class Evaluator:
                     if add:
                         if len(node.generators) > 1:
                             r = self.visit_setcomp(
-                                _ast.SetComp(
+                                ast.SetComp(
                                     elt=node.elt,
                                     generators=node.generators[1:],
                                 ),
@@ -1240,42 +1331,49 @@ class Evaluator:
                     self.delete(current_gen.target)
         return result
 
-    def visit_slice(self, node: _ast.Slice):  # lower, upper, step
+    def visit_slice(self, node: ast.Slice):  # lower, upper, step
         return slice(
             self._run(node.lower),
             self._run(node.upper),
             self._run(node.step),
         )
 
-    def visit_subscript(self, node: _ast.Subscript):  # value, slice, ctx
-        return self._run(node.value)[self._run(node.slice)]
+    def visit_subscript(self, node: ast.Subscript):  # value, slice, ctx
+        value = self._run(node.value)
+        if not is_get_subscriptable(value):
+            raise NotSubscriptableError(value)
+        xslice = self._run(node.slice)
+        return value[xslice]
 
-    def visit_try(self, node: _ast.Try):
-        raise BadSyntax("You can not use `try` syntax")
+    def visit_try(self, node: ast.Try):
+        error = "You can not use `try` syntax"
+        raise BadSyntax(error)
 
-    def visit_trystar(self, node: _ast.TryStar):
-        raise BadSyntax("You can not use `try` syntax with star")
+    def visit_trystar(self, node: ast.TryStar):
+        error = "You can not use `try` syntax with star"
+        raise BadSyntax(error)
 
-    def visit_tuple(self, node: _ast.Tuple):  # elts, ctx
+    def visit_tuple(self, node: ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
     def visit_typealias(self, node):  # name, type_params, value
-        raise BadSyntax("You can not define type alias")
+        error = "You can not define type alias"
+        raise BadSyntax(error)
 
-    def visit_unaryop(self, node: _ast.UnaryOp):  # op, operand
+    def visit_unaryop(self, node: ast.UnaryOp):  # op, operand
         op = UNARYOP_TABLE.get(node.op.__class__)
         if op:
             return op(self._run(node.operand))
         raise NotImplementedError
 
-    def visit_while(self, node: _ast.While):  # test, body, orelse
+    def visit_while(self, node: ast.While):  # test, body, orelse
         while self._run(node.test):
             self.current_interrupt = None
             for tnode in node.body:
                 self._run(tnode)
                 if self.current_interrupt is not None:
                     break
-            if isinstance(self.current_interrupt, _ast.Break):
+            if isinstance(self.current_interrupt, ast.Break):
                 break
         else:
             for tnode in node.orelse:
@@ -1283,14 +1381,17 @@ class Evaluator:
 
         self.current_interrupt = None
 
-    def visit_with(self, node: _ast.With):
-        raise BadSyntax("You can not use `with` syntax")
+    def visit_with(self, node: ast.With):
+        error = "You can not use `with` syntax"
+        raise BadSyntax(error)
 
-    def visit_yield(self, node: _ast.Yield):
-        raise BadSyntax("You can not use `yield` syntax")
+    def visit_yield(self, node: ast.Yield):
+        error = "You can not use `yield` syntax"
+        raise BadSyntax(error)
 
-    def visit_yieldfrom(self, node: _ast.YieldFrom):
-        raise BadSyntax("You can not use `yield from` syntax")
+    def visit_yieldfrom(self, node: ast.YieldFrom):
+        error = "You can not use `yield from` syntax"
+        raise BadSyntax(error)
 
 
 def calculate(
@@ -1298,7 +1399,6 @@ def calculate(
     *,
     decimal_mode: bool = True,
 ):  # pragma: no cover  -- run on other process
-    import resource
 
     limit = 2 * 1024 * 1024
     resource.setrlimit(resource.RLIMIT_AS, (limit, limit))

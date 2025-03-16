@@ -21,7 +21,7 @@ def to_test_type(o):
 
 
 def test_to_json():
-    field = to_test_type(Field("title val", "value val", True))
+    field = to_test_type(Field("title val", "value val", short=True))
     assert field == {
         "title": "title val",
         "value": "value val",
@@ -32,7 +32,7 @@ def test_to_json():
         Attachment(
             fallback="fallback val",
             title="title val",
-            fields=[Field("field title1", "field value1", False)],
+            fields=[Field("field title1", "field value1", short=False)],
             actions=[
                 Action(
                     name="action1 name",

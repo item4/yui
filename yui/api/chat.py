@@ -52,7 +52,8 @@ class Chat(Endpoint):
         }
 
         if text is None and blocks is None and attachments is None:
-            raise TypeError("text or attachement or blocks is required.")
+            error = "text or attachement or blocks is required."
+            raise TypeError(error)
 
         if text is not None:
             params["text"] = text
@@ -114,7 +115,8 @@ class Chat(Endpoint):
         }
 
         if text is None and blocks is None and attachments is None:
-            raise TypeError("text or attachement or blocks is required.")
+            error = "text or attachement or blocks is required."
+            raise TypeError(error)
 
         if text is not None:
             params["text"] = text

@@ -2,19 +2,16 @@ from __future__ import annotations
 
 import datetime
 import shlex
-from typing import TYPE_CHECKING
 
 import pytest
 
 from yui.box import Box
+from yui.box.apps.basic import App
 from yui.box.parsers import parse_option_and_arguments
 from yui.command.decorators import argument
 from yui.command.decorators import option
 from yui.transform import str_to_date
 from yui.transform import value_range
-
-if TYPE_CHECKING:
-    from yui.box.apps.basic import App
 
 
 def test_parse_option_and_arguments():
@@ -48,6 +45,7 @@ def test_parse_option_and_arguments():
         nargs=2,
     )
     async def test_option(
+        *,
         required_option: int,
         dest_changed_option: int,
         is_flag: bool,
@@ -63,7 +61,8 @@ def test_parse_option_and_arguments():
     ):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split(
         "--dest-change-option=2222 "
@@ -164,7 +163,8 @@ def test_parse_option_and_arguments():
     ):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split(
         "hello 2017-10-07 3.3 1.1 2.2 1 2 3 2017-10-07 2017-10-24 ",
@@ -186,7 +186,8 @@ def test_parse_option_and_arguments():
     async def test_argument2(args):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split("")
 
@@ -203,7 +204,8 @@ def test_parse_option_and_arguments():
     async def test_argument3(args):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split("1")
 
@@ -226,7 +228,8 @@ def test_parse_option_and_arguments():
     async def test_argument4(args: int):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split("asdf")
 
@@ -242,7 +245,8 @@ def test_parse_option_and_arguments():
     async def test_argument5(args):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split("2017-10-99")
 
@@ -258,7 +262,8 @@ def test_parse_option_and_arguments():
     async def test_argument6(args):
         pass
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
 
     chunks = shlex.split("2017-10-99 2017-10-00")
 

@@ -1,4 +1,5 @@
 import enum
+from contextlib import suppress
 from typing import Any
 
 import attrs
@@ -6,8 +7,8 @@ import attrs
 from ..types.slack.response import APIResponse
 
 
-def prepare_for_json(obj):
-    if isinstance(obj, list | tuple | set):
+def prepare_for_json(obj: Any) -> Any:
+    if isinstance(obj, (list, tuple, set)):
         return [prepare_for_json(x) for x in obj]
     if issubclass(obj.__class__, enum.Enum):
         return obj.value
@@ -20,10 +21,9 @@ def prepare_for_json(obj):
         }
     if isinstance(obj, str):
         return obj
-    try:
+    with suppress(attrs.exceptions.NotAnAttrsClassError):
         return prepare_for_json(attrs.asdict(obj))
-    except attrs.exceptions.NotAnAttrsClassError:
-        pass
+
     return obj
 
 

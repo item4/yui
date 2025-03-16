@@ -33,7 +33,8 @@ async def cleanup_by_event_logs(
 
     deleted: set[int] = set()
 
-    async for log in result.scalars():  # type: EventLog
+    log: EventLog
+    async for log in result.scalars():
         try:
             resp = await bot.api.chat.delete(
                 log.channel,

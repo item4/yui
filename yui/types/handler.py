@@ -1,25 +1,24 @@
 from __future__ import annotations
 
 import inspect
+from collections.abc import Awaitable
 from collections.abc import Callable
-from collections.abc import Coroutine
 from collections.abc import Mapping
 from typing import Any
 from typing import TYPE_CHECKING
-from typing import TypeAlias
 from typing import get_type_hints
 
 from attrs import define
 
 from ..utils.attrs import field
 from ..utils.attrs import field_transformer
+from ..utils.cast import is_container
 
 if TYPE_CHECKING:
     from ..box.tasks import CronTask
 
 
-HANDLER_CALL_RETURN_TYPE: TypeAlias = Coroutine[Any, Any, bool | None]
-HANDLER_CALL_TYPE: TypeAlias = Callable[..., HANDLER_CALL_RETURN_TYPE]
+type FuncType = Callable[..., Awaitable[bool | None]]
 
 
 @define(kw_only=True, field_transformer=field_transformer)
@@ -61,11 +60,10 @@ class Option:
 
 @define(kw_only=True, field_transformer=field_transformer)
 class Handler:
-    f: HANDLER_CALL_TYPE
+    f: FuncType
     arguments: list[Argument] = field(init=False)
     options: list[Option] = field(init=False)
     cron: CronTask | None = field(init=False, default=None)
-    last_call: Any = field(init=False)
     doc: str | None = field(init=False)
     params: Mapping[str, inspect.Parameter] = field(init=False)
     annotations: dict[str, Any] = field(init=False)
@@ -78,11 +76,8 @@ class Handler:
         self.annotations = get_type_hints(self.f)
         self.arguments = []
         self.options = []
-        self.last_call = {}
 
     def prepare(self):
-        from ..box.utils import is_container
-
         for o in self.options:
             if o.type_ is None:
                 type_ = self.annotations.get(o.dest, None)
@@ -105,7 +100,7 @@ class Handler:
                     a.typing_has_container = True
         self.is_prepared = True
 
-    def __call__(self, *args, **kwargs) -> HANDLER_CALL_RETURN_TYPE:
+    def __call__(self, *args, **kwargs):
         if self.bound:
             return self.f(self.bound, *args, **kwargs)
         return self.f(*args, **kwargs)
@@ -113,6 +108,8 @@ class Handler:
     def __repr__(self) -> str:
         return f"{self.f.__module__}.{self.f.__name__}"
 
-
-DECORATOR_ARGS_TYPE: TypeAlias = HANDLER_CALL_TYPE | Handler
-DECORATOR_TYPE: TypeAlias = Callable[[DECORATOR_ARGS_TYPE], Handler]
+    @classmethod
+    def from_callable(cls, obj: FuncType | Handler) -> Handler:
+        if isinstance(obj, Handler):
+            return obj
+        return Handler(f=obj)

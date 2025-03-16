@@ -1,35 +1,35 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
-from typing import TYPE_CHECKING
+from typing import Final
 
 from ..types.handler import Argument
+from ..types.handler import FuncType
 from ..types.handler import Handler
 from ..types.handler import Option
-from ..utils.handler import get_handler
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
-
-    from ..types.handler import DECORATOR_ARGS_TYPE
-    from ..types.handler import DECORATOR_TYPE
+type Decorator = Callable[[FuncType | Handler], Handler]
 
 
-ARGUMENT_TYPE_ERROR = "{name}: invalid type of argument value({e})"
-ARGUMENT_COUNT_ERROR = (
+ARGUMENT_TYPE_ERROR: Final = "{name}: invalid type of argument value({e})"
+ARGUMENT_COUNT_ERROR: Final = (
     "{name}: incorrect argument value count. expected {expected}, {given}"
     " given."
 )
-ARGUMENT_TRANSFORM_ERROR = "{name}: fail to transform argument value ({e})"
-OPTION_TYPE_ERROR = "{name}: invalid type of option value({e})"
-OPTION_COUNT_ERROR = (
+ARGUMENT_TRANSFORM_ERROR: Final = (
+    "{name}: fail to transform argument value ({e})"
+)
+OPTION_TYPE_ERROR: Final = "{name}: invalid type of option value({e})"
+OPTION_COUNT_ERROR: Final = (
     "{name}: incorrect option value count. expected {expected}, {given} given."
 )
-OPTION_TRANSFORM_ERROR = "{name}: fail to transform option value ({e})"
+OPTION_TRANSFORM_ERROR: Final = "{name}: fail to transform option value ({e})"
 
 
 def argument(
     name: str,
+    *,
     dest: str | None = None,
     nargs: int = 1,
     transform_func: Callable | None = None,
@@ -39,7 +39,7 @@ def argument(
     type_error: str = ARGUMENT_TYPE_ERROR,
     count_error: str = ARGUMENT_COUNT_ERROR,
     transform_error: str = ARGUMENT_TRANSFORM_ERROR,
-) -> DECORATOR_TYPE:
+) -> Decorator:
     """
     Add argument to command.
 
@@ -77,21 +77,20 @@ def argument(
         else:
             container_cls = tuple
 
-    _dest = name if dest is None else dest
+    dest = (name if dest is None else dest).lower()
 
-    _dest = _dest.lower()
-
-    def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-        handler = get_handler(target)
+    def decorator(target: FuncType | Handler) -> Handler:
+        handler = Handler.from_callable(target)
 
         if nargs < 0 and any(a.nargs < 0 for a in handler.arguments):
-            raise TypeError("can not have two nargs<0")
+            error = "can not have two nargs<0"
+            raise TypeError(error)
 
         handler.arguments.insert(
             0,
             Argument(
                 name=name,
-                dest=_dest,
+                dest=dest,
                 nargs=nargs,
                 transform_func=transform_func,
                 type_=type_,
@@ -122,7 +121,7 @@ def option(
     type_error: str = OPTION_TYPE_ERROR,
     count_error: str = OPTION_COUNT_ERROR,
     transform_error: str = OPTION_TRANSFORM_ERROR,
-) -> DECORATOR_TYPE:
+) -> Decorator:
     """
     Add option parameter to command.
 
@@ -167,7 +166,7 @@ def option(
 
     key: str = " ".join(args)
 
-    _dest = (
+    dest = (
         args[0].lstrip("-").split("/")[0].replace("-", "_")
         if dest is None
         else dest
@@ -176,41 +175,41 @@ def option(
     for name in args:
         if "/" in name:
             true_case, false_case = name.split("/")
-            options.append(
-                Option(
-                    key=key,
-                    name=true_case,
-                    default=default,
-                    dest=_dest,
-                    nargs=0,
-                    multiple=multiple,
-                    container_cls=container_cls,
-                    required=required,
-                    transform_func=transform_func,
-                    type_=bool,
-                    value=True,
-                    type_error=type_error,
-                    count_error=count_error,
-                    transform_error=transform_error,
-                ),
-            )
-            options.append(
-                Option(
-                    key=key,
-                    name=false_case,
-                    default=default,
-                    dest=_dest,
-                    nargs=0,
-                    multiple=multiple,
-                    container_cls=container_cls,
-                    required=required,
-                    transform_func=transform_func,
-                    type_=bool,
-                    value=False,
-                    type_error=type_error,
-                    count_error=count_error,
-                    transform_error=transform_error,
-                ),
+            options.extend(
+                [
+                    Option(
+                        key=key,
+                        name=true_case,
+                        default=default,
+                        dest=dest,
+                        nargs=0,
+                        multiple=multiple,
+                        container_cls=container_cls,
+                        required=required,
+                        transform_func=transform_func,
+                        type_=bool,
+                        value=True,
+                        type_error=type_error,
+                        count_error=count_error,
+                        transform_error=transform_error,
+                    ),
+                    Option(
+                        key=key,
+                        name=false_case,
+                        default=default,
+                        dest=dest,
+                        nargs=0,
+                        multiple=multiple,
+                        container_cls=container_cls,
+                        required=required,
+                        transform_func=transform_func,
+                        type_=bool,
+                        value=False,
+                        type_error=type_error,
+                        count_error=count_error,
+                        transform_error=transform_error,
+                    ),
+                ],
             )
         elif is_flag:
             options.append(
@@ -218,7 +217,7 @@ def option(
                     key=key,
                     name=name,
                     default=default,
-                    dest=_dest,
+                    dest=dest,
                     nargs=0,
                     multiple=multiple,
                     container_cls=container_cls,
@@ -237,7 +236,7 @@ def option(
                     key=key,
                     name=name,
                     default=default,
-                    dest=_dest,
+                    dest=dest,
                     nargs=nargs,
                     multiple=multiple,
                     container_cls=container_cls,
@@ -251,8 +250,8 @@ def option(
                 ),
             )
 
-    def decorator(target: DECORATOR_ARGS_TYPE) -> Handler:
-        handler = get_handler(target)
+    def decorator(target: FuncType | Handler) -> Handler:
+        handler = Handler.from_callable(target)
         handler.options[:] = options + handler.options
         return handler
 

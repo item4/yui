@@ -1,6 +1,8 @@
 import copy
 import os
 import pathlib
+from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import Mock
 
 import aioresponses
 import pytest
@@ -41,7 +43,7 @@ def database_url(request):
 
 @pytest_asyncio.fixture()
 async def fx_engine(database_url):
-    engine = create_database_engine(database_url, False)
+    engine = create_database_engine(database_url, echo=False)
     try:
         metadata = Base.metadata
         async with engine.begin() as conn:
@@ -94,7 +96,12 @@ def bot_config(database_url, owner_id):
 
 
 @pytest.fixture
-def bot(bot_config):
+def bot(request, bot_config, monkeypatch):
+    if request.config.pluginmanager.hasplugin(
+        "vscode_pytest",
+    ) and request.config.pluginmanager.hasplugin("pytest_cov"):
+        monkeypatch.setattr("resource.setrlimit", Mock())
+        monkeypatch.setattr("yui.bot.ProcessPoolExecutor", ThreadPoolExecutor)
     return FakeBot(bot_config)
 
 

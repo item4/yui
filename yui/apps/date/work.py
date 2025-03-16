@@ -56,7 +56,7 @@ async def say_knife(bot, hour: int):
     await bot.api.chat.postMessage(
         channel=bot.config.CHANNELS["general"],
         text=(
-            f"{hour}시가 되었습니다. {hour+3}시에 출근하신 분들은 칼같이"
+            f"{hour}시가 되었습니다. {hour + 3}시에 출근하신 분들은 칼같이"
             " 퇴근하시길 바랍니다."
         ),
         icon_url="https://i.imgur.com/9asRVeZ.png",

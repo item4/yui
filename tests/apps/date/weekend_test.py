@@ -38,7 +38,7 @@ def test_auto_weekend_loading_spec():
     ],
 )
 def test_auto_weekend_loading_match(sunday, delta, result):
-    assert_crontab_match(auto_weekend_loading, sunday + delta, result)
+    assert_crontab_match(auto_weekend_loading, sunday + delta, expected=result)
 
 
 def test_auto_weekend_start_spec():
@@ -59,7 +59,7 @@ def test_auto_weekend_start_spec():
     ],
 )
 def test_auto_weekend_start_match(sunday, delta, result):
-    assert_crontab_match(auto_weekend_start, sunday + delta, result)
+    assert_crontab_match(auto_weekend_start, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio

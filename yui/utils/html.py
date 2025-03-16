@@ -1,5 +1,3 @@
-from typing import AnyStr
-
 from lxml.etree import strip_elements
 from lxml.html import HTMLParser
 from lxml.html import fromstring
@@ -16,7 +14,7 @@ USELESS_TAGS = frozenset(
 
 
 def get_root(
-    html: AnyStr,
+    html: str | bytes,
     *,
     useless_tags: list[str] | None = None,
     remove_comments: bool = True,

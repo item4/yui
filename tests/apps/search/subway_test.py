@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
@@ -22,14 +23,14 @@ from yui.apps.search.subway import refresh_db
 from yui.apps.search.subway import subway
 from yui.utils.datetime import now
 
-from ...util import FakeBot
 from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture()
-async def bot(cache) -> FakeBot:
-    return FakeBot(cache=cache)
+@pytest_asyncio.fixture(name="bot")
+async def bot_with_cache(bot, cache):
+    async with bot.use_cache(cache):
+        yield bot
 
 
 @pytest.fixture(scope="session")
@@ -245,17 +246,16 @@ def time():
 
 @pytest.mark.asyncio
 async def test_fetch_all_station_db(bot):
-    async with bot.begin():
-        for service_region, api_version in REGION_TABLE.values():
-            data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
-            assert data is None
+    for service_region, api_version in REGION_TABLE.values():
+        data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
+        assert data is None
 
-        await fetch_all_station_db(bot)
+    await fetch_all_station_db(bot)
 
-        for service_region, api_version in REGION_TABLE.values():
-            data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
-            assert isinstance(data, list)
-            assert isinstance(data[0], dict)
+    for service_region, api_version in REGION_TABLE.values():
+        data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
+        assert isinstance(data, list)
+        assert isinstance(data[0], dict)
 
 
 @pytest.mark.asyncio
@@ -316,16 +316,14 @@ async def test_get_shortest_route(time, start_id, goal_id):
 
 @pytest.mark.asyncio
 async def test_on_start(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.fetch_all_station_db",
-        fake_fetch,
+        mock,
     )
 
-    async with bot.begin():
-        assert await on_start(bot)
+    assert await on_start(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 def test_refresh_db_spec():
@@ -346,21 +344,19 @@ def test_refresh_db_spec():
     ),
 )
 def test_refresh_db_match(sunday, delta, result):
-    assert_crontab_match(refresh_db, sunday + delta, result)
+    assert_crontab_match(refresh_db, sunday + delta, expected=result)
 
 
 @pytest.mark.asyncio
 async def test_refresh_db(bot, monkeypatch):
-    async def fake_fetch(bot_):
-        assert bot is bot_
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.fetch_all_station_db",
-        fake_fetch,
+        mock,
     )
 
-    async with bot.begin():
-        await refresh_db(bot)
+    await refresh_db(bot)
+    mock.assert_awaited_once_with(bot)
 
 
 def test_find_station_id(station_data, start_id):
@@ -392,114 +388,79 @@ def test_make_route_desc(result_data):
 
 
 @pytest.mark.asyncio
-async def test_command_body(bot: FakeBot, start_name, goal_name):
+async def test_command_body(bot, start_name, goal_name):
     event = bot.create_message()
 
-    async with bot.begin():
-        await body(bot, event, "수도권", start_name, goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
-        )
+    await body(bot, event, "수도권", start_name, goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert (
+        said.data["text"]
+        == "아직 지하철 관련 명령어의 실행준비가 덜 되었어요. 잠시만 기다려주세요!"
+    )
 
-        await fetch_station_db(
-            bot,
-            REGION_TABLE["수도권"][0],
-            REGION_TABLE["수도권"][1],
-        )
+    await fetch_station_db(
+        bot,
+        REGION_TABLE["수도권"][0],
+        REGION_TABLE["수도권"][1],
+    )
 
-        await body(bot, event, "수도권", "서울", "서을")
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '서울역' 이에요!)"
-        )
+    await body(bot, event, "수도권", "서울", "서을")
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert (
+        said.data["text"]
+        == "출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '서울역' 이에요!)"
+    )
 
-        await body(bot, event, "수도권", "ASDF", goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
-        )
+    await body(bot, event, "수도권", "ASDF", goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == "출발역으로 지정하신 역 이름을 찾지 못하겠어요!"
 
-        await body(bot, event, "수도권", start_name, "ASDF")
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert (
-            said.data["text"]
-            == "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
-        )
+    await body(bot, event, "수도권", start_name, "ASDF")
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert said.data["text"] == "도착역으로 지정하신 역 이름을 찾지 못하겠어요!"
 
-        await body(bot, event, "수도권", start_name, goal_name)
-        said = bot.call_queue.pop()
-        assert said.method == "chat.postMessage"
-        assert isinstance(said.data, dict)
-        assert said.data["channel"] == event.channel
-        assert start_name in said.data["text"]
-        assert goal_name in said.data["text"]
+    await body(bot, event, "수도권", start_name, goal_name)
+    said = bot.call_queue.pop()
+    assert said.method == "chat.postMessage"
+    assert isinstance(said.data, dict)
+    assert said.data["channel"] == event.channel
+    assert start_name in said.data["text"]
+    assert goal_name in said.data["text"]
 
 
 @pytest.mark.asyncio
 async def test_branch_commands(bot, monkeypatch):
     event = bot.create_message()
-    history = []
 
-    async def fake_body(bot_, event_, region, start, end):
-        history.append((bot_, event_, region, start, end))
-
+    mock = AsyncMock()
     monkeypatch.setattr(
         "yui.apps.search.subway.body",
-        fake_body,
+        mock,
     )
 
     await subway(bot, event, "수도권", "서울", "인천")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "수도권"
-    assert result[3] == "서울"
-    assert result[4] == "인천"
+    mock.assert_awaited_with(bot, event, "수도권", "서울", "인천")
 
     await busan_subway(bot, event, "가야대", "수영")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "부산"
-    assert result[3] == "가야대"
-    assert result[4] == "수영"
+    mock.assert_awaited_with(bot, event, "부산", "가야대", "수영")
 
     await daegu_subway(bot, event, "학정", "지산")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "대구"
-    assert result[3] == "학정"
-    assert result[4] == "지산"
+    mock.assert_awaited_with(bot, event, "대구", "학정", "지산")
 
     await gwangju_subway(bot, event, "상무", "소태")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "광주"
-    assert result[3] == "상무"
-    assert result[4] == "소태"
+    mock.assert_awaited_with(bot, event, "광주", "상무", "소태")
 
     await daejeon_subway(bot, event, "반석", "월평")
-    result = history.pop(0)
-    assert result[0] is bot
-    assert result[1] is event
-    assert result[2] == "대전"
-    assert result[3] == "반석"
-    assert result[4] == "월평"
+    mock.assert_awaited_with(bot, event, "대전", "반석", "월평")

@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from yui.box import Box
+from yui.box.apps.basic import App
 from yui.command.decorators import argument
 from yui.command.decorators import option
 from yui.event import Message
 from yui.event import MessageMessage
 from yui.types.base import Ts
-
-if TYPE_CHECKING:
-    from yui.box.apps.basic import App
 
 
 def test_basic_app(channel_id, user_id):
@@ -35,7 +31,8 @@ def test_basic_app(channel_id, user_id):
 
         """
 
-    app: App = box.apps.pop()
+    app = box.apps.pop()
+    assert isinstance(app, App)
     assert app.name == "test"
     assert app.aliases == ["tttt"]
     assert app.names == ["tttt", "test"]
@@ -62,7 +59,7 @@ LONG"""
         ts=ts,
         event_ts=event_ts,
     )
-    assert app.get_event_text(event) == ""
+    assert not app.get_event_text(event)
     event = Message(
         channel=channel_id,
         ts=ts,

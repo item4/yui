@@ -23,9 +23,9 @@ async def cleanup_channels(bot, sess: AsyncSession):
     time_limit = now() - timedelta(hours=12)
     ts = str(int(time_limit.timestamp()))
 
-    logger.info(f"Delete messages before {ts}")
+    logger.info("Delete messages before %s", ts)
     for channel in channels:
-        logger.info(f"Start channel cleanup: {channel}")
+        logger.info("Start channel cleanup: %s", channel)
         deleted = await cleanup_by_event_logs(
             bot,
             sess,
@@ -33,7 +33,7 @@ async def cleanup_channels(bot, sess: AsyncSession):
             ts,
             bot.config.USER_TOKEN,
         )
-        logger.info(f"Finish channel cleanup: {channel}, {deleted} deleted")
+        logger.info("Finish channel cleanup: %s, %d deleted", channel, deleted)
 
 
 @box.cron("5 * * * *")
@@ -42,9 +42,10 @@ async def get_old_history(bot, sess: AsyncSession):
     channels = bot.config.CHANNELS.get("auto_cleanup_targets", [])
 
     for channel in channels:
-        logger.info(f"Start collect message in channel: {channel}")
+        logger.info("Start collect message in channel: %s", channel)
         collected = await collect_history_from_channel(bot, channel, sess)
         logger.info(
-            f"Finish collect message in channel: {channel},"
-            f" {collected} collected",
+            "Finish collect message in channel: %s, %d collected",
+            channel,
+            collected,
         )

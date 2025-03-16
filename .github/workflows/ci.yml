@@ -7,6 +7,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  DB_USER: kirito
+  DB_PASSWORD: eugeo
+  DB_NAME: test
 
 jobs:
   check-coding-convention:
@@ -38,9 +41,9 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: kirito
-          POSTGRES_PASSWORD: eugeo
-          POSTGRES_DB: test
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
         ports:
           - 5432:5432
         options: >-
@@ -73,10 +76,10 @@ jobs:
 
       # Test
       - name: Run test cases
-        run: poetry run pytest -W always::DeprecationWarning -v --cov=yui --cov-report=xml --junitxml=junit.xml tests
+        run: poetry run pytest -v --cov=yui --cov-report=xml --junitxml=junit.xml
         env:
           SQLALCHEMY_WARN_20: 1
-          YUI_TEST_DATABASE_URL: postgresql+psycopg://kirito:eugeo@localhost/test
+          YUI_TEST_DATABASE_URL: postgresql+psycopg://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@localhost/${{ env.DB_NAME }}
           GOOGLE_API_KEY: ${{ secrets.TEST_GOOGLE_API_KEY }}
           NAVER_CLIENT_ID: ${{ secrets.TEST_NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.TEST_NAVER_CLIENT_SECRET }}

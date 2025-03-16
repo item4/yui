@@ -1,12 +1,15 @@
+import functools
+import html
 import math
 from datetime import date
-from datetime import datetime
 
 import pytest
 
 from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
+from yui.apps.compute.calc import NotIterableError
+from yui.apps.compute.calc import NotSubscriptableError
 from yui.apps.compute.calc import ScopeStack
 from yui.apps.compute.calc import body
 from yui.apps.compute.calc import calc_decimal
@@ -16,6 +19,7 @@ from yui.apps.compute.calc import calc_num_on_change
 from yui.apps.compute.calc import calculate
 from yui.types.base import Ts
 from yui.types.objects import MessageMessage
+from yui.utils import datetime
 
 
 class GetItemSpy:
@@ -26,7 +30,6 @@ class GetItemSpy:
         self.queue.append(item)
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_decimal_command(bot):
     event = bot.create_message()
@@ -39,7 +42,6 @@ async def test_calc_decimal_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_decimal_on_change_command(bot, user_id):
     event = bot.create_message(
@@ -54,7 +56,6 @@ async def test_calc_decimal_on_change_command(bot, user_id):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_num_command(bot):
     event = bot.create_message()
@@ -67,7 +68,6 @@ async def test_calc_num_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_calc_num_on_change_command(bot, user_id):
     event = bot.create_message(
@@ -82,13 +82,12 @@ async def test_calc_num_on_change_command(bot, user_id):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_empty_expr(bot):
     event = bot.create_message()
     expr = "  "
     help_text = "expected"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -96,13 +95,12 @@ async def test_command_empty_expr(bot):
     assert said.data["text"] == help_text
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_bad_syntax(bot):
     event = bot.create_message()
     expr = "1++"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -112,13 +110,12 @@ async def test_command_bad_syntax(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_zero_division(bot):
     event = bot.create_message()
     expr = "1/0"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -129,13 +126,12 @@ async def test_command_zero_division(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_timeout(bot):
     event = bot.create_message()
     expr = "2**1000"
     help_text = "help"
-    await body(bot, event, expr, help_text, timeout=0.0001)
+    await body(bot=bot, event=event, expr=expr, help=help_text, timeout=0.0001)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -146,13 +142,12 @@ async def test_command_timeout(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_unexpected_error(bot):
     event = bot.create_message()
     expr = "undefined_variable"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -162,13 +157,12 @@ async def test_command_unexpected_error(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_short_expr(bot):
     event = bot.create_message()
     expr = "1+2"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -176,13 +170,12 @@ async def test_command_short_expr(bot):
     assert said.data["text"] == "`1+2` == `3`"
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_short_expr_empty_result(bot):
     event = bot.create_message()
     expr = "''"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -190,13 +183,12 @@ async def test_command_short_expr_empty_result(bot):
     assert said.data["text"] == "`''` == _Empty_"
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_multiline_expr(bot):
     event = bot.create_message()
     expr = "1+\\\n2"
     help_text = "help"
-    await body(bot, event, expr, help_text)
+    await body(bot=bot, event=event, expr=expr, help=help_text)
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -206,13 +198,18 @@ async def test_command_multiline_expr(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_multiline_expr_empty_result(bot):
     event = bot.create_message()
     expr = "'''\n'''[1:]"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -220,13 +217,18 @@ async def test_command_multiline_expr_empty_result(bot):
     assert said.data["text"] == f"*Input*\n```\n{expr}\n```\n*Output*\n_Empty_"
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_locals(bot):
     event = bot.create_message()
     expr = "sao = '키리토'"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -237,13 +239,18 @@ async def test_command_locals(bot):
     )
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 async def test_command_none(bot):
     event = bot.create_message()
     expr = "None"
     help_text = "help"
-    await body(bot, event, expr, help_text, decimal_mode=False)
+    await body(
+        bot=bot,
+        event=event,
+        expr=expr,
+        help=help_text,
+        decimal_mode=False,
+    )
 
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
@@ -341,6 +348,11 @@ def test_assign():
     e.run("arr[:] = [10, 20, 30]")
     assert e.scope["arr"] == [10, 20, 30]
 
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("text[3] = 'x'")
+
 
 def test_asyncfor():
     e = Evaluator()
@@ -407,10 +419,10 @@ def test_attribute():
     with pytest.raises(BadSyntax, match=err):
         e.run("math.__module__")
 
-    e.scope["datetime"] = datetime
+    e.scope["functools"] = functools
     err = "You can not access `test_test` attribute"
     with pytest.raises(BadSyntax, match=err):
-        e.run("datetime.test_test")
+        e.run("functools.test_test")
 
     err = "You can not access attributes of "
     with pytest.raises(BadSyntax, match=err):
@@ -434,6 +446,11 @@ def test_augassign():
     err = "This assign method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("dt.year += 2000")
+
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("text[3] += 'x'")
 
 
 def test_await():
@@ -491,9 +508,8 @@ def test_call():
     e.run("y = math.sqrt(121)")
     assert e.scope["y"] == math.sqrt(121)
 
-    e.scope["datetime"] = datetime
-    e.run("z = datetime.now().date()")
-    assert e.scope["z"] == datetime.now().date()
+    e.run("z = html.escape('<hello>')")
+    assert e.scope["z"] == html.escape("<hello>")
 
 
 def test_classdef():
@@ -564,6 +580,11 @@ def test_delete():
     with pytest.raises(BadSyntax, match=err):
         e.run("del dt.year")
 
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("del text[3]")
+
 
 def test_dict():
     e = Evaluator()
@@ -607,6 +628,10 @@ def test_dictcomp():
     assert e.scope["k"] == "test k"
     assert e.scope["v"] == "test v"
 
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
+        e.run("{x: x for x in None}")
+
 
 def test_ellipsis():
     e = Evaluator()
@@ -643,17 +668,7 @@ def abc():
 
 
 def test_for():
-    total = 0
-    for x in [1, 2, 3, 4, 5, 6]:
-        total = total + x
-        if total > 10:
-            continue
-        total = total * 2
-    else:  # noqa: PLW0120
-        total = total + 10000
-    e = Evaluator()
-    e.run(
-        """
+    code = """\
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total = total + x
@@ -662,21 +677,14 @@ for x in [1, 2, 3, 4, 5, 6]:
     total = total * 2
 else:
     total = total + 10000
-""",
-    )
-    assert e.scope["total"] == total
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e = Evaluator()
+    e.run(code)
+    assert e.scope["total"] == real_locals["total"]
 
-    total2 = 0
-    for x in [1, 2, 3, 4, 5, 6]:
-        total2 = total2 + x
-        if total2 > 10:
-            break
-        total2 = total2 * 2
-    else:
-        total2 = total2 + 10000
-
-    e.run(
-        """
+    code = """\
 total2 = 0
 for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 + x
@@ -685,9 +693,20 @@ for x in [1, 2, 3, 4, 5, 6]:
     total2 = total2 * 2
 else:
     total2 = total2 + 10000
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["total2"] == real_locals["total2"]
+
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
+        e.run(
+            """\
+for x in None:
+    pass
 """,
-    )
-    assert e.scope["total2"] == total2
+        )
 
 
 def test_formattedvalue():
@@ -837,6 +856,10 @@ def test_listcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
+        e.run("[x for x in None]")
+
 
 def test_name():
     e = Evaluator()
@@ -927,6 +950,10 @@ def test_setcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
+        e.run("{x for x in None}")
+
 
 def test_slice():
     e = Evaluator()
@@ -961,6 +988,9 @@ def test_subscript():
     assert e.run("l[2]") == 33
     e.run("l[2] = 44")
     assert e.scope["l"] == [11, 22, 44]
+    err = "'int' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("1[2]")
 
 
 def test_try():
@@ -1021,18 +1051,7 @@ def test_unaryop():
 
 
 def test_while():
-    total = 0
-    i = 1
-    while total > 100:
-        total += i
-        i += i
-        if i % 10 == 0:
-            i += 1
-    else:  # noqa: PLW0120
-        total = total + 10000
-    e = Evaluator()
-    e.run(
-        """
+    code = """\
 total = 0
 i = 1
 while total > 100:
@@ -1042,26 +1061,24 @@ while total > 100:
         i += 1
 else:
     total = total + 10000
-""",
-    )
-    assert e.scope["total"] == total
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e = Evaluator()
+    e.run(code)
+    assert e.scope["total"] == real_locals["total"]
 
-    r = 0
-    while True:
-        break
-    else:
-        r += 10
-
-    e.run(
-        """
+    code = """\
 r = 0
 while True:
     break
 else:
     r += 10
-""",
-    )
-    assert e.scope["r"] == 0
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["r"] == real_locals["r"]
 
 
 def test_with():
@@ -1093,7 +1110,6 @@ def test_yield_from():
     assert "x" not in e.scope
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     (

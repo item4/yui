@@ -1,20 +1,23 @@
 import datetime
+from typing import Final
 
 import aiohttp
 
 from ...utils import json
+
+WEEKEND: Final = frozenset({5, 6})
 
 
 class APIDoesNotSupport(Exception):
     pass
 
 
-async def get_holiday_names(dt: datetime.datetime) -> list[str]:
+async def get_holiday_names(date: datetime.date) -> list[str]:
     url = "https://item4.net/api/holiday"
     async with (
         aiohttp.ClientSession() as session,
         session.get(
-            "{}/{}".format(url, dt.strftime("%Y/%m/%d")),
+            "{}/{}".format(url, date.strftime("%Y/%m/%d")),
         ) as resp,
     ):
         if resp.status == 200:
@@ -24,7 +27,7 @@ async def get_holiday_names(dt: datetime.datetime) -> list[str]:
 
 def weekend_loading_percent(dt: datetime.datetime) -> float:
     weekday = dt.weekday()
-    if weekday in [5, 6]:
+    if weekday in WEEKEND:
         return 100.0
     monday = (dt - datetime.timedelta(days=weekday)).replace(
         hour=0,

@@ -23,7 +23,8 @@ class TextField:
 
 def enforce_plain_text(instance, attribute, value):
     if value != TextFieldType.plain_text:
-        raise ValueError("this field support only plain text")
+        error = "this field support only plain text"
+        raise ValueError(error)
 
 
 @define(kw_only=True, field_transformer=field_transformer)

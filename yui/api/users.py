@@ -17,6 +17,7 @@ class Users(Endpoint):
 
     async def list(
         self,
+        *,
         curser: str | None = None,
         include_locale: bool | None = None,
         limit: int = 0,

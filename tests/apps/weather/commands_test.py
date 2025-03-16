@@ -1,18 +1,20 @@
 import pytest
-
-from tests.util import FakeBot
+import pytest_asyncio
 
 from yui.apps.weather.commands import weather
 
 
-@pytest.mark.asyncio
-async def test_weather_command(bot_config, cache, address):
-    bot = FakeBot(bot_config, cache=cache)
+@pytest_asyncio.fixture(name="bot")
+async def bot_with_cache(bot, cache):
+    async with bot.use_cache(cache):
+        yield bot
 
+
+@pytest.mark.asyncio
+async def test_weather_command(bot, address):
     event = bot.create_message(ts="1234.5678")
 
-    async with bot.begin():
-        await weather(bot, event, address)
+    await weather(bot, event, address)
 
     weather_said = bot.call_queue.pop(0)
 
@@ -31,16 +33,10 @@ async def test_weather_command(bot_config, cache, address):
 
 
 @pytest.mark.asyncio
-async def test_weather_command_too_short(
-    bot_config,
-    cache,
-):
-    bot = FakeBot(bot_config, cache=cache)
-
+async def test_weather_command_too_short(bot):
     event = bot.create_message(ts="1234.5678")
 
-    async with bot.begin():
-        await weather(bot, event, "a")
+    await weather(bot, event, "a")
 
     weather_said = bot.call_queue.pop(0)
 
@@ -58,16 +54,12 @@ async def test_weather_command_too_short(
 
 @pytest.mark.asyncio
 async def test_weather_command_wrong_address(
-    bot_config,
-    cache,
+    bot,
     unavailable_address,
 ):
-    bot = FakeBot(bot_config, cache=cache)
-
     event = bot.create_message(ts="1234.5678")
 
-    async with bot.begin():
-        await weather(bot, event, unavailable_address)
+    await weather(bot, event, unavailable_address)
 
     weather_said = bot.call_queue.pop(0)
 
@@ -83,20 +75,16 @@ async def test_weather_command_wrong_address(
 @pytest.mark.asyncio
 async def test_weather_command_server_error(
     response_mock,
-    bot_config,
-    cache,
+    bot,
     address,
 ):
     response_mock.get(
         "https://item4.net/api/weather/",
         body="[}",
     )
-    bot = FakeBot(bot_config, cache=cache)
-
     event = bot.create_message(ts="1234.5678")
 
-    async with bot.begin():
-        await weather(bot, event, address)
+    await weather(bot, event, address)
 
     weather_said = bot.call_queue.pop(0)
 
