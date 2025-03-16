@@ -612,7 +612,8 @@ def test_dictcomp():
     assert e.scope["k"] == "test k"
     assert e.scope["v"] == "test v"
 
-    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
         e.run("{x: x for x in None}")
 
 
@@ -682,12 +683,13 @@ else:
     e.run(code)
     assert e.scope["total2"] == real_locals["total2"]
 
-    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
         e.run(
             """\
 for x in None:
     pass
-"""
+""",
         )
 
 
@@ -838,7 +840,8 @@ def test_listcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
-    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
         e.run("[x for x in None]")
 
 
@@ -931,7 +934,8 @@ def test_setcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
-    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+    err = "'NoneType' object is not iterable"
+    with pytest.raises(NotIterableError, match=err):
         e.run("{x for x in None}")
 
 
