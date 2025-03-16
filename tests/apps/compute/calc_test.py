@@ -8,6 +8,7 @@ import pytest
 from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
+from yui.apps.compute.calc import NotIterableError
 from yui.apps.compute.calc import ScopeStack
 from yui.apps.compute.calc import body
 from yui.apps.compute.calc import calc_decimal
@@ -611,6 +612,9 @@ def test_dictcomp():
     assert e.scope["k"] == "test k"
     assert e.scope["v"] == "test v"
 
+    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+        e.run("{x: x for x in None}")
+
 
 def test_ellipsis():
     e = Evaluator()
@@ -677,6 +681,14 @@ else:
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
     assert e.scope["total2"] == real_locals["total2"]
+
+    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+        e.run(
+            """\
+for x in None:
+    pass
+"""
+        )
 
 
 def test_formattedvalue():
@@ -826,6 +838,9 @@ def test_listcomp():
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+        e.run("[x for x in None]")
+
 
 def test_name():
     e = Evaluator()
@@ -915,6 +930,9 @@ def test_setcomp():
     ) == {13, 35}
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
+
+    with pytest.raises(NotIterableError, match="'NoneType' is not iterable"):
+        e.run("{x for x in None}")
 
 
 def test_slice():

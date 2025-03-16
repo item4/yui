@@ -298,6 +298,15 @@ class BadSyntax(Exception):
     pass
 
 
+class NotIterableError(TypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} is not iterable"
+
+    def __str__(self) -> str:
+        return self.message
+
+
 BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     ast.Add: operator.add,
     ast.BitAnd: operator.and_,
@@ -1114,11 +1123,10 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                maybe_iter = self._run(current_gen.iter)
-                if not is_iterable(maybe_iter):
-                    error = f"{type(maybe_iter)!r} is not iterable"
-                    raise TypeError(error)
-                for val in maybe_iter:
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
@@ -1148,11 +1156,10 @@ class Evaluator:
         raise BadSyntax(error)
 
     def visit_for(self, node: ast.For):  # target, iter, body, orelse
-        maybe_iter = self._run(node.iter)
-        if not is_iterable(maybe_iter):
-            error = f"{type(maybe_iter)!r} is not iterable"
-            raise TypeError(error)
-        for val in maybe_iter:
+        it = self._run(node.iter)
+        if not is_iterable(it):
+            raise NotIterableError(it)
+        for val in it:
             self.assign(node.target, val)
             self.current_interrupt = None
             for tnode in node.body:
@@ -1214,11 +1221,10 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                maybe_iter = self._run(current_gen.iter)
-                if not is_iterable(maybe_iter):
-                    error = f"{type(maybe_iter)!r} is not iterable"
-                    raise TypeError(error)
-                for val in maybe_iter:
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
@@ -1274,11 +1280,10 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             with self.scope:
-                maybe_iter = self._run(current_gen.iter)
-                if not is_iterable(maybe_iter):
-                    error = f"{type(maybe_iter)!r} is not iterable"
-                    raise TypeError(error)
-                for val in maybe_iter:
+                it = self._run(current_gen.iter)
+                if not is_iterable(it):
+                    raise NotIterableError(it)
+                for val in it:
                     self.assign(current_gen.target, val)
                     add = True
                     for cond in current_gen.ifs:
