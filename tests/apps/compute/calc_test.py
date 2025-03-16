@@ -9,6 +9,7 @@ from yui.apps.compute.calc import BadSyntax
 from yui.apps.compute.calc import Decimal as D
 from yui.apps.compute.calc import Evaluator
 from yui.apps.compute.calc import NotIterableError
+from yui.apps.compute.calc import NotSubscriptableError
 from yui.apps.compute.calc import ScopeStack
 from yui.apps.compute.calc import body
 from yui.apps.compute.calc import calc_decimal
@@ -347,6 +348,11 @@ def test_assign():
     e.run("arr[:] = [10, 20, 30]")
     assert e.scope["arr"] == [10, 20, 30]
 
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("text[3] = 'x'")
+
 
 def test_asyncfor():
     e = Evaluator()
@@ -440,6 +446,11 @@ def test_augassign():
     err = "This assign method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("dt.year += 2000")
+
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("text[3] += 'x'")
 
 
 def test_await():
@@ -568,6 +579,11 @@ def test_delete():
     err = "This delete method is not allowed"
     with pytest.raises(BadSyntax, match=err):
         e.run("del dt.year")
+
+    e.scope["text"] = "kirito"
+    err = "'str' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("del text[3]")
 
 
 def test_dict():
@@ -972,6 +988,9 @@ def test_subscript():
     assert e.run("l[2]") == 33
     e.run("l[2] = 44")
     assert e.scope["l"] == [11, 22, 44]
+    err = "'int' object is not subscriptable"
+    with pytest.raises(NotSubscriptableError, match=err):
+        e.run("1[2]")
 
 
 def test_try():

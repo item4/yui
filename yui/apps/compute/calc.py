@@ -14,7 +14,9 @@ from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any
 from typing import Final
+from typing import Protocol
 from typing import TypeGuard
+from typing import runtime_checkable
 
 from more_itertools import numeric_range
 
@@ -305,10 +307,27 @@ class RuntimeTypeError(TypeError):
         return self.message
 
 
+@runtime_checkable
+class SupportsGetSubscript(Protocol):
+    def __getitem__(self, key, default=None): ...
+
+
+@runtime_checkable
+class SupportsSubscript(SupportsGetSubscript, Protocol):
+    def __setitem__(self, key, value): ...
+    def __delitem__(self, key): ...
+
+
 class NotIterableError(RuntimeTypeError):
     def __init__(self, value, *args) -> None:
         super().__init__(*args)
         self.message = f"{type(value).__name__!r} object is not iterable"
+
+
+class NotSubscriptableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not subscriptable"
 
 
 BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
@@ -352,6 +371,14 @@ UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
 
 def is_iterable(x) -> TypeGuard[Iterable]:
     return isinstance(x, Iterable)
+
+
+def is_get_subscriptable(x) -> TypeGuard[SupportsGetSubscript]:
+    return isinstance(x, SupportsGetSubscript)
+
+
+def is_subscriptable(x) -> TypeGuard[SupportsSubscript]:
+    return isinstance(x, SupportsSubscript)
 
 
 class ScopeStack:
@@ -937,9 +964,8 @@ class Evaluator:
         elif isinstance(node, ast.Subscript):
             sym = self._run(node.value)
             xslice = self._run(node.slice)
-            if sym is None:
-                error = f"{type(sym)!r} object is not subscriptable"
-                raise TypeError(error)
+            if not is_subscriptable(sym):
+                raise NotSubscriptableError(sym)
             sym[xslice] = val
         else:
             error = "This assign method is not allowed"
@@ -1018,9 +1044,8 @@ class Evaluator:
             )
         elif isinstance(target, ast.Subscript):
             sym = self._run(target.value)
-            if sym is None:
-                error = f"{type(sym)!r} object is not subscriptable"
-                raise TypeError(error)
+            if not is_subscriptable(sym):
+                raise NotSubscriptableError(sym)
             xslice = self._run(target.slice)
             if not isinstance(target.slice, (ast.Tuple, ast.Slice)):
                 sym[xslice] = BINOP_TABLE[op_cls](
@@ -1102,9 +1127,8 @@ class Evaluator:
                 del self.scope[target.id]
             elif isinstance(target, ast.Subscript):
                 sym = self._run(target.value)
-                if sym is None:
-                    error = f"{type(sym)!r} object is not subscriptable"
-                    raise TypeError(error)
+                if not is_subscriptable(sym):
+                    raise NotSubscriptableError(sym)
                 xslice = self._run(target.slice)
                 if not isinstance(
                     target.slice,
@@ -1316,9 +1340,8 @@ class Evaluator:
 
     def visit_subscript(self, node: ast.Subscript):  # value, slice, ctx
         value = self._run(node.value)
-        if value is None:
-            error = f"{type(value)!r} object is not subscriptable"
-            raise TypeError(error)
+        if not is_get_subscriptable(value):
+            raise NotSubscriptableError(value)
         xslice = self._run(node.slice)
         return value[xslice]
 
