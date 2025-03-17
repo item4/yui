@@ -3,6 +3,7 @@ import logging
 import operator
 import re
 from datetime import datetime
+from typing import Final
 from typing import TypedDict
 
 import aiohttp
@@ -20,18 +21,20 @@ from ...utils.datetime import now
 from ...utils.fuzz import ratio
 from ...utils.http import USER_AGENT
 
-PARENTHESES = re.compile(r"\(.+?\)")
-
-logger = logging.getLogger(__name__)
-
-TEMPLATE = "{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}"
-REGION_TABLE: dict[str, tuple[str, str]] = {
+TEMPLATE: Final = (
+    "{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}"
+)
+REGION_TABLE: Final[dict[str, tuple[str, str]]] = {
     "수도권": ("1000", "6.58"),
     "부산": ("7000", "4.23"),
     "대구": ("4000", "4.21"),
     "광주": ("5000", "4.10"),
     "대전": ("3000", "4.10"),
 }
+
+PARENTHESES = re.compile(r"\(.+?\)")
+
+logger = logging.getLogger(__name__)
 
 
 class PlatformType(TypedDict):
