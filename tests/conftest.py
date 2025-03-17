@@ -18,15 +18,14 @@ from yui.utils.datetime import datetime
 
 from .util import FakeBot
 
-DEFAULT_DATABASE_URL = "sqlite://"
+DATABASE_URL_ENVVAR_NAME = "YUI_TEST_DATABASE_URL"
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--database-url",
         type=str,
-        default=os.getenv("YUI_TEST_DATABASE_URL", DEFAULT_DATABASE_URL),
-        help="Database URL for testing.[default: %(default)s]",
+        help=f"Database URL for testing if there is no '{DATABASE_URL_ENVVAR_NAME}' envvar",
     )
 
 
@@ -41,8 +40,11 @@ def fx_tmpdir(tmp_path):
 
 
 @pytest.fixture(scope="session")
-def database_url(request):
-    return request.config.getoption("--database-url")
+def database_url(request) -> str:
+    return os.getenv(DATABASE_URL_ENVVAR_NAME) or request.config.getoption(
+        "--database-url",
+        skip=True,
+    )
 
 
 @pytest.fixture
