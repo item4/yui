@@ -1,5 +1,3 @@
-import pathlib
-
 import pytest
 
 from yui.config import ConfigurationError
@@ -14,54 +12,57 @@ def test_error():
         error("Error")
 
 
-def test_load_not_exists_file(fx_tmpdir: pathlib.Path):
+@pytest.mark.anyio
+async def test_load_not_exists_file(fx_tmpdir):
     """Test config load function - not exists file"""
 
     no_file = fx_tmpdir / "nofile"
 
     with pytest.raises(SystemExit):
-        load(no_file)
+        await load(no_file)
 
 
-def test_load_not_file(fx_tmpdir: pathlib.Path):
-    """Test config load function - not exists file"""
-
-    path = fx_tmpdir / "path"
-    path.mkdir()
+@pytest.mark.anyio
+async def test_load_not_file(fx_tmpdir):
+    """Test config load function - path is not file"""
 
     with pytest.raises(SystemExit):
-        load(path)
+        await load(fx_tmpdir)
 
 
-def test_load_not_correct_suffix(fx_tmpdir: pathlib.Path):
+@pytest.mark.anyio
+async def test_load_not_correct_suffix(fx_tmpdir):
     """Test config load function - not correct suffix"""
 
     file = fx_tmpdir / "conf.py"
-    file.touch()
+    await file.touch()
 
     with pytest.raises(SystemExit):
-        load(file)
+        await load(file)
 
 
-def test_load_empty(fx_tmpdir: pathlib.Path):
+@pytest.mark.anyio
+async def test_load_empty(fx_tmpdir):
     """Test config load function - empty file"""
 
     file = fx_tmpdir / "empty.config.toml"
-    file.touch()
+    await file.touch()
 
     with pytest.raises(SystemExit):
-        load(file)
+        await load(file)
 
 
-def test_load_fine(fx_tmpdir: pathlib.Path):
+@pytest.mark.anyio
+async def test_load_fine(fx_tmpdir):
     """Test config load function - empty file"""
+    APP_TOKEN = "TEST_APP_TOKEN"  # noqa: S105 - fake value
+    BOT_TOKEN = "TEST_BOT_TOKEN"  # noqa: S105 - fake value
 
     file = fx_tmpdir / "yui.config.toml"
-    with file.open("w") as f:
-        f.write(
-            """
-APP_TOKEN = 'TEST_APP_TOKEN'
-BOT_TOKEN = 'TEST_BOT_TOKEN'
+    await file.write_text(
+        f"""\
+APP_TOKEN = '{APP_TOKEN}'
+BOT_TOKEN = '{BOT_TOKEN}'
 DATABASE_URL = 'sqlite:///:memory:'
 DEBUG = true
 PREFIX = '.'
@@ -72,13 +73,13 @@ general = 'C1'
 
 [USERS]
 owner = 'U111'
+                          """,
+    )
 
-        """,
-        )
-    config = load(file)
+    config = await load(file)
 
-    assert config.APP_TOKEN == "TEST_APP_TOKEN"  # noqa: S105
-    assert config.BOT_TOKEN == "TEST_BOT_TOKEN"  # noqa: S105
+    assert config.APP_TOKEN == APP_TOKEN
+    assert config.BOT_TOKEN == BOT_TOKEN
     assert config.DEBUG
     assert config.PREFIX == "."
     assert config.APPS == ["a", "b"]
@@ -100,7 +101,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.APP_TOKEN = "TEST_APP_TOKEN"  # noqa: S105
+    bot_config.APP_TOKEN = "TEST_APP_TOKEN"  # noqa: S105 - fake value
     err = "Wrong config value type: APP_TOKEN"
     with pytest.raises(ConfigurationError, match=err):
         bot_config.check(
@@ -122,7 +123,7 @@ def test_config_check(bot_config):
             set(),
         )
 
-    bot_config.APP_TOKEN = "XXXX"  # noqa: S105
+    bot_config.APP_TOKEN = "XXXX"  # noqa: S105 - fake value
     assert bot_config.check(
         {"APP_TOKEN": str},
         set(),
