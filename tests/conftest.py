@@ -1,10 +1,10 @@
 import copy
 import os
-import pathlib
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import Mock
 
 import aioresponses
+import anyio
 import pytest
 from valkey.asyncio import Valkey
 
@@ -36,8 +36,8 @@ def anyio_backend():
 
 
 @pytest.fixture
-def fx_tmpdir(tmpdir):
-    return pathlib.Path(tmpdir)
+def fx_tmpdir(tmp_path):
+    return anyio.Path(tmp_path)
 
 
 @pytest.fixture(scope="session")
