@@ -32,6 +32,11 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
+def anyio_backend():
+    return "asyncio"
+
+
+@pytest.fixture
 def fx_tmpdir(tmpdir):
     return pathlib.Path(tmpdir)
 
