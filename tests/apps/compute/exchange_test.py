@@ -2,7 +2,6 @@ import re
 
 import aiohttp.client_exceptions
 import pytest
-import pytest_asyncio
 from yarl import URL
 
 from yui.apps.compute.exchange import exchange
@@ -13,7 +12,7 @@ YEN_PATTERN = re.compile(
 )
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def skip_if_no_exchange_api():
     try:
         await get_exchange_rate("KRW", "JPY", timeout=1.0)

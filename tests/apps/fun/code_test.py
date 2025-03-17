@@ -1,11 +1,10 @@
 import pytest
-import pytest_asyncio
 
 from yui.apps.fun.code import code_review
 from yui.apps.fun.code import write_code_review
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot

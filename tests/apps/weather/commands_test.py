@@ -1,10 +1,9 @@
 import pytest
-import pytest_asyncio
 
 from yui.apps.weather.commands import weather
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot

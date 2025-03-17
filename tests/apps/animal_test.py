@@ -1,7 +1,6 @@
 import re
 
 import pytest
-import pytest_asyncio
 from aiohttp.client_exceptions import ClientConnectionError
 
 from yui.apps.animal import APIServerError
@@ -26,7 +25,7 @@ FOX_REJECTED_PATTERN = re.compile(
 )
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot

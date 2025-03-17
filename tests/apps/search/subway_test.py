@@ -2,7 +2,6 @@ from datetime import timedelta
 from unittest.mock import AsyncMock
 
 import pytest
-import pytest_asyncio
 from more_itertools import flatten
 from yarl import URL
 
@@ -27,7 +26,7 @@ from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot

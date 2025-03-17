@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 import pytest
-import pytest_asyncio
 from time_machine import travel
 
 from yui.apps.date.utils import APIDoesNotSupport
@@ -16,7 +15,7 @@ from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 async def _api_server_check():
     try:
         await get_holiday_names(now())
