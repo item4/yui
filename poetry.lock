@@ -2057,26 +2057,6 @@ pluggy = ">=1.5,<2"
 dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "pytest-asyncio"
-version = "0.25.3"
-description = "Pytest support for asyncio"
-optional = true
-python-versions = ">=3.9"
-groups = ["main"]
-markers = "extra == \"dev\""
-files = [
-    {file = "pytest_asyncio-0.25.3-py3-none-any.whl", hash = "sha256:9e89518e0f9bd08928f97a3482fdc4e244df17529460bc038291ccaf8f85c7c3"},
-    {file = "pytest_asyncio-0.25.3.tar.gz", hash = "sha256:fc1da2cf9f125ada7e710b4ddad05518d4cee187ae9412e9ac9271003497f07a"},
-]
-
-[package.dependencies]
-pytest = ">=8.2,<9"
-
-[package.extras]
-docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1)"]
-testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
-
-[[package]]
 name = "pytest-cov"
 version = "6.0.0"
 description = "Pytest plugin for measuring coverage."
@@ -3099,9 +3079,9 @@ multidict = ">=4.0"
 propcache = ">=0.2.0"
 
 [extras]
-dev = ["aioresponses", "black", "croniter", "mypy", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov", "ruff", "time-machine", "types-croniter", "types-lxml", "types-orjson", "types-python-dateutil", "types-tzlocal"]
+dev = ["aioresponses", "black", "croniter", "mypy", "pre-commit", "pytest", "pytest-cov", "ruff", "time-machine", "types-croniter", "types-lxml", "types-orjson", "types-python-dateutil", "types-tzlocal"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "4eae881b2eb8b32dc13bc80fbee95b93385a8fc49896d8aebcc4b311dc3d477b"
+content-hash = "adc6d07a88df2557c80c4246083df1f8766f4fed55f671d43666c38c4a2c3724"
