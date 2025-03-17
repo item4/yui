@@ -16,7 +16,7 @@ from ...util import assert_crontab_spec
 
 
 @pytest.fixture(autouse=True)
-async def _api_server_check():
+async def _api_server_check(anyio_backend):
     try:
         await get_holiday_names(now())
     except APIDoesNotSupport:
