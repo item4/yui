@@ -3,7 +3,7 @@ import pytest
 from yui.apps.ping import ping
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_ping_command(bot):
     event = bot.create_message()
 

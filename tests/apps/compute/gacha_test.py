@@ -23,7 +23,7 @@ def test_get_full_help():
     assert g.get_full_help(".")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_fallback(bot):
     g = Gacha()
 
@@ -37,7 +37,7 @@ async def test_fallback(bot):
     assert said.data["text"] == f"Usage: `{bot.config.PREFIX}help 가챠`"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_collect(bot):
     g = Gacha()
 
@@ -139,7 +139,7 @@ async def test_collect(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_challenge(bot):
     g = Gacha()
 

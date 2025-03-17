@@ -9,7 +9,7 @@ from yui.utils.datetime import datetime
 from yui.utils.datetime import now
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_weather_datetime_is_correct(
     google_api_key,
     address,
@@ -19,7 +19,7 @@ async def test_get_weather_datetime_is_correct(
     assert weather_data.observed_at < now()
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_weather_with_bad_response(response_mock, address):
     response_mock.get(
         "https://item4.net/api/weather/",
@@ -31,7 +31,7 @@ async def test_get_weather_with_bad_response(response_mock, address):
         await get_weather_by_keyword(address)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_weather_with_bad_json(response_mock, address):
     response_mock.get(
         "https://item4.net/api/weather/",
@@ -43,7 +43,7 @@ async def test_get_weather_with_bad_json(response_mock, address):
         await get_weather_by_keyword(address)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_weather_with_expired_cert(response_mock, address):
     response_mock.get(
         "https://item4.net/api/weather/",
@@ -66,7 +66,7 @@ async def test_get_weather_with_expired_cert(response_mock, address):
         await get_weather_by_keyword(address)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_weather_record():
     weather = WeatherRecord(
         name="부천",

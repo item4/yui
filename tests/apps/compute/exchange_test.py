@@ -2,7 +2,6 @@ import re
 
 import aiohttp.client_exceptions
 import pytest
-import pytest_asyncio
 from yarl import URL
 
 from yui.apps.compute.exchange import exchange
@@ -13,7 +12,7 @@ YEN_PATTERN = re.compile(
 )
 
 
-@pytest_asyncio.fixture
+@pytest.fixture
 async def skip_if_no_exchange_api():
     try:
         await get_exchange_rate("KRW", "JPY", timeout=1.0)
@@ -21,7 +20,7 @@ async def skip_if_no_exchange_api():
         pytest.skip("Exchange API is not available")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_exchange_command(bot, skip_if_no_exchange_api):
     event = bot.create_message()
 
@@ -68,7 +67,7 @@ async def test_exchange_command(bot, skip_if_no_exchange_api):
     assert said.data["text"] == "주문을 이해하는데에 실패했어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_exchange_error(bot, response_mock):
     response_mock.get(
         URL("https://api.manana.kr/exchange/rate.json").with_query(
@@ -90,7 +89,7 @@ async def test_exchange_error(bot, response_mock):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_exchange_timeout(bot, response_mock):
     response_mock.get(
         URL("https://api.manana.kr/exchange/rate.json").with_query(

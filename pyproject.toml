@@ -8,8 +8,9 @@ requires-python = ">=3.13,<4.0"
 authors = [{ name = "Kim, Jin Su" }]
 dependencies = [
     "aiocron >= 2.1",
-    "aiohttp >= 3.11.13",
+    "aiohttp >= 3.11.14",
     "alembic >= 1.15.1",
+    "anyio >= 4.9.0",
     "asyncclick >= 8.1.8",
     "attrdict >= 2.0.1",
     "attrs >= 25.3.0",
@@ -45,7 +46,6 @@ dev = [
     "mypy >= 1.15.0",
     "pre-commit >= 4.1.0",
     "pytest >= 8.3.5",
-    "pytest-asyncio >= 0.25.3",
     "pytest-cov >= 6.0.0",
     "ruff >= 0.11.0",
     "time-machine >= 2.16.0",
@@ -211,8 +211,6 @@ extend-immutable-calls = [
 
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
 filterwarnings = [
     "always::DeprecationWarning",
     "ignore::DeprecationWarning:multiprocessing.popen_fork",

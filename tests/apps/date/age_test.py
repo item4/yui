@@ -5,7 +5,7 @@ import pytest
 from yui.apps.date.age import age
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_age_command(bot):
     event = bot.create_message()
     kirito_birthday = datetime.date(2008, 10, 7)

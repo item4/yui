@@ -4,7 +4,7 @@ from yui.apps.fun.answer import RESPONSES
 from yui.apps.fun.answer import magic_conch
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_magic_conch(bot):
     event = bot.create_message(text="마법의 유이님")
 

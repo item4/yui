@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 import pytest
-import pytest_asyncio
 from time_machine import travel
 
 from yui.apps.date.utils import APIDoesNotSupport
@@ -16,8 +15,8 @@ from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture(autouse=True)
-async def _api_server_check():
+@pytest.fixture(autouse=True)
+async def _api_server_check(anyio_backend):
     try:
         await get_holiday_names(now())
     except APIDoesNotSupport:
@@ -104,7 +103,7 @@ def test_work_end_task_match_at_19(sunday_19, delta, result):
     assert_crontab_match(work_end, sunday_19 + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 8, 9), tick=False)
 async def test_work_start_monday(bot, channel_id):
     await work_start(bot)
@@ -116,7 +115,7 @@ async def test_work_start_monday(bot, channel_id):
     assert said.data["attachments"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 10, 9), tick=False)
 async def test_work_start_normal(bot, channel_id):
     await work_start(bot)
@@ -131,7 +130,7 @@ async def test_work_start_normal(bot, channel_id):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 9, 9), tick=False)
 async def test_work_start_holiday(bot, channel_id):
     await work_start(bot)
@@ -146,7 +145,7 @@ async def test_work_start_holiday(bot, channel_id):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 8, 18), tick=False)
 async def test_work_end_18_normal(bot, channel_id):
     await work_end(bot)
@@ -161,7 +160,7 @@ async def test_work_end_18_normal(bot, channel_id):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 9, 18), tick=False)
 async def test_work_end_18_holiday(bot, channel_id):
     await work_end(bot)
@@ -176,7 +175,7 @@ async def test_work_end_18_holiday(bot, channel_id):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 8, 19), tick=False)
 async def test_work_end_19_normal(bot, channel_id):
     await work_end(bot)
@@ -191,7 +190,7 @@ async def test_work_end_19_normal(bot, channel_id):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 9, 19), tick=False)
 async def test_work_end_19_holiday(bot, channel_id):
     await work_end(bot)

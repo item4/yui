@@ -1,17 +1,16 @@
 import pytest
-import pytest_asyncio
 
 from yui.apps.fun.code import code_review
 from yui.apps.fun.code import write_code_review
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_write_code_review(bot):
     event = bot.create_message(text="코드 리뷰")
     await write_code_review(bot, event, seed=100)
@@ -30,7 +29,7 @@ async def test_write_code_review(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_code_review(bot, channel_id):
     event = bot.create_message(channel_id=channel_id, text="영화 리뷰")
 

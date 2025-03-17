@@ -8,7 +8,7 @@ from yui.apps.info.memo.commands import memo_show
 from yui.apps.info.memo.models import Memo
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_memo_flow(bot, fx_sess):
     keyword1 = "키리토"
     keyword2 = "밥"
@@ -154,7 +154,7 @@ async def test_memo_flow(bot, fx_sess):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_length_limit(bot, fx_sess):
     event = bot.create_message()
 

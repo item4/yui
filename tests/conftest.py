@@ -1,12 +1,11 @@
 import copy
 import os
-import pathlib
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import Mock
 
 import aioresponses
+import anyio
 import pytest
-import pytest_asyncio
 from valkey.asyncio import Valkey
 
 from yui.cache import Cache
@@ -19,29 +18,36 @@ from yui.utils.datetime import datetime
 
 from .util import FakeBot
 
-DEFAULT_DATABASE_URL = "sqlite://"
+DATABASE_URL_ENVVAR_NAME = "YUI_TEST_DATABASE_URL"
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--database-url",
         type=str,
-        default=os.getenv("YUI_TEST_DATABASE_URL", DEFAULT_DATABASE_URL),
-        help="Database URL for testing.[default: %(default)s]",
+        help=f"Database URL for testing if there is no '{DATABASE_URL_ENVVAR_NAME}' envvar",
     )
 
 
 @pytest.fixture
-def fx_tmpdir(tmpdir):
-    return pathlib.Path(tmpdir)
+def anyio_backend():
+    return "asyncio"
+
+
+@pytest.fixture
+def fx_tmpdir(tmp_path):
+    return anyio.Path(tmp_path)
 
 
 @pytest.fixture(scope="session")
-def database_url(request):
-    return request.config.getoption("--database-url")
+def database_url(request) -> str:
+    return os.getenv(DATABASE_URL_ENVVAR_NAME) or request.config.getoption(
+        "--database-url",
+        skip=True,
+    )
 
 
-@pytest_asyncio.fixture()
+@pytest.fixture
 async def fx_engine(database_url):
     engine = create_database_engine(database_url, echo=False)
     try:
@@ -56,7 +62,7 @@ async def fx_engine(database_url):
         await engine.dispose()
 
 
-@pytest_asyncio.fixture()
+@pytest.fixture
 async def fx_sess(fx_engine):
     session = sessionmaker(bind=fx_engine)
     async with session() as sess:
@@ -105,7 +111,7 @@ def bot(request, bot_config, monkeypatch):
     return FakeBot(bot_config)
 
 
-@pytest_asyncio.fixture()
+@pytest.fixture
 async def cache():
     valkey_client = Valkey.from_url("valkey://localhost")
     c = Cache(valkey_client, "YUI_TEST_")

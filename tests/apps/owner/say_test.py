@@ -4,7 +4,7 @@ from yui.apps.owner.say import say
 from yui.types.slack.response import APIResponse
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_say_command(bot, owner_id, user_id):
     test = bot.create_channel("C2", "test")
 

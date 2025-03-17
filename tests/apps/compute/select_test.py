@@ -3,7 +3,7 @@ import pytest
 from yui.apps.compute.select import select
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_select_command(bot):
     event = bot.create_message()
     seed = 1

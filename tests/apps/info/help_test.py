@@ -6,7 +6,7 @@ from yui.box import Box
 from ...util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_help_command(bot_config):
     box = Box()
 

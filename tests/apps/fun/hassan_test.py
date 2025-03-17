@@ -3,7 +3,7 @@ import pytest
 from yui.apps.fun.hassan import hassan
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_hassan_handler(bot):
     event = bot.create_message(text="똑바로 서라 유이")
 

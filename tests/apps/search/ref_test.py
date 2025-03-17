@@ -2,7 +2,6 @@ from datetime import timedelta
 from unittest.mock import AsyncMock
 
 import pytest
-import pytest_asyncio
 from more_itertools import flatten
 
 from yui.apps.search.ref import css
@@ -19,13 +18,13 @@ from ...util import assert_crontab_match
 from ...util import assert_crontab_spec
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_fetch_all_ref(bot):
     html_data = await bot.cache.get("REF_HTML")
     assert html_data is None
@@ -51,7 +50,7 @@ async def test_fetch_all_ref(bot):
     assert python_data
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_on_start(bot, monkeypatch):
     mock = AsyncMock()
     monkeypatch.setattr(
@@ -62,7 +61,7 @@ async def test_on_start(bot, monkeypatch):
     mock.assert_awaited_once_with(bot)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_refresh(bot, monkeypatch):
     mock = AsyncMock()
     monkeypatch.setattr(
@@ -94,7 +93,7 @@ def test_refresh_match(sunday, delta, result):
     assert_crontab_match(refresh, sunday + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_css_command(bot):
     event = bot.create_message()
 
@@ -128,7 +127,7 @@ async def test_css_command(bot):
     assert said.data["text"] == "비슷한 CSS 관련 요소를 찾지 못하겠어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_html_command(bot):
     event = bot.create_message()
 
@@ -162,7 +161,7 @@ async def test_html_command(bot):
     assert said.data["text"] == "비슷한 HTML Element를 찾지 못하겠어요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_python_command(bot):
     event = bot.create_message()
 

@@ -1,9 +1,10 @@
 import copy
-import pathlib
 import sys
 import tomllib
 from types import SimpleNamespace
 from typing import Any
+
+import anyio
 
 from .utils.cast import CastError
 from .utils.cast import cast
@@ -167,20 +168,20 @@ def error(message: str, *args):
     raise SystemExit(1)
 
 
-def load(path: pathlib.Path) -> Config:
+async def load(path: anyio.Path) -> Config:
     """Load configuration from given path."""
 
-    if not path.exists():
+    if not await path.exists():
         error("File do not exists.")
 
-    if not path.is_file():
+    if not await path.is_file():
         error("Given path is not file.")
 
     if not path.match("*.config.toml"):
         error("File suffix must be *.config.toml")
 
     config_dict = copy.deepcopy(DEFAULT)
-    data = tomllib.load(path.open("rb"))
+    data = tomllib.loads(await path.read_text())
 
     if missing := REQUIRED - set(data.keys()):
         error(f'Missing required keys: {", ".join(missing)}')

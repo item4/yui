@@ -1,7 +1,6 @@
 import re
 
 import pytest
-import pytest_asyncio
 from aiohttp.client_exceptions import ClientConnectionError
 
 from yui.apps.animal import APIServerError
@@ -26,13 +25,13 @@ FOX_REJECTED_PATTERN = re.compile(
 )
 
 
-@pytest_asyncio.fixture(name="bot")
+@pytest.fixture(name="bot")
 async def bot_with_cache(bot, cache):
     async with bot.use_cache(cache):
         yield bot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_cat_image_url_server_error(response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -42,7 +41,7 @@ async def test_get_cat_image_url_server_error(response_mock):
         await get_cat_image_url(1.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_cat_image_url_timeout(response_mock):
     URL_TIMEOUT = "http://cat.com/timeout.jpg"
     response_mock.get(
@@ -69,7 +68,7 @@ async def test_get_cat_image_url_timeout(response_mock):
         await get_cat_image_url(10.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_cat_image_url_no_url(response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -91,7 +90,7 @@ async def test_get_cat_image_url_no_url(response_mock):
         await get_cat_image_url(0.001)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_cat_image_url_empty_url(response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -113,7 +112,7 @@ async def test_get_cat_image_url_empty_url(response_mock):
         await get_cat_image_url(0.001)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_cat_image_url(response_mock):
     URL_200 = "http://cat.com/200.jpg"
     URL_404 = "http://cat.com/404.jpg"
@@ -169,7 +168,7 @@ async def test_get_cat_image_url(response_mock):
     assert url == URL_200
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_dog_image_url_server_error(response_mock):
     response_mock.get(
         DOG_API_URL,
@@ -179,7 +178,7 @@ async def test_get_dog_image_url_server_error(response_mock):
         await get_dog_image_url(1.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_dog_image_url_timeout(response_mock):
     URL_TIMEOUT = "http://dog.com/timeout.jpg"
     response_mock.get(
@@ -194,7 +193,7 @@ async def test_get_dog_image_url_timeout(response_mock):
         await get_dog_image_url(10.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_dog_image_url_no_url(response_mock):
     response_mock.get(
         DOG_API_URL,
@@ -204,7 +203,7 @@ async def test_get_dog_image_url_no_url(response_mock):
         await get_dog_image_url(1.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_dog_image_url_empty_url(response_mock):
     response_mock.get(
         DOG_API_URL,
@@ -214,7 +213,7 @@ async def test_get_dog_image_url_empty_url(response_mock):
         await get_dog_image_url(1.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_dog_image_url(response_mock):
     URL_200 = "http://dog.com/200.jpg"
     URL_404 = "http://dog.com/404.jpg"
@@ -250,7 +249,7 @@ async def test_get_dog_image_url(response_mock):
     assert url == URL_200
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_fox_image_url_server_error(response_mock):
     response_mock.get(
         FOX_GALLERY_URL,
@@ -260,7 +259,7 @@ async def test_get_fox_image_url_server_error(response_mock):
         await get_fox_image_url(1.0)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_fox_image_url_no_image(response_mock):
     response_mock.get(
         FOX_GALLERY_URL,
@@ -271,7 +270,7 @@ async def test_get_fox_image_url_no_image(response_mock):
         await get_fox_image_url(0.001)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_fox_image_url(response_mock):
     IMAGE_URL = "http://fox.com/img1.png"
     response_mock.get(
@@ -293,7 +292,7 @@ async def test_get_fox_image_url(response_mock):
     assert url == IMAGE_URL
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_cat_command(bot, response_mock):
     response_mock.get(
         CAT_API_URL,
@@ -413,7 +412,7 @@ async def test_cat_command(bot, response_mock):
     assert said.data["icon_url"] == "https://i.imgur.com/hIBJUMI.jpg"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dog_command(bot, response_mock):
     response_mock.get(
         DOG_API_URL,
@@ -517,7 +516,7 @@ async def test_dog_command(bot, response_mock):
     assert said.data["icon_url"] == "https://i.imgur.com/Q9FKplO.png"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_fox_command(bot, response_mock):
     response_mock.get(
         FOX_GALLERY_URL,

@@ -4,7 +4,7 @@ from yui.apps.info.about import MESSAGE
 from yui.apps.info.about import about
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_about_command(bot):
     event = bot.create_message(ts="1234.56")
 

@@ -3,7 +3,7 @@ import pytest
 from yui.apps.owner.quit import quit
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_quit_command(bot, owner_id):
     event = bot.create_message(user_id=owner_id)
 

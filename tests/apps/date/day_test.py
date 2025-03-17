@@ -33,7 +33,7 @@ def test_holiday_message_match(sunday, delta, result):
     assert_crontab_match(holiday_message, sunday + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2019, 2, 6), tick=False)
 async def test_holiday_task_at_holiday(bot_config, channel_id):
     bot_config.CHANNELS["general"] = channel_id
@@ -45,7 +45,7 @@ async def test_holiday_task_at_holiday(bot_config, channel_id):
     assert said.data["text"] == "오늘은 설날연휴! 행복한 휴일 되세요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2019, 2, 7), tick=False)
 async def test_holiday_task_at_workday(bot_config, channel_id):
     bot_config.CHANNELS["general"] = channel_id
@@ -54,7 +54,7 @@ async def test_holiday_task_at_workday(bot_config, channel_id):
     assert not bot.call_queue
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2019, 2, 4), tick=False)
 async def test_holiday_command(bot_config):
     bot = FakeBot(bot_config)
