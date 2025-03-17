@@ -1,6 +1,6 @@
-import functools
-from pathlib import Path
+from typing import Final
 
+import anyio
 import asyncclick as click
 from alembic import command
 from alembic.config import Config
@@ -8,6 +8,8 @@ from alembic.config import Config
 from .bot import Bot
 from .config import ConfigurationError
 from .config import load
+
+ALEMBIC_BASE_DIR: Final = anyio.Path("yui", "migrations")
 
 
 def error(message: str):
@@ -17,35 +19,19 @@ def error(message: str):
     raise SystemExit(1)
 
 
-def load_config(func):
-    """Decorator for add load config file option"""
-
-    @functools.wraps(func)
-    def internal(*args, **kwargs):
-        filename = kwargs.pop("config")
-        if filename is None:
-            click.echo("--config option is required.", err=True)
-            raise SystemExit(1)
-
-        config = load(Path(filename))
-        kwargs["config"] = config
-        return func(*args, **kwargs)
-
-    decorator = click.option(
-        "--config",
-        "-c",
-        type=click.Path(exists=True),
-        envvar="YUI_CONFIG_FILE_PATH",
-    )
-
-    return decorator(internal)
+config_option = click.option(
+    "--config",
+    "-c",
+    "config_path",
+    type=click.Path(exists=True, path_type=anyio.Path),
+    envvar="YUI_CONFIG_FILE_PATH",
+)
 
 
 async def run_alembic_op(config, op):
     async with Bot(config) as bot:
-        directory = Path("yui", "migrations")
-        c = Config(directory / "alembic.ini")
-        c.set_main_option("script_location", str(directory))
+        c = Config(ALEMBIC_BASE_DIR / "alembic.ini")
+        c.set_main_option("script_location", str(ALEMBIC_BASE_DIR))
         c.set_main_option("sqlalchemy.url", bot.config.DATABASE_URL)
         c.attributes["Base"] = bot.orm_base
         async with bot.database_engine.begin() as conn:
@@ -58,9 +44,11 @@ def yui():
 
 
 @yui.command()
-@load_config
-async def run(*, config):
+@config_option
+async def run(*, config_path: anyio.Path):
     """Run YUI."""
+
+    config = await load(config_path)
     try:
         while True:
             async with Bot(config) as bot:
@@ -78,10 +66,10 @@ async def run(*, config):
 @click.option("--branch-label")
 @click.option("--version-path")
 @click.option("--rev-id")
-@load_config
+@config_option
 async def revision(
     *,
-    config,
+    config_path: anyio.Path,
     message: str | None,
     autogenerate: bool,
     sql: bool,
@@ -92,6 +80,8 @@ async def revision(
     rev_id: str | None,
 ):
     """Create a new revision file."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -118,10 +108,10 @@ async def revision(
 @click.option("--branch-label")
 @click.option("--version-path")
 @click.option("--rev-id")
-@load_config
+@config_option
 async def migrate(
     *,
-    config,
+    config_path: anyio.Path,
     message: str | None,
     sql: bool,
     head: str,
@@ -131,6 +121,8 @@ async def migrate(
     rev_id: str | None,
 ):
     """Alias for 'revision --autogenerate'"""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -151,9 +143,11 @@ async def migrate(
 
 @yui.command()
 @click.argument("revision", default="current")
-@load_config
-async def edit(*, config, revision: str):
+@config_option
+async def edit(*, config_path: anyio.Path, revision: str):
     """Edit current revision."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -167,16 +161,18 @@ async def edit(*, config, revision: str):
 @click.option("--branch-label")
 @click.option("--message", "-m")
 @click.argument("revisions", nargs=-1)
-@load_config
+@config_option
 async def merge(
     *,
-    config,
+    config_path: anyio.Path,
     revisions: str,
     message: str | None,
     branch_label: str | None,
     rev_id: str | None,
 ):
     """Merge two revisions together.  Creates a new migration file."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -195,9 +191,17 @@ async def merge(
 @click.option("--tag")
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
-@load_config
-async def upgrade(*, config, revision: str, sql: bool, tag: str | None):
+@config_option
+async def upgrade(
+    *,
+    config_path: anyio.Path,
+    revision: str,
+    sql: bool,
+    tag: str | None,
+):
     """Upgrade to a later version."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -210,9 +214,17 @@ async def upgrade(*, config, revision: str, sql: bool, tag: str | None):
 @click.option("--tag")
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="-1")
-@load_config
-async def downgrade(*, config, revision: str, sql: bool, tag: str):
+@config_option
+async def downgrade(
+    *,
+    config_path: anyio.Path,
+    revision: str,
+    sql: bool,
+    tag: str,
+):
     """Revert to a previous version."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -223,9 +235,11 @@ async def downgrade(*, config, revision: str, sql: bool, tag: str):
 
 @yui.command()
 @click.argument("revision", default="head")
-@load_config
-async def show(*, config, revision: str):
+@config_option
+async def show(*, config_path: anyio.Path, revision: str):
     """Show the revision denoted by the given symbol."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -237,9 +251,16 @@ async def show(*, config, revision: str):
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
 @click.option("--rev-range", "-r")
-@load_config
-async def history(*, config, verbose: bool, rev_range: str | None):
+@config_option
+async def history(
+    *,
+    config_path: anyio.Path,
+    verbose: bool,
+    rev_range: str | None,
+):
     """List changeset scripts in chronological order."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -251,9 +272,16 @@ async def history(*, config, verbose: bool, rev_range: str | None):
 @yui.command()
 @click.option("--resolve-dependencies", is_flag=True, default=False)
 @click.option("--verbose", "-v", is_flag=True, default=False)
-@load_config
-async def heads(*, config, verbose: bool, resolve_dependencies: bool):
+@config_option
+async def heads(
+    *,
+    config_path: anyio.Path,
+    verbose: bool,
+    resolve_dependencies: bool,
+):
     """Show current available heads in the script directory."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -268,9 +296,11 @@ async def heads(*, config, verbose: bool, resolve_dependencies: bool):
 
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
-@load_config
-async def branches(*, config, verbose: bool):
+@config_option
+async def branches(*, config_path: anyio.Path, verbose: bool):
     """Show current branch points."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -281,9 +311,11 @@ async def branches(*, config, verbose: bool):
 
 @yui.command()
 @click.option("--verbose", "-v", is_flag=True, default=False)
-@load_config
-async def current(*, config, verbose: bool):
+@config_option
+async def current(*, config_path: anyio.Path, verbose: bool):
     """Display the current revision for each database."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
@@ -296,10 +328,18 @@ async def current(*, config, verbose: bool):
 @click.option("--tag")
 @click.option("--sql", is_flag=True, default=False)
 @click.argument("revision", default="head")
-@load_config
-async def stamp(*, config, revision: str, sql: bool, tag: str | None):
+@config_option
+async def stamp(
+    *,
+    config_path: anyio.Path,
+    revision: str,
+    sql: bool,
+    tag: str | None,
+):
     """'stamp' the revision table with the given revision; don't run any
     migrations."""
+
+    config = await load(config_path)
 
     def op(connection, c):
         c.attributes["connection"] = connection
