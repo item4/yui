@@ -7,7 +7,7 @@ from yui.apps.date.utils import weekend_loading_percent
 from yui.utils.datetime import datetime
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_holiday_names():
     jan_first = datetime(2018, 1, 1)
     jan_second = datetime(2018, 1, 2)

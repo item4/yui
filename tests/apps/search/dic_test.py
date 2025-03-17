@@ -7,7 +7,7 @@ from yui.apps.search.dic import dic
 MULTIPLE_PATTERN = re.compile(r"검색결과 (\d+)개의 링크를 찾았어요!")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dic_multiple(
     bot,
 ):
@@ -23,7 +23,7 @@ async def test_dic_multiple(
     assert int(matched[1]) == len(said.data["attachments"])
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_dic_redirect(
     bot,
 ):

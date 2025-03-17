@@ -8,7 +8,7 @@ from yui.apps.manage.cleanup.models import EventLog
 from ....util import FakeBot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_make_log(bot_config, fx_sess):
     channel_1 = "C111"
     channel_2 = "C222"

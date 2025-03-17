@@ -3,7 +3,7 @@ import pytest
 from yui.apps.hi import hi
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_hi_handler(bot):
     event = bot.create_message(text="안녕 유이")
 

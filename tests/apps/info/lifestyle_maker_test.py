@@ -32,7 +32,7 @@ def test_alert_match(sunday, delta, result):
     assert_crontab_match(alert_lifestyle, sunday + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_alert(bot_config, channel_id):
     bot_config.CHANNELS = {
         "memo": channel_id,

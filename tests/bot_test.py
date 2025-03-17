@@ -11,7 +11,7 @@ from yui.box import Box
 from yui.types.slack.response import APIResponse
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_bot_init(monkeypatch, bot_config):
     import_queue = []
 
@@ -34,7 +34,7 @@ async def test_bot_init(monkeypatch, bot_config):
         ]
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_call(bot_config, response_mock):
     token = "asdf1234"  # noqa: S105
 
@@ -108,7 +108,7 @@ async def test_call(bot_config, response_mock):
         assert e.value.data is None
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_call_json(bot_config, response_mock, channel_id):
     response_mock.post(
         "https://slack.com/api/chat.postMessage",

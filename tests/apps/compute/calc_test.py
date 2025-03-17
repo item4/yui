@@ -30,7 +30,7 @@ class GetItemSpy:
         self.queue.append(item)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_calc_decimal_command(bot):
     event = bot.create_message()
     raw = ""
@@ -42,7 +42,7 @@ async def test_calc_decimal_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_calc_decimal_on_change_command(bot, user_id):
     event = bot.create_message(
         message=MessageMessage(user=user_id, ts=Ts("1234.5678")),
@@ -56,7 +56,7 @@ async def test_calc_decimal_on_change_command(bot, user_id):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_calc_num_command(bot):
     event = bot.create_message()
     raw = ""
@@ -68,7 +68,7 @@ async def test_calc_num_command(bot):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_calc_num_on_change_command(bot, user_id):
     event = bot.create_message(
         message=MessageMessage(user=user_id, ts=Ts("1234.5678")),
@@ -82,7 +82,7 @@ async def test_calc_num_on_change_command(bot, user_id):
     assert said.data["text"].startswith("사용법: ")
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_empty_expr(bot):
     event = bot.create_message()
     expr = "  "
@@ -95,7 +95,7 @@ async def test_command_empty_expr(bot):
     assert said.data["text"] == help_text
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_bad_syntax(bot):
     event = bot.create_message()
     expr = "1++"
@@ -110,7 +110,7 @@ async def test_command_bad_syntax(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_zero_division(bot):
     event = bot.create_message()
     expr = "1/0"
@@ -126,7 +126,7 @@ async def test_command_zero_division(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_timeout(bot):
     event = bot.create_message()
     expr = "2**1000"
@@ -142,7 +142,7 @@ async def test_command_timeout(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_unexpected_error(bot):
     event = bot.create_message()
     expr = "undefined_variable"
@@ -157,7 +157,7 @@ async def test_command_unexpected_error(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_short_expr(bot):
     event = bot.create_message()
     expr = "1+2"
@@ -170,7 +170,7 @@ async def test_command_short_expr(bot):
     assert said.data["text"] == "`1+2` == `3`"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_short_expr_empty_result(bot):
     event = bot.create_message()
     expr = "''"
@@ -183,7 +183,7 @@ async def test_command_short_expr_empty_result(bot):
     assert said.data["text"] == "`''` == _Empty_"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_multiline_expr(bot):
     event = bot.create_message()
     expr = "1+\\\n2"
@@ -198,7 +198,7 @@ async def test_command_multiline_expr(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_multiline_expr_empty_result(bot):
     event = bot.create_message()
     expr = "'''\n'''[1:]"
@@ -217,7 +217,7 @@ async def test_command_multiline_expr_empty_result(bot):
     assert said.data["text"] == f"*Input*\n```\n{expr}\n```\n*Output*\n_Empty_"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_locals(bot):
     event = bot.create_message()
     expr = "sao = '키리토'"
@@ -239,7 +239,7 @@ async def test_command_locals(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_none(bot):
     event = bot.create_message()
     expr = "None"
@@ -1110,7 +1110,7 @@ def test_yield_from():
     assert "x" not in e.scope
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     (
         (

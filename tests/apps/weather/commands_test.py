@@ -10,7 +10,7 @@ async def bot_with_cache(bot, cache):
         yield bot
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_weather_command(bot, address):
     event = bot.create_message(ts="1234.5678")
 
@@ -32,7 +32,7 @@ async def test_weather_command(bot, address):
     assert weather_said.data["text"] != "해당 이름의 관측소는 존재하지 않아요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_weather_command_too_short(bot):
     event = bot.create_message(ts="1234.5678")
 
@@ -52,7 +52,7 @@ async def test_weather_command_too_short(bot):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_weather_command_wrong_address(
     bot,
     unavailable_address,
@@ -72,7 +72,7 @@ async def test_weather_command_wrong_address(
     assert weather_said.data["text"] == "해당 이름의 관측소는 존재하지 않아요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_weather_command_server_error(
     response_mock,
     bot,

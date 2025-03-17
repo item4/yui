@@ -30,7 +30,7 @@ def naver_client_secret():
     return key
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_book(
     bot_config,
     naver_client_id,

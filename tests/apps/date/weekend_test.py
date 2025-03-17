@@ -62,7 +62,7 @@ def test_auto_weekend_start_match(sunday, delta, result):
     assert_crontab_match(auto_weekend_start, sunday + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_auto_weekend_start(bot, channel_id):
     await auto_weekend_start(bot)
 
@@ -72,7 +72,7 @@ async def test_auto_weekend_start(bot, channel_id):
     assert said.data["text"] == "주말이에요! 즐거운 주말 되세요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_auto_weekend_loading_start(bot, channel_id):
 
@@ -84,7 +84,7 @@ async def test_auto_weekend_loading_start(bot, channel_id):
     assert said.data["text"] == "주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_auto_weekend_loading_half(bot, channel_id):
     await auto_weekend_loading(bot)
@@ -95,7 +95,7 @@ async def test_auto_weekend_loading_half(bot, channel_id):
     assert said.data["text"] == "주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 8, 0), tick=False)
 async def test_weekend_loading_start(bot):
     event = bot.create_message()
@@ -108,7 +108,7 @@ async def test_weekend_loading_start(bot):
     assert said.data["text"] == "주말로딩… [□□□□□□□□□□□□□□□□□□□□] 0.00%"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 10, 12), tick=False)
 async def test_weekend_loading_half(bot):
     event = bot.create_message()
@@ -121,7 +121,7 @@ async def test_weekend_loading_half(bot):
     assert said.data["text"] == "주말로딩… [■■■■■■■■■■□□□□□□□□□□] 50.00%"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 13), tick=False)
 async def test_weekend_loading_end(bot):
     event = bot.create_message()
@@ -134,7 +134,7 @@ async def test_weekend_loading_end(bot):
     assert said.data["text"] == "주말이에요! 즐거운 주말 되세요!"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 @travel(datetime(2018, 10, 14), tick=False)
 async def test_weekend_loading_over(bot):
     event = bot.create_message()

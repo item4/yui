@@ -244,7 +244,7 @@ def time():
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_fetch_all_station_db(bot):
     for service_region, api_version in REGION_TABLE.values():
         data = await bot.cache.get(f"SUBWAY_{service_region}_{api_version}")
@@ -258,7 +258,7 @@ async def test_fetch_all_station_db(bot):
         assert isinstance(data[0], dict)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_shortest_route_fail(response_mock, time, start_id, goal_id):
     url = URL(
         "https://map.naver.com/p/api/pubtrans/subway-directions",
@@ -293,7 +293,7 @@ async def test_get_shortest_route_fail(response_mock, time, start_id, goal_id):
         )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_get_shortest_route(time, start_id, goal_id):
     try:
         result = await get_shortest_route(
@@ -314,7 +314,7 @@ async def test_get_shortest_route(time, start_id, goal_id):
     assert result["legs"][0]["steps"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_on_start(bot, monkeypatch):
     mock = AsyncMock()
     monkeypatch.setattr(
@@ -347,7 +347,7 @@ def test_refresh_db_match(sunday, delta, result):
     assert_crontab_match(refresh_db, sunday + delta, expected=result)
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_refresh_db(bot, monkeypatch):
     mock = AsyncMock()
     monkeypatch.setattr(
@@ -387,7 +387,7 @@ def test_make_route_desc(result_data):
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_command_body(bot, start_name, goal_name):
     event = bot.create_message()
 
@@ -440,7 +440,7 @@ async def test_command_body(bot, start_name, goal_name):
     assert goal_name in said.data["text"]
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_branch_commands(bot, monkeypatch):
     event = bot.create_message()
 
