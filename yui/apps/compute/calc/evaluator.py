@@ -955,6 +955,9 @@ class Evaluator:
             return self.global_symbol_table[node.id]
         raise NameError(str(node.id))
 
+    def visit_namedexpr(self, node: ast.NamedExpr):
+        raise UnavailableSyntaxError(node)
+
     def visit_nonlocal(self, node: ast.Nonlocal):
         raise UnavailableSyntaxError(node)
 

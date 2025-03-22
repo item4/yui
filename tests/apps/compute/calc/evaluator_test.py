@@ -616,6 +616,18 @@ def test_name():
     assert e.run("int") is int
 
 
+def test_namedexpr():
+    e = Evaluator()
+    err = "Evaluation of 'NamedExpr' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+if age := 10:
+    pass
+""",
+        )
+
+
 def test_nameconstant():
     e = Evaluator()
     assert e.run("True") is True
