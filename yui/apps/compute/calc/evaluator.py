@@ -667,7 +667,7 @@ class Evaluator:
     def visit_assert(self, node: ast.Assert):
         raise UnavailableSyntaxError(node)
 
-    def visit_assign(self, node: ast.Assign):  # targets, value
+    def visit_assign(self, node: ast.Assign):  # targets, value, type_comment
         value = self._run(node.value)
         for tnode in node.targets:
             self.assign(tnode, value)
@@ -742,7 +742,7 @@ class Evaluator:
             return op(self._run(node.left), self._run(node.right))
         raise NotImplementedError
 
-    def visit_boolop(self, node: ast.BoolOp):  # left, op, right
+    def visit_boolop(self, node: ast.BoolOp):  # op, values
         op = BOOLOP_TABLE.get(node.op.__class__)
 
         if op:
@@ -855,7 +855,10 @@ class Evaluator:
     def visit_functiondef(self, node: ast.FunctionDef):
         raise UnavailableSyntaxError(node)
 
-    def visit_for(self, node: ast.For):  # target, iter, body, orelse
+    def visit_for(
+        self,
+        node: ast.For,
+    ):  # target, iter, body, orelse, type_comment
         it = self._run(node.iter)
         if not is_iterable(it):
             raise NotIterableError(it)
