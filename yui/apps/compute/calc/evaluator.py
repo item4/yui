@@ -23,7 +23,7 @@ from .types import is_get_subscriptable
 from .types import is_iterable
 from .types import is_subscriptable
 
-BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
+BINOP_TABLE: dict[type[ast.operator], Callable[[Any, Any], Any]] = {
     ast.Add: operator.add,
     ast.BitAnd: operator.and_,
     ast.BitOr: operator.or_,
@@ -38,11 +38,11 @@ BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     ast.RShift: operator.rshift,
     ast.Sub: operator.sub,
 }
-BOOLOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
+BOOLOP_TABLE: dict[type[ast.boolop], Callable[[Any, Any], Any]] = {
     ast.And: lambda a, b: a and b,
     ast.Or: lambda a, b: a or b,
 }
-COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
+COMPARE_TABLE: dict[type[ast.cmpop], Callable[[Any, Any], bool]] = {
     ast.Eq: operator.eq,
     ast.Gt: operator.gt,
     ast.GtE: operator.ge,
@@ -54,7 +54,7 @@ COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
     ast.NotEq: operator.ne,
     ast.NotIn: lambda a, b: a not in b,
 }
-UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
+UNARYOP_TABLE: dict[type[ast.unaryop], Callable[[Any], Any]] = {
     ast.Invert: operator.invert,
     ast.Not: operator.not_,
     ast.UAdd: operator.pos,
