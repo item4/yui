@@ -15,6 +15,7 @@ from more_itertools import numeric_range
 from ....utils import json
 from .exceptions import AsyncComprehensionError
 from .exceptions import BadSyntax
+from .exceptions import CallableKeywordsError
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
 from .exceptions import UnavailableSyntaxError
@@ -762,8 +763,7 @@ class Evaluator:
         keywords = {}
         for x in node.keywords:
             if not isinstance(x.arg, str):
-                error = f"key name of kwargs must be str, {type(x.arg)!r} given"
-                raise TypeError(error)
+                raise CallableKeywordsError
             keywords[x.arg] = self._run(x.value)
         if callable(func):
             return func(*args, **keywords)

@@ -9,6 +9,7 @@ from yui.apps.compute.calc.evaluator import Evaluator
 from yui.apps.compute.calc.evaluator import ScopeStack
 from yui.apps.compute.calc.exceptions import AsyncComprehensionError
 from yui.apps.compute.calc.exceptions import BadSyntax
+from yui.apps.compute.calc.exceptions import CallableKeywordsError
 from yui.apps.compute.calc.exceptions import NotIterableError
 from yui.apps.compute.calc.exceptions import NotSubscriptableError
 from yui.apps.compute.calc.exceptions import UnavailableSyntaxError
@@ -250,6 +251,11 @@ def test_call():
 
     e.run("z = html.escape('<hello>')")
     assert e.scope["z"] == html.escape("<hello>")
+
+    e.scope["kwd"] = {0: 2020, 1: 3, 2: 10}
+    err = "keywords must be strings"
+    with pytest.raises(CallableKeywordsError, match=err):
+        e.run("date(**kwd)")
 
 
 def test_classdef():

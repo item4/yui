@@ -46,3 +46,9 @@ class NotSubscriptableError(RuntimeTypeError):
     def __init__(self, value, *args) -> None:
         super().__init__(*args)
         self.message = f"{type(value).__name__!r} object is not subscriptable"
+
+
+class CallableKeywordsError(RuntimeTypeError):
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
+        self.message = "keywords must be strings"
