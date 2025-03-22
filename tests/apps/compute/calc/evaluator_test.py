@@ -285,6 +285,8 @@ def test_constant():
     e2 = Evaluator(decimal_mode=True)
     assert e1.run("1.2") == 1.2
     assert e2.run("1.2") == D("1.2")
+    assert e1.run("...") == Ellipsis
+    assert e2.run("...") == Ellipsis
 
 
 def test_continue():
@@ -370,11 +372,6 @@ def test_dictcomp():
     err = "'NoneType' object is not iterable"
     with pytest.raises(NotIterableError, match=err):
         e.run("{x: x for x in None}")
-
-
-def test_ellipsis():
-    e = Evaluator()
-    assert e.run("...") == Ellipsis
 
 
 def test_expr():
