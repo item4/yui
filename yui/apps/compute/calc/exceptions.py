@@ -1,0 +1,60 @@
+import ast
+
+
+class BadSyntax(Exception):
+    pass
+
+
+class RuntimeErrorMixin:
+    message: str
+
+    def __str__(self) -> str:
+        return self.message
+
+
+class RuntimeSyntaxError(RuntimeErrorMixin, SyntaxError):
+    pass
+
+
+class RuntimeTypeError(RuntimeErrorMixin, TypeError):
+    pass
+
+
+class UnavailableSyntaxError(RuntimeSyntaxError):
+    def __init__(self, node: ast.AST, *args) -> None:
+        super().__init__(*args)
+        self.message = (
+            f"Evaluation of {type(node).__name__!r} node is unavailable."
+        )
+
+
+class AsyncComprehensionError(RuntimeSyntaxError):
+    def __init__(self, node: ast.AST, *args) -> None:
+        super().__init__(*args)
+        self.message = (
+            f"Async syntax with {type(node).__name__!r} node is unavailable."
+        )
+
+
+class NotCallableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not callable"
+
+
+class NotIterableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not iterable"
+
+
+class NotSubscriptableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not subscriptable"
+
+
+class CallableKeywordsError(RuntimeTypeError):
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
+        self.message = "keywords must be strings"

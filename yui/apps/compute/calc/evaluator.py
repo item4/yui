@@ -1,336 +1,33 @@
 import ast
-import asyncio
 import datetime
-import decimal
 import functools
 import html
 import itertools
 import math
 import operator
 import random
-import resource
 import statistics
 from collections.abc import Callable
-from collections.abc import Iterable
 from typing import Any
 from typing import Final
-from typing import Protocol
-from typing import TypeGuard
-from typing import runtime_checkable
 
 from more_itertools import numeric_range
 
-from ...bot import Bot
-from ...box import box
-from ...event import Message
-from ...utils import json
+from ....utils import json
+from .exceptions import AsyncComprehensionError
+from .exceptions import BadSyntax
+from .exceptions import CallableKeywordsError
+from .exceptions import NotCallableError
+from .exceptions import NotIterableError
+from .exceptions import NotSubscriptableError
+from .exceptions import UnavailableSyntaxError
+from .types import Decimal
+from .types import PLACEHOLDER
+from .types import is_get_subscriptable
+from .types import is_iterable
+from .types import is_subscriptable
 
-TIMEOUT: Final = 1
-TO_DECIMAL: Final[tuple[type, ...]] = (int, float)
-
-type MAYBE_DECIMAL = int | float | decimal.Decimal
-
-
-class PLACEHOLDER:
-    pass
-
-
-async def body(
-    *,
-    bot: Bot,
-    event: Message,
-    expr: str,
-    help: str,
-    decimal_mode: bool = True,
-    timeout: float = 1,  # noqa: ASYNC109
-):
-    expr = expr.strip()
-    expr_is_multiline = "\n" in expr
-    ts = None if event.message is None else event.message.ts
-    if not expr:
-        await bot.say(event.channel, help)
-        return
-
-    try:
-        async with asyncio.timeout(timeout):
-            result, local = await bot.run_in_other_process(
-                calculate,
-                expr,
-                decimal_mode=decimal_mode,
-            )
-    except (SyntaxError, BadSyntax) as e:
-        await bot.say(
-            event.channel,
-            f"입력해주신 수식에 문법 오류가 있어요! {e}",
-            thread_ts=ts,
-        )
-        return
-    except ZeroDivisionError:
-        await bot.say(
-            event.channel,
-            "입력해주신 수식은 계산하다보면 0으로 나누기가 발생해서 계산할 수 없어요!",
-            thread_ts=ts,
-        )
-        return
-    except TimeoutError:
-        await bot.say(
-            event.channel,
-            "입력해주신 수식을 계산하려고 했지만 연산 시간이 너무 길어서 중단했어요!",
-            thread_ts=ts,
-        )
-        return
-    except Exception as e:  # noqa: BLE001
-        await bot.say(
-            event.channel,
-            f"예기치 않은 에러가 발생했어요! {e.__class__.__name__}: {e}",
-            thread_ts=ts,
-        )
-        return
-
-    if result is not None:
-        result_string = str(result)[:1500].strip()
-
-        if expr_is_multiline or "\n" in result_string:
-            r = (
-                f"```\n{result_string}\n```"
-                if result_string.strip()
-                else "_Empty_"
-            )
-            text = f"*Input*\n```\n{expr}\n```\n*Output*\n{r}"
-            if ts is None:
-                ts = event.ts
-        else:
-            r = f"`{result_string}`" if result_string.strip() else "_Empty_"
-            text = f"`{expr}` == {r}"
-        await bot.say(
-            event.channel,
-            text,
-            thread_ts=ts,
-        )
-    elif local:
-        r = "\n".join(f"{key} = {value!r}" for key, value in local.items())[
-            :1500
-        ].strip()
-        if ts is None:
-            ts = event.ts
-        await bot.say(
-            event.channel,
-            f"*Input*\n```\n{expr}\n```\n*Local State*\n```\n{r}\n```",
-            thread_ts=ts,
-        )
-    else:
-        await bot.say(
-            event.channel,
-            "입력해주신 수식을 계산했지만 아무런 값도 나오지 않았어요!",
-            thread_ts=ts,
-        )
-
-
-@box.command("=", ["calc"])
-async def calc_decimal(bot, event: Message, raw: str):
-    """
-    정수타입 수식 계산기
-
-    `{PREFIX}= 1+2+3`
-
-    Python 문법과 모듈 일부가 사용 가능합니다.
-
-    """
-
-    await body(
-        bot=bot,
-        event=event,
-        expr=raw,
-        help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-        decimal_mode=True,
-    )
-
-
-@box.command("=", ["calc"], subtype="message_changed")
-async def calc_decimal_on_change(bot, event: Message, raw: str):
-    if event.message:
-        await body(
-            bot=bot,
-            event=event,
-            expr=raw,
-            help=f"사용법: `{bot.config.PREFIX}= <계산할 수식>`",
-            decimal_mode=True,
-        )
-
-
-@box.command("==")
-async def calc_num(bot, event: Message, raw: str):
-    """
-    부동소숫점타입 수식 계산기
-
-    `{PREFIX}== 1+2+3`
-
-    Python 문법과 모듈 일부가 사용 가능합니다.
-
-    """
-
-    await body(
-        bot=bot,
-        event=event,
-        expr=raw,
-        help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-        decimal_mode=False,
-    )
-
-
-@box.command("==", subtype="message_changed")
-async def calc_num_on_change(bot, event: Message, raw: str):
-    if event.message:
-        await body(
-            bot=bot,
-            event=event,
-            expr=raw,
-            help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
-            decimal_mode=False,
-        )
-
-
-class Decimal(decimal.Decimal):
-    def __abs__(self):
-        return Decimal(super().__abs__())
-
-    def __add__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__add__(other))
-
-    def __divmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        quotient, remainder = super().__divmod__(other)
-        return Decimal(quotient), Decimal(remainder)
-
-    def __floordiv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__floordiv__(other))
-
-    def __mod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__mod__(other))
-
-    def __mul__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__mul__(other))
-
-    def __neg__(self):
-        return Decimal(super().__neg__())
-
-    def __pos__(self):
-        return Decimal(super().__pos__())
-
-    def __pow__(
-        self,
-        other,
-        mod=None,
-        /,
-    ):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        if isinstance(mod, TO_DECIMAL):
-            mod = Decimal(mod)
-        return Decimal(super().__pow__(other, mod))
-
-    def __radd__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__add__(self))
-
-    def __rdivmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        quotient, remainder = other.__divmod__(self)
-        return Decimal(quotient), Decimal(remainder)
-
-    def __rfloordiv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__floordiv__(self))
-
-    def __rmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__mod__(self))
-
-    def __rmul__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__mul__(self))
-
-    def __rsub__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__sub__(self))
-
-    def __rtruediv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__truediv__(self))
-
-    def __sub__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__sub__(other))
-
-    def __truediv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(super().__truediv__(other))
-
-    def __rpow__(self, other, context=None, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        return Decimal(other.__pow__(self))
-
-
-TYPE_STORE = type(ast.Store())
-TYPE_LOAD = type(ast.Load())
-TYPE_DEL = type(ast.Del())
-TYPE_EXPR = type(ast.Expr(ast.expr()))
-
-
-class BadSyntax(Exception):
-    pass
-
-
-class RuntimeTypeError(TypeError):
-    message: str
-
-    def __str__(self) -> str:
-        return self.message
-
-
-@runtime_checkable
-class SupportsGetSubscript(Protocol):
-    def __getitem__(self, key, default=None): ...
-
-
-@runtime_checkable
-class SupportsSubscript(SupportsGetSubscript, Protocol):
-    def __setitem__(self, key, value): ...
-    def __delitem__(self, key): ...
-
-
-class NotIterableError(RuntimeTypeError):
-    def __init__(self, value, *args) -> None:
-        super().__init__(*args)
-        self.message = f"{type(value).__name__!r} object is not iterable"
-
-
-class NotSubscriptableError(RuntimeTypeError):
-    def __init__(self, value, *args) -> None:
-        super().__init__(*args)
-        self.message = f"{type(value).__name__!r} object is not subscriptable"
-
-
-BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
+BINOP_TABLE: Final[dict[type[ast.operator], Callable[[Any, Any], Any]]] = {
     ast.Add: operator.add,
     ast.BitAnd: operator.and_,
     ast.BitOr: operator.or_,
@@ -345,11 +42,11 @@ BINOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
     ast.RShift: operator.rshift,
     ast.Sub: operator.sub,
 }
-BOOLOP_TABLE: dict[Any, Callable[[Any, Any], Any]] = {
+BOOLOP_TABLE: Final[dict[type[ast.boolop], Callable[[Any, Any], Any]]] = {
     ast.And: lambda a, b: a and b,
     ast.Or: lambda a, b: a or b,
 }
-COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
+COMPARE_TABLE: Final[dict[type[ast.cmpop], Callable[[Any, Any], bool]]] = {
     ast.Eq: operator.eq,
     ast.Gt: operator.gt,
     ast.GtE: operator.ge,
@@ -361,24 +58,12 @@ COMPARE_TABLE: dict[Any, Callable[[Any, Any], bool]] = {
     ast.NotEq: operator.ne,
     ast.NotIn: lambda a, b: a not in b,
 }
-UNARYOP_TABLE: dict[Any, Callable[[Any], Any]] = {
+UNARYOP_TABLE: Final[dict[type[ast.unaryop], Callable[[Any], Any]]] = {
     ast.Invert: operator.invert,
     ast.Not: operator.not_,
     ast.UAdd: operator.pos,
     ast.USub: operator.neg,
 }
-
-
-def is_iterable(x) -> TypeGuard[Iterable]:
-    return isinstance(x, Iterable)
-
-
-def is_get_subscriptable(x) -> TypeGuard[SupportsGetSubscript]:
-    return isinstance(x, SupportsGetSubscript)
-
-
-def is_subscriptable(x) -> TypeGuard[SupportsSubscript]:
-    return isinstance(x, SupportsSubscript)
 
 
 class ScopeStack:
@@ -439,7 +124,6 @@ class Evaluator:
     def __init__(self, *, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
-            datetime: {"date", "datetime", "time", "timedelta", "tzinfo"},
             functools: {"reduce"},
             html: {"escape", "unescape"},
             itertools: {
@@ -944,7 +628,7 @@ class Evaluator:
         if isinstance(node, ast.Name):
             self.scope[node.id] = val
         elif isinstance(node, (ast.Tuple, ast.List)):
-            if not isinstance(val, Iterable):
+            if not is_iterable(val):
                 error = (
                     f"cannot unpack non-iterable {type(val).__name__} object"
                 )
@@ -982,29 +666,24 @@ class Evaluator:
         raise NotImplementedError
 
     def visit_annassign(self, node: ast.AnnAssign):
-        error = "You can not use annotation syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_assert(self, node: ast.Assert):
-        error = "You can not use assertion syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
-    def visit_assign(self, node: ast.Assign):  # targets, value
+    def visit_assign(self, node: ast.Assign):  # targets, value, type_comment
         value = self._run(node.value)
         for tnode in node.targets:
             self.assign(tnode, value)
 
     def visit_asyncfor(self, node: ast.AsyncFor):
-        error = "You can not use `async for` loop syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_asyncfunctiondef(self, node: ast.AsyncFunctionDef):
-        error = "Defining new coroutine via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_asyncwith(self, node: ast.AsyncWith):
-        error = "You can not use `async with` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_attribute(self, node: ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
@@ -1058,8 +737,7 @@ class Evaluator:
             raise BadSyntax(error)
 
     def visit_await(self, node: ast.Await):
-        error = "You can not await anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_binop(self, node: ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
@@ -1068,7 +746,7 @@ class Evaluator:
             return op(self._run(node.left), self._run(node.right))
         raise NotImplementedError
 
-    def visit_boolop(self, node: ast.BoolOp):  # left, op, right
+    def visit_boolop(self, node: ast.BoolOp):  # op, values
         op = BOOLOP_TABLE.get(node.op.__class__)
 
         if op:
@@ -1087,13 +765,11 @@ class Evaluator:
         keywords = {}
         for x in node.keywords:
             if not isinstance(x.arg, str):
-                error = f"key name of kwargs must be str, {type(x.arg)!r} given"
-                raise TypeError(error)
+                raise CallableKeywordsError
             keywords[x.arg] = self._run(x.value)
         if callable(func):
             return func(*args, **keywords)
-        error = "not callable"
-        raise TypeError(error)
+        raise NotCallableError(func)
 
     def visit_compare(self, node: ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
@@ -1117,8 +793,7 @@ class Evaluator:
         self.current_interrupt = node
 
     def visit_classdef(self, node: ast.ClassDef):
-        error = "Defining new class via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_delete(self, node: ast.Delete):  # targets
         error = "This delete method is not allowed"
@@ -1150,6 +825,8 @@ class Evaluator:
         result: dict = {}
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
@@ -1180,10 +857,12 @@ class Evaluator:
         return self._run(node.value)
 
     def visit_functiondef(self, node: ast.FunctionDef):
-        error = "Defining new function via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
-    def visit_for(self, node: ast.For):  # target, iter, body, orelse
+    def visit_for(
+        self,
+        node: ast.For,
+    ):  # target, iter, body, orelse, type_comment
         it = self._run(node.iter)
         if not is_iterable(it):
             raise NotIterableError(it)
@@ -1211,12 +890,10 @@ class Evaluator:
         return format(value, format_spec)
 
     def visit_generatorexp(self, node: ast.GeneratorExp):
-        error = "Defining new generator expression is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_global(self, node: ast.Global):
-        error = "You can not use `global` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_if(self, node: ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
@@ -1227,19 +904,16 @@ class Evaluator:
         return self._run(node.body if self._run(node.test) else node.orelse)
 
     def visit_import(self, node: ast.Import):
-        error = "You can not import anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_importfrom(self, node: ast.ImportFrom):
-        error = "You can not import anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_joinedstr(self, node: ast.JoinedStr):  # values,
         return "".join(str(self._run(x)) for x in node.values)
 
     def visit_lambda(self, node: ast.Lambda):
-        error = "Defining new function via lambda syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_list(self, node: ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]
@@ -1248,6 +922,8 @@ class Evaluator:
         result: list = []
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
@@ -1272,6 +948,9 @@ class Evaluator:
                     self.delete(current_gen.target)
         return result
 
+    def visit_match(self, node: ast.Match):  # TODO
+        raise UnavailableSyntaxError(node)
+
     def visit_module(self, node: ast.Module):  # body,
         last = None
         for body_node in node.body:
@@ -1285,20 +964,20 @@ class Evaluator:
             return self.global_symbol_table[node.id]
         raise NameError(str(node.id))
 
+    def visit_namedexpr(self, node: ast.NamedExpr):
+        raise UnavailableSyntaxError(node)
+
     def visit_nonlocal(self, node: ast.Nonlocal):
-        error = "You can not use `nonlocal` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_pass(self, node: ast.Pass):
         return
 
     def visit_raise(self, node: ast.Raise):
-        error = "You can not use `raise` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_return(self, node: ast.Return):
-        error = "You can not use `return` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_set(self, node: ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
@@ -1307,6 +986,8 @@ class Evaluator:
         result = set()
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
@@ -1346,19 +1027,16 @@ class Evaluator:
         return value[xslice]
 
     def visit_try(self, node: ast.Try):
-        error = "You can not use `try` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_trystar(self, node: ast.TryStar):
-        error = "You can not use `try` syntax with star"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_tuple(self, node: ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
     def visit_typealias(self, node):  # name, type_params, value
-        error = "You can not define type alias"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_unaryop(self, node: ast.UnaryOp):  # op, operand
         op = UNARYOP_TABLE.get(node.op.__class__)
@@ -1382,27 +1060,10 @@ class Evaluator:
         self.current_interrupt = None
 
     def visit_with(self, node: ast.With):
-        error = "You can not use `with` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_yield(self, node: ast.Yield):
-        error = "You can not use `yield` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_yieldfrom(self, node: ast.YieldFrom):
-        error = "You can not use `yield from` syntax"
-        raise BadSyntax(error)
-
-
-def calculate(
-    expr: str,
-    *,
-    decimal_mode: bool = True,
-):  # pragma: no cover  -- run on other process
-
-    limit = 2 * 1024 * 1024
-    resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
-    e = Evaluator(decimal_mode=decimal_mode)
-    result = e.run(expr)
-
-    return result, e.scope
+        raise UnavailableSyntaxError(node)
