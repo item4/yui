@@ -40,7 +40,7 @@ async def run_alembic_op(config, op):
 
 @click.group()
 def yui():
-    """YUI, Slack Bot for item4.slack.com"""
+    """YUI is Multi-purposed Slack Bot"""
 
 
 @yui.command()
