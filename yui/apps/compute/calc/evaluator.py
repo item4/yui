@@ -13,6 +13,7 @@ from typing import Any
 from more_itertools import numeric_range
 
 from ....utils import json
+from .exceptions import AsyncComprehensionError
 from .exceptions import BadSyntax
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
@@ -823,6 +824,8 @@ class Evaluator:
         result: dict = {}
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
@@ -918,6 +921,8 @@ class Evaluator:
         result: list = []
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
@@ -980,6 +985,8 @@ class Evaluator:
         result = set()
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
+            if current_gen.is_async:
+                raise AsyncComprehensionError(node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):

@@ -7,6 +7,7 @@ import pytest
 
 from yui.apps.compute.calc.evaluator import Evaluator
 from yui.apps.compute.calc.evaluator import ScopeStack
+from yui.apps.compute.calc.exceptions import AsyncComprehensionError
 from yui.apps.compute.calc.exceptions import BadSyntax
 from yui.apps.compute.calc.exceptions import NotIterableError
 from yui.apps.compute.calc.exceptions import NotSubscriptableError
@@ -373,6 +374,10 @@ def test_dictcomp():
     with pytest.raises(NotIterableError, match=err):
         e.run("{x: x for x in None}")
 
+    err = "Async syntax with 'DictComp' node is unavailable."
+    with pytest.raises(AsyncComprehensionError, match=err):
+        e.run("{k: v async for k, v in magic}")
+
 
 def test_expr():
     e = Evaluator()
@@ -596,6 +601,10 @@ def test_listcomp():
     with pytest.raises(NotIterableError, match=err):
         e.run("[x for x in None]")
 
+    err = "Async syntax with 'ListComp' node is unavailable."
+    with pytest.raises(AsyncComprehensionError, match=err):
+        e.run("[x async for x in magic]")
+
 
 def test_match():
     e = Evaluator()
@@ -715,6 +724,10 @@ def test_setcomp():
     err = "'NoneType' object is not iterable"
     with pytest.raises(NotIterableError, match=err):
         e.run("{x for x in None}")
+
+    err = "Async syntax with 'SetComp' node is unavailable."
+    with pytest.raises(AsyncComprehensionError, match=err):
+        e.run("{x async for x in magic}")
 
 
 def test_slice():

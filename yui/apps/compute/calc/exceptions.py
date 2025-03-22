@@ -28,6 +28,14 @@ class UnavailableSyntaxError(RuntimeSyntaxError):
         )
 
 
+class AsyncComprehensionError(RuntimeSyntaxError):
+    def __init__(self, node: ast.AST, *args) -> None:
+        super().__init__(*args)
+        self.message = (
+            f"Async syntax with {type(node).__name__!r} node is unavailable."
+        )
+
+
 class NotIterableError(RuntimeTypeError):
     def __init__(self, value, *args) -> None:
         super().__init__(*args)
