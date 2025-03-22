@@ -7,6 +7,8 @@ from ....box import box
 from ....event import Message
 from .evaluator import Evaluator
 from .exceptions import BadSyntax
+from .exceptions import RuntimeSyntaxError
+from .exceptions import RuntimeTypeError
 
 TIMEOUT: Final = 1
 
@@ -34,6 +36,13 @@ async def body(
                 expr,
                 decimal_mode=decimal_mode,
             )
+    except (RuntimeSyntaxError, RuntimeTypeError) as e:
+        await bot.say(
+            event.channel,
+            f"입력해주신 수식을 처리할 수 없어요!\n*{e.__class__.__name__}*: `{e.message}`",
+            thread_ts=ts,
+        )
+        return
     except (SyntaxError, BadSyntax) as e:
         await bot.say(
             event.channel,

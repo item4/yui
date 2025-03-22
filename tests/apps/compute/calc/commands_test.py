@@ -94,6 +94,22 @@ async def test_command_bad_syntax(bot):
 
 
 @pytest.mark.anyio
+async def test_command_runtime_error(bot):
+    event = bot.create_message()
+    expr = "await breath()"
+    help_text = "help"
+    await body(bot=bot, event=event, expr=expr, help=help_text)
+
+    said = bot.call_queue.pop(0)
+    assert said.method == "chat.postMessage"
+    assert said.data["channel"] == event.channel
+    assert (
+        said.data["text"]
+        == "입력해주신 수식을 처리할 수 없어요!\n*UnavailableSyntaxError*: `Evaluation of 'Await' node is unavailable.`"
+    )
+
+
+@pytest.mark.anyio
 async def test_command_zero_division(bot):
     event = bot.create_message()
     expr = "1/0"
