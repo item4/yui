@@ -1,60 +1,74 @@
-import ast
+from typing import NoReturn
 
 
 class BadSyntax(Exception):
     pass
 
 
-class RuntimeErrorMixin:
-    message: str
-
-    def __str__(self) -> str:
-        return self.message
-
-
-class RuntimeSyntaxError(RuntimeErrorMixin, SyntaxError):
+class RuntimeSyntaxError(SyntaxError):
     pass
 
 
-class RuntimeTypeError(RuntimeErrorMixin, TypeError):
+class RuntimeTypeError(TypeError):
     pass
 
 
 class UnavailableSyntaxError(RuntimeSyntaxError):
-    def __init__(self, node: ast.AST, *args) -> None:
-        super().__init__(*args)
-        self.message = (
-            f"Evaluation of {type(node).__name__!r} node is unavailable."
-        )
+    pass
 
 
 class AsyncComprehensionError(RuntimeSyntaxError):
-    def __init__(self, node: ast.AST, *args) -> None:
-        super().__init__(*args)
-        self.message = (
-            f"Async syntax with {type(node).__name__!r} node is unavailable."
-        )
+    pass
 
 
 class NotCallableError(RuntimeTypeError):
-    def __init__(self, value, *args) -> None:
-        super().__init__(*args)
-        self.message = f"{type(value).__name__!r} object is not callable"
+    pass
 
 
 class NotIterableError(RuntimeTypeError):
-    def __init__(self, value, *args) -> None:
-        super().__init__(*args)
-        self.message = f"{type(value).__name__!r} object is not iterable"
+    pass
 
 
 class NotSubscriptableError(RuntimeTypeError):
-    def __init__(self, value, *args) -> None:
-        super().__init__(*args)
-        self.message = f"{type(value).__name__!r} object is not subscriptable"
+    pass
 
 
 class CallableKeywordsError(RuntimeTypeError):
-    def __init__(self, *args) -> None:
-        super().__init__(*args)
-        self.message = "keywords must be strings"
+    pass
+
+
+def error_maker(
+    exc_cls: type[RuntimeSyntaxError] | type[RuntimeTypeError],
+    *args,
+) -> NoReturn:
+    if exc_cls is UnavailableSyntaxError:
+        x = args[0]
+        error = f"Evaluation of {type(x).__name__!r} node is unavailable."
+        raise UnavailableSyntaxError(error)
+
+    if exc_cls is AsyncComprehensionError:
+        x = args[0]
+        error = f"Async syntax with {type(x).__name__!r} node is unavailable."
+        raise AsyncComprehensionError(error)
+
+    if exc_cls is NotCallableError:
+        x = args[0]
+        error = f"{type(x).__name__!r} object is not callable"
+        raise NotCallableError(error)
+
+    if exc_cls is NotIterableError:
+        x = args[0]
+        error = f"{type(x).__name__!r} object is not iterable"
+        raise NotIterableError(error)
+
+    if exc_cls is NotSubscriptableError:
+        x = args[0]
+        error = f"{type(x).__name__!r} object is not subscriptable"
+        raise NotSubscriptableError(error)
+
+    if exc_cls is CallableKeywordsError:
+        error = "keywords must be strings"
+        raise CallableKeywordsError(error)
+
+    error = "Unknown exception"
+    raise TypeError(error)

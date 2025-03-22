@@ -39,7 +39,7 @@ async def body(
     except (RuntimeSyntaxError, RuntimeTypeError) as e:
         await bot.say(
             event.channel,
-            f"입력해주신 수식을 처리할 수 없어요!\n*{e.__class__.__name__}*: `{e.message}`",
+            f"입력해주신 수식을 처리할 수 없어요!\n*{e.__class__.__name__}*: `{e}`",
             thread_ts=ts,
         )
         return

@@ -21,6 +21,7 @@ from .exceptions import NotCallableError
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
 from .exceptions import UnavailableSyntaxError
+from .exceptions import error_maker
 from .types import Decimal
 from .types import PLACEHOLDER
 from .types import is_get_subscriptable
@@ -629,10 +630,7 @@ class Evaluator:
             self.scope[node.id] = val
         elif isinstance(node, (ast.Tuple, ast.List)):
             if not is_iterable(val):
-                error = (
-                    f"cannot unpack non-iterable {type(val).__name__} object"
-                )
-                raise TypeError(error)
+                error_maker(NotIterableError, val)
             for telem, tval in itertools.zip_longest(
                 node.elts,
                 val,
@@ -649,7 +647,7 @@ class Evaluator:
             sym = self._run(node.value)
             xslice = self._run(node.slice)
             if not is_subscriptable(sym):
-                raise NotSubscriptableError(sym)
+                error_maker(NotSubscriptableError, sym)
             sym[xslice] = val
         else:
             error = "This assign method is not allowed"
@@ -666,10 +664,10 @@ class Evaluator:
         raise NotImplementedError
 
     def visit_annassign(self, node: ast.AnnAssign):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_assert(self, node: ast.Assert):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_assign(self, node: ast.Assign):  # targets, value, type_comment
         value = self._run(node.value)
@@ -677,13 +675,13 @@ class Evaluator:
             self.assign(tnode, value)
 
     def visit_asyncfor(self, node: ast.AsyncFor):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_asyncfunctiondef(self, node: ast.AsyncFunctionDef):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_asyncwith(self, node: ast.AsyncWith):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_attribute(self, node: ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
@@ -724,7 +722,7 @@ class Evaluator:
         elif isinstance(target, ast.Subscript):
             sym = self._run(target.value)
             if not is_subscriptable(sym):
-                raise NotSubscriptableError(sym)
+                error_maker(NotSubscriptableError, sym)
             xslice = self._run(target.slice)
             if not isinstance(target.slice, (ast.Tuple, ast.Slice)):
                 sym[xslice] = BINOP_TABLE[op_cls](
@@ -737,7 +735,7 @@ class Evaluator:
             raise BadSyntax(error)
 
     def visit_await(self, node: ast.Await):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_binop(self, node: ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
@@ -765,11 +763,11 @@ class Evaluator:
         keywords = {}
         for x in node.keywords:
             if not isinstance(x.arg, str):
-                raise CallableKeywordsError
+                error_maker(CallableKeywordsError)
             keywords[x.arg] = self._run(x.value)
         if callable(func):
             return func(*args, **keywords)
-        raise NotCallableError(func)
+        return error_maker(NotCallableError, func)
 
     def visit_compare(self, node: ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
@@ -793,7 +791,7 @@ class Evaluator:
         self.current_interrupt = node
 
     def visit_classdef(self, node: ast.ClassDef):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_delete(self, node: ast.Delete):  # targets
         error = "This delete method is not allowed"
@@ -803,7 +801,7 @@ class Evaluator:
             elif isinstance(target, ast.Subscript):
                 sym = self._run(target.value)
                 if not is_subscriptable(sym):
-                    raise NotSubscriptableError(sym)
+                    error_maker(NotSubscriptableError, sym)
                 xslice = self._run(target.slice)
                 if not isinstance(
                     target.slice,
@@ -826,11 +824,11 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             if current_gen.is_async:
-                raise AsyncComprehensionError(node)
+                error_maker(AsyncComprehensionError, node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
-                    raise NotIterableError(it)
+                    error_maker(NotIterableError, it)
                 for val in it:
                     self.assign(current_gen.target, val)
                     add = True
@@ -857,7 +855,7 @@ class Evaluator:
         return self._run(node.value)
 
     def visit_functiondef(self, node: ast.FunctionDef):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_for(
         self,
@@ -865,7 +863,7 @@ class Evaluator:
     ):  # target, iter, body, orelse, type_comment
         it = self._run(node.iter)
         if not is_iterable(it):
-            raise NotIterableError(it)
+            error_maker(NotIterableError, it)
         for val in it:
             self.assign(node.target, val)
             self.current_interrupt = None
@@ -890,10 +888,10 @@ class Evaluator:
         return format(value, format_spec)
 
     def visit_generatorexp(self, node: ast.GeneratorExp):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_global(self, node: ast.Global):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_if(self, node: ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
@@ -904,16 +902,16 @@ class Evaluator:
         return self._run(node.body if self._run(node.test) else node.orelse)
 
     def visit_import(self, node: ast.Import):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_importfrom(self, node: ast.ImportFrom):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_joinedstr(self, node: ast.JoinedStr):  # values,
         return "".join(str(self._run(x)) for x in node.values)
 
     def visit_lambda(self, node: ast.Lambda):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_list(self, node: ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]
@@ -923,11 +921,11 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             if current_gen.is_async:
-                raise AsyncComprehensionError(node)
+                error_maker(AsyncComprehensionError, node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
-                    raise NotIterableError(it)
+                    error_maker(NotIterableError, it)
                 for val in it:
                     self.assign(current_gen.target, val)
                     add = True
@@ -949,7 +947,7 @@ class Evaluator:
         return result
 
     def visit_match(self, node: ast.Match):  # TODO
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_module(self, node: ast.Module):  # body,
         last = None
@@ -965,19 +963,19 @@ class Evaluator:
         raise NameError(str(node.id))
 
     def visit_namedexpr(self, node: ast.NamedExpr):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_nonlocal(self, node: ast.Nonlocal):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_pass(self, node: ast.Pass):
         return
 
     def visit_raise(self, node: ast.Raise):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_return(self, node: ast.Return):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_set(self, node: ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
@@ -987,11 +985,11 @@ class Evaluator:
         current_gen = node.generators[0]
         if isinstance(current_gen, ast.comprehension):
             if current_gen.is_async:
-                raise AsyncComprehensionError(node)
+                error_maker(AsyncComprehensionError, node)
             with self.scope:
                 it = self._run(current_gen.iter)
                 if not is_iterable(it):
-                    raise NotIterableError(it)
+                    error_maker(NotIterableError, it)
                 for val in it:
                     self.assign(current_gen.target, val)
                     add = True
@@ -1022,21 +1020,21 @@ class Evaluator:
     def visit_subscript(self, node: ast.Subscript):  # value, slice, ctx
         value = self._run(node.value)
         if not is_get_subscriptable(value):
-            raise NotSubscriptableError(value)
+            error_maker(NotSubscriptableError, value)
         xslice = self._run(node.slice)
         return value[xslice]
 
     def visit_try(self, node: ast.Try):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_trystar(self, node: ast.TryStar):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_tuple(self, node: ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
     def visit_typealias(self, node):  # name, type_params, value
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_unaryop(self, node: ast.UnaryOp):  # op, operand
         op = UNARYOP_TABLE.get(node.op.__class__)
@@ -1060,10 +1058,10 @@ class Evaluator:
         self.current_interrupt = None
 
     def visit_with(self, node: ast.With):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_yield(self, node: ast.Yield):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)
 
     def visit_yieldfrom(self, node: ast.YieldFrom):
-        raise UnavailableSyntaxError(node)
+        error_maker(UnavailableSyntaxError, node)

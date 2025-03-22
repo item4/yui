@@ -79,7 +79,7 @@ def test_assign(e):
     with pytest.raises(ValueError, match=err):
         e.run('id, name = 1, "kirito", "black"')
 
-    err = "cannot unpack non-iterable int object"
+    err = "'int' object is not iterable"
     with pytest.raises(TypeError, match=err):
         e.run("year, month, day = 1")
 
