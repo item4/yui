@@ -119,7 +119,6 @@ class Evaluator:
     def __init__(self, *, decimal_mode: bool = False) -> None:
         self.decimal_mode = decimal_mode
         self.allowed_modules = {
-            datetime: {"date", "datetime", "time", "timedelta", "tzinfo"},
             functools: {"reduce"},
             html: {"escape", "unescape"},
             itertools: {
