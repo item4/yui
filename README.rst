@@ -1,7 +1,8 @@
 YUI
 ===
 
-.. image:: https://github.com/item4/yui/workflows/CI/badge.svg
+.. image:: https://github.com/item4/yui/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/item4/yui/actions/workflows/ci.yml
    :alt: CI Status
 
 .. image:: https://codecov.io/gh/item4/yui/branch/main/graph/badge.svg
