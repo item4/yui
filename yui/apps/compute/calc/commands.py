@@ -1,4 +1,3 @@
-import ast
 import asyncio
 import resource
 from typing import Final
@@ -165,12 +164,6 @@ async def calc_num_on_change(bot, event: Message, raw: str):
             help=f"사용법: `{bot.config.PREFIX}== <계산할 수식>`",
             decimal_mode=False,
         )
-
-
-TYPE_STORE = type(ast.Store())
-TYPE_LOAD = type(ast.Load())
-TYPE_DEL = type(ast.Del())
-TYPE_EXPR = type(ast.Expr(ast.expr()))
 
 
 def calculate(
