@@ -211,10 +211,7 @@ extend-immutable-calls = [
 
 
 [tool.pytest.ini_options]
-filterwarnings = [
-    "always::DeprecationWarning",
-    "ignore::DeprecationWarning:multiprocessing.popen_fork",
-]
+filterwarnings = ["always::DeprecationWarning"]
 testpaths = ["tests"]
 
 

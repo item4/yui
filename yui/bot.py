@@ -6,6 +6,7 @@ import functools
 import importlib
 import logging
 import logging.config
+import multiprocessing
 import random
 import string
 from collections import defaultdict
@@ -287,7 +288,9 @@ class Bot(GetLoggerMixin):
         **kwargs: P.kwargs,
     ) -> R:
         loop = asyncio.get_running_loop()
-        with ProcessPoolExecutor() as executor:
+        with ProcessPoolExecutor(
+            mp_context=multiprocessing.get_context("spawn"),
+        ) as executor:
             return await loop.run_in_executor(
                 executor=executor,
                 func=functools.partial(f, *args, **kwargs),
