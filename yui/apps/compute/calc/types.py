@@ -1,11 +1,8 @@
 import decimal
 from collections.abc import Iterable
-from typing import Final
 from typing import Protocol
 from typing import TypeGuard
 from typing import runtime_checkable
-
-TO_DECIMAL: Final[tuple[type, ...]] = (int, float)
 
 
 class PLACEHOLDER:
@@ -13,33 +10,34 @@ class PLACEHOLDER:
 
 
 class Decimal(decimal.Decimal):
+    @staticmethod
+    def _infect(value):
+        if isinstance(value, (int, float)):
+            return Decimal(value)
+        return value
+
     def __abs__(self):
         return Decimal(super().__abs__())
 
     def __add__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__add__(other))
 
     def __divmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         quotient, remainder = super().__divmod__(other)
         return Decimal(quotient), Decimal(remainder)
 
     def __floordiv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__floordiv__(other))
 
     def __mod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__mod__(other))
 
     def __mul__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__mul__(other))
 
     def __neg__(self):
@@ -54,61 +52,49 @@ class Decimal(decimal.Decimal):
         mod=None,
         /,
     ):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
-        if isinstance(mod, TO_DECIMAL):
-            mod = Decimal(mod)
+        other = self._infect(other)
+        mod = self._infect(mod)
         return Decimal(super().__pow__(other, mod))
 
     def __radd__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__add__(self))
 
     def __rdivmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         quotient, remainder = other.__divmod__(self)
         return Decimal(quotient), Decimal(remainder)
 
     def __rfloordiv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__floordiv__(self))
 
     def __rmod__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__mod__(self))
 
     def __rmul__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__mul__(self))
 
     def __rsub__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__sub__(self))
 
     def __rtruediv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__truediv__(self))
 
     def __sub__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__sub__(other))
 
     def __truediv__(self, other, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(super().__truediv__(other))
 
     def __rpow__(self, other, context=None, /):
-        if isinstance(other, TO_DECIMAL):
-            other = Decimal(other)
+        other = self._infect(other)
         return Decimal(other.__pow__(self))
 
 
