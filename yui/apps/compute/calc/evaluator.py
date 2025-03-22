@@ -16,6 +16,7 @@ from ....utils import json
 from .exceptions import BadSyntax
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
+from .exceptions import UnavailableSyntaxError
 from .types import Decimal
 from .types import PLACEHOLDER
 from .types import is_get_subscriptable
@@ -661,12 +662,10 @@ class Evaluator:
         raise NotImplementedError
 
     def visit_annassign(self, node: ast.AnnAssign):
-        error = "You can not use annotation syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_assert(self, node: ast.Assert):
-        error = "You can not use assertion syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_assign(self, node: ast.Assign):  # targets, value
         value = self._run(node.value)
@@ -674,16 +673,13 @@ class Evaluator:
             self.assign(tnode, value)
 
     def visit_asyncfor(self, node: ast.AsyncFor):
-        error = "You can not use `async for` loop syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_asyncfunctiondef(self, node: ast.AsyncFunctionDef):
-        error = "Defining new coroutine via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_asyncwith(self, node: ast.AsyncWith):
-        error = "You can not use `async with` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_attribute(self, node: ast.Attribute):  # value, attr, ctx
         value = self._run(node.value)
@@ -737,8 +733,7 @@ class Evaluator:
             raise BadSyntax(error)
 
     def visit_await(self, node: ast.Await):
-        error = "You can not await anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_binop(self, node: ast.BinOp):  # left, op, right
         op = BINOP_TABLE.get(node.op.__class__)
@@ -796,8 +791,7 @@ class Evaluator:
         self.current_interrupt = node
 
     def visit_classdef(self, node: ast.ClassDef):
-        error = "Defining new class via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_delete(self, node: ast.Delete):  # targets
         error = "This delete method is not allowed"
@@ -859,8 +853,7 @@ class Evaluator:
         return self._run(node.value)
 
     def visit_functiondef(self, node: ast.FunctionDef):
-        error = "Defining new function via def syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_for(self, node: ast.For):  # target, iter, body, orelse
         it = self._run(node.iter)
@@ -890,12 +883,10 @@ class Evaluator:
         return format(value, format_spec)
 
     def visit_generatorexp(self, node: ast.GeneratorExp):
-        error = "Defining new generator expression is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_global(self, node: ast.Global):
-        error = "You can not use `global` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_if(self, node: ast.If):  # test, body, orelse
         stmts = node.body if self._run(node.test) else node.orelse
@@ -906,19 +897,16 @@ class Evaluator:
         return self._run(node.body if self._run(node.test) else node.orelse)
 
     def visit_import(self, node: ast.Import):
-        error = "You can not import anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_importfrom(self, node: ast.ImportFrom):
-        error = "You can not import anything"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_joinedstr(self, node: ast.JoinedStr):  # values,
         return "".join(str(self._run(x)) for x in node.values)
 
     def visit_lambda(self, node: ast.Lambda):
-        error = "Defining new function via lambda syntax is not allowed"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_list(self, node: ast.List):  # elts, ctx
         return [self._run(x) for x in node.elts]
@@ -965,19 +953,16 @@ class Evaluator:
         raise NameError(str(node.id))
 
     def visit_nonlocal(self, node: ast.Nonlocal):
-        error = "You can not use `nonlocal` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_pass(self, node: ast.Pass):
         return
 
     def visit_raise(self, node: ast.Raise):
-        error = "You can not use `raise` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_return(self, node: ast.Return):
-        error = "You can not use `return` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_set(self, node: ast.Set):  # elts,
         return {self._run(x) for x in node.elts}
@@ -1025,19 +1010,16 @@ class Evaluator:
         return value[xslice]
 
     def visit_try(self, node: ast.Try):
-        error = "You can not use `try` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_trystar(self, node: ast.TryStar):
-        error = "You can not use `try` syntax with star"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_tuple(self, node: ast.Tuple):  # elts, ctx
         return tuple(self._run(x) for x in node.elts)
 
     def visit_typealias(self, node):  # name, type_params, value
-        error = "You can not define type alias"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_unaryop(self, node: ast.UnaryOp):  # op, operand
         op = UNARYOP_TABLE.get(node.op.__class__)
@@ -1061,13 +1043,10 @@ class Evaluator:
         self.current_interrupt = None
 
     def visit_with(self, node: ast.With):
-        error = "You can not use `with` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_yield(self, node: ast.Yield):
-        error = "You can not use `yield` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)
 
     def visit_yieldfrom(self, node: ast.YieldFrom):
-        error = "You can not use `yield from` syntax"
-        raise BadSyntax(error)
+        raise UnavailableSyntaxError(node)

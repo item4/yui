@@ -10,6 +10,7 @@ from yui.apps.compute.calc.evaluator import ScopeStack
 from yui.apps.compute.calc.exceptions import BadSyntax
 from yui.apps.compute.calc.exceptions import NotIterableError
 from yui.apps.compute.calc.exceptions import NotSubscriptableError
+from yui.apps.compute.calc.exceptions import UnavailableSyntaxError
 from yui.apps.compute.calc.types import Decimal as D
 from yui.utils import datetime
 
@@ -35,8 +36,8 @@ def test_scope_stack():
 def test_annassign():
     e = Evaluator()
 
-    err = "You can not use annotation syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'AnnAssign' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("a: int = 10")
 
     assert "a" not in e.scope
@@ -44,11 +45,11 @@ def test_annassign():
 
 def test_assert():
     e = Evaluator()
-    err = "You can not use assertion syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Assert' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("assert True")
 
-    with pytest.raises(BadSyntax, match=err):
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("assert False")
 
 
@@ -95,8 +96,8 @@ def test_assign():
 def test_asyncfor():
     e = Evaluator()
     e.scope["r"] = 0
-    err = "You can not use `async for` loop syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'AsyncFor' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 async for x in [1, 2, 3, 4]:
@@ -109,8 +110,8 @@ async for x in [1, 2, 3, 4]:
 
 def test_asyncfunctiondef():
     e = Evaluator()
-    err = "Defining new coroutine via def syntax is not allowed"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'AsyncFunctionDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 async def abc():
@@ -124,8 +125,8 @@ async def abc():
 def test_asyncwith():
     e = Evaluator()
     e.scope["r"] = 0
-    err = "You can not use `async with` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'AsyncWith' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 async with x():
@@ -193,8 +194,8 @@ def test_augassign():
 
 def test_await():
     e = Evaluator()
-    err = "You can not await anything"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Await' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("r = await x()")
     assert "r" not in e.scope
 
@@ -252,8 +253,8 @@ def test_call():
 
 def test_classdef():
     e = Evaluator()
-    err = "Defining new class via def syntax is not allowed"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'ClassDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 class ABCD:
@@ -393,8 +394,8 @@ def test_expr():
 
 def test_functiondef():
     e = Evaluator()
-    err = "Defining new function via def syntax is not allowed"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'FunctionDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 def abc():
@@ -457,16 +458,16 @@ def test_formattedvalue():
 def test_generator_exp():
     e = Evaluator()
     e.scope["r"] = [1, 2, 3]
-    err = "Defining new generator expression is not allowed"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'GeneratorExp' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = (i ** 2 for i in r)")
     assert "x" not in e.scope
 
 
 def test_global():
     e = Evaluator()
-    err = "You can not use `global` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Global' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("global x")
 
 
@@ -535,24 +536,24 @@ def test_ifexp():
 
 def test_import():
     e = Evaluator()
-    err = "You can not import anything"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Import' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("import sys")
     assert "sys" not in e.scope
 
 
 def test_importfrom():
     e = Evaluator()
-    err = "You can not import anything"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'ImportFrom' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("from os import path")
     assert "path" not in e.scope
 
 
 def test_lambda():
     e = Evaluator()
-    err = "Defining new function via lambda syntax is not allowed"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Lambda' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("lambda x: x*2")
 
 
@@ -619,8 +620,8 @@ def test_nameconstant():
 
 def test_nonlocal():
     e = Evaluator()
-    err = "You can not use `nonlocal` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Nonlocal' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("nonlocal x")
 
 
@@ -638,15 +639,15 @@ def test_pass():
 
 def test_raise():
     e = Evaluator()
-    err = "You can not use `raise` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Raise' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("raise NameError")
 
 
 def test_return():
     e = Evaluator()
-    err = "You can not use `return` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Return' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("return True")
 
 
@@ -733,8 +734,8 @@ def test_subscript():
 
 def test_try():
     e = Evaluator()
-    err = "You can not use `try` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Try' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 try:
@@ -748,8 +749,8 @@ except:
 
 def test_trystar():
     e = Evaluator()
-    err = "You can not use `try` syntax with star"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'TryStar' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 try:
@@ -770,8 +771,8 @@ def test_tuple():
 
 def test_typealias():
     e = Evaluator()
-    err = "You can not define type alias"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'TypeAlias' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 type Number = int
@@ -821,8 +822,8 @@ else:
 
 def test_with():
     e = Evaluator()
-    err = "You can not use `with` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'With' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """
 with some:
@@ -834,15 +835,15 @@ with some:
 
 def test_yield():
     e = Evaluator()
-    err = "You can not use `yield` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'Yield' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = yield f()")
     assert "x" not in e.scope
 
 
 def test_yield_from():
     e = Evaluator()
-    err = "You can not use `yield from` syntax"
-    with pytest.raises(BadSyntax, match=err):
+    err = "Evaluation of 'YieldFrom' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = yield from f()")
     assert "x" not in e.scope
