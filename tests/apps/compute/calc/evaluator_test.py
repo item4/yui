@@ -17,6 +17,11 @@ from yui.apps.compute.calc.types import Decimal as D
 from yui.utils import datetime
 
 
+@pytest.fixture
+def e():
+    return Evaluator()
+
+
 class GetItemSpy:
     def __init__(self):
         self.queue = []
@@ -35,9 +40,7 @@ def test_scope_stack():
         del scope["undefined"]
 
 
-def test_annassign():
-    e = Evaluator()
-
+def test_annassign(e):
     err = "Evaluation of 'AnnAssign' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("a: int = 10")
@@ -45,8 +48,7 @@ def test_annassign():
     assert "a" not in e.scope
 
 
-def test_assert():
-    e = Evaluator()
+def test_assert(e):
     err = "Evaluation of 'Assert' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("assert True")
@@ -55,8 +57,7 @@ def test_assert():
         e.run("assert False")
 
 
-def test_assign():
-    e = Evaluator()
+def test_assign(e):
     e.run("a = 1 + 2")
     assert e.scope["a"] == 3
     e.run("x, y = 10, 20")
@@ -95,8 +96,7 @@ def test_assign():
         e.run("text[3] = 'x'")
 
 
-def test_asyncfor():
-    e = Evaluator()
+def test_asyncfor(e):
     e.scope["r"] = 0
     err = "Evaluation of 'AsyncFor' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
@@ -110,8 +110,7 @@ async for x in [1, 2, 3, 4]:
     assert e.scope["r"] == 0
 
 
-def test_asyncfunctiondef():
-    e = Evaluator()
+def test_asyncfunctiondef(e):
     err = "Evaluation of 'AsyncFunctionDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -124,8 +123,7 @@ async def abc():
     assert "abc" not in e.scope
 
 
-def test_asyncwith():
-    e = Evaluator()
+def test_asyncwith(e):
     e.scope["r"] = 0
     err = "Evaluation of 'AsyncWith' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
@@ -139,8 +137,7 @@ async with x():
     assert e.scope["r"] == 0
 
 
-def test_attribute():
-    e = Evaluator()
+def test_attribute(e):
     e.scope["dt"] = datetime.now()
     e.run("x = dt.year")
     assert e.scope["x"] == e.scope["dt"].year
@@ -170,8 +167,7 @@ def test_attribute():
         e.run("Decimal.test_test")
 
 
-def test_augassign():
-    e = Evaluator()
+def test_augassign(e):
     e.scope["a"] = 0
     e.run("a += 1")
     assert e.scope["a"] == 1
@@ -194,16 +190,14 @@ def test_augassign():
         e.run("text[3] += 'x'")
 
 
-def test_await():
-    e = Evaluator()
+def test_await(e):
     err = "Evaluation of 'Await' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("r = await x()")
     assert "r" not in e.scope
 
 
-def test_binop():
-    e = Evaluator()
+def test_binop(e):
     assert e.run("1 + 2") == 1 + 2
     assert e.run("3 & 2") == 3 & 2
     assert e.run("1 | 2") == 1 | 2
@@ -220,27 +214,23 @@ def test_binop():
     assert e.run("3 - 1") == 3 - 1
 
 
-def test_boolop():
-    e = Evaluator()
+def test_boolop(e):
     assert e.run("True and False") is (True and False)  # noqa: SIM223
     assert e.run("True or False") is (True or False)  # noqa: SIM222
 
 
-def test_break():
-    e = Evaluator()
+def test_break(e):
     e.run("break")
     assert e.current_interrupt.__class__.__name__ == "Break"
 
 
-def test_bytes():
-    e = Evaluator()
+def test_bytes(e):
     assert e.run('b"asdf"') == b"asdf"
     e.run('a = b"asdf"')
     assert e.scope["a"] == b"asdf"
 
 
-def test_call():
-    e = Evaluator()
+def test_call(e):
     e.scope["date"] = date
     e.run("x = date(2019, 10, day=7)")
     assert e.scope["x"] == date(2019, 10, day=7)
@@ -258,8 +248,7 @@ def test_call():
         e.run("date(**kwd)")
 
 
-def test_classdef():
-    e = Evaluator()
+def test_classdef(e):
     err = "Evaluation of 'ClassDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -272,8 +261,7 @@ class ABCD:
     assert "ABCD" not in e.scope
 
 
-def test_compare():
-    e = Evaluator()
+def test_compare(e):
     assert e.run("1 == 2") is (1 == 2)  # noqa: PLR0133
     assert e.run("3 > 2") is (3 > 2)  # noqa: PLR0133
     assert e.run("3 >= 2") is (3 >= 2)  # noqa: PLR0133
@@ -296,14 +284,12 @@ def test_constant():
     assert e2.run("...") == Ellipsis
 
 
-def test_continue():
-    e = Evaluator()
+def test_continue(e):
     e.run("continue")
     assert e.current_interrupt.__class__.__name__ == "Continue"
 
 
-def test_delete():
-    e = Evaluator()
+def test_delete(e):
     e.scope["a"] = 0
     e.scope["b"] = 0
     e.scope["c"] = 0
@@ -334,15 +320,13 @@ def test_delete():
         e.run("del text[3]")
 
 
-def test_dict():
-    e = Evaluator()
+def test_dict(e):
     assert e.run("{1: 111, 2: 222}") == {1: 111, 2: 222}
     e.run("a = {1: 111, 2: 222}")
     assert e.scope["a"] == {1: 111, 2: 222}
 
 
-def test_dictcomp():
-    e = Evaluator()
+def test_dictcomp(e):
     assert e.run("{k+1: v**2 for k, v in {1: 1, 2: 11, 3: 111}.items()}") == {
         2: 1,
         3: 121,
@@ -385,8 +369,7 @@ def test_dictcomp():
         e.run("{k: v async for k, v in magic}")
 
 
-def test_expr():
-    e = Evaluator()
+def test_expr(e):
     assert e.run("True") is True
     assert e.run("False") is False
     assert e.run("None") is None
@@ -400,8 +383,7 @@ def test_expr():
         e.run("undefined_variable")
 
 
-def test_functiondef():
-    e = Evaluator()
+def test_functiondef(e):
     err = "Evaluation of 'FunctionDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -414,7 +396,7 @@ def abc():
     assert "abc" not in e.scope
 
 
-def test_for():
+def test_for(e):
     code = """\
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
@@ -427,7 +409,6 @@ else:
 """
     real_locals = {}
     exec(code, locals=real_locals)  # noqa: S102 - for test only
-    e = Evaluator()
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
 
@@ -456,15 +437,13 @@ for x in None:
         )
 
 
-def test_formattedvalue():
-    e = Evaluator()
+def test_formattedvalue(e):
     e.scope["before"] = 123456
     e.run('after = f"change {before} to {before:,}!"')
     assert e.scope["after"] == "change 123456 to 123,456!"
 
 
-def test_generator_exp():
-    e = Evaluator()
+def test_generator_exp(e):
     e.scope["r"] = [1, 2, 3]
     err = "Evaluation of 'GeneratorExp' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
@@ -472,15 +451,13 @@ def test_generator_exp():
     assert "x" not in e.scope
 
 
-def test_global():
-    e = Evaluator()
+def test_global(e):
     err = "Evaluation of 'Global' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("global x")
 
 
-def test_if():
-    e = Evaluator()
+def test_if(e):
     e.scope["a"] = 1
     e.run(
         """
@@ -536,44 +513,38 @@ else:
     assert "z" not in e.scope
 
 
-def test_ifexp():
-    e = Evaluator()
+def test_ifexp(e):
     assert e.run("100 if 1 == 1 else 200") == 100
     assert e.run("100 if 1 == 2 else 200") == 200
 
 
-def test_import():
-    e = Evaluator()
+def test_import(e):
     err = "Evaluation of 'Import' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("import sys")
     assert "sys" not in e.scope
 
 
-def test_importfrom():
-    e = Evaluator()
+def test_importfrom(e):
     err = "Evaluation of 'ImportFrom' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("from os import path")
     assert "path" not in e.scope
 
 
-def test_lambda():
-    e = Evaluator()
+def test_lambda(e):
     err = "Evaluation of 'Lambda' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("lambda x: x*2")
 
 
-def test_list():
-    e = Evaluator()
+def test_list(e):
     assert e.run("[1, 2, 3]") == [1, 2, 3]
     e.run("a = [1, 2, 3]")
     assert e.scope["a"] == [1, 2, 3]
 
 
-def test_listcomp():
-    e = Evaluator()
+def test_listcomp(e):
     assert e.run("[x ** 2 for x in [1, 2, 3]]") == [1, 4, 9]
     assert "x" not in e.scope
 
@@ -612,8 +583,7 @@ def test_listcomp():
         e.run("[x async for x in magic]")
 
 
-def test_match():
-    e = Evaluator()
+def test_match(e):
     err = "Evaluation of 'Match' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -626,13 +596,11 @@ match age:
         )
 
 
-def test_name():
-    e = Evaluator()
+def test_name(e):
     assert e.run("int") is int
 
 
-def test_namedexpr():
-    e = Evaluator()
+def test_namedexpr(e):
     err = "Evaluation of 'NamedExpr' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -643,8 +611,7 @@ if age := 10:
         )
 
 
-def test_nameconstant():
-    e = Evaluator()
+def test_nameconstant(e):
     assert e.run("True") is True
     assert e.run("False") is False
     assert e.run("None") is None
@@ -656,48 +623,41 @@ def test_nameconstant():
     assert e.scope["z"] is None
 
 
-def test_nonlocal():
-    e = Evaluator()
+def test_nonlocal(e):
     err = "Evaluation of 'Nonlocal' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("nonlocal x")
 
 
-def test_num():
-    e = Evaluator()
+def test_num(e):
     assert e.run("123") == 123
     e.run("a = 123")
     assert e.scope["a"] == 123
 
 
-def test_pass():
-    e = Evaluator()
-    e.run("pass")
+def test_pass(e):
+    assert e.run("pass") is None
 
 
-def test_raise():
-    e = Evaluator()
+def test_raise(e):
     err = "Evaluation of 'Raise' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("raise NameError")
 
 
-def test_return():
-    e = Evaluator()
+def test_return(e):
     err = "Evaluation of 'Return' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("return True")
 
 
-def test_set():
-    e = Evaluator()
+def test_set(e):
     assert e.run("{1, 1, 2, 3, 3}") == {1, 2, 3}
     e.run("a = {1, 1, 2, 3, 3}")
     assert e.scope["a"] == {1, 2, 3}
 
 
-def test_setcomp():
-    e = Evaluator()
+def test_setcomp(e):
     assert e.run("{x ** 2 for x in [1, 2, 3, 3]}") == {1, 4, 9}
     assert "x" not in e.scope
 
@@ -736,8 +696,7 @@ def test_setcomp():
         e.run("{x async for x in magic}")
 
 
-def test_slice():
-    e = Evaluator()
+def test_slice(e):
     e.scope["obj"] = GetItemSpy()
     e.run("obj[10:20:3]")
     s = e.scope["obj"].queue.pop()
@@ -747,15 +706,13 @@ def test_slice():
     assert s.step == 3
 
 
-def test_str():
-    e = Evaluator()
+def test_str(e):
     assert e.run('"asdf"') == "asdf"
     e.run('a = "asdf"')
     assert e.scope["a"] == "asdf"
 
 
-def test_subscript():
-    e = Evaluator()
+def test_subscript(e):
     assert e.run("[10, 20, 30][0]") == 10
     assert e.run("(100, 200, 300)[0]") == 100
     assert e.run('{"a": 1000, "b": 2000, "c": 3000}["a"]') == 1000
@@ -774,8 +731,7 @@ def test_subscript():
         e.run("1[2]")
 
 
-def test_try():
-    e = Evaluator()
+def test_try(e):
     err = "Evaluation of 'Try' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -789,8 +745,7 @@ except:
     assert "x" not in e.scope
 
 
-def test_trystar():
-    e = Evaluator()
+def test_trystar(e):
     err = "Evaluation of 'TryStar' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -804,15 +759,13 @@ except* Exception:
     assert "x" not in e.scope
 
 
-def test_tuple():
-    e = Evaluator()
+def test_tuple(e):
     assert e.run("(1, 1, 2, 3, 3)") == (1, 1, 2, 3, 3)
     e.run("a = (1, 1, 2, 3, 3)")
     assert e.scope["a"] == (1, 1, 2, 3, 3)
 
 
-def test_typealias():
-    e = Evaluator()
+def test_typealias(e):
     err = "Evaluation of 'TypeAlias' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -823,15 +776,14 @@ type Number = int
     assert "Number" not in e.scope
 
 
-def test_unaryop():
-    e = Evaluator()
+def test_unaryop(e):
     assert e.run("~100") == ~100
     assert e.run("not 100") == (not 100)
     assert e.run("+100") == +100
     assert e.run("-100") == -100
 
 
-def test_while():
+def test_while(e):
     code = """\
 total = 0
 i = 1
@@ -845,7 +797,6 @@ else:
 """
     real_locals = {}
     exec(code, locals=real_locals)  # noqa: S102 - for test only
-    e = Evaluator()
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
 
@@ -862,8 +813,7 @@ else:
     assert e.scope["r"] == real_locals["r"]
 
 
-def test_with():
-    e = Evaluator()
+def test_with(e):
     err = "Evaluation of 'With' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
@@ -875,16 +825,14 @@ with some:
     assert "x" not in e.scope
 
 
-def test_yield():
-    e = Evaluator()
+def test_yield(e):
     err = "Evaluation of 'Yield' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = yield f()")
     assert "x" not in e.scope
 
 
-def test_yield_from():
-    e = Evaluator()
+def test_yield_from(e):
     err = "Evaluation of 'YieldFrom' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = yield from f()")
