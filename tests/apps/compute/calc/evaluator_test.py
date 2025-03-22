@@ -597,6 +597,20 @@ def test_listcomp():
         e.run("[x for x in None]")
 
 
+def test_match():
+    e = Evaluator()
+    err = "Evaluation of 'Match' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+age = 10
+match age:
+    case 1:
+        pass
+""",
+        )
+
+
 def test_name():
     e = Evaluator()
     assert e.run("int") is int
