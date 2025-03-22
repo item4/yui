@@ -70,5 +70,5 @@ def error_maker(
         error = "keywords must be strings"
         raise CallableKeywordsError(error)
 
-    error = "Unknown exception"
-    raise TypeError(error)
+    error = "Unknown exception"  # pragma: no cover
+    raise TypeError(error)  # pragma: no cover
