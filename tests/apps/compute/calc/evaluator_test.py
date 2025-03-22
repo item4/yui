@@ -1,3 +1,4 @@
+import ast
 import functools
 import html
 import math
@@ -222,7 +223,7 @@ def test_boolop(e):
 
 def test_break(e):
     e.run("break")
-    assert e.current_interrupt.__class__.__name__ == "Break"
+    assert isinstance(e.current_interrupt, ast.Break)
 
 
 def test_bytes(e):
@@ -291,7 +292,7 @@ def test_constant():
 
 def test_continue(e):
     e.run("continue")
-    assert e.current_interrupt.__class__.__name__ == "Continue"
+    assert isinstance(e.current_interrupt, ast.Continue)
 
 
 def test_delete(e):
