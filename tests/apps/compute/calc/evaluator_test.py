@@ -10,6 +10,7 @@ from yui.apps.compute.calc.evaluator import ScopeStack
 from yui.apps.compute.calc.exceptions import AsyncComprehensionError
 from yui.apps.compute.calc.exceptions import BadSyntax
 from yui.apps.compute.calc.exceptions import CallableKeywordsError
+from yui.apps.compute.calc.exceptions import NotCallableError
 from yui.apps.compute.calc.exceptions import NotIterableError
 from yui.apps.compute.calc.exceptions import NotSubscriptableError
 from yui.apps.compute.calc.exceptions import UnavailableSyntaxError
@@ -246,6 +247,10 @@ def test_call(e):
     err = "keywords must be strings"
     with pytest.raises(CallableKeywordsError, match=err):
         e.run("date(**kwd)")
+
+    err = "'float' object is not callable"
+    with pytest.raises(NotCallableError, match=err):
+        e.run("pi()")
 
 
 def test_classdef(e):

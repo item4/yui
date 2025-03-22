@@ -36,6 +36,12 @@ class AsyncComprehensionError(RuntimeSyntaxError):
         )
 
 
+class NotCallableError(RuntimeTypeError):
+    def __init__(self, value, *args) -> None:
+        super().__init__(*args)
+        self.message = f"{type(value).__name__!r} object is not callable"
+
+
 class NotIterableError(RuntimeTypeError):
     def __init__(self, value, *args) -> None:
         super().__init__(*args)

@@ -16,6 +16,7 @@ from ....utils import json
 from .exceptions import AsyncComprehensionError
 from .exceptions import BadSyntax
 from .exceptions import CallableKeywordsError
+from .exceptions import NotCallableError
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
 from .exceptions import UnavailableSyntaxError
@@ -767,8 +768,7 @@ class Evaluator:
             keywords[x.arg] = self._run(x.value)
         if callable(func):
             return func(*args, **keywords)
-        error = "not callable"
-        raise TypeError(error)
+        raise NotCallableError(func)
 
     def visit_compare(self, node: ast.Compare):  # left, ops, comparators
         lval = self._run(node.left)
