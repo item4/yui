@@ -30,6 +30,7 @@ else:
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
+    assert e.current_interrupt is None
 
 
 def test_for_break(e):
@@ -47,6 +48,7 @@ else:
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
+    assert e.current_interrupt is None
 
 
 def test_for_not_iterable(e):
@@ -60,6 +62,7 @@ for x in None:
         )
 
     assert "x" not in e.scope
+    assert e.current_interrupt is None
 
 
 def test_while(e):
