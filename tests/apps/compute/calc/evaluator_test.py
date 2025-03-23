@@ -103,20 +103,21 @@ def test_asyncfor(e):
     err = "Evaluation of 'AsyncFor' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 async for x in [1, 2, 3, 4]:
     r += x
 
 """,
         )
     assert e.scope["r"] == 0
+    assert "x" not in e.scope
 
 
 def test_asyncfunctiondef(e):
     err = "Evaluation of 'AsyncFunctionDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 async def abc():
     pass
 
@@ -130,13 +131,14 @@ def test_asyncwith(e):
     err = "Evaluation of 'AsyncWith' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
-async with x():
-    r += 100
+            """\
+async with x() as y:
+    r += 100 + y
 
 """,
         )
     assert e.scope["r"] == 0
+    assert "y" not in e.scope
 
 
 def test_attribute(e):
@@ -258,7 +260,7 @@ def test_classdef(e):
     err = "Evaluation of 'ClassDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 class ABCD:
     pass
 
@@ -393,7 +395,7 @@ def test_functiondef(e):
     err = "Evaluation of 'FunctionDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 def abc():
     pass
 
@@ -466,7 +468,7 @@ def test_global(e):
 def test_if(e):
     e.scope["a"] = 1
     e.run(
-        """
+        """\
 if a == 1:
     a = 2
     b = 3
@@ -476,7 +478,7 @@ if a == 1:
     assert e.scope["b"] == 3
 
     e.run(
-        """
+        """\
 if a == 1:
     a = 2
     b = 3
@@ -493,7 +495,7 @@ else:
     assert "z" not in e.scope
 
     e.run(
-        """
+        """\
 if a == 1:
     a = 2
     b = 3
@@ -741,7 +743,7 @@ def test_try(e):
     err = "Evaluation of 'Try' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 try:
     x = 1
 except:
@@ -755,7 +757,7 @@ def test_trystar(e):
     err = "Evaluation of 'TryStar' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 try:
     x = 1
 except* Exception:
@@ -775,7 +777,7 @@ def test_typealias(e):
     err = "Evaluation of 'TypeAlias' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
+            """\
 type Number = int
 """,
         )
@@ -823,11 +825,12 @@ def test_with(e):
     err = "Evaluation of 'With' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
-            """
-with some:
-    x = 1
+            """\
+with some as s:
+    x = 1 + s
 """,
         )
+    assert "s" not in e.scope
     assert "x" not in e.scope
 
 
