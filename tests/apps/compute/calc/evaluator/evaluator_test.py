@@ -300,7 +300,11 @@ def test_ifexp(e):
 
 
 def test_name(e):
-    assert e.run("int") is int
+    e.scope["name"] = "kirito"
+    assert e.run("name") == "kirito"
+
+    with pytest.raises(NameError):
+        e.run("undefined_variable")
 
 
 def test_pass(e):
