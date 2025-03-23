@@ -783,7 +783,11 @@ class Evaluator:
         return out
 
     def visit_constant(self, node: ast.Constant):  # value, kind
-        if self.decimal_mode and isinstance(node.value, (int, float)):
+        if (
+            self.decimal_mode
+            and isinstance(node.value, (int, float))
+            and not isinstance(node.value, bool)
+        ):
             return Decimal(str(node.value))
         return node.value
 
