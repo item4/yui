@@ -129,12 +129,20 @@ def test_import(e):
         e.run("import sys")
     assert "sys" not in e.scope
 
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("import numpy as np")
+    assert "np" not in e.scope
+
 
 def test_importfrom(e):
     err = "Evaluation of 'ImportFrom' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("from os import path")
     assert "path" not in e.scope
+
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("from decimal import Decimal as D")
+    assert "D" not in e.scope
 
 
 def test_lambda(e):
