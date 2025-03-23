@@ -1,3 +1,6 @@
+import pytest
+
+from yui.apps.compute.calc.exceptions import UnavailableTypeError
 from yui.apps.compute.calc.types import Decimal as D
 
 
@@ -9,6 +12,22 @@ def test_bytes(e):
 def test_bytes_decimal_mode(ed):
     assert ed.run('b""') == b""
     assert ed.run('b"asdf"') == b"asdf"
+
+
+def test_complex(e):
+    with pytest.raises(
+        UnavailableTypeError,
+        match="'complex' type is unavailable",
+    ):
+        e.run("1j")
+
+
+def test_complex_decimal_mode(ed):
+    with pytest.raises(
+        UnavailableTypeError,
+        match="'complex' type is unavailable",
+    ):
+        ed.run("1j")
 
 
 def test_dict(e):

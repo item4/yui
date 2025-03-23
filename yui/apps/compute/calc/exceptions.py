@@ -37,6 +37,10 @@ class CallableKeywordsError(RuntimeTypeError):
     pass
 
 
+class UnavailableTypeError(RuntimeTypeError):
+    pass
+
+
 def error_maker(
     exc_cls: type[RuntimeSyntaxError] | type[RuntimeTypeError],
     *args,
@@ -69,6 +73,11 @@ def error_maker(
     if exc_cls is CallableKeywordsError:
         error = "keywords must be strings"
         raise CallableKeywordsError(error)
+
+    if exc_cls is UnavailableTypeError:
+        x = args[0]
+        error = f"{type(x).__name__!r} type is unavailable"
+        raise UnavailableTypeError(error)
 
     error = "Unknown exception"  # pragma: no cover
     raise TypeError(error)  # pragma: no cover

@@ -21,6 +21,7 @@ from .exceptions import NotCallableError
 from .exceptions import NotIterableError
 from .exceptions import NotSubscriptableError
 from .exceptions import UnavailableSyntaxError
+from .exceptions import UnavailableTypeError
 from .exceptions import error_maker
 from .types import Decimal
 from .types import PLACEHOLDER
@@ -783,6 +784,8 @@ class Evaluator:
         return out
 
     def visit_constant(self, node: ast.Constant):  # value, kind
+        if isinstance(node.value, complex):
+            error_maker(UnavailableTypeError, node.value)
         if (
             self.decimal_mode
             and isinstance(node.value, (int, float))
