@@ -268,6 +268,16 @@ class ABCD:
         )
     assert "ABCD" not in e.scope
 
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+class MyStr(str):
+    pass
+
+""",
+        )
+    assert "MyStr" not in e.scope
+
 
 def test_compare(e):
     assert e.run("1 == 2") is (1 == 2)  # noqa: PLR0133
