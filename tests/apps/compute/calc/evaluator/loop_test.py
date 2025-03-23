@@ -65,31 +65,119 @@ for x in None:
     assert e.current_interrupt is None
 
 
-def test_while(e):
+def test_while_simple(e):
     code = """\
 total = 0
 i = 1
 while total > 100:
     total += i
-    i += i
-    if i % 10 == 0:
-        i += 1
-else:
-    total = total + 10000
+    i *= 2
 """
     real_locals = {}
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
+    assert e.current_interrupt is None
 
+
+def test_while_orelse(e):
+    code = """\
+total = 0
+i = 1
+while total > 100:
+    total += i
+    i *= 2
+else:
+    total += 10000
+    check = 100
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["total"] == real_locals["total"]
+    assert e.scope["check"] == real_locals["check"] == 100
+    assert e.current_interrupt is None
+
+
+def test_while_continue(e):
+    code = """\
+length = 0
+data = list("kirito")
+while data:
+    x = data.pop()
+    if x in {"a", "e", "i", "o", "u"}:
+        continue
+    length += 1
+else:
+    check = 100
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["length"] == real_locals["length"] == 3
+    assert e.scope["check"] == real_locals["check"] == 100
+    assert e.current_interrupt is None
+
+
+def test_while_break(e):
     code = """\
 r = 0
 while True:
     break
 else:
     r += 10
+    check = 100
 """
     real_locals = {}
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
-    assert e.scope["r"] == real_locals["r"]
+    assert e.scope["r"] == real_locals["r"] == 0
+    assert "check" not in e.scope
+    assert e.current_interrupt is None
+
+
+def test_while_never(e):
+    code = """\
+r = 0
+while False:
+    r += 100
+    x = 999
+else:
+    r += 10
+    check = 100
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["r"] == real_locals["r"] == 10
+    assert e.scope["check"] == real_locals["check"] == 100
+    assert "x" not in e.scope
+    assert e.current_interrupt is None
+
+
+def test_while_nested(e):
+    code = """\
+selected = []
+names = ["kirito", "eugeo", "asuna", "sinon"]
+while names:
+    name = names.pop()
+    chunks = list(name)
+    while chunks:
+        x = chunks.pop()
+        if x == "n":
+            break
+    else:
+        selected.append(name)
+else:
+    check = 100
+"""
+    real_locals = {}
+    exec(code, locals=real_locals)  # noqa: S102 - for test only
+    e.run(code)
+    assert e.scope["selected"] == real_locals["selected"] == ["eugeo", "kirito"]
+    assert e.scope["names"] == real_locals["names"] == []
+    assert e.scope["name"] == real_locals["name"] == "kirito"
+    assert e.scope["chunks"] == real_locals["chunks"] == []
+    assert e.scope["x"] == real_locals["x"] == "k"
+    assert e.scope["check"] == real_locals["check"] == 100
+    assert e.current_interrupt is None
