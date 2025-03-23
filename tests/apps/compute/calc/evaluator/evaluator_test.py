@@ -399,3 +399,7 @@ def test_tuple(e):
     assert e.run("(1, 1, 2, 3, 3)") == (1, 1, 2, 3, 3)
     e.run("a = (1, 1, 2, 3, 3)")
     assert e.scope["a"] == (1, 1, 2, 3, 3)
+
+    assert e.run("()") == ()
+    e.run("b = ()")
+    assert e.scope["b"] == ()
