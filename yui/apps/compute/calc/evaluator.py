@@ -950,7 +950,7 @@ class Evaluator:
                     self.delete(current_gen.target)
         return result
 
-    def visit_match(self, node: ast.Match):  # TODO
+    def visit_match(self, node: ast.Match):
         error_maker(UnavailableSyntaxError, node)
 
     def visit_module(self, node: ast.Module):  # body,
