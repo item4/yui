@@ -199,6 +199,9 @@ def test_raise(e):
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("raise NameError")
 
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("raise NameError from exc")
+
 
 def test_return(e):
     err = "Evaluation of 'Return' node is unavailable."
