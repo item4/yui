@@ -472,6 +472,7 @@ def test_generator_exp(e):
     err = "Evaluation of 'GeneratorExp' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("x = (i ** 2 for i in r)")
+    assert "i" not in e.scope
     assert "x" not in e.scope
 
 
@@ -480,6 +481,7 @@ def test_global(e):
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("global x")
 
+    assert "x" not in e.scope
 
 
 def test_if_simple(e):
@@ -588,6 +590,7 @@ def test_lambda(e):
     err = "Evaluation of 'Lambda' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("lambda x: x*2")
+    assert "x" not in e.scope
 
 
 def test_list(e):
@@ -636,16 +639,18 @@ def test_listcomp(e):
 
 
 def test_match(e):
+    e.scope["age"] = 10
     err = "Evaluation of 'Match' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """\
-age = 10
 match age:
-    case 1:
-        pass
+    case 10:
+        x = 1
 """,
         )
+
+    assert "x" not in e.scope
 
 
 def test_name(e):
@@ -661,6 +666,7 @@ if age := 10:
     pass
 """,
         )
+    assert "age" not in e.scope
 
 
 def test_nameconstant(e):
