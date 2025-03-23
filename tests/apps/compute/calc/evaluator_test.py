@@ -481,11 +481,12 @@ def test_global(e):
         e.run("global x")
 
 
-def test_if(e):
-    e.scope["a"] = 1
+
+def test_if_simple(e):
+    e.scope["x"] = 1
     e.run(
         """\
-if a == 1:
+if x == 1:
     a = 2
     b = 3
 """,
@@ -493,9 +494,12 @@ if a == 1:
     assert e.scope["a"] == 2
     assert e.scope["b"] == 3
 
+
+def test_if_else(e):
+    e.scope["x"] = 10
     e.run(
         """\
-if a == 1:
+if x == 1:
     a = 2
     b = 3
     z = 1
@@ -510,13 +514,38 @@ else:
     assert e.scope["c"] == 5
     assert "z" not in e.scope
 
+
+def test_if_elif(e):
+    e.scope["x"] = 3
     e.run(
         """\
-if a == 1:
+if x == 1:
+    a = 2
+    b = 3
+    c = 1
+elif x == 3:
+    d = 4
+    e = 5
+    f = 6
+""",
+    )
+    assert "a" not in e.scope
+    assert "b" not in e.scope
+    assert "c" not in e.scope
+    assert e.scope["d"] == 4
+    assert e.scope["e"] == 5
+    assert e.scope["f"] == 6
+
+
+def test_if_elif_else(e):
+    e.scope["x"] = 3
+    e.run(
+        """\
+if x == 1:
     a = 2
     b = 3
     z = 1
-elif a == 3:
+elif x == 3:
     d = 4
     e = 5
     f = 6
@@ -527,14 +556,13 @@ else:
     y = 7
 """,
     )
-    assert e.scope["a"] == 3
-    assert e.scope["b"] == 4
-    assert e.scope["c"] == 5
+    assert "a" not in e.scope
+    assert "b" not in e.scope
+    assert "z" not in e.scope
     assert e.scope["d"] == 4
     assert e.scope["e"] == 5
     assert e.scope["f"] == 6
     assert "y" not in e.scope
-    assert "z" not in e.scope
 
 
 def test_ifexp(e):
