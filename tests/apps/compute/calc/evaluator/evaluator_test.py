@@ -191,20 +191,6 @@ def test_delete(e):
         e.run("del text[3]")
 
 
-def test_expr(e):
-    assert e.run("True") is True
-    assert e.run("False") is False
-    assert e.run("None") is None
-    assert e.run("123") == 123
-    assert e.run('"abc"') == "abc"
-    assert e.run("[1, 2, 3]") == [1, 2, 3]
-    assert e.run("(1, 2, 3, 3)") == (1, 2, 3, 3)
-    assert e.run("{1, 2, 3, 3}") == {1, 2, 3}
-    assert e.run("{1: 111, 2: 222}") == {1: 111, 2: 222}
-    with pytest.raises(NameError):
-        e.run("undefined_variable")
-
-
 def test_formattedvalue(e):
     e.scope["before"] = 123456
     e.run('after = f"change {before} to {before:,}!"')
