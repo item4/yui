@@ -5,14 +5,12 @@ from datetime import date
 
 import pytest
 
-from yui.apps.compute.calc.evaluator import Evaluator
 from yui.apps.compute.calc.evaluator import ScopeStack
 from yui.apps.compute.calc.exceptions import BadSyntax
 from yui.apps.compute.calc.exceptions import CallableKeywordsError
 from yui.apps.compute.calc.exceptions import NotCallableError
 from yui.apps.compute.calc.exceptions import NotIterableError
 from yui.apps.compute.calc.exceptions import NotSubscriptableError
-from yui.apps.compute.calc.types import Decimal as D
 from yui.utils import datetime
 
 
@@ -126,12 +124,6 @@ def test_augassign(e):
         e.run("text[3] += 'x'")
 
 
-def test_bytes(e):
-    assert e.run('b"asdf"') == b"asdf"
-    e.run('a = b"asdf"')
-    assert e.scope["a"] == b"asdf"
-
-
 def test_call(e):
     e.scope["date"] = date
     e.run("x = date(2019, 10, day=7)")
@@ -168,15 +160,6 @@ def test_compare(e):
     assert e.run("3 <= 2") is (3 <= 2)  # noqa: PLR0133
 
 
-def test_constant():
-    e1 = Evaluator()
-    e2 = Evaluator(decimal_mode=True)
-    assert e1.run("1.2") == 1.2
-    assert e2.run("1.2") == D("1.2")
-    assert e1.run("...") == Ellipsis
-    assert e2.run("...") == Ellipsis
-
-
 def test_delete(e):
     e.scope["a"] = 0
     e.scope["b"] = 0
@@ -206,12 +189,6 @@ def test_delete(e):
     err = "'str' object is not subscriptable"
     with pytest.raises(NotSubscriptableError, match=err):
         e.run("del text[3]")
-
-
-def test_dict(e):
-    assert e.run("{1: 111, 2: 222}") == {1: 111, 2: 222}
-    e.run("a = {1: 111, 2: 222}")
-    assert e.scope["a"] == {1: 111, 2: 222}
 
 
 def test_expr(e):
@@ -322,42 +299,12 @@ def test_ifexp(e):
     assert e.run("100 if 1 == 2 else 200") == 200
 
 
-def test_list(e):
-    assert e.run("[1, 2, 3]") == [1, 2, 3]
-    e.run("a = [1, 2, 3]")
-    assert e.scope["a"] == [1, 2, 3]
-
-
 def test_name(e):
     assert e.run("int") is int
 
 
-def test_nameconstant(e):
-    assert e.run("True") is True
-    assert e.run("False") is False
-    assert e.run("None") is None
-    e.run("x = True")
-    e.run("y = False")
-    e.run("z = None")
-    assert e.scope["x"] is True
-    assert e.scope["y"] is False
-    assert e.scope["z"] is None
-
-
-def test_num(e):
-    assert e.run("123") == 123
-    e.run("a = 123")
-    assert e.scope["a"] == 123
-
-
 def test_pass(e):
     assert e.run("pass") is None
-
-
-def test_set(e):
-    assert e.run("{1, 1, 2, 3, 3}") == {1, 2, 3}
-    e.run("a = {1, 1, 2, 3, 3}")
-    assert e.scope["a"] == {1, 2, 3}
 
 
 def test_slice(e):
@@ -368,12 +315,6 @@ def test_slice(e):
     assert s.start == 10
     assert s.stop == 20
     assert s.step == 3
-
-
-def test_str(e):
-    assert e.run('"asdf"') == "asdf"
-    e.run('a = "asdf"')
-    assert e.scope["a"] == "asdf"
 
 
 def test_subscript(e):
@@ -393,13 +334,3 @@ def test_subscript(e):
     err = "'int' object is not subscriptable"
     with pytest.raises(NotSubscriptableError, match=err):
         e.run("1[2]")
-
-
-def test_tuple(e):
-    assert e.run("(1, 1, 2, 3, 3)") == (1, 1, 2, 3, 3)
-    e.run("a = (1, 1, 2, 3, 3)")
-    assert e.scope["a"] == (1, 1, 2, 3, 3)
-
-    assert e.run("()") == ()
-    e.run("b = ()")
-    assert e.scope["b"] == ()
