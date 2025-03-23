@@ -17,7 +17,13 @@ def test_assert(e):
         e.run("assert True")
 
     with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("assert True, 'what?'")
+
+    with pytest.raises(UnavailableSyntaxError, match=err):
         e.run("assert False")
+
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("assert False, 'what?'")
 
 
 def test_asyncfor(e):
