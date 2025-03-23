@@ -115,6 +115,15 @@ def test_generator_exp(e):
     assert "x" not in e.scope
 
 
+def test_async_generator_exp(e):
+    e.scope["r"] = [1, 2, 3]
+    err = "Evaluation of 'GeneratorExp' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run("x = (i ** 2 async for i in r)")
+    assert "i" not in e.scope
+    assert "x" not in e.scope
+
+
 def test_global(e):
     err = "Evaluation of 'Global' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
