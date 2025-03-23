@@ -1,4 +1,3 @@
-import ast
 import functools
 import html
 import math
@@ -127,11 +126,6 @@ def test_augassign(e):
         e.run("text[3] += 'x'")
 
 
-def test_break(e):
-    e.run("break")
-    assert isinstance(e.current_interrupt, ast.Break)
-
-
 def test_bytes(e):
     assert e.run('b"asdf"') == b"asdf"
     e.run('a = b"asdf"')
@@ -181,11 +175,6 @@ def test_constant():
     assert e2.run("1.2") == D("1.2")
     assert e1.run("...") == Ellipsis
     assert e2.run("...") == Ellipsis
-
-
-def test_continue(e):
-    e.run("continue")
-    assert isinstance(e.current_interrupt, ast.Continue)
 
 
 def test_delete(e):

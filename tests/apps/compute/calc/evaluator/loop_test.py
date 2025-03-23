@@ -1,6 +1,18 @@
+import ast
+
 import pytest
 
 from yui.apps.compute.calc.exceptions import NotIterableError
+
+
+def test_break(e):
+    e.run("break")
+    assert isinstance(e.current_interrupt, ast.Break)
+
+
+def test_continue(e):
+    e.run("continue")
+    assert isinstance(e.current_interrupt, ast.Continue)
 
 
 def test_for_continue(e):
