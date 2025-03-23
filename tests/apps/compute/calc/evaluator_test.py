@@ -80,7 +80,7 @@ def test_assign(e):
         e.run('id, name = 1, "kirito", "black"')
 
     err = "'int' object is not iterable"
-    with pytest.raises(TypeError, match=err):
+    with pytest.raises(NotIterableError, match=err):
         e.run("year, month, day = 1")
 
     e.run("arr = [1, 2, 3]")
