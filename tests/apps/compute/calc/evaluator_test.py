@@ -747,43 +747,75 @@ def test_set(e):
     assert e.scope["a"] == {1, 2, 3}
 
 
-def test_setcomp(e):
+def test_setcomp_simple(e):
     assert e.run("{x ** 2 for x in [1, 2, 3, 3]}") == {1, 4, 9}
     assert "x" not in e.scope
 
+
+def test_setcomp_nested(e):
     assert e.run("{x ** 2 + y for x in [1, 2, 3] for y in [10, 20, 30]}") == (
         {x**2 + y for x in [1, 2, 3] for y in [10, 20, 30]}
     )
     assert "x" not in e.scope
     assert "y" not in e.scope
 
+
+def test_setcomp_nested_complex(e):
     assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == (
         {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
     )
     assert "x" not in e.scope
     assert "y" not in e.scope
 
-    e.run("x = 'test x'")
-    e.run("y = 'test y'")
+
+def test_setcomp_nested_complex_scope_check(e):
+    e.scope["x"] = "test x"
+    e.scope["y"] = "test y"
     assert e.run("{y ** 2 for x in [1, 2, 3] for y in [x+1, x+3, x+5]}") == (
         {y**2 for x in [1, 2, 3] for y in [x + 1, x + 3, x + 5]}
     )
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+
+def test_setcomp_nested_ifs(e):
+    assert e.run(
+        "{x + y for x in [1, 2, 3] for y in [11, 22, 33] if x % 2 == 0 if y % 2 == 1}",
+    ) == {13, 35}
+    assert "x" not in e.scope
+    assert "y" not in e.scope
+
+
+def test_setcomp_nested_ifs_scope_check(e):
+    e.scope["x"] = "test x"
+    e.scope["y"] = "test y"
     assert e.run(
         "{x + y for x in [1, 2, 3] for y in [11, 22, 33] if x % 2 == 0 if y % 2 == 1}",
     ) == {13, 35}
     assert e.scope["x"] == "test x"
     assert e.scope["y"] == "test y"
 
+
+def test_setcomp_not_iterable(e):
     err = "'NoneType' object is not iterable"
     with pytest.raises(NotIterableError, match=err):
         e.run("{x for x in None}")
+    assert "x" not in e.scope
 
+
+def test_setcomp_async(e):
     err = "Async syntax with 'SetComp' node is unavailable."
     with pytest.raises(AsyncComprehensionError, match=err):
         e.run("{x async for x in magic}")
+    assert "x" not in e.scope
+
+
+def test_setcomp_async_nested(e):
+    err = "Async syntax with 'SetComp' node is unavailable."
+    with pytest.raises(AsyncComprehensionError, match=err):
+        e.run("{x + y for y in [1, 2, 3] async for x in magic}")
+    assert "x" not in e.scope
+    assert "y" not in e.scope
 
 
 def test_slice(e):
