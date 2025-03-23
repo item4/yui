@@ -54,6 +54,20 @@ async def abc():
     assert "abc" not in e.scope
 
 
+def test_asyncfunctiondef_with_generic(e):
+    err = "Evaluation of 'AsyncFunctionDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+async def abc[T](*args: T) -> T:
+    pass
+
+""",
+        )
+    assert "abc" not in e.scope
+    assert "T" not in e.scope
+
+
 def test_asyncwith(e):
     e.scope["r"] = 0
     err = "Evaluation of 'AsyncWith' node is unavailable."
@@ -88,6 +102,9 @@ class ABCD:
         )
     assert "ABCD" not in e.scope
 
+
+def test_classdef_with_inherit(e):
+    err = "Evaluation of 'ClassDef' node is unavailable."
     with pytest.raises(UnavailableSyntaxError, match=err):
         e.run(
             """\
@@ -97,6 +114,19 @@ class MyStr(str):
 """,
         )
     assert "MyStr" not in e.scope
+
+
+def test_classdef_with_generic(e):
+    err = "Evaluation of 'ClassDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+class MySet[T]:
+    pass
+
+""",
+        )
+    assert "MySet" not in e.scope
 
 
 def test_functiondef(e):
@@ -110,6 +140,20 @@ def abc():
 """,
         )
     assert "abc" not in e.scope
+
+
+def test_functiondef_with_generic(e):
+    err = "Evaluation of 'FunctionDef' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+def abc[T](*args: T) -> T:
+    pass
+
+""",
+        )
+    assert "abc" not in e.scope
+    assert "T" not in e.scope
 
 
 def test_generator_exp(e):
@@ -252,6 +296,18 @@ type Number = int
 """,
         )
     assert "Number" not in e.scope
+
+
+def test_typealias_with_generic(e):
+    err = "Evaluation of 'TypeAlias' node is unavailable."
+    with pytest.raises(UnavailableSyntaxError, match=err):
+        e.run(
+            """\
+type Response[T] = list[T] | None
+""",
+        )
+    assert "Response" not in e.scope
+    assert "T" not in e.scope
 
 
 def test_with(e):
