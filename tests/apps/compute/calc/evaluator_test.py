@@ -414,7 +414,7 @@ def abc():
     assert "abc" not in e.scope
 
 
-def test_for(e):
+def test_for_continue(e):
     code = """\
 total = 0
 for x in [1, 2, 3, 4, 5, 6]:
@@ -430,21 +430,25 @@ else:
     e.run(code)
     assert e.scope["total"] == real_locals["total"]
 
+
+def test_for_break(e):
     code = """\
-total2 = 0
+total = 0
 for x in [1, 2, 3, 4, 5, 6]:
-    total2 = total2 + x
-    if total2 > 10:
+    total = total + x
+    if total > 10:
         break
-    total2 = total2 * 2
+    total = total * 2
 else:
-    total2 = total2 + 10000
+    total = total + 10000
 """
     real_locals = {}
     exec(code, locals=real_locals)  # noqa: S102 - for test only
     e.run(code)
-    assert e.scope["total2"] == real_locals["total2"]
+    assert e.scope["total"] == real_locals["total"]
 
+
+def test_for_not_iterable(e):
     err = "'NoneType' object is not iterable"
     with pytest.raises(NotIterableError, match=err):
         e.run(
@@ -453,6 +457,8 @@ for x in None:
     pass
 """,
         )
+
+    assert "x" not in e.scope
 
 
 def test_formattedvalue(e):
