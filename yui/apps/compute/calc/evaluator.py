@@ -515,7 +515,6 @@ class Evaluator:
             "bool": bool,
             "bytes": bytes,
             "chr": chr,
-            "complex": complex,
             "dict": dict,
             "divmod": divmod,
             "enumerate": enumerate,
