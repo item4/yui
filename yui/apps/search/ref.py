@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 
 REF_URLS: dict[str, str] = {
-    "html": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element",
+    "html": (
+        "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements"
+    ),
     "css": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference",
     "python": "https://docs.python.org/3/library/",
 }
@@ -45,14 +47,16 @@ def parse(
 async def fetch_css_ref(bot: Bot):
     logger.info("fetch css ref start")
 
-    url = "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference"
-    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(REF_URLS["css"]) as resp,
+    ):
         blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
         blob,
-        "a[href^=\\/en-US\\/docs\\/Web\\/CSS\\/]",
+        r"a[href^=\/en-US\/docs\/Web\/CSS\/]",
         "https://developer.mozilla.org",
     )
 
@@ -64,14 +68,16 @@ async def fetch_css_ref(bot: Bot):
 async def fetch_html_ref(bot: Bot):
     logger.info("fetch html ref start")
 
-    url = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element"
-    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(REF_URLS["html"]) as resp,
+    ):
         blob = await resp.read()
 
     body = await bot.run_in_other_process(
         parse,
         blob,
-        "a[href^=\\/en-US\\/docs\\/Web\\/HTML\\/Element\\/]",
+        r"a[href^=\/en-US\/docs\/Web\/HTML\/Reference\/Elements\/]",
         "https://developer.mozilla.org",
     )
     await bot.cache.set("REF_HTML", body)
@@ -87,7 +93,7 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
     for a in a_tags:
         code_els = a.cssselect("code.docutils.literal")
         name = str(a.text_content()).strip()
-        link = f'https://docs.python.org/3/library/{a.get("href")}'
+        link = f"{REF_URLS['python']}{a.get('href')}"
         if code_els:
             result.extend(
                 [
@@ -113,8 +119,10 @@ def parse_python(blob: bytes) -> list[tuple[str, str, str]]:
 async def fetch_python_ref(bot: Bot):
     logger.info("fetch python ref start")
 
-    url = "https://docs.python.org/3/library/"
-    async with aiohttp.ClientSession() as session, session.get(url) as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(REF_URLS["python"]) as resp,
+    ):
         blob = await resp.read()
 
     body = await bot.run_in_other_process(
