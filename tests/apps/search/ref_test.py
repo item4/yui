@@ -115,8 +115,8 @@ async def test_css_command(bot):
     assert isinstance(said.data, dict)
     assert said.data["channel"] == event.channel
     assert (
-        said.data["text"] == "CSS `font-family` - "
-        "https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
+        said.data["text"]
+        == "CSS `font-family` - https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
     )
 
     await css(bot, event, "쀍뗗")
@@ -150,7 +150,7 @@ async def test_html_command(bot):
     assert said.data["channel"] == event.channel
     assert (
         said.data["text"] == "HTML `<section>` - "
-        "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section"
+        "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/section"
     )
 
     await html(bot, event, "쀍뗗")
@@ -183,8 +183,8 @@ async def test_python_command(bot):
     assert isinstance(said.data, dict)
     assert said.data["channel"] == event.channel
     assert (
-        said.data["text"] == "Python Built-in Functions - "
-        "https://docs.python.org/3/library/functions.html"
+        said.data["text"]
+        == "Python Built-in Functions - https://docs.python.org/3/library/functions.html"
     )
 
     await python(bot, event, "re")
@@ -193,8 +193,8 @@ async def test_python_command(bot):
     assert isinstance(said.data, dict)
     assert said.data["channel"] == event.channel
     assert (
-        said.data["text"] == "Python re — Regular expression operations - "
-        "https://docs.python.org/3/library/re.html"
+        said.data["text"]
+        == "Python re — Regular expression operations - https://docs.python.org/3/library/re.html"
     )
 
     await python(bot, event, "쀍뗗")
