@@ -67,6 +67,8 @@ jobs:
         with:
           python-version: "3.13"
           cache: "poetry"
+      - name: Check pyproject.toml
+        run: poetry check
       - name: Install dependencies
         run: poetry install --all-extras
 
