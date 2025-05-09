@@ -40,54 +40,56 @@ class WeatherRecord:
     # 관측 시간
     observed_at: datetime
 
+    def format_rain(self) -> str:
+        label = (
+            "강설"
+            if self.temperature is not None and self.temperature < 0
+            else "강수"
+        )
+        if self.is_rain == "Rain":
+            return f"{label}: 예(15분: {shorten(self.rain_15 or 0)}㎜ / 일일: {shorten(self.rain_day or 0)}㎜)"
+        if self.is_rain == "Unavailable":
+            return f"{label}: 확인 불가"
+        if self.is_rain == "Unknown":
+            return f"{label}: 알 수 없음"
+        return ""
+
+    def format_temperature(self) -> str:
+        if self.temperature:
+            return f"기온: {shorten(self.temperature)}℃"
+        return "기온: 확인 불가"
+
+    def format_wind(self) -> str:
+        if self.wind_direction == "No":
+            return "바람: 없음"
+        if self.wind_direction == "Unavailable":
+            return ""
+        return f"바람: {self.wind_direction} {shorten(self.wind_velocity)}㎧"
+
+    def format_humidity(self) -> str:
+        if self.humidity is not None:
+            return f"습도: {shorten(self.humidity)}%"
+        return ""
+
+    def format_atmospheric(self) -> str:
+        if self.atmospheric is not None:
+            return f"해면기압: {shorten(self.atmospheric)}㍱"
+        return ""
+
     def as_str(self) -> str:
-        rain = None
-        match self.is_rain:
-            case "Rain":
-                rain = (
-                    f"예(15분: {shorten(self.rain_15 or 0)}㎜ / 일일:"
-                    f" {shorten(self.rain_day or 0)}㎜)"
-                )
-            case "Unavailable":
-                rain = "확인 불가"
-            case "Unknown":
-                rain = "알 수 없음"
-
-        temperature = (
-            "기온: 알 수 없음"
-            if self.temperature is None
-            else f"기온: {shorten(self.temperature)}℃"
+        desc = " / ".join(
+            filter(
+                bool,
+                [
+                    self.format_rain(),
+                    self.format_temperature(),
+                    self.format_wind(),
+                    self.format_humidity(),
+                    self.format_atmospheric(),
+                ],
+            ),
         )
-
-        wind = f"{self.wind_direction} {shorten(self.wind_velocity)}㎧"
-
-        humidity = (
-            None if self.humidity is None else f"{shorten(self.humidity)}%"
-        )
-
-        atmospheric = (
-            None
-            if self.atmospheric is None
-            else f"{shorten(self.atmospheric)}㍱"
-        )
-
-        weather_text = "[{} / {}] ".format(
-            self.location,
-            self.observed_at.strftime("%H시 %M분 기준"),
-        )
-
-        if self.is_rain != "Clear" and rain:
-            if self.temperature is not None and self.temperature > 0:
-                weather_text += f"강수 {rain} / "
-            else:
-                weather_text += f"강설 {rain} / "
-
-        weather_text += temperature
-        weather_text += f" / 바람: {wind}"
-        if humidity:
-            weather_text += f" / 습도: {humidity}"
-        if atmospheric:
-            weather_text += f" / 해면기압: {atmospheric}"
+        weather_text = f"[{self.location} / {self.observed_at.strftime('%H시 %M분 기준')}] {desc}"
 
         if self.temperature is not None:
             recommend = clothes_by_temperature(self.temperature)
