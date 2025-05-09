@@ -51,5 +51,4 @@ async def weather(
         text=weather_text,
         username=f"{result.name} 날씨",
         icon_emoji=weather_emoji,
-        thread_ts=event.ts,
     )

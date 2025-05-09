@@ -11,7 +11,7 @@ async def bot_with_cache(bot, cache):
 
 @pytest.mark.anyio
 async def test_weather_command(bot, address):
-    event = bot.create_message(ts="1234.5678")
+    event = bot.create_message()
 
     await weather(bot, event, address)
 
@@ -23,7 +23,6 @@ async def test_weather_command(bot, address):
     if weather_said.data["text"] == "날씨 API 접근 중 에러가 발생했어요!":
         pytest.skip("Can not run test via AWS Weather API")
 
-    assert weather_said.data["thread_ts"] == event.ts
     assert weather_said.data["username"] == "부천 날씨"
 
     assert weather_said.data["text"] != "해당 주소는 찾을 수 없어요!"
@@ -33,7 +32,7 @@ async def test_weather_command(bot, address):
 
 @pytest.mark.anyio
 async def test_weather_command_too_short(bot):
-    event = bot.create_message(ts="1234.5678")
+    event = bot.create_message()
 
     await weather(bot, event, "a")
 
@@ -56,7 +55,7 @@ async def test_weather_command_wrong_address(
     bot,
     unavailable_address,
 ):
-    event = bot.create_message(ts="1234.5678")
+    event = bot.create_message()
 
     await weather(bot, event, unavailable_address)
 
@@ -81,7 +80,7 @@ async def test_weather_command_server_error(
         "https://item4.net/api/weather/",
         body="[}",
     )
-    event = bot.create_message(ts="1234.5678")
+    event = bot.create_message()
 
     await weather(bot, event, address)
 
