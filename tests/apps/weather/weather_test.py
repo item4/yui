@@ -165,3 +165,39 @@ async def test_weather_record():
         "\n\n추천 의상: 얇은 재킷, 가디건, 간절기 야상, 맨투맨, 니트, 살구색 스타킹"
     )
     assert await weather.get_emoji_by_weather() == ":sunny:"
+
+    weather = WeatherRecord(
+        name="부천",
+        location="경기도 부천시 원미구 중동",
+        temperature=None,
+        humidity=None,
+        atmospheric=None,
+        wind_velocity=0.0,
+        wind_direction="No",
+        is_rain="Clear",
+        rain_15=None,
+        rain_day=None,
+        observed_at=datetime(2024, 2, 2, 12, 34, 56),
+    )
+    assert weather.as_str() == (
+        "[경기도 부천시 원미구 중동 / 12시 34분 기준] 기온: 확인 불가 / 바람: 없음"
+    )
+    assert await weather.get_emoji_by_weather() == ":sunny:"
+
+    weather = WeatherRecord(
+        name="부천",
+        location="경기도 부천시 원미구 중동",
+        temperature=None,
+        humidity=None,
+        atmospheric=None,
+        wind_velocity=0.0,
+        wind_direction="Unavailable",
+        is_rain="Clear",
+        rain_15=None,
+        rain_day=None,
+        observed_at=datetime(2024, 2, 2, 12, 34, 56),
+    )
+    assert weather.as_str() == (
+        "[경기도 부천시 원미구 중동 / 12시 34분 기준] 기온: 확인 불가"
+    )
+    assert await weather.get_emoji_by_weather() == ":sunny:"
