@@ -24,9 +24,9 @@ class WeatherRecord:
     location: str
 
     # 현재 기온, 습도 및 기압
-    temperature: float
-    humidity: int
-    atmospheric: float
+    temperature: float | None
+    humidity: int | None
+    atmospheric: float | None
 
     # 바람의 세기와 각도
     wind_velocity: float
