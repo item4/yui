@@ -31,7 +31,7 @@ async def on_start(bot: Bot):
         )
         values = [
             {
-                "levels": x["next"],
+                "levels": list(map(int, x["next"])),
                 "start_at": fromtimestamp(x["next_terror_time_utc"]),
                 "fetched_at": now_dt,
                 "next_fetch_at": fromtimestamp(
@@ -132,7 +132,7 @@ async def polling_d2r_tz(bot: Bot):
             await sess.execute(
                 insert(TerrorZoneLog)
                 .values(
-                    levels=data["next"],
+                    levels=list(map(int, data["next"])),
                     start_at=fromtimestamp(data["next_terror_time_utc"]),
                     fetched_at=now_dt,
                     next_fetch_at=fromtimestamp(
