@@ -1,12 +1,7 @@
-import asyncio
-
 import aiohttp
 from discord_webhook import AsyncDiscordWebhook
 
-from ....bot import Bot
 from ....utils import json
-from ....utils.datetime import fromtimestamp
-from ....utils.datetime import now
 
 
 def tz_id_to_names(ids: list[int]) -> list[str]:
@@ -397,67 +392,22 @@ async def get_d2r_terror_zone_info(username: str, token: str):
         return json.loads(blob)
 
 
+async def get_d2r_terror_zone_history(username: str, token: str):
+    async with (
+        aiohttp.ClientSession(
+            headers={
+                "x-emu-username": username,
+                "x-emu-token": token,
+            },
+        ) as session,
+        session.get(
+            "https://d2emu.com/api/v1/tz/history",
+        ) as resp,
+    ):
+        blob = await resp.text()
+        return json.loads(blob)
+
+
 async def send_d2r_terror_zone_info_to_discord(webhook_url: str, message: str):
     webhook = AsyncDiscordWebhook(url=webhook_url, content=message)
     await webhook.execute()
-
-
-async def say_d2r_terror_zone_info(bot: Bot, channel):
-    data = await get_d2r_terror_zone_info(
-        bot.config.D2EMU_USERNAME,
-        bot.config.D2EMU_TOKEN,
-    )
-
-    now_dt = now()
-    now_timestamp = int(now_dt.timestamp())
-    now_fallback_time = now_dt.strftime("%Y-%m-%d %H:%M")
-
-    current = ", ".join(tz_id_to_names(data["current"]))
-    next_ = ", ".join(tz_id_to_names(data["next"]))
-    dt = fromtimestamp(data["next_terror_time_utc"])
-    fallback_time = dt.strftime("%Y-%m-%d %H:%M")
-
-    text = f"""\
-[<!date^{now_timestamp}^{{date_num}} {{time}}|{now_fallback_time}>] {current}
-[<!date^{data['next_terror_time_utc']}^{{date_num}} {{time}}|{fallback_time}>] {next_}"""
-
-    await bot.say(channel, text)
-
-
-async def wait_next_d2r_terror_zone_info(bot: Bot, channel):
-    data = await get_d2r_terror_zone_info(
-        bot.config.D2EMU_USERNAME,
-        bot.config.D2EMU_TOKEN,
-    )
-    this_time = now().replace(minute=0, second=0, microsecond=0).timestamp()
-
-    loop_count = 0
-    while "ERROR" in data or data["next_terror_time_utc"] <= this_time:
-        await asyncio.sleep((loop_count + 1) * 90)
-        data = await get_d2r_terror_zone_info(
-            bot.config.D2EMU_USERNAME,
-            bot.config.D2EMU_TOKEN,
-        )
-        loop_count += 1
-        if loop_count > 15:
-            return
-
-    now_dt = now()
-    now_timestamp = int(now_dt.timestamp())
-    now_fallback_time = now_dt.strftime("%Y-%m-%d %H:%M")
-
-    current = ", ".join(tz_id_to_names(data["current"]))
-    next_ = ", ".join(tz_id_to_names(data["next"]))
-    dt = fromtimestamp(data["next_terror_time_utc"])
-    fallback_time = dt.strftime("%Y-%m-%d %H:%M")
-
-    text = f"""\
-[<!date^{now_timestamp}^{{date_num}} {{time}}|{now_fallback_time}>] {current}
-[<!date^{data['next_terror_time_utc']}^{{date_num}} {{time}}|{fallback_time}>] {next_}"""
-    discord_text = f"""\
-<t:{now_timestamp}:f>: {current}
-<t:{data['next_terror_time_utc']}:f>: {next_}"""
-
-    await bot.say(channel, text)
-    for webhook_url in bot.config.DISCORD_WEBHOOKS["d2tz"]:
-        await send_d2r_terror_zone_info_to_discord(webhook_url, discord_text)
