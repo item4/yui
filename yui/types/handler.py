@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import inspect
-from collections.abc import Awaitable
 from collections.abc import Callable
+from collections.abc import Coroutine
 from collections.abc import Mapping
 from typing import Any
 from typing import TYPE_CHECKING
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..box.tasks import CronTask
 
 
-type FuncType = Callable[..., Awaitable[bool | None]]
+type FuncType = Callable[..., Coroutine[Any, None, bool | None]]
 
 
 @define(kw_only=True, field_transformer=field_transformer)
