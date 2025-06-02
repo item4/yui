@@ -6,6 +6,8 @@ from ..types.handler import FuncType
 from ..types.handler import Handler
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from ._box import Box
 
 
@@ -13,6 +15,8 @@ class CronTask:
     """Cron Task"""
 
     handler: Handler
+    start: Callable[[], None]
+    stop: Callable[[], None]
 
     def __init__(self, box: Box, spec: str, args: tuple, kwargs: dict) -> None:
         """Initialize."""
@@ -24,8 +28,6 @@ class CronTask:
         self.spec = spec
         self.args = args
         self.kwargs = kwargs
-        self.start = None
-        self.stop = None
 
     def __call__(self, target: FuncType | Handler) -> Handler:
         """Use as decorator"""
