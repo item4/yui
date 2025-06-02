@@ -15,5 +15,6 @@ class Base(DeclarativeBase):
             PrimaryKey: types.Integer,
             Text: types.Text,
             datetime: DateTime(timezone=True),
+            list[int]: types.ARRAY(types.Integer),
         },
     )
