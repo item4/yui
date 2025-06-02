@@ -16,6 +16,7 @@ from ..utils.cast import is_container
 
 if TYPE_CHECKING:
     from ..box.tasks import CronTask
+    from ..box.tasks import PollingTask
 
 
 type FuncType = Callable[..., Coroutine[Any, None, bool | None]]
@@ -64,6 +65,7 @@ class Handler:
     arguments: list[Argument] = field(init=False)
     options: list[Option] = field(init=False)
     cron: CronTask | None = field(init=False, default=None)
+    polling_task: PollingTask | None = field(init=False, default=None)
     doc: str | None = field(init=False)
     params: Mapping[str, inspect.Parameter] = field(init=False)
     annotations: dict[str, Any] = field(init=False)

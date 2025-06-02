@@ -7,6 +7,7 @@ from ..types.handler import Handler
 from .apps.base import BaseApp
 from .apps.basic import App
 from .tasks import CronTask
+from .tasks import PollingTask
 
 type Decorator = Callable[[FuncType | Handler], Handler]
 
@@ -24,6 +25,7 @@ class Box:
         self.users_required: set[str] = set()
         self.apps: list[BaseApp] = []
         self.cron_tasks: list[CronTask] = []
+        self.polling_tasks: list[PollingTask] = []
 
     def register(self, app: BaseApp):
         """Register App manually."""
@@ -119,3 +121,10 @@ class Box:
         c = CronTask(self, spec, args, kwargs)
         self.cron_tasks.append(c)
         return c
+
+    def polling_task(self, /) -> PollingTask:
+        """Decorator for polling task."""
+
+        p = PollingTask(self)
+        self.polling_tasks.append(p)
+        return p

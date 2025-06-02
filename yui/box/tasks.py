@@ -43,3 +43,27 @@ class CronTask:
         return f"CronTask(spec={self.spec!r}, func={self.handler!r})"
 
     __str__ = __repr__
+
+
+class PollingTask:
+    """Polling Task"""
+
+    handler: Handler
+
+    def __init__(self, box: Box) -> None:
+        self.box = box
+
+    def __call__(self, target: FuncType | Handler) -> Handler:
+        """Use as decorator"""
+
+        handler = Handler.from_callable(target)
+
+        self.handler = handler
+        handler.polling_task = self
+
+        return handler
+
+    def __repr__(self) -> str:
+        return f"PollingTask(func={self.handler!r})"
+
+    __str__ = __repr__

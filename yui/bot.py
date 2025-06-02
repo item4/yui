@@ -274,6 +274,10 @@ class Bot(GetLoggerMixin):
                 asyncio.create_task(self.connect()),
                 asyncio.create_task(self.process()),
             ]
+            tasks.extend(
+                asyncio.create_task(task.handler(bot=self))
+                for task in self.box.polling_tasks
+            )
             await asyncio.wait(
                 tasks,
                 return_when=asyncio.FIRST_EXCEPTION,
