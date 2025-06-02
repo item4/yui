@@ -236,10 +236,7 @@ def make_route_desc(data: Result) -> str:
         )
         result += "\n"
 
-    result += (
-        f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞"
-        f" / 요금(카드 기준): {fare:,}원"
-    )
+    result += f"\n소요시간: {duration:,}분 / 거리: {distance:,.2f}㎞ / 요금(카드 기준): {fare:,}원"
 
     return result
 
@@ -260,9 +257,7 @@ async def body(bot, event: Message, region: str, start: str, end: str):
     except ValueError as e:
         await bot.say(
             event.channel,
-            "출발역과 도착역이 동일한 역인 것 같아요!"
-            f" (참고로 제가 인식한 역 이름은 '{e}'"
-            " 이에요!)",
+            f"출발역과 도착역이 동일한 역인 것 같아요! (참고로 제가 인식한 역 이름은 '{e}' 이에요!)",
         )
         return
 
