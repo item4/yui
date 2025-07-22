@@ -22,7 +22,8 @@ from ...utils.fuzz import ratio
 from ...utils.http import USER_AGENT
 
 TEMPLATE: Final = (
-    "{}에서 {} {}행 열차에 탑승해서 {} 정거장을 지나 {}에서 내립니다.{}"
+    "{start_station}에서 {line_name} {direction}행 열차에 탑승해서 {station_count} 정거장을 지나"
+    " {goal_station}에서 내립니다.{extra_guides}"
 )
 REGION_TABLE: Final[dict[str, tuple[str, str]]] = {
     "수도권": ("1000", "6.61"),
@@ -216,23 +217,23 @@ def make_route_desc(data: Result) -> str:
         routes = step["routes"]
         stations = step["stations"]
         platform = routes[0]["platform"]
-        start_name = stations[0]["displayName"]
-        line = routes[0]["longName"]
+        start_station = stations[0]["displayName"]
+        line_name = routes[0]["longName"]
         direction = routes[0]["headsign"]
         station_count = ilen(filter(operator.itemgetter("stop"), stations)) - 1
-        end_name = stations[-1]["displayName"]
+        goal_station = stations[-1]["displayName"]
         doors = platform["doors"]
         doors_list = ", ".join(doors) if doors else ""
-        guide = ""
+        extra_guides = ""
         if doors_list:
-            guide = f" ({platform['type']['desc']}: {doors_list})"
+            extra_guides = f" ({platform['type']['desc']}: {doors_list})"
         result += TEMPLATE.format(
-            start_name,
-            line,
-            direction,
-            station_count,
-            end_name,
-            guide,
+            start_station=start_station,
+            line_name=line_name,
+            direction=direction,
+            station_count=station_count,
+            goal_station=goal_station,
+            extra_guides=extra_guides,
         )
         result += "\n"
 
