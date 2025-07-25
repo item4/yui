@@ -90,14 +90,14 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
             },
         ) as session,
         session.get(
-            "https://map.naver.com/p/api/subway/meta",
+            "https://apis.map.naver.com/SubwayProvide.xml",
             params={
                 "readPath": service_region,
                 "version": api_version,
                 "language": "ko",
                 "style": "normal",
                 "requestFile": "metaData.json",
-                "caller": "NaverMapPcBetaWeb",
+                "caller": "pcweb_v5",
             },
         ) as resp,
     ):
@@ -139,9 +139,7 @@ async def get_shortest_route(
             params={
                 "start": start_id,
                 "goal": end_id,
-                "lang": "ko",
-                "includeDetailOperation": "true",
-                "departureTime": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                "departureTime": time.strftime("%Y-%m-%dT%H:%M:%S") + "+09:00",
             },
         ) as resp,
     ):

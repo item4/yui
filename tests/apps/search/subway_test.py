@@ -264,9 +264,7 @@ async def test_get_shortest_route_fail(response_mock, time, start_id, goal_id):
     ).with_query(
         start=start_id,
         goal=goal_id,
-        lang="ko",
-        includeDetailOperation="true",
-        departureTime=time.strftime("%Y-%m-%dT%H:%M:%S"),
+        departureTime=time.strftime("%Y-%m-%dT%H:%M:%S") + "+09:00",
     )
     response_mock.get(
         url,
