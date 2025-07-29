@@ -29,7 +29,7 @@ jobs:
 
       # Lint
       - name: Check coding convention
-        run: ruff check yui tests
+        run: ruff check
       - name: Check missing autofix
         run: black --check .
 
