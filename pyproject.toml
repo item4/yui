@@ -8,7 +8,7 @@ requires-python = ">=3.13,<4.0"
 authors = [{ name = "Kim, Jin Su" }]
 dependencies = [
     "aiocron >= 2.1",
-    "aiohttp >= 3.12.14",
+    "aiohttp >= 3.12.15",
     "alembic >= 1.16.4",
     "anyio >= 4.9.0",
     "asyncclick >= 8.1.8",
@@ -21,11 +21,11 @@ dependencies = [
     "fastfeedparser >= 0.3.9",
     "lxml >= 6.0.0",
     "more-itertools >= 10.7.0",
-    "orjson >= 3.11.0",
+    "orjson >= 3.11.1",
     "psycopg[binary] >= 3.2.9",
     "python-dateutil >= 2.9.0",
     "rapidfuzz >= 3.13.0",
-    "scipy >= 1.16.0",
+    "scipy >= 1.16.1",
     "sqlalchemy-utils >= 0.41.2",
     "sqlalchemy[asyncio] >= 2.0.41",
     "sympy >= 1.14.0",
