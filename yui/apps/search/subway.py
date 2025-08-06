@@ -26,12 +26,13 @@ TEMPLATE: Final = (
     " {goal_station}에서 내립니다.{extra_guides}"
 )
 REGION_TABLE: Final[dict[str, tuple[str, str]]] = {
-    "수도권": ("1000", "6.61"),
-    "부산": ("7000", "4.24"),
-    "대구": ("4000", "4.22"),
-    "광주": ("5000", "4.10"),
-    "대전": ("3000", "4.10"),
+    "수도권": ("1000", "6.62"),
+    "부산": ("7000", "4.25"),
+    "대구": ("4000", "4.23"),
+    "광주": ("5000", "4.11"),
+    "대전": ("3000", "4.11"),
 }
+NAVER_API_CALLER: Final = "pcweb_v5"
 
 PARENTHESES = re.compile(r"\(.+?\)")
 
@@ -97,7 +98,7 @@ async def fetch_station_db(bot, service_region: str, api_version: str):
                 "language": "ko",
                 "style": "normal",
                 "requestFile": "metaData.json",
-                "caller": "pcweb_v5",
+                "caller": NAVER_API_CALLER,
             },
         ) as resp,
     ):
