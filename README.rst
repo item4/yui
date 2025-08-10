@@ -17,7 +17,7 @@ YUI는 다용도 Slack App 입니다.
 
 - Git
 - Slack App 설치 및 App Token/Bot Token
-- Python 3.13.5 혹은 그 이상 버전
+- Python 3.13.6 혹은 그 이상 버전
 - PostgreSQL 16
 - Valkey_ 8.0 이상
 - Poetry_ 2.1.4 이상
