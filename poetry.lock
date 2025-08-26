@@ -3013,21 +3013,21 @@ files = [
 
 [[package]]
 name = "types-lxml"
-version = "2025.3.30"
+version = "2025.8.25"
 description = "Complete lxml external type annotation"
 optional = true
 python-versions = ">=3.8"
 groups = ["main"]
 markers = "extra == \"dev\""
 files = [
-    {file = "types_lxml-2025.3.30-py3-none-any.whl", hash = "sha256:310b0ddf9e2104c8684362445808adf8a2cf41cf102d4ea0d16ced413cc46f66"},
-    {file = "types_lxml-2025.3.30.tar.gz", hash = "sha256:ea4da0d2b61a73e114e14e2dcca1f62671182d80016a483369c553a24ba8f163"},
+    {file = "types_lxml-2025.8.25-py3-none-any.whl", hash = "sha256:d61340e5329e102d3f8d64124e90d50c12c0bfeaa9088d65558279ef4e7138ac"},
+    {file = "types_lxml-2025.8.25.tar.gz", hash = "sha256:79b9f5b1f236f937f14fe3add9dc687bd8d4111ca5df58eb9f1bde1a3b032fd5"},
 ]
 
 [package.dependencies]
 beautifulsoup4 = ">=4.13,<5.0"
 cssselect = ">=1.2,<2.0"
-types-html5lib = ">=1.1.11.20241018,<1.2.0.0"
+types-html5lib = ">=1.1.11.20241018,<1.1.11.20250516 || >1.1.11.20250516,<1.2.0.0"
 
 [package.extras]
 basedpyright = ["basedpyright (>=1.4.0)"]
@@ -3316,4 +3316,4 @@ dev = ["aioresponses", "black", "croniter", "mypy", "pre-commit", "pytest", "pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "a423f6f821e4967b7030b222354aa01f33ec389f7254484fbfacfaaa93adab4f"
+content-hash = "30c9399276715938763817d5c00f396a6b9e4f3acbcb2e40f5501655499b59e8"
