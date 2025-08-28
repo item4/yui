@@ -86,7 +86,7 @@ jobs:
       # After jobs
       - name: Export requirements.txt for docker build
         run: |
-          uv export --locked --format requirements.txt --output-file requirements.txt --no-hashes
+          uv export --locked --format requirements.txt --output-file requirements.txt --no-hashes --no-emit-project --no-dev
       - name: Archive requirements.txt file
         uses: actions/upload-artifact@v4
         with:
