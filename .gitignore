@@ -21,32 +21,8 @@ Session.vim
 *~
 tags
 [._]*.un~
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/dictionaries
-.idea/**/shelf
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
-.idea/**/gradle.xml
-.idea/**/libraries
 cmake-build-debug/
 cmake-build-release/
-.idea/**/mongoSettings.xml
-*.iws
-out/
-.idea_modules/
-atlassian-ide-plugin.xml
-.idea/replstate.xml
-com_crashlytics_export_strings.xml
-crashlytics.properties
-crashlytics-build.properties
-fabric.properties
-.idea/httpRequests
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -149,7 +125,6 @@ instance/
 docs/_build/
 target/
 .ipynb_checkpoints
-.python-version
 celerybeat-schedule
 *.sage.py
 .env
@@ -181,12 +156,9 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-.dmypy.json
 .ruff_cache
 
 # yui only
-*.iml
-.idea
 *.config.toml
 !example.config.toml
 log

@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version-file: "pyproject.toml"
       # Install Dependencies
       - name: Install Checkers
         run: pip install black ruff
@@ -60,25 +60,22 @@ jobs:
       # Set-up
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Install Poetry
-        run: pipx install poetry
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: "3.13"
-          cache: "poetry"
-      - name: Check pyproject.toml
-        run: poetry check
+          enable-cache: true
+      - name: Setup Python
+        run: uv python install
       - name: Install dependencies
-        run: poetry install --all-extras
+        run: uv sync --locked --all-extras --dev
 
       # Type Check
       - name: Check static types
-        run: poetry run mypy yui
+        run: uv run mypy yui
 
       # Test
       - name: Run test cases
-        run: poetry run pytest -v --cov=yui --cov-report=xml --junitxml=junit.xml
+        run: uv run pytest -v --cov=yui --cov-report=xml --junitxml=junit.xml
         env:
           SQLALCHEMY_WARN_20: 1
           YUI_TEST_DATABASE_URL: postgresql+psycopg://${{ env.DB_USER }}:${{ env.DB_PASSWORD }}@localhost/${{ env.DB_NAME }}
@@ -89,7 +86,7 @@ jobs:
       # After jobs
       - name: Export requirements.txt for docker build
         run: |
-          poetry export -f requirements.txt --output requirements.txt --without-hashes
+          uv export --locked --format requirements.txt --output-file requirements.txt --no-hashes
       - name: Archive requirements.txt file
         uses: actions/upload-artifact@v4
         with:

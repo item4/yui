@@ -15,16 +15,16 @@ repos:
     hooks:
       - id: black
         name: black
-        entry: black
+        entry: uv run black
         language: system
         types: [ python ]
       - id: ruff
         name: ruff
-        entry: ruff check --fix
+        entry: uv run ruff check --fix
         language: system
         types: [ python ]
       - id: mypy
         name: mypy
-        entry: mypy
+        entry: uv run mypy
         language: system
         types: [ python ]

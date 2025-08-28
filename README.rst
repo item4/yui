@@ -20,11 +20,11 @@ YUI는 다용도 Slack App 입니다.
 - Python 3.13.7 혹은 그 이상 버전
 - PostgreSQL 16
 - Valkey_ 8.0 이상
-- Poetry_ 2.1.4 이상
+- uv_ 2.1.4 이상
 
 
 .. _Valkey: https://canonical.com/data/valkey
-.. _Poetry: https://python-poetry.org/
+.. _uv: https://docs.astral.sh/uv/
 
 
 설치
@@ -35,7 +35,7 @@ YUI는 다용도 Slack App 입니다.
    $ git clone https://github.com/item4/yui.git
    $ cd yui
    $ mkdir log
-   $ poetry install
+   $ uv sync
 
 
 설정
@@ -152,7 +152,7 @@ LOGGING
 
 .. code-block:: bash
 
-   $ yui run -c yui.config.toml
+   $ uv run yui run -c yui.config.toml
 
 
 ``YUI_CONFIG_FILE_PATH`` 환경변수를 정의하면 ``-c`` 인자를 생략할 수 있습니다.
@@ -160,7 +160,7 @@ LOGGING
 .. code-block:: bash
 
    $ export YUI_CONFIG_FILE_PATH="yui.config.toml"
-   $ yui run
+   $ uv run yui run
 
 
 CLI for Database
@@ -225,11 +225,12 @@ YUI에 코드 기여하기
 -----------------
 
 YUI는 PEP8 등의 몇가지 코드 컨벤션을 따르고 있습니다.
-이를 위해서는 ``poetry install`` 이후에 반드시 추가적으로 아래와 같은 방법으로 Git Hook을 설치해주셔야합니다.
+이를 위해서는 ``uv sync --all-extras`` 이후에 반드시 추가적으로 아래와 같은 방법으로 Git Hook을 설치해주셔야합니다.
 
 .. code-block:: bash
 
-   $ pre-commit install
+   $ uv sync --all-extras
+   $ uv run pre-commit install
 
 
 License
