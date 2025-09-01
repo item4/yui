@@ -20,7 +20,7 @@ YUI는 다용도 Slack App 입니다.
 - Python 3.13.7 혹은 그 이상 버전
 - PostgreSQL 16
 - Valkey_ 8.0 이상
-- uv_ 2.1.4 이상
+- 최신 버전의 uv_
 
 
 .. _Valkey: https://canonical.com/data/valkey
