@@ -143,11 +143,13 @@ def choice(
     return callback
 
 
-def value_range[T: (
-    int,
-    float,
-    Decimal,
-)](start: T, end: T, *, autofix: bool = False) -> Callable[[T], T]:
+def value_range[
+    T: (
+        int,
+        float,
+        Decimal,
+    ),
+](start: T, end: T, *, autofix: bool = False) -> Callable[[T], T]:
     """
     Helper to constraint value to in range or raise error.
 
