@@ -26,7 +26,7 @@ TEMPLATE: Final = (
     " {goal_station}에서 내립니다.{extra_guides}"
 )
 REGION_TABLE: Final[dict[str, tuple[str, str]]] = {
-    "수도권": ("1000", "6.63"),
+    "수도권": ("1000", "6.64"),
     "부산": ("7000", "4.25"),
     "대구": ("4000", "4.23"),
     "광주": ("5000", "4.11"),
