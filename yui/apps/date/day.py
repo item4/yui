@@ -1,7 +1,6 @@
 import contextlib
 import re
 
-import aiohttp
 import aiohttp.client_exceptions
 
 from ...box import box
