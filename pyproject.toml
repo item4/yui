@@ -10,7 +10,7 @@ authors = [{ name = "Kim, Jin Su" }]
 dependencies = [
     "aiocron >= 2.1",
     "aiohttp >= 3.13.0",
-    "alembic >= 1.16.5",
+    "alembic >= 1.17.0",
     "anyio >= 4.11.0",
     "asyncclick >= 8.3.0.7",
     "attrdict >= 2.0.1",
