@@ -147,14 +147,14 @@ wheels = [
 
 [[package]]
 name = "asyncclick"
-version = "8.3.0.5"
+version = "8.3.0.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "colorama", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/0c/a1e5b75b4d29e6b3657b83de6ccb1f0a72c5fcb591498d40d843861af1f9/asyncclick-8.3.0.5.tar.gz", hash = "sha256:b8c58a5ee5aeb7ef3a359bf2803dda10098d246581dee834a4dcdc838d603106", size = 277622, upload-time = "2025-10-08T07:16:10.026Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/ca/25e426d16bd0e91c1c9259112cecd17b2c2c239bdd8e5dba430f3bd5e3ef/asyncclick-8.3.0.7.tar.gz", hash = "sha256:8a80d8ac613098ee6a9a8f0248f60c66c273e22402cf3f115ed7f071acfc71d3", size = 277634, upload-time = "2025-10-11T08:35:44.841Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/e2/dccc54aec32a61cc6c1b60339cef6e56f8ec70cf5976ec2f6b1a0ceae83f/asyncclick-8.3.0.5-py3-none-any.whl", hash = "sha256:8ccc9e2c32fa078dc7a9af00df340ffad70acc5d9de49c1ab525e973d8e86143", size = 109916, upload-time = "2025-10-08T07:16:08.547Z" },
+    { url = "https://files.pythonhosted.org/packages/01/d9/782ffcb4c97b889bc12d8276637d2739b99520390ee8fec77c07416c5d12/asyncclick-8.3.0.7-py3-none-any.whl", hash = "sha256:7607046de39a3f315867cad818849f973e29d350c10d92f251db3ff7600c6c7d", size = 109925, upload-time = "2025-10-11T08:35:43.378Z" },
 ]
 
 [[package]]
@@ -1904,7 +1904,7 @@ requires-dist = [
     { name = "aioresponses", marker = "extra == 'dev'", specifier = ">=0.7.8" },
     { name = "alembic", specifier = ">=1.16.5" },
     { name = "anyio", specifier = ">=4.11.0" },
-    { name = "asyncclick", specifier = ">=8.3.0.5" },
+    { name = "asyncclick", specifier = ">=8.3.0.7" },
     { name = "attrdict", specifier = ">=2.0.1" },
     { name = "attrs", specifier = ">=25.4.0" },
     { name = "babel", specifier = ">=2.17.0" },
