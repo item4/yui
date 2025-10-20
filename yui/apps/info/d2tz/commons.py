@@ -1,5 +1,4 @@
 import aiohttp
-from discord_webhook import AsyncDiscordWebhook
 
 from ....utils import json
 
@@ -406,8 +405,3 @@ async def get_d2r_terror_zone_history(username: str, token: str):
     ):
         blob = await resp.text()
         return json.loads(blob)
-
-
-async def send_d2r_terror_zone_info_to_discord(webhook_url: str, message: str):
-    webhook = AsyncDiscordWebhook(url=webhook_url, content=message)
-    await webhook.execute()

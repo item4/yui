@@ -11,7 +11,6 @@ from ....utils.datetime import fromtimestamp
 from ....utils.datetime import now
 from .commons import get_d2r_terror_zone_history
 from .commons import get_d2r_terror_zone_info
-from .commons import send_d2r_terror_zone_info_to_discord
 from .models import TerrorZoneLog
 
 DEFAULT_DELAY: Final = 60.0
@@ -67,12 +66,10 @@ async def broadcast(bot: Bot):
     )
     log: TerrorZoneLog
     output_slack = []
-    output_discord = []
     min_id: int | None = None
     async for log in result.scalars():
         min_id = log.id if min_id is None else min(min_id, log.id)
         output_slack.append(log.to_slack_text())
-        output_discord.append(log.to_discord_text())
 
     if min_id is not None:
         before_log: TerrorZoneLog = await sess.scalar(
@@ -82,7 +79,6 @@ async def broadcast(bot: Bot):
             .limit(1),
         )
         output_slack.append(before_log.to_slack_text())
-        output_discord.append(before_log.to_discord_text())
 
     if output_slack:
         resp = await bot.say(
@@ -96,13 +92,6 @@ async def broadcast(bot: Bot):
                 .values(broadcasted_at=now()),
             )
             await sess.commit()
-
-        discord_text = "\n".join(reversed(output_discord))
-        for webhook_url in bot.config.DISCORD_WEBHOOKS["d2tz"]:
-            await send_d2r_terror_zone_info_to_discord(
-                webhook_url,
-                discord_text,
-            )
 
     await sess.close()
 
