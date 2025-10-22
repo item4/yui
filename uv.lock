@@ -397,7 +397,7 @@ wheels = [
 
 [[package]]
 name = "fastfeedparser"
-version = "0.4.3"
+version = "0.4.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "brotli" },
@@ -405,9 +405,9 @@ dependencies = [
     { name = "lxml" },
     { name = "python-dateutil" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/5a/ac0b9a77c4913b14eb77440e591461cbb081f810b30c800822093fcddb5e/fastfeedparser-0.4.3.tar.gz", hash = "sha256:5881452f04247d489b004c6d172c8226349e336b930de5ad228e7457b9f9355a", size = 15229, upload-time = "2025-08-14T05:03:27.185Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/1f/5f6c6b812817f33a064736780d0c3844d39723c91b9149fbc607cec965ac/fastfeedparser-0.4.4.tar.gz", hash = "sha256:6658ec08f177f88b6c71d712113667a61df071cb4b5cb4821bf3c34c4cf8e324", size = 20411, upload-time = "2025-10-22T04:32:12.032Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/82/98/290914c13bedfa4de0e575079c88ae3cc10296458595787708e0e19f2faf/fastfeedparser-0.4.3-py3-none-any.whl", hash = "sha256:6b71a34b74e882a7fa357e8ce39bf73f06043f9e6e8459d38f4670c0faa2e062", size = 13130, upload-time = "2025-08-14T05:03:25.967Z" },
+    { url = "https://files.pythonhosted.org/packages/36/b4/48bacb5d73599ff8c0451ed5c79c92d2fc8802dc657b0045306e09af231c/fastfeedparser-0.4.4-py3-none-any.whl", hash = "sha256:decb549751b39bbd2493e50c5c7c0edee2bd21e8e84bbb3cee6ffc5844aec59e", size = 18144, upload-time = "2025-10-22T04:32:10.831Z" },
 ]
 
 [[package]]
@@ -1792,7 +1792,7 @@ requires-dist = [
     { name = "croniter", marker = "extra == 'dev'", specifier = ">=6.0.0" },
     { name = "cssselect", specifier = ">=1.3.0" },
     { name = "defusedxml", specifier = ">=0.7.1" },
-    { name = "fastfeedparser", specifier = ">=0.4.3" },
+    { name = "fastfeedparser", specifier = ">=0.4.4" },
     { name = "lxml", specifier = ">=6.0.2" },
     { name = "more-itertools", specifier = ">=10.8.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.18.2" },
