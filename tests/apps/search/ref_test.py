@@ -116,7 +116,7 @@ async def test_css_command(bot):
     assert said.data["channel"] == event.channel
     assert (
         said.data["text"]
-        == "CSS `font-family` - https://developer.mozilla.org/en-US/docs/Web/CSS/font-family"
+        == "CSS `font-family` - https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/font-family"
     )
 
     await css(bot, event, "쀍뗗")
