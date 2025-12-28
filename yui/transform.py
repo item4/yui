@@ -149,7 +149,12 @@ def value_range[
         float,
         Decimal,
     ),
-](start: T, end: T, *, autofix: bool = False) -> Callable[[T], T]:
+](
+    start: T,
+    end: T,
+    *,
+    autofix: bool = False,
+) -> Callable[[T], T]:
     """
     Helper to constraint value to in range or raise error.
 

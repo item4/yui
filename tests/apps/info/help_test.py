@@ -45,13 +45,10 @@ async def test_help_command(bot_config):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert (
-        said.data["text"]
-        == f"""*{bot_config.PREFIX}cat*
+    assert said.data["text"] == f"""*{bot_config.PREFIX}cat*
 Cat
 
 It's a cat"""
-    )
     assert said.data["thread_ts"] == "1234.56"
 
     await help(bot, event, "bat")

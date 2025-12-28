@@ -42,13 +42,10 @@ def test_basic_app(channel_id, user_id):
     assert app.has_short_help
     assert app.has_full_help
     assert app.short_help == "TEST TITLE"
-    assert (
-        app.help
-        == """LONG
+    assert app.help == """LONG
 CAT
 IS
 LONG"""
-    )
     assert app.get_short_help("=") == "`=test`: TEST TITLE"
     assert (
         app.get_full_help("=")

@@ -371,9 +371,7 @@ def test_find_station_id(station_data, start_id):
 
 
 def test_make_route_desc(result_data):
-    assert (
-        make_route_desc(result_data)
-        == """\
+    assert make_route_desc(result_data) == """\
 4호선 서울역에서 신분당선 판교역으로 가는 노선을 안내드릴게요!
 
 서울역에서 수도권 4호선(진접-오이도) 진접행 열차에 탑승해서 3 정거장을 지나 충무로역에서 내립니다. (빠른환승: 5-1)
@@ -381,7 +379,6 @@ def test_make_route_desc(result_data):
 신사역에서 수도권 신분당선(신사-광교) 광교행 열차에 탑승해서 7 정거장을 지나 판교역에서 내립니다. (빠른하차: 1-1, 4-2)
 
 소요시간: 42분 / 거리: 25.81㎞ / 요금(카드 기준): 3,500원"""
-    )
 
 
 @pytest.mark.anyio

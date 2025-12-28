@@ -239,12 +239,9 @@ async def test_list_fine(bot, fx_sess):
     said = bot.call_queue.pop(0)
     assert said.method == "chat.postMessage"
     assert said.data["channel"] == event.channel
-    assert (
-        said.data["text"]
-        == f"""\
+    assert said.data["text"] == f"""\
 <#{event.channel}> 채널에서 구독중인 RSS 목록은 다음과 같아요!
 ```
 {feed1.id} - {feed1.url}
 {feed2.id} - {feed2.url}
 ```"""
-    )
