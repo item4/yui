@@ -63,6 +63,7 @@ yui = "yui.cli:main"
 [tool.black]
 line-length = 80
 preview = true
+target-version = ["py313"]
 
 
 [tool.ruff]
