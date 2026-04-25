@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 from yui.apps.compute.calc.exceptions import UnavailableTypeError
@@ -66,7 +68,7 @@ def test_nameconstant_decimal_mode(ed):
 
 def test_num(e):
     assert e.run("123") == 123
-    assert e.run("123.45") == 123.45
+    assert math.isclose(e.run("123.45"), 123.45)
 
 
 def test_num_decimal_mode(ed):

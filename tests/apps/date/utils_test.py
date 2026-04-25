@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 from yui.apps.date.utils import APIDoesNotSupport
@@ -28,13 +30,13 @@ async def test_get_holiday_names():
 
 
 def test_weekend_loading_percent():
-    assert weekend_loading_percent(datetime(2020, 6, 1)) == 0.0
-    assert weekend_loading_percent(datetime(2020, 6, 2)) == 20.0
-    assert weekend_loading_percent(datetime(2020, 6, 3)) == 40.0
-    assert weekend_loading_percent(datetime(2020, 6, 4)) == 60.0
-    assert weekend_loading_percent(datetime(2020, 6, 5)) == 80.0
-    assert weekend_loading_percent(datetime(2020, 6, 6)) == 100.0
-    assert weekend_loading_percent(datetime(2020, 6, 7)) == 100.0
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 1)), 0.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 2)), 20.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 3)), 40.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 4)), 60.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 5)), 80.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 6)), 100.0)
+    assert math.isclose(weekend_loading_percent(datetime(2020, 6, 7)), 100.0)
 
 
 def test_weekend_loading_box():

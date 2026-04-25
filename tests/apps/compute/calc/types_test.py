@@ -1,3 +1,5 @@
+import math
+
 from yui.apps.compute.calc.types import Decimal as D
 
 
@@ -13,8 +15,8 @@ def test_decimal():
     assert 2 * D("3") == D("6")
     assert D("10") // 2 == D("5")
     assert 10 // D("2") == D("5")
-    assert D("10") / 2.5 == D("4")
-    assert 10 / D("2.5") == D("4")
+    assert math.isclose(D("10") / 2.5, D("4"))
+    assert math.isclose(10 / D("2.5"), D("4"))
     assert D("5") % 2 == D("1")
     assert 5 % D("2") == D("1")
     assert divmod(D("5"), 2) == (D("2"), D("1"))

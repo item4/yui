@@ -128,3 +128,7 @@ class Box:
         p = PollingTask(self)
         self.polling_tasks.append(p)
         return p
+
+
+# (:class:`Box`) Default Box instance
+box = Box()

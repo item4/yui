@@ -1,3 +1,4 @@
+import math
 import re
 
 import pytest
@@ -10,7 +11,7 @@ def test_binop(e):
     assert e.run("3 & 2") == 3 & 2
     assert e.run("1 | 2") == 1 | 2
     assert e.run("3 ^ 2") == 3 ^ 2
-    assert e.run("3 / 2") == 3 / 2
+    assert math.isclose(e.run("3 / 2"), 3 / 2)
     assert e.run("3 // 2") == 3 // 2
     assert e.run("3 << 2") == 3 << 2
     with pytest.raises(TypeError):

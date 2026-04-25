@@ -1,5 +1,6 @@
 import datetime
 import enum
+import math
 from decimal import Decimal
 
 import pytest
@@ -153,8 +154,8 @@ def test_value_range():
 
     # float
 
-    assert value_range(1.0, 5.0)(3.0) == 3.0
-    assert value_range(1.0, 5.0, autofix=True)(3.0) == 3.0
+    assert math.isclose(value_range(1.0, 5.0)(3.0), 3.0)
+    assert math.isclose(value_range(1.0, 5.0, autofix=True)(3.0), 3.0)
 
     with pytest.raises(ValueError):
         value_range(1.0, 5.0)(0.0)
@@ -162,8 +163,8 @@ def test_value_range():
     with pytest.raises(ValueError):
         value_range(1.0, 5.0)(6.0)
 
-    assert value_range(1.0, 5.0, autofix=True)(0.0) == 1.0
-    assert value_range(1.0, 5.0, autofix=True)(6.0) == 5.0
+    assert math.isclose(value_range(1.0, 5.0, autofix=True)(0.0), 1.0)
+    assert math.isclose(value_range(1.0, 5.0, autofix=True)(6.0), 5.0)
 
     # int
 

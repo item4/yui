@@ -1,3 +1,4 @@
+import math
 from typing import Any
 from typing import NewType
 from typing import TypeVar
@@ -44,7 +45,7 @@ def test_cast(bot):
     assert cast(set[int], ["1", "1", "2"]) == {1, 2}
     assert cast(int | None, 3) == 3
     assert cast(int | None, None) is None
-    assert cast(int | float, "3.2") == 3.2
+    assert math.isclose(cast(int | float, "3.2"), 3.2)
     assert cast(int | str, "e") == "e"
     assert cast(list[ID], [1, 2, 3]) == [ID("1"), ID("2"), ID("3")]
     assert cast(list[N], [1, 2, 3]) == [1, 2, 3]

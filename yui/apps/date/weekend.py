@@ -1,3 +1,5 @@
+import math
+
 from ...box import box
 from ...event import Message
 from ...utils.datetime import now
@@ -42,7 +44,7 @@ async def weekend_loading(bot, event: Message):
     now_dt = now()
     percent = weekend_loading_percent(now_dt)
     blocks = weekend_loading_box(percent)
-    if percent == 100.0:
+    if math.isclose(percent, 100.0):
         await bot.say(event.channel, "주말이에요! 즐거운 주말 되세요!")
     else:
         await bot.say(event.channel, f"주말로딩… {blocks} {percent:.2f}%")
